@@ -76,7 +76,7 @@ params:
     profileMode:
         enabled: true
         title: 
-        imageUrl: "images/SwimmingLiu.png"
+        imageUrl: "https://i0.imgs.ovh/2023/11/12/nLRSp.png"
         imageTitle: my image
         imageWidth: 240
         imageHeight: 240

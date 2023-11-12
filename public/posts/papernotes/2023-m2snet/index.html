@@ -1,0 +1,582 @@
+<!DOCTYPE html>
+<html lang="en" dir="auto">
+
+<head><meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta name="robots" content="index, follow">
+<title>M2SNet: Multi-scale in Multi-scale Subtraction Network for Medical Image Segmentation | SwimmingLiu&#39;s Blog</title>
+<meta name="keywords" content="Unet, M2SNet, Multi-scale Subtraction">
+<meta name="description" content="(2023) M2SNet: 新颖多尺度模块 &#43; 智能损失函数 = 通用图像分割SOTA网络 Abstract 准确的医学图像分割对于早期医学诊断至关重要。大多数现有方法基于U形结构，并使用逐元素加法或串联在解码器中逐步融合不同级别的特征。然而，这两种操作都容易产生大量冗余信息，从而削弱不同级别特征之间的互补性，导致病灶定位不准确和边缘模糊。为了应对这一挑战，我们提出了一种通用的多尺度减法网络（M2SNet）来完成医学图像的多样化分割。具体来说，我们首先设计一个基本减法单元（SU）来产生编码器中相邻级别之间的差异特征。接下来，我们将单尺度 SU 扩展到层内多尺度 SU，它可以为解码器提供像素级和结构级差异信息。
+然后，我们金字塔式地为不同层次的多尺度SU配备不同的感受野，从而实现层间多尺度特征聚合并获得丰富的多尺度差异信息。此外，我们构建了一个免训练网络“LossNet”来全面监督从底层到顶层的任务感知特征，这驱动我们的多尺度减法网络同时捕获细节和结构线索。
+没有花里胡哨的东西，我们的方法在不同的评估指标下，在不同图像模态的四种不同医学图像分割任务的 11 个数据集上表现优于大多数最先进的方法，包括彩色结肠镜成像、超声成像、计算机断层扫描 (CT) ）和光学相干断层扫描（OCT）。
+两个主要创新点：多尺度金字塔减法单元 （确实牛逼）&#43; LossNet（为了创新而创新的损失函数）
+Introduction 作为计算机辅助诊断系统中的重要作用，精确的医学图像分割技术可以为医生做出临床决策提供重要指导。精确分割存在三个普遍的挑战：首先，U形结构[1]、[2]由于其利用多级信息重建高分辨率特征图的能力而受到了相当多的关注。在UNet [2]中，上采样的特征图与从编码器跳过的特征图连接在一起，并在上采样步骤之间添加卷积和非线性，如图1（a）所示。后续基于UNet的方法通过注意力机制[3]、[4]、门机制[5]、[6]、变压器技术[7]、[8]设计不同的特征增强模块，如图1（b）所示。 UNet&#43;&#43;[9]使用嵌套和密集的跳跃连接来减少编码器和解码器的特征图之间的语义差距，如图1（c）所示。
+先说医学分割在医学领域重要&hellip;(balabala) 然后当前领域存在xxx挑战&hellip;(balabala)
+这里是以医学图像分割挑战的视角，介绍UNet发展的情况。然后在描述不同UNet变体发展过程中解决的不同问题（感觉可以借鉴）
+一般来说，编码器中不同级别的特征有不同的特征。高级别具有更多的语义信息，有助于定位对象，而低级别具有更详细的信息，可以捕捉对象的微妙边界。解码器利用特定级别和跨级别特征来生成最终的高分辨率预测。然而，上述方法直接使用逐元素加法或串联来融合来自编码器的任意两级特征并将它们传输到解码器。这些简单的操作并没有更多地关注不同层次之间的差异信息。这一缺点不仅会产生冗余信息来稀释真正有用的特征，还会削弱特定于级别的特征的特性，从而导致网络无法平衡精确定位和微妙的边界细化。其次，由于感受野有限，单尺度卷积核很难捕获大小变化物体的上下文信息。一些方法[1]、[2]、[9]-[11]依赖于层间多尺度特征，并逐步整合来自不同尺度表示的语义上下文和纹理细节。其他人[6]、[12]-[15]专注于基于网络中的空洞空间金字塔池化模块[16]（ASPP）或DenseASPP [17]提取层内多尺度信息。然而，类似ASPP的多尺度卷积模块会产生许多额外的参数和计算。许多方法[5]、[18]-[21]通常将多个ASPP模块安装到不同级别的编码器/解码器块中，而有些方法[13]、[14]、[22]、[23]将其安装在不同级别的编码器/解码器块中。最高级别的编码器块。第三，损失函数的形式直接为网络的梯度优化提供了方向。在分割领域，提出了许多损失函数来监督不同级别的预测，例如像素级别的L1损失、交叉熵损失和加权交叉熵损失[24]，SSIM[25]损失区域层面的不确定性损失[26]，全局层面的IoU损失、Dice损失和一致性增强损失[11]。尽管这些基本损失函数及其变体具有不同的优化特性，但复杂的手动数学形式的设计对于许多研究来说确实非常耗时。为了获得综合性能，模型通常会集成多种损失函数，这对研究人员的训练技能提出了很高的要求。因此，我们认为有必要引入一种无需复杂人工设计的智能损失函数来全面监督分割预测。
+在本文中，我们提出了一种用于一般医学图像分割的新型多尺度减法网络（M2SNet）。首先，我们设计一个减法单元（SU）并将其应用于每对相邻的级别特征。 SU突出了特征之间有用的差异信息，并消除了冗余部分的干扰。其次，我们借助所提出的多尺度减法模块收集极端多尺度信息。
+对于层间多尺度信息，我们以金字塔方式连接多个减法单元来捕获大跨度的跨层信息。然后，我们聚合特定于级别的特征和多路径跨级别差分特征，然后在解码器中生成最终预测。对于层内多尺度信息，我们通过一组不同内核大小的full one滤波器将单尺度减法单元改进为多尺度减法单元，可以自然地实现多尺度减法聚合，而无需引入额外的参数。如图1所示，MSNet配备了层间多尺度减法模块，M2SNet同时具有层间和层内多尺度减法结构。第三，我们提出了一个LossNet来自动监督从底层到顶层提取的特征图，它可以通过简单的L2损失函数优化从细节到结构的分割。
+多尺度减法单元可以去特征之间的差异信息，消除冗余干扰。
+（也就是说可以用这种办法替换注意力机制）
+RELATED WORK Medical Image Segmentation Network 根据不同器官或病变的特点，我们将现有的医学图像分割方法分为两类：医学通用的和医学专用的。随着U-Net[2]在医学图像分割领域取得稳定的性能，带有编码器-解码器的U形结构已成为基本的分割基线。 U-Net&#43;&#43;[9]集成了长连接和短连接，可以减少编码器和解码器子网络的特征图之间的语义差距。对于注意力 U-Net [28]，注意力门嵌入在编码器和解码器块之间的每个过渡层中，它可以自动学习关注不同形状和大小的目标结构。最近，Transformer [29]架构在许多自然语言处理任务中取得了成功。一些作品[7]、[8]探讨了其对医学视觉任务的有效性。 UTNet [7] 是一种简单但功能强大的混合变压器架构，它在编码器和解码器中应用自注意力模块，以最小的开销捕获不同规模的远程依赖关系。另一个具有代表性的基于 Transformer 的模型是 TransUNet [8]，它通过将图像特征视为序列来编码强全局上下文，并通过 U 形混合架构设计利用低级 CNN 特征。
+医学特定方法。在息肉分割任务中，SFA [30]和PraNet [4]专注于恢复息肉与其周围粘膜之间的清晰边界。前者提出了共享编码器和两个相互约束的解码器下的选择性特征聚合结构和边界敏感损失函数。后者利用反向注意模块来建立区域和边界线索之间的关系。此外，Ji等人[31]利用时空信息构建视频息肉分割模型。在COVID-19肺部感染任务中，Paluru等人[32]提出了一种基于变形深度嵌入的轻量级CNN来分割COVID-19胸部CT图像中的异常。 Inf-Net [33] 构建隐式反向注意力和显式边缘注意力来对边界进行建模。 BCS-Net [34]具有三个渐进边界上下文语义重建块，可以帮助解码器捕获肺部感染的零散区域。在乳腺分割任务中，Byra等人[35]通过注意力机制开发了选择性核来调整U-Net的感受野，可以进一步提高乳腺肿瘤的分割精度。 Chen 等人 [36] 提出了一种嵌套 U 网，通过利用不同的深度和共享权重来实现乳腺肿瘤的稳健表示。">
+<meta name="author" content="SwimmingLiu">
+<link rel="canonical" href="https://swimmingliu.github.io/posts/papernotes/2023-m2snet/">
+<link crossorigin="anonymous" href="/assets/css/stylesheet.fce773af76300c55732470d4e395524d3dc8800c50784ec518bb2f1635a0ef35.css" integrity="sha256-/Odzr3YwDFVzJHDU45VSTT3IgAxQeE7FGLsvFjWg7zU=" rel="preload stylesheet" as="style">
+<link rel="icon" href="https://swimmingliu.github.io/favicon.ico">
+<link rel="icon" type="image/png" sizes="16x16" href="https://swimmingliu.github.io/favicon-16x16.png">
+<link rel="icon" type="image/png" sizes="32x32" href="https://swimmingliu.github.io/favicon-32x32.png">
+<link rel="apple-touch-icon" href="https://swimmingliu.github.io/apple-touch-icon.png">
+<link rel="mask-icon" href="https://swimmingliu.github.io/safari-pinned-tab.svg">
+<meta name="theme-color" content="#2e2e33">
+<meta name="msapplication-TileColor" content="#2e2e33">
+<noscript>
+    <style>
+        #theme-toggle,
+        .top-link {
+            display: none;
+        }
+
+    </style>
+    <style>
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --theme: rgb(29, 30, 32);
+                --entry: rgb(46, 46, 51);
+                --primary: rgb(218, 218, 219);
+                --secondary: rgb(155, 156, 157);
+                --tertiary: rgb(65, 66, 68);
+                --content: rgb(196, 196, 197);
+                --hljs-bg: rgb(46, 46, 51);
+                --code-bg: rgb(55, 56, 62);
+                --border: rgb(51, 51, 51);
+            }
+
+            .list {
+                background: var(--theme);
+            }
+
+            .list:not(.dark)::-webkit-scrollbar-track {
+                background: 0 0;
+            }
+
+            .list:not(.dark)::-webkit-scrollbar-thumb {
+                border-color: var(--theme);
+            }
+        }
+
+    </style>
+</noscript><meta property="og:title" content="M2SNet: Multi-scale in Multi-scale Subtraction Network for Medical Image Segmentation" />
+<meta property="og:description" content="(2023) M2SNet: 新颖多尺度模块 &#43; 智能损失函数 = 通用图像分割SOTA网络 Abstract 准确的医学图像分割对于早期医学诊断至关重要。大多数现有方法基于U形结构，并使用逐元素加法或串联在解码器中逐步融合不同级别的特征。然而，这两种操作都容易产生大量冗余信息，从而削弱不同级别特征之间的互补性，导致病灶定位不准确和边缘模糊。为了应对这一挑战，我们提出了一种通用的多尺度减法网络（M2SNet）来完成医学图像的多样化分割。具体来说，我们首先设计一个基本减法单元（SU）来产生编码器中相邻级别之间的差异特征。接下来，我们将单尺度 SU 扩展到层内多尺度 SU，它可以为解码器提供像素级和结构级差异信息。
+然后，我们金字塔式地为不同层次的多尺度SU配备不同的感受野，从而实现层间多尺度特征聚合并获得丰富的多尺度差异信息。此外，我们构建了一个免训练网络“LossNet”来全面监督从底层到顶层的任务感知特征，这驱动我们的多尺度减法网络同时捕获细节和结构线索。
+没有花里胡哨的东西，我们的方法在不同的评估指标下，在不同图像模态的四种不同医学图像分割任务的 11 个数据集上表现优于大多数最先进的方法，包括彩色结肠镜成像、超声成像、计算机断层扫描 (CT) ）和光学相干断层扫描（OCT）。
+两个主要创新点：多尺度金字塔减法单元 （确实牛逼）&#43; LossNet（为了创新而创新的损失函数）
+Introduction 作为计算机辅助诊断系统中的重要作用，精确的医学图像分割技术可以为医生做出临床决策提供重要指导。精确分割存在三个普遍的挑战：首先，U形结构[1]、[2]由于其利用多级信息重建高分辨率特征图的能力而受到了相当多的关注。在UNet [2]中，上采样的特征图与从编码器跳过的特征图连接在一起，并在上采样步骤之间添加卷积和非线性，如图1（a）所示。后续基于UNet的方法通过注意力机制[3]、[4]、门机制[5]、[6]、变压器技术[7]、[8]设计不同的特征增强模块，如图1（b）所示。 UNet&#43;&#43;[9]使用嵌套和密集的跳跃连接来减少编码器和解码器的特征图之间的语义差距，如图1（c）所示。
+先说医学分割在医学领域重要&hellip;(balabala) 然后当前领域存在xxx挑战&hellip;(balabala)
+这里是以医学图像分割挑战的视角，介绍UNet发展的情况。然后在描述不同UNet变体发展过程中解决的不同问题（感觉可以借鉴）
+一般来说，编码器中不同级别的特征有不同的特征。高级别具有更多的语义信息，有助于定位对象，而低级别具有更详细的信息，可以捕捉对象的微妙边界。解码器利用特定级别和跨级别特征来生成最终的高分辨率预测。然而，上述方法直接使用逐元素加法或串联来融合来自编码器的任意两级特征并将它们传输到解码器。这些简单的操作并没有更多地关注不同层次之间的差异信息。这一缺点不仅会产生冗余信息来稀释真正有用的特征，还会削弱特定于级别的特征的特性，从而导致网络无法平衡精确定位和微妙的边界细化。其次，由于感受野有限，单尺度卷积核很难捕获大小变化物体的上下文信息。一些方法[1]、[2]、[9]-[11]依赖于层间多尺度特征，并逐步整合来自不同尺度表示的语义上下文和纹理细节。其他人[6]、[12]-[15]专注于基于网络中的空洞空间金字塔池化模块[16]（ASPP）或DenseASPP [17]提取层内多尺度信息。然而，类似ASPP的多尺度卷积模块会产生许多额外的参数和计算。许多方法[5]、[18]-[21]通常将多个ASPP模块安装到不同级别的编码器/解码器块中，而有些方法[13]、[14]、[22]、[23]将其安装在不同级别的编码器/解码器块中。最高级别的编码器块。第三，损失函数的形式直接为网络的梯度优化提供了方向。在分割领域，提出了许多损失函数来监督不同级别的预测，例如像素级别的L1损失、交叉熵损失和加权交叉熵损失[24]，SSIM[25]损失区域层面的不确定性损失[26]，全局层面的IoU损失、Dice损失和一致性增强损失[11]。尽管这些基本损失函数及其变体具有不同的优化特性，但复杂的手动数学形式的设计对于许多研究来说确实非常耗时。为了获得综合性能，模型通常会集成多种损失函数，这对研究人员的训练技能提出了很高的要求。因此，我们认为有必要引入一种无需复杂人工设计的智能损失函数来全面监督分割预测。
+在本文中，我们提出了一种用于一般医学图像分割的新型多尺度减法网络（M2SNet）。首先，我们设计一个减法单元（SU）并将其应用于每对相邻的级别特征。 SU突出了特征之间有用的差异信息，并消除了冗余部分的干扰。其次，我们借助所提出的多尺度减法模块收集极端多尺度信息。
+对于层间多尺度信息，我们以金字塔方式连接多个减法单元来捕获大跨度的跨层信息。然后，我们聚合特定于级别的特征和多路径跨级别差分特征，然后在解码器中生成最终预测。对于层内多尺度信息，我们通过一组不同内核大小的full one滤波器将单尺度减法单元改进为多尺度减法单元，可以自然地实现多尺度减法聚合，而无需引入额外的参数。如图1所示，MSNet配备了层间多尺度减法模块，M2SNet同时具有层间和层内多尺度减法结构。第三，我们提出了一个LossNet来自动监督从底层到顶层提取的特征图，它可以通过简单的L2损失函数优化从细节到结构的分割。
+多尺度减法单元可以去特征之间的差异信息，消除冗余干扰。
+（也就是说可以用这种办法替换注意力机制）
+RELATED WORK Medical Image Segmentation Network 根据不同器官或病变的特点，我们将现有的医学图像分割方法分为两类：医学通用的和医学专用的。随着U-Net[2]在医学图像分割领域取得稳定的性能，带有编码器-解码器的U形结构已成为基本的分割基线。 U-Net&#43;&#43;[9]集成了长连接和短连接，可以减少编码器和解码器子网络的特征图之间的语义差距。对于注意力 U-Net [28]，注意力门嵌入在编码器和解码器块之间的每个过渡层中，它可以自动学习关注不同形状和大小的目标结构。最近，Transformer [29]架构在许多自然语言处理任务中取得了成功。一些作品[7]、[8]探讨了其对医学视觉任务的有效性。 UTNet [7] 是一种简单但功能强大的混合变压器架构，它在编码器和解码器中应用自注意力模块，以最小的开销捕获不同规模的远程依赖关系。另一个具有代表性的基于 Transformer 的模型是 TransUNet [8]，它通过将图像特征视为序列来编码强全局上下文，并通过 U 形混合架构设计利用低级 CNN 特征。
+医学特定方法。在息肉分割任务中，SFA [30]和PraNet [4]专注于恢复息肉与其周围粘膜之间的清晰边界。前者提出了共享编码器和两个相互约束的解码器下的选择性特征聚合结构和边界敏感损失函数。后者利用反向注意模块来建立区域和边界线索之间的关系。此外，Ji等人[31]利用时空信息构建视频息肉分割模型。在COVID-19肺部感染任务中，Paluru等人[32]提出了一种基于变形深度嵌入的轻量级CNN来分割COVID-19胸部CT图像中的异常。 Inf-Net [33] 构建隐式反向注意力和显式边缘注意力来对边界进行建模。 BCS-Net [34]具有三个渐进边界上下文语义重建块，可以帮助解码器捕获肺部感染的零散区域。在乳腺分割任务中，Byra等人[35]通过注意力机制开发了选择性核来调整U-Net的感受野，可以进一步提高乳腺肿瘤的分割精度。 Chen 等人 [36] 提出了一种嵌套 U 网，通过利用不同的深度和共享权重来实现乳腺肿瘤的稳健表示。" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://swimmingliu.github.io/posts/papernotes/2023-m2snet/" /><meta property="og:image" content="https://swimmingliu.github.io/papermod-cover.png"/><meta property="article:section" content="posts" />
+<meta property="article:published_time" content="2023-11-12T16:25:03+08:00" />
+<meta property="article:modified_time" content="2023-11-12T16:25:03+08:00" />
+
+<meta name="twitter:card" content="summary_large_image"/>
+<meta name="twitter:image" content="https://swimmingliu.github.io/papermod-cover.png"/>
+
+<meta name="twitter:title" content="M2SNet: Multi-scale in Multi-scale Subtraction Network for Medical Image Segmentation"/>
+<meta name="twitter:description" content="(2023) M2SNet: 新颖多尺度模块 &#43; 智能损失函数 = 通用图像分割SOTA网络 Abstract 准确的医学图像分割对于早期医学诊断至关重要。大多数现有方法基于U形结构，并使用逐元素加法或串联在解码器中逐步融合不同级别的特征。然而，这两种操作都容易产生大量冗余信息，从而削弱不同级别特征之间的互补性，导致病灶定位不准确和边缘模糊。为了应对这一挑战，我们提出了一种通用的多尺度减法网络（M2SNet）来完成医学图像的多样化分割。具体来说，我们首先设计一个基本减法单元（SU）来产生编码器中相邻级别之间的差异特征。接下来，我们将单尺度 SU 扩展到层内多尺度 SU，它可以为解码器提供像素级和结构级差异信息。
+然后，我们金字塔式地为不同层次的多尺度SU配备不同的感受野，从而实现层间多尺度特征聚合并获得丰富的多尺度差异信息。此外，我们构建了一个免训练网络“LossNet”来全面监督从底层到顶层的任务感知特征，这驱动我们的多尺度减法网络同时捕获细节和结构线索。
+没有花里胡哨的东西，我们的方法在不同的评估指标下，在不同图像模态的四种不同医学图像分割任务的 11 个数据集上表现优于大多数最先进的方法，包括彩色结肠镜成像、超声成像、计算机断层扫描 (CT) ）和光学相干断层扫描（OCT）。
+两个主要创新点：多尺度金字塔减法单元 （确实牛逼）&#43; LossNet（为了创新而创新的损失函数）
+Introduction 作为计算机辅助诊断系统中的重要作用，精确的医学图像分割技术可以为医生做出临床决策提供重要指导。精确分割存在三个普遍的挑战：首先，U形结构[1]、[2]由于其利用多级信息重建高分辨率特征图的能力而受到了相当多的关注。在UNet [2]中，上采样的特征图与从编码器跳过的特征图连接在一起，并在上采样步骤之间添加卷积和非线性，如图1（a）所示。后续基于UNet的方法通过注意力机制[3]、[4]、门机制[5]、[6]、变压器技术[7]、[8]设计不同的特征增强模块，如图1（b）所示。 UNet&#43;&#43;[9]使用嵌套和密集的跳跃连接来减少编码器和解码器的特征图之间的语义差距，如图1（c）所示。
+先说医学分割在医学领域重要&hellip;(balabala) 然后当前领域存在xxx挑战&hellip;(balabala)
+这里是以医学图像分割挑战的视角，介绍UNet发展的情况。然后在描述不同UNet变体发展过程中解决的不同问题（感觉可以借鉴）
+一般来说，编码器中不同级别的特征有不同的特征。高级别具有更多的语义信息，有助于定位对象，而低级别具有更详细的信息，可以捕捉对象的微妙边界。解码器利用特定级别和跨级别特征来生成最终的高分辨率预测。然而，上述方法直接使用逐元素加法或串联来融合来自编码器的任意两级特征并将它们传输到解码器。这些简单的操作并没有更多地关注不同层次之间的差异信息。这一缺点不仅会产生冗余信息来稀释真正有用的特征，还会削弱特定于级别的特征的特性，从而导致网络无法平衡精确定位和微妙的边界细化。其次，由于感受野有限，单尺度卷积核很难捕获大小变化物体的上下文信息。一些方法[1]、[2]、[9]-[11]依赖于层间多尺度特征，并逐步整合来自不同尺度表示的语义上下文和纹理细节。其他人[6]、[12]-[15]专注于基于网络中的空洞空间金字塔池化模块[16]（ASPP）或DenseASPP [17]提取层内多尺度信息。然而，类似ASPP的多尺度卷积模块会产生许多额外的参数和计算。许多方法[5]、[18]-[21]通常将多个ASPP模块安装到不同级别的编码器/解码器块中，而有些方法[13]、[14]、[22]、[23]将其安装在不同级别的编码器/解码器块中。最高级别的编码器块。第三，损失函数的形式直接为网络的梯度优化提供了方向。在分割领域，提出了许多损失函数来监督不同级别的预测，例如像素级别的L1损失、交叉熵损失和加权交叉熵损失[24]，SSIM[25]损失区域层面的不确定性损失[26]，全局层面的IoU损失、Dice损失和一致性增强损失[11]。尽管这些基本损失函数及其变体具有不同的优化特性，但复杂的手动数学形式的设计对于许多研究来说确实非常耗时。为了获得综合性能，模型通常会集成多种损失函数，这对研究人员的训练技能提出了很高的要求。因此，我们认为有必要引入一种无需复杂人工设计的智能损失函数来全面监督分割预测。
+在本文中，我们提出了一种用于一般医学图像分割的新型多尺度减法网络（M2SNet）。首先，我们设计一个减法单元（SU）并将其应用于每对相邻的级别特征。 SU突出了特征之间有用的差异信息，并消除了冗余部分的干扰。其次，我们借助所提出的多尺度减法模块收集极端多尺度信息。
+对于层间多尺度信息，我们以金字塔方式连接多个减法单元来捕获大跨度的跨层信息。然后，我们聚合特定于级别的特征和多路径跨级别差分特征，然后在解码器中生成最终预测。对于层内多尺度信息，我们通过一组不同内核大小的full one滤波器将单尺度减法单元改进为多尺度减法单元，可以自然地实现多尺度减法聚合，而无需引入额外的参数。如图1所示，MSNet配备了层间多尺度减法模块，M2SNet同时具有层间和层内多尺度减法结构。第三，我们提出了一个LossNet来自动监督从底层到顶层提取的特征图，它可以通过简单的L2损失函数优化从细节到结构的分割。
+多尺度减法单元可以去特征之间的差异信息，消除冗余干扰。
+（也就是说可以用这种办法替换注意力机制）
+RELATED WORK Medical Image Segmentation Network 根据不同器官或病变的特点，我们将现有的医学图像分割方法分为两类：医学通用的和医学专用的。随着U-Net[2]在医学图像分割领域取得稳定的性能，带有编码器-解码器的U形结构已成为基本的分割基线。 U-Net&#43;&#43;[9]集成了长连接和短连接，可以减少编码器和解码器子网络的特征图之间的语义差距。对于注意力 U-Net [28]，注意力门嵌入在编码器和解码器块之间的每个过渡层中，它可以自动学习关注不同形状和大小的目标结构。最近，Transformer [29]架构在许多自然语言处理任务中取得了成功。一些作品[7]、[8]探讨了其对医学视觉任务的有效性。 UTNet [7] 是一种简单但功能强大的混合变压器架构，它在编码器和解码器中应用自注意力模块，以最小的开销捕获不同规模的远程依赖关系。另一个具有代表性的基于 Transformer 的模型是 TransUNet [8]，它通过将图像特征视为序列来编码强全局上下文，并通过 U 形混合架构设计利用低级 CNN 特征。
+医学特定方法。在息肉分割任务中，SFA [30]和PraNet [4]专注于恢复息肉与其周围粘膜之间的清晰边界。前者提出了共享编码器和两个相互约束的解码器下的选择性特征聚合结构和边界敏感损失函数。后者利用反向注意模块来建立区域和边界线索之间的关系。此外，Ji等人[31]利用时空信息构建视频息肉分割模型。在COVID-19肺部感染任务中，Paluru等人[32]提出了一种基于变形深度嵌入的轻量级CNN来分割COVID-19胸部CT图像中的异常。 Inf-Net [33] 构建隐式反向注意力和显式边缘注意力来对边界进行建模。 BCS-Net [34]具有三个渐进边界上下文语义重建块，可以帮助解码器捕获肺部感染的零散区域。在乳腺分割任务中，Byra等人[35]通过注意力机制开发了选择性核来调整U-Net的感受野，可以进一步提高乳腺肿瘤的分割精度。 Chen 等人 [36] 提出了一种嵌套 U 网，通过利用不同的深度和共享权重来实现乳腺肿瘤的稳健表示。"/>
+
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position":  1 ,
+      "name": "📚 Posts",
+      "item": "https://swimmingliu.github.io/posts/"
+    }, 
+    {
+      "@type": "ListItem",
+      "position":  2 ,
+      "name": "📝 Paper Notes",
+      "item": "https://swimmingliu.github.io/posts/papernotes/"
+    }, 
+    {
+      "@type": "ListItem",
+      "position":  3 ,
+      "name": "M2SNet: Multi-scale in Multi-scale Subtraction Network for Medical Image Segmentation",
+      "item": "https://swimmingliu.github.io/posts/papernotes/2023-m2snet/"
+    }
+  ]
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "M2SNet: Multi-scale in Multi-scale Subtraction Network for Medical Image Segmentation",
+  "name": "M2SNet: Multi-scale in Multi-scale Subtraction Network for Medical Image Segmentation",
+  "description": "(2023) M2SNet: 新颖多尺度模块 + 智能损失函数 = 通用图像分割SOTA网络 Abstract 准确的医学图像分割对于早期医学诊断至关重要。大多数现有方法基于U形结构，并使用逐元素加法或串联在解码器中逐步融合不同级别的特征。然而，这两种操作都容易产生大量冗余信息，从而削弱不同级别特征之间的互补性，导致病灶定位不准确和边缘模糊。为了应对这一挑战，我们提出了一种通用的多尺度减法网络（M2SNet）来完成医学图像的多样化分割。具体来说，我们首先设计一个基本减法单元（SU）来产生编码器中相邻级别之间的差异特征。接下来，我们将单尺度 SU 扩展到层内多尺度 SU，它可以为解码器提供像素级和结构级差异信息。\n然后，我们金字塔式地为不同层次的多尺度SU配备不同的感受野，从而实现层间多尺度特征聚合并获得丰富的多尺度差异信息。此外，我们构建了一个免训练网络“LossNet”来全面监督从底层到顶层的任务感知特征，这驱动我们的多尺度减法网络同时捕获细节和结构线索。\n没有花里胡哨的东西，我们的方法在不同的评估指标下，在不同图像模态的四种不同医学图像分割任务的 11 个数据集上表现优于大多数最先进的方法，包括彩色结肠镜成像、超声成像、计算机断层扫描 (CT) ）和光学相干断层扫描（OCT）。\n两个主要创新点：多尺度金字塔减法单元 （确实牛逼）+ LossNet（为了创新而创新的损失函数）\nIntroduction 作为计算机辅助诊断系统中的重要作用，精确的医学图像分割技术可以为医生做出临床决策提供重要指导。精确分割存在三个普遍的挑战：首先，U形结构[1]、[2]由于其利用多级信息重建高分辨率特征图的能力而受到了相当多的关注。在UNet [2]中，上采样的特征图与从编码器跳过的特征图连接在一起，并在上采样步骤之间添加卷积和非线性，如图1（a）所示。后续基于UNet的方法通过注意力机制[3]、[4]、门机制[5]、[6]、变压器技术[7]、[8]设计不同的特征增强模块，如图1（b）所示。 UNet++[9]使用嵌套和密集的跳跃连接来减少编码器和解码器的特征图之间的语义差距，如图1（c）所示。\n先说医学分割在医学领域重要\u0026hellip;(balabala) 然后当前领域存在xxx挑战\u0026hellip;(balabala)\n这里是以医学图像分割挑战的视角，介绍UNet发展的情况。然后在描述不同UNet变体发展过程中解决的不同问题（感觉可以借鉴）\n一般来说，编码器中不同级别的特征有不同的特征。高级别具有更多的语义信息，有助于定位对象，而低级别具有更详细的信息，可以捕捉对象的微妙边界。解码器利用特定级别和跨级别特征来生成最终的高分辨率预测。然而，上述方法直接使用逐元素加法或串联来融合来自编码器的任意两级特征并将它们传输到解码器。这些简单的操作并没有更多地关注不同层次之间的差异信息。这一缺点不仅会产生冗余信息来稀释真正有用的特征，还会削弱特定于级别的特征的特性，从而导致网络无法平衡精确定位和微妙的边界细化。其次，由于感受野有限，单尺度卷积核很难捕获大小变化物体的上下文信息。一些方法[1]、[2]、[9]-[11]依赖于层间多尺度特征，并逐步整合来自不同尺度表示的语义上下文和纹理细节。其他人[6]、[12]-[15]专注于基于网络中的空洞空间金字塔池化模块[16]（ASPP）或DenseASPP [17]提取层内多尺度信息。然而，类似ASPP的多尺度卷积模块会产生许多额外的参数和计算。许多方法[5]、[18]-[21]通常将多个ASPP模块安装到不同级别的编码器/解码器块中，而有些方法[13]、[14]、[22]、[23]将其安装在不同级别的编码器/解码器块中。最高级别的编码器块。第三，损失函数的形式直接为网络的梯度优化提供了方向。在分割领域，提出了许多损失函数来监督不同级别的预测，例如像素级别的L1损失、交叉熵损失和加权交叉熵损失[24]，SSIM[25]损失区域层面的不确定性损失[26]，全局层面的IoU损失、Dice损失和一致性增强损失[11]。尽管这些基本损失函数及其变体具有不同的优化特性，但复杂的手动数学形式的设计对于许多研究来说确实非常耗时。为了获得综合性能，模型通常会集成多种损失函数，这对研究人员的训练技能提出了很高的要求。因此，我们认为有必要引入一种无需复杂人工设计的智能损失函数来全面监督分割预测。\n在本文中，我们提出了一种用于一般医学图像分割的新型多尺度减法网络（M2SNet）。首先，我们设计一个减法单元（SU）并将其应用于每对相邻的级别特征。 SU突出了特征之间有用的差异信息，并消除了冗余部分的干扰。其次，我们借助所提出的多尺度减法模块收集极端多尺度信息。\n对于层间多尺度信息，我们以金字塔方式连接多个减法单元来捕获大跨度的跨层信息。然后，我们聚合特定于级别的特征和多路径跨级别差分特征，然后在解码器中生成最终预测。对于层内多尺度信息，我们通过一组不同内核大小的full one滤波器将单尺度减法单元改进为多尺度减法单元，可以自然地实现多尺度减法聚合，而无需引入额外的参数。如图1所示，MSNet配备了层间多尺度减法模块，M2SNet同时具有层间和层内多尺度减法结构。第三，我们提出了一个LossNet来自动监督从底层到顶层提取的特征图，它可以通过简单的L2损失函数优化从细节到结构的分割。\n多尺度减法单元可以去特征之间的差异信息，消除冗余干扰。\n（也就是说可以用这种办法替换注意力机制）\nRELATED WORK Medical Image Segmentation Network 根据不同器官或病变的特点，我们将现有的医学图像分割方法分为两类：医学通用的和医学专用的。随着U-Net[2]在医学图像分割领域取得稳定的性能，带有编码器-解码器的U形结构已成为基本的分割基线。 U-Net++[9]集成了长连接和短连接，可以减少编码器和解码器子网络的特征图之间的语义差距。对于注意力 U-Net [28]，注意力门嵌入在编码器和解码器块之间的每个过渡层中，它可以自动学习关注不同形状和大小的目标结构。最近，Transformer [29]架构在许多自然语言处理任务中取得了成功。一些作品[7]、[8]探讨了其对医学视觉任务的有效性。 UTNet [7] 是一种简单但功能强大的混合变压器架构，它在编码器和解码器中应用自注意力模块，以最小的开销捕获不同规模的远程依赖关系。另一个具有代表性的基于 Transformer 的模型是 TransUNet [8]，它通过将图像特征视为序列来编码强全局上下文，并通过 U 形混合架构设计利用低级 CNN 特征。\n医学特定方法。在息肉分割任务中，SFA [30]和PraNet [4]专注于恢复息肉与其周围粘膜之间的清晰边界。前者提出了共享编码器和两个相互约束的解码器下的选择性特征聚合结构和边界敏感损失函数。后者利用反向注意模块来建立区域和边界线索之间的关系。此外，Ji等人[31]利用时空信息构建视频息肉分割模型。在COVID-19肺部感染任务中，Paluru等人[32]提出了一种基于变形深度嵌入的轻量级CNN来分割COVID-19胸部CT图像中的异常。 Inf-Net [33] 构建隐式反向注意力和显式边缘注意力来对边界进行建模。 BCS-Net [34]具有三个渐进边界上下文语义重建块，可以帮助解码器捕获肺部感染的零散区域。在乳腺分割任务中，Byra等人[35]通过注意力机制开发了选择性核来调整U-Net的感受野，可以进一步提高乳腺肿瘤的分割精度。 Chen 等人 [36] 提出了一种嵌套 U 网，通过利用不同的深度和共享权重来实现乳腺肿瘤的稳健表示。",
+  "keywords": [
+    "Unet", "M2SNet", "Multi-scale Subtraction"
+  ],
+  "articleBody": "(2023) M2SNet: 新颖多尺度模块 + 智能损失函数 = 通用图像分割SOTA网络 Abstract 准确的医学图像分割对于早期医学诊断至关重要。大多数现有方法基于U形结构，并使用逐元素加法或串联在解码器中逐步融合不同级别的特征。然而，这两种操作都容易产生大量冗余信息，从而削弱不同级别特征之间的互补性，导致病灶定位不准确和边缘模糊。为了应对这一挑战，我们提出了一种通用的多尺度减法网络（M2SNet）来完成医学图像的多样化分割。具体来说，我们首先设计一个基本减法单元（SU）来产生编码器中相邻级别之间的差异特征。接下来，我们将单尺度 SU 扩展到层内多尺度 SU，它可以为解码器提供像素级和结构级差异信息。\n然后，我们金字塔式地为不同层次的多尺度SU配备不同的感受野，从而实现层间多尺度特征聚合并获得丰富的多尺度差异信息。此外，我们构建了一个免训练网络“LossNet”来全面监督从底层到顶层的任务感知特征，这驱动我们的多尺度减法网络同时捕获细节和结构线索。\n没有花里胡哨的东西，我们的方法在不同的评估指标下，在不同图像模态的四种不同医学图像分割任务的 11 个数据集上表现优于大多数最先进的方法，包括彩色结肠镜成像、超声成像、计算机断层扫描 (CT) ）和光学相干断层扫描（OCT）。\n两个主要创新点：多尺度金字塔减法单元 （确实牛逼）+ LossNet（为了创新而创新的损失函数）\nIntroduction 作为计算机辅助诊断系统中的重要作用，精确的医学图像分割技术可以为医生做出临床决策提供重要指导。精确分割存在三个普遍的挑战：首先，U形结构[1]、[2]由于其利用多级信息重建高分辨率特征图的能力而受到了相当多的关注。在UNet [2]中，上采样的特征图与从编码器跳过的特征图连接在一起，并在上采样步骤之间添加卷积和非线性，如图1（a）所示。后续基于UNet的方法通过注意力机制[3]、[4]、门机制[5]、[6]、变压器技术[7]、[8]设计不同的特征增强模块，如图1（b）所示。 UNet++[9]使用嵌套和密集的跳跃连接来减少编码器和解码器的特征图之间的语义差距，如图1（c）所示。\n先说医学分割在医学领域重要…(balabala) 然后当前领域存在xxx挑战…(balabala)\n这里是以医学图像分割挑战的视角，介绍UNet发展的情况。然后在描述不同UNet变体发展过程中解决的不同问题（感觉可以借鉴）\n一般来说，编码器中不同级别的特征有不同的特征。高级别具有更多的语义信息，有助于定位对象，而低级别具有更详细的信息，可以捕捉对象的微妙边界。解码器利用特定级别和跨级别特征来生成最终的高分辨率预测。然而，上述方法直接使用逐元素加法或串联来融合来自编码器的任意两级特征并将它们传输到解码器。这些简单的操作并没有更多地关注不同层次之间的差异信息。这一缺点不仅会产生冗余信息来稀释真正有用的特征，还会削弱特定于级别的特征的特性，从而导致网络无法平衡精确定位和微妙的边界细化。其次，由于感受野有限，单尺度卷积核很难捕获大小变化物体的上下文信息。一些方法[1]、[2]、[9]-[11]依赖于层间多尺度特征，并逐步整合来自不同尺度表示的语义上下文和纹理细节。其他人[6]、[12]-[15]专注于基于网络中的空洞空间金字塔池化模块[16]（ASPP）或DenseASPP [17]提取层内多尺度信息。然而，类似ASPP的多尺度卷积模块会产生许多额外的参数和计算。许多方法[5]、[18]-[21]通常将多个ASPP模块安装到不同级别的编码器/解码器块中，而有些方法[13]、[14]、[22]、[23]将其安装在不同级别的编码器/解码器块中。最高级别的编码器块。第三，损失函数的形式直接为网络的梯度优化提供了方向。在分割领域，提出了许多损失函数来监督不同级别的预测，例如像素级别的L1损失、交叉熵损失和加权交叉熵损失[24]，SSIM[25]损失区域层面的不确定性损失[26]，全局层面的IoU损失、Dice损失和一致性增强损失[11]。尽管这些基本损失函数及其变体具有不同的优化特性，但复杂的手动数学形式的设计对于许多研究来说确实非常耗时。为了获得综合性能，模型通常会集成多种损失函数，这对研究人员的训练技能提出了很高的要求。因此，我们认为有必要引入一种无需复杂人工设计的智能损失函数来全面监督分割预测。\n在本文中，我们提出了一种用于一般医学图像分割的新型多尺度减法网络（M2SNet）。首先，我们设计一个减法单元（SU）并将其应用于每对相邻的级别特征。 SU突出了特征之间有用的差异信息，并消除了冗余部分的干扰。其次，我们借助所提出的多尺度减法模块收集极端多尺度信息。\n对于层间多尺度信息，我们以金字塔方式连接多个减法单元来捕获大跨度的跨层信息。然后，我们聚合特定于级别的特征和多路径跨级别差分特征，然后在解码器中生成最终预测。对于层内多尺度信息，我们通过一组不同内核大小的full one滤波器将单尺度减法单元改进为多尺度减法单元，可以自然地实现多尺度减法聚合，而无需引入额外的参数。如图1所示，MSNet配备了层间多尺度减法模块，M2SNet同时具有层间和层内多尺度减法结构。第三，我们提出了一个LossNet来自动监督从底层到顶层提取的特征图，它可以通过简单的L2损失函数优化从细节到结构的分割。\n多尺度减法单元可以去特征之间的差异信息，消除冗余干扰。\n（也就是说可以用这种办法替换注意力机制）\nRELATED WORK Medical Image Segmentation Network 根据不同器官或病变的特点，我们将现有的医学图像分割方法分为两类：医学通用的和医学专用的。随着U-Net[2]在医学图像分割领域取得稳定的性能，带有编码器-解码器的U形结构已成为基本的分割基线。 U-Net++[9]集成了长连接和短连接，可以减少编码器和解码器子网络的特征图之间的语义差距。对于注意力 U-Net [28]，注意力门嵌入在编码器和解码器块之间的每个过渡层中，它可以自动学习关注不同形状和大小的目标结构。最近，Transformer [29]架构在许多自然语言处理任务中取得了成功。一些作品[7]、[8]探讨了其对医学视觉任务的有效性。 UTNet [7] 是一种简单但功能强大的混合变压器架构，它在编码器和解码器中应用自注意力模块，以最小的开销捕获不同规模的远程依赖关系。另一个具有代表性的基于 Transformer 的模型是 TransUNet [8]，它通过将图像特征视为序列来编码强全局上下文，并通过 U 形混合架构设计利用低级 CNN 特征。\n医学特定方法。在息肉分割任务中，SFA [30]和PraNet [4]专注于恢复息肉与其周围粘膜之间的清晰边界。前者提出了共享编码器和两个相互约束的解码器下的选择性特征聚合结构和边界敏感损失函数。后者利用反向注意模块来建立区域和边界线索之间的关系。此外，Ji等人[31]利用时空信息构建视频息肉分割模型。在COVID-19肺部感染任务中，Paluru等人[32]提出了一种基于变形深度嵌入的轻量级CNN来分割COVID-19胸部CT图像中的异常。 Inf-Net [33] 构建隐式反向注意力和显式边缘注意力来对边界进行建模。 BCS-Net [34]具有三个渐进边界上下文语义重建块，可以帮助解码器捕获肺部感染的零散区域。在乳腺分割任务中，Byra等人[35]通过注意力机制开发了选择性核来调整U-Net的感受野，可以进一步提高乳腺肿瘤的分割精度。 Chen 等人 [36] 提出了一种嵌套 U 网，通过利用不同的深度和共享权重来实现乳腺肿瘤的稳健表示。\n我们可以看到，医学通用方法通常针对通用挑战（即丰富的特征表示、多尺度信息提取和跨级别特征聚合）。并且，医学特异性方法根据当前器官或病变的特征提出有针对性的解决方案，例如设计一系列注意力机制、边缘增强模块、不确定性估计等。然而，通用医学模型和医学特异性模型都依赖于通过大量的加法或串联操作来实现特征融合，削弱了互补特征之间的特殊性部分。我们提出的多尺度减法模块自然专注于提取差异信息，从而为解码器提供有效的目标特征。\n主要是说大部分特征融合都是用加法/乘法/串联实现的，但是减法可以削弱互补特征之间的特殊性部分。所以多尺度减法模块提取差异信息，然后再用加法进行特征融合。\nMulti-scale Feature Extraction 尺度线索在捕捉对象的上下文信息中发挥着重要作用。受到被广泛验证为有效且理论上合理的框架的尺度空间理论的启发，越来越多的多尺度方法被提出。与单尺度特征相比，多尺度特征有利于解决自然发生的尺度变化。这一特性可以帮助医学分割模型感知不同尺度的病变。根据形式，当前基于多尺度的方法可以大致分为两类，即层间多尺度结构和层内多尺度结构。前者基于特征编码器提取的不同尺度的特征，并在解码器中逐步聚合它们，例如U形[1]、[2]、[4]、[9]-[11]、[37] ，[38]架构。后者通常配备多尺度可插拔模块，如ASPP [16]、DenseASPP [17]、FoldASPP [6]和PAFEM [12]，构建具有不同扩张率的并行多分支卷积层，以获得丰富的组合感受野。与它们不同的是，我们通过同时引入层间和层内多尺度，提出了具有极端多尺度信息的多尺度减法模块中的多尺度。并且，层内多尺度减法单元专注于挖掘从像素到像素到区域到区域的特征对的自差分性质。与单尺度操作相比，整个过程非常高效，不需要额外的参数。\n多尺度减法模块可以超越其他卷积类办法的多尺度特征信息提取办法\nLoss Method 图像分割中的大多数损失函数都是基于交叉熵或重合度量。传统的交叉熵损失对类别信息一视同仁。 Long等人[24]提出了每个类别的加权交叉熵损失（WCE），以抵消数据中的类别不平衡。 Lin等人[39]引入了困难样本和简单样本的权重来提出焦点损失。 Dice loss[40]被提出作为V-Net中重合测量的损失函数，可以有效抑制类别不平衡带来的问题。 Tversky 损失[41]是 Dice 损失的正则化版本，用于控制准确率和召回率对损失函数的贡献。 Wong等人[42]通过Dice损失和WCE损失的加权求和提出指数对数损失（EL Loss）来提高小结构物体的分割精度。\nTaghanaki等人[43]发现单独使用基于重叠的损失函数存在风险，并提出comomoloss将Dice损失作为正则化项与WCE损失相结合来处理输入输出不平衡的问题。\n虽然这些各种各样的损失函数在不同层次上有不同的效果，但手动设计这些复杂的函数确实费时费力。为此，我们提出了自动且全面的分割损失结构，称为LossNet。\nLossNet权重就0.1 （ 感觉这个是为了创新而创新）\nMETHOD Encoder: Res2Net + Connection: MMSB + Decoder: Plus\nMulti-scale in Multi-scale Subtraction Module 我们使用 FA 和 FB 来表示相邻级别的特征图。\n它们都已被 ReLU 操作激活。我们定义一个基本减法单位（SU）：\n其中是逐元素减法运算，然后计算绝对值，Conv(·) 表示卷积层。直接对元素位置特征进行单尺度减法只是为了建立孤立像素级别上的差异关系，没有考虑病灶可能具有区域聚类的特征。与带有单尺度减法单元的MSNet MICCAI版本[27]相比，我们设计了一个强大的层内多尺度减法单元（MSU），并将MSNet改进为M2SNet。如图3所示，我们利用大小为1×1、3×3和5×5的固定全一权重的多尺度卷积滤波器根据像素-像素和区域区域模式计算细节和结构差异值。使用具有固定参数的多尺度滤波器不仅可以直接捕获匹配空间位置处的初始特征对之间的多尺度差异线索，而且可以在不引入额外参数负担的情况下实现高效训练。因此，M2SNet可以保持与MSNet相同的低计算量，并获得更高精度的性能。整个多尺度减法过程可以表述为：\n其中 Filter(·) n×n 表示大小为 n × n 的完整滤波器（卷积）。 MSU可以捕获FA和FB的互补信息，并突出它们从纹理到结构的差异，从而为解码器提供更丰富的信息。\n为了获得跨多个特征级别的高阶互补信息，我们水平和垂直连接多个MSU来计算一系列具有不同阶数和感受野的差分特征。多尺度减法模块中多尺度的细节可以在图2中找到。我们聚合了相应级别和任意级别之间的特定尺度特征（MSi 1 ）和跨尺度差分特征（MSi n6=1）。其他级别生成互补增强特征（CEi）。这个过程可以表述如下：\n最后，所有CEi参与解码，然后对息肉区域进行分割。\n这里就是介绍一下MSU\nLossNet 在所提出的模型中，总训练损失可以写为：\n其中L w IoU和L w BCE表示加权IoU损失和二元交叉熵（BCE）损失，它们已在分割任务中广泛采用。我们使用与[4]、[44]、[45]中相同的定义，它们的有效性已在这些工作中得到验证。与它们不同的是，我们额外使用LossNet来进一步优化从细节到结构的分割。\n具体来说，我们使用 ImageNet 预训练分类网络，例如 VGG-16，分别提取预测和地面实况的多尺度特征。然后，它们的特征差异计算为损失 Lf ：\n令 F i P 和 F i G 分别表示从预测和地面实况中提取的第 i 层特征图。 l i f 计算为其欧几里德距离（L2-Loss），该距离在像素级别进行监督：\n从图4中可以看出，低层特征图包含丰富的边界信息，高层特征图描述位置信息。因此，LossNet可以在特征层面产生全面的监督。\n",
+  "wordCount" : "171",
+  "inLanguage": "en",
+  "datePublished": "2023-11-12T16:25:03+08:00",
+  "dateModified": "2023-11-12T16:25:03+08:00",
+  "author":[{
+    "@type": "Person",
+    "name": "SwimmingLiu"
+  }],
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": "https://swimmingliu.github.io/posts/papernotes/2023-m2snet/"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "SwimmingLiu's Blog",
+    "logo": {
+      "@type": "ImageObject",
+      "url": "https://swimmingliu.github.io/favicon.ico"
+    }
+  }
+}
+</script>
+</head>
+
+<body class="" id="top">
+<script>
+    if (localStorage.getItem("pref-theme") === "dark") {
+        document.body.classList.add('dark');
+    } else if (localStorage.getItem("pref-theme") === "light") {
+        document.body.classList.remove('dark')
+    } else if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+        document.body.classList.add('dark');
+    }
+
+</script>
+
+<header class="header">
+    <nav class="nav">
+        <div class="logo">
+            <a href="https://swimmingliu.github.io/" accesskey="h" title="SwimmingLiu&#39;s Blog (Alt + H)">SwimmingLiu&#39;s Blog</a>
+            <div class="logo-switches">
+                <button id="theme-toggle" accesskey="t" title="(Alt + T)">
+                    <svg id="moon" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                    </svg>
+                    <svg id="sun" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="5"></circle>
+                        <line x1="12" y1="1" x2="12" y2="3"></line>
+                        <line x1="12" y1="21" x2="12" y2="23"></line>
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                        <line x1="1" y1="12" x2="3" y2="12"></line>
+                        <line x1="21" y1="12" x2="23" y2="12"></line>
+                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                    </svg>
+                </button>
+            </div>
+        </div>
+        <ul id="menu">
+            <li>
+                <a href="https://swimmingliu.github.io/index.html" title="🏡 Home">
+                    <span>🏡 Home</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://swimmingliu.github.io/search/" title="🔍 Search">
+                    <span>🔍 Search</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://swimmingliu.github.io/posts/" title="🗒️ Posts">
+                    <span>🗒️ Posts</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://swimmingliu.github.io/archives/" title="📃 Archive">
+                    <span>📃 Archive</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://swimmingliu.github.io/aboutme/" title="👨🏻‍🎓 About Me">
+                    <span>👨🏻‍🎓 About Me</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://www.emojisearch.app/" title="Emoji">
+                    <span>Emoji</span>&nbsp;
+                    <svg fill="none" shape-rendering="geometricPrecision" stroke="currentColor" stroke-linecap="round"
+                        stroke-linejoin="round" stroke-width="2.5" viewBox="0 0 24 24" height="12" width="12">
+                        <path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"></path>
+                        <path d="M15 3h6v6"></path>
+                        <path d="M10 14L21 3"></path>
+                    </svg>
+                </a>
+            </li>
+        </ul>
+    </nav>
+</header>
+<main class="main">
+
+<article class="post-single">
+  <header class="post-header">
+    <div class="breadcrumbs"><a href="https://swimmingliu.github.io/">Home</a>&nbsp;»&nbsp;<a href="https://swimmingliu.github.io/posts/">📚 Posts</a>&nbsp;»&nbsp;<a href="https://swimmingliu.github.io/posts/papernotes/">📝 Paper Notes</a></div>
+    <h1 class="post-title">
+      M2SNet: Multi-scale in Multi-scale Subtraction Network for Medical Image Segmentation
+    </h1>
+    <div class="post-meta"><span title='2023-11-12 16:25:03 +0800 CST'>November 12, 2023</span>&nbsp;·&nbsp;1 min&nbsp;·&nbsp;SwimmingLiu
+
+</div>
+  </header> <aside id="toc-container" class="toc-container wide">
+    <div class="toc">
+        <details >
+            <summary accesskey="c" title="(Alt + C)">
+                <span class="details">Table of Contents</span>
+            </summary>
+
+            <div class="inner"><ul>
+                    <li>
+                        <a href="#2023-m2snet-%e6%96%b0%e9%a2%96%e5%a4%9a%e5%b0%ba%e5%ba%a6%e6%a8%a1%e5%9d%97--%e6%99%ba%e8%83%bd%e6%8d%9f%e5%a4%b1%e5%87%bd%e6%95%b0--%e9%80%9a%e7%94%a8%e5%9b%be%e5%83%8f%e5%88%86%e5%89%b2sota%e7%bd%91%e7%bb%9c" aria-label="(2023) M2SNet: 新颖多尺度模块 &#43; 智能损失函数 = 通用图像分割SOTA网络">(2023) M2SNet: 新颖多尺度模块 + 智能损失函数 = 通用图像分割SOTA网络</a><ul>
+                            
+                    <li>
+                        <a href="#abstract" aria-label="Abstract">Abstract</a></li>
+                    <li>
+                        <a href="#introduction" aria-label="Introduction">Introduction</a></li>
+                    <li>
+                        <a href="#related-work" aria-label="RELATED WORK">RELATED WORK</a><ul>
+                            
+                    <li>
+                        <a href="#medical-image-segmentation-network" aria-label="Medical Image Segmentation Network">Medical Image Segmentation Network</a></li>
+                    <li>
+                        <a href="#multi-scale-feature-extraction" aria-label="Multi-scale Feature Extraction">Multi-scale Feature Extraction</a></li>
+                    <li>
+                        <a href="#loss-method" aria-label="Loss Method">Loss Method</a></li></ul>
+                    </li>
+                    <li>
+                        <a href="#method" aria-label="METHOD">METHOD</a><ul>
+                            
+                    <li>
+                        <a href="#multi-scale-in-multi-scale-subtraction-module" aria-label="Multi-scale in Multi-scale Subtraction Module">Multi-scale in Multi-scale Subtraction Module</a></li>
+                    <li>
+                        <a href="#lossnet" aria-label="LossNet">LossNet</a>
+                    </li>
+                </ul>
+                </li>
+                </ul>
+                </li>
+                </ul>
+            </div>
+        </details>
+    </div>
+</aside>
+<script>
+    let activeElement;
+    let elements;
+    window.addEventListener('DOMContentLoaded', function (event) {
+        checkTocPosition();
+
+        elements = document.querySelectorAll('h1[id],h2[id],h3[id],h4[id],h5[id],h6[id]');
+         
+         activeElement = elements[0];
+         const id = encodeURI(activeElement.getAttribute('id')).toLowerCase();
+         document.querySelector(`.inner ul li a[href="#${id}"]`).classList.add('active');
+     }, false);
+
+    window.addEventListener('resize', function(event) {
+        checkTocPosition();
+    }, false);
+
+    window.addEventListener('scroll', () => {
+        
+        activeElement = Array.from(elements).find((element) => {
+            if ((getOffsetTop(element) - window.pageYOffset) > 0 && 
+                (getOffsetTop(element) - window.pageYOffset) < window.innerHeight/2) {
+                return element;
+            }
+        }) || activeElement
+
+        elements.forEach(element => {
+             const id = encodeURI(element.getAttribute('id')).toLowerCase();
+             if (element === activeElement){
+                 document.querySelector(`.inner ul li a[href="#${id}"]`).classList.add('active');
+             } else {
+                 document.querySelector(`.inner ul li a[href="#${id}"]`).classList.remove('active');
+             }
+         })
+     }, false);
+
+    const main = parseInt(getComputedStyle(document.body).getPropertyValue('--article-width'), 10);
+    const toc = parseInt(getComputedStyle(document.body).getPropertyValue('--toc-width'), 10);
+    const gap = parseInt(getComputedStyle(document.body).getPropertyValue('--gap'), 10);
+
+    function checkTocPosition() {
+        const width = document.body.scrollWidth;
+
+        if (width - main - (toc * 2) - (gap * 4) > 0) {
+            document.getElementById("toc-container").classList.add("wide");
+        } else {
+            document.getElementById("toc-container").classList.remove("wide");
+        }
+    }
+
+    function getOffsetTop(element) {
+        if (!element.getClientRects().length) {
+            return 0;
+        }
+        let rect = element.getBoundingClientRect();
+        let win = element.ownerDocument.defaultView;
+        return rect.top + win.pageYOffset;   
+    }
+</script>
+
+  <div class="post-content"><h1 id="2023-m2snet-新颖多尺度模块--智能损失函数--通用图像分割sota网络">(2023) M2SNet: 新颖多尺度模块 + 智能损失函数 = 通用图像分割SOTA网络<a hidden class="anchor" aria-hidden="true" href="#2023-m2snet-新颖多尺度模块--智能损失函数--通用图像分割sota网络">#</a></h1>
+<h2 id="abstract">Abstract<a hidden class="anchor" aria-hidden="true" href="#abstract">#</a></h2>
+<blockquote>
+<p>准确的医学图像分割对于早期医学诊断至关重要。大多数现有方法基于U形结构，并使用<strong>逐元素加法或串联在解码器中逐步融合不同级别的特征</strong>。然而，这两种操作都<strong>容易产生大量冗余信息</strong>，从而<strong>削弱不同级别特征之间的互补性</strong>，导致<strong>病灶定位不准确和边缘模糊</strong>。为了应对这一挑战，我们提出了一种通用的多尺度减法网络（M2SNet）来完成医学图像的多样化分割。具体来说，我们首先设计一个基本<strong>减法单元（SU）<strong>来产生编码器中相邻级别之间的差异特征。接下来，我们将单尺度 SU 扩展到层内多尺度 SU，它可以为解码器</strong>提供像素级和结构级差异信息</strong>。</p>
+<p>然后，我们金字塔式地为不同层次的多尺度SU配备不同的感受野，从而实现层间多尺度特征聚合并获得丰富的多尺度差异信息。此外，我们构建了一个免训练网络“LossNet”来全面监督从底层到顶层的任务感知特征，这驱动我们的多尺度减法网络同时捕获细节和结构线索。</p>
+<p>没有花里胡哨的东西，我们的方法在不同的评估指标下，在不同图像模态的四种不同医学图像分割任务的 11 个数据集上表现优于大多数最先进的方法，包括彩色结肠镜成像、超声成像、计算机断层扫描 (CT) ）和光学相干断层扫描（OCT）。</p>
+</blockquote>
+<p>两个主要创新点：多尺度金字塔减法单元 （确实牛逼）+ LossNet（为了创新而创新的损失函数）</p>
+<h2 id="introduction">Introduction<a hidden class="anchor" aria-hidden="true" href="#introduction">#</a></h2>
+<blockquote>
+<p>作为计算机辅助诊断系统中的重要作用，精确的医学图像分割技术可以为医生做出临床决策提供重要指导。精确分割存在三个普遍的挑战：首先，U形结构[1]、[2]由于其利用多级信息重建高分辨率特征图的能力而受到了相当多的关注。在UNet [2]中，上采样的特征图与从编码器跳过的特征图连接在一起，并在上采样步骤之间添加卷积和非线性，如图1（a）所示。后续基于UNet的方法通过注意力机制[3]、[4]、门机制[5]、[6]、变压器技术[7]、[8]设计不同的特征增强模块，如图1（b）所示。 UNet++[9]使用嵌套和密集的跳跃连接来减少编码器和解码器的特征图之间的语义差距，如图1（c）所示。</p>
+</blockquote>
+<p>先说医学分割在医学领域重要&hellip;(balabala)  然后当前领域存在xxx挑战&hellip;(balabala)</p>
+<p>这里是以医学图像分割挑战的视角，介绍UNet发展的情况。然后在描述不同UNet变体发展过程中解决的不同问题（感觉可以借鉴）</p>
+<blockquote>
+<p>一般来说，编码器中不同级别的特征有不同的特征。<strong>高级别具有更多的语义信息</strong>，有助于定位对象，而低级别具有<strong>更详细的信息</strong>，可以捕捉对象的<strong>微妙边界</strong>。解码器利用特定级别和跨级别特征来生成最终的<strong>高分辨率预测</strong>。然而，上述方法<strong>直接使用逐元素加法或串联来融合来自编码器的任意两级特征</strong>并将它们传输到解码器。这些简单的操作并没有更多地关注<strong>不同层次之间的差异信息。<strong>这一缺点不仅会产生</strong>冗余信息来稀释真正有用的特征</strong>，还会<strong>削弱特定于级别的特征的特性</strong>，从而导致网络无法平衡精确定位和微妙的边界细化。其次，由于<strong>感受野有限</strong>，单尺度卷积核很难捕获大小变化物体的<strong>上下文信息</strong>。一些方法[1]、[2]、[9]-[11]依赖于层间多尺度特征，并逐步整合来自不同尺度表示的<strong>语义上下文和纹理细节</strong>。其他人[6]、[12]-[15]专注于基于网络中的空洞空间金字塔池化模块[16]（ASPP）或DenseASPP [17]提取<strong>层内多尺度信息</strong>。然而，类似ASPP的多尺度卷积模块会产生<strong>许多额外的参数和计算</strong>。许多方法[5]、[18]-[21]通常将多个ASPP模块安装到不同级别的编码器/解码器块中，而有些方法[13]、[14]、[22]、[23]将其安装在不同级别的编码器/解码器块中。最高级别的编码器块。第三，损失函数的形式直接为网络的梯度优化提供了方向。在分割领域，提出了许多损失函数来监督不同级别的预测，例如像素级别的L1损失、交叉熵损失和加权交叉熵损失[24]，SSIM[25]损失区域层面的不确定性损失[26]，全局层面的IoU损失、Dice损失和一致性增强损失[11]。尽管这些基本损失函数及其变体具有不同的优化特性，但复杂的手动数学形式的设计对于许多研究来说确实非常耗时。为了获得综合性能，模型通常会集成多种损失函数，这对研究人员的训练技能提出了很高的要求。因此，我们认为有必要引入一种无需复杂人工设计的智能损失函数来全面监督分割预测。</p>
+<p>在本文中，我们提出了一种用于一般医学图像分割的新型多尺度减法网络（M2SNet）。首先，我们设计一个减法单元（SU）并将其应用于<strong>每对相邻的级别特征</strong>。 SU突出了<strong>特征之间有用的差异信息，并消除了冗余部分的干扰</strong>。其次，我们借助所提出的<strong>多尺度减法模块</strong>收集<strong>极端多尺度信息</strong>。</p>
+<p>对于层间多尺度信息，我们以金字塔方式连接多个减法单元来捕获大跨度的跨层信息。然后，我们<strong>聚合特定于级别的特征</strong>和<strong>多路径跨级别差分特征</strong>，然后在解码器中生成最终预测。对于层内多尺度信息，我们通过一组不同内核大小的full one滤波器将单尺度减法单元<strong>改进为多尺度减法单元，可以自然地实现多尺度减法聚合，而无需引入额外的参数</strong>。如图1所示，MSNet配备了层间多尺度减法模块，M2SNet同时具有层间和层内多尺度减法结构。第三，我们提出了一个LossNet来自动监督从底层到顶层提取的特征图，它可以通过简单的L2损失函数优化从细节到结构的分割。</p>
+</blockquote>
+<p>多尺度减法单元可以去特征之间的差异信息，消除冗余干扰。</p>
+<p>（也就是说可以用这种办法替换注意力机制）</p>
+<h2 id="related-work">RELATED WORK<a hidden class="anchor" aria-hidden="true" href="#related-work">#</a></h2>
+<h3 id="medical-image-segmentation-network">Medical Image Segmentation Network<a hidden class="anchor" aria-hidden="true" href="#medical-image-segmentation-network">#</a></h3>
+<blockquote>
+<p>根据不同器官或病变的特点，我们将现有的医学图像分割方法分为两类：医学通用的和医学专用的。随着U-Net[2]在医学图像分割领域取得稳定的性能，带有编码器-解码器的U形结构已成为基本的分割基线。 U-Net++[9]集成了<strong>长连接和短连接</strong>，可以减少编码器和解码器子网络的特征图之间的语义差距。对于注意力 U-Net [28]，<strong>注意力门</strong>嵌入在编码器和解码器块之间的每个过渡层中，它可以自动学习关注不<strong>同形状和大小的目标结构</strong>。最近，Transformer [29]架构在许多自然语言处理任务中取得了成功。一些作品[7]、[8]探讨了其对医学视觉任务的有效性。 UTNet [7] 是一种简单但功能强大的混合变压器架构，它在编码器和解码器中应用自注意力模块，以最小的开销捕获不同规模的远程依赖关系。另一个具有代表性的基于 Transformer 的模型是 TransUNet [8]，它通过将图像特征视为序列来编码强全局上下文，并通过 U 形混合架构设计利用低级 CNN 特征。</p>
+<p>医学特定方法。在息肉分割任务中，SFA [30]和PraNet [4]专注于恢复息肉与其周围粘膜之间的清晰边界。前者提出了共享编码器和两个相互约束的解码器下的选择性特征聚合结构和边界敏感损失函数。后者利用反向注意模块来建立区域和边界线索之间的关系。此外，Ji等人[31]利用时空信息构建视频息肉分割模型。在COVID-19肺部感染任务中，Paluru等人[32]提出了一种基于变形深度嵌入的轻量级CNN来分割COVID-19胸部CT图像中的异常。 Inf-Net [33] 构建隐式反向注意力和显式边缘注意力来对边界进行建模。 BCS-Net [34]具有三个渐进边界上下文语义重建块，可以帮助解码器捕获肺部感染的零散区域。在乳腺分割任务中，Byra等人[35]通过注意力机制开发了选择性核来调整U-Net的感受野，可以进一步提高乳腺肿瘤的分割精度。 Chen 等人 [36] 提出了一种嵌套 U 网，通过利用不同的深度和共享权重来实现乳腺肿瘤的稳健表示。</p>
+<p>我们可以看到，医学通用方法通常针对通用挑战（即丰富的特征表示、多尺度信息提取和跨级别特征聚合）。并且，医学特异性方法根据当前器官或病变的特征提出有针对性的解决方案，例如设计一系列<strong>注意力机制、边缘增强模块、不确定性估计</strong>等。然而，通用医学模型和医学特异性模型都依赖于通过<strong>大量的加法或串联操作来实现特征融合</strong>，<strong>削弱了互补特征之间的特殊性部分</strong>。我们提出的多尺度减法模块自然专注于提取差异信息，从而为解码器提供有效的目标特征。</p>
+</blockquote>
+<p>主要是说大部分特征融合都是用加法/乘法/串联实现的，但是减法可以削弱互补特征之间的特殊性部分。所以多尺度减法模块提取差异信息，然后再用加法进行特征融合。</p>
+<h3 id="multi-scale-feature-extraction">Multi-scale Feature Extraction<a hidden class="anchor" aria-hidden="true" href="#multi-scale-feature-extraction">#</a></h3>
+<blockquote>
+<p>尺度线索在捕捉对象的上下文信息中发挥着重要作用。受到被广泛验证为有效且理论上合理的框架的尺度空间理论的启发，越来越多的多尺度方法被提出。与单尺度特征相比，多尺度特征有利于解决自然发生的尺度变化。这一特性可以帮助医学分割模型感知不同尺度的病变。根据形式，当前基于多尺度的方法可以大致分为两类，即层间多尺度结构和层内多尺度结构。前者基于特征编码器提取的不同尺度的特征，并在解码器中逐步聚合它们，例如U形[1]、[2]、[4]、[9]-[11]、[37] ，[38]架构。后者通常配备多尺度可插拔模块，如<strong>ASPP [16]、DenseASPP [17]、FoldASPP [6]和PAFEM [12]</strong>，构建具有<strong>不同扩张率的并行多分支卷积层</strong>，以<strong>获得丰富的组合感受野</strong>。与它们不同的是，我们通过同时引入<strong>层间和层内多尺度</strong>，提出了具有极端多尺度信息的<strong>多尺度减法模块中的多尺度</strong>。并且，层内多尺度减法单元专注于挖掘从像素到像素到区域到区域的特征对的自差分性质。与单尺度操作相比，整个过程非常高效，不需要额外的参数。</p>
+</blockquote>
+<p>多尺度减法模块可以超越其他卷积类办法的多尺度特征信息提取办法</p>
+<h3 id="loss-method">Loss Method<a hidden class="anchor" aria-hidden="true" href="#loss-method">#</a></h3>
+<blockquote>
+<p>图像分割中的大多数<strong>损失函数</strong>都是基于<strong>交叉熵或重合度量</strong>。传统的<strong>交叉熵损失对类别信息</strong>一视同仁。 Long等人[24]提出了每个类别的<strong>加权交叉熵损失</strong>（WCE），以抵消数据中的类别不平衡。 Lin等人[39]引入了困难样本和简单样本的权重来提出焦点损失。 Dice loss[40]被提出作为V-Net中重合测量的损失函数，可以有效抑制类别不平衡带来的问题。 Tversky 损失[41]是 Dice 损失的正则化版本，用于控制准确率和召回率对损失函数的贡献。 Wong等人[42]通过Dice损失和WCE损失的加权求和提出指数对数损失（EL Loss）来提高小结构物体的分割精度。</p>
+<p>Taghanaki等人[43]发现单独使用基于重叠的损失函数存在风险，并提出comomoloss将Dice损失作为正则化项与WCE损失相结合来处理输入输出不平衡的问题。</p>
+<p>虽然这些各种各样的损失函数在不同层次上有不同的效果，但手动设计这些复杂的函数确实费时费力。为此，我们提出了<strong>自动且全面的分割损失结构</strong>，称为<strong>LossNet</strong>。</p>
+</blockquote>
+<p>LossNet权重就0.1 （ 感觉这个是为了创新而创新）</p>
+<h2 id="method">METHOD<a hidden class="anchor" aria-hidden="true" href="#method">#</a></h2>
+<p>Encoder: Res2Net + Connection: MMSB + Decoder: Plus</p>
+<p><img loading="lazy" src="https://i0.imgs.ovh/2023/11/12/nL5MV.png" alt="image-20231103191513189"  />
+</p>
+<h3 id="multi-scale-in-multi-scale-subtraction-module">Multi-scale in Multi-scale Subtraction Module<a hidden class="anchor" aria-hidden="true" href="#multi-scale-in-multi-scale-subtraction-module">#</a></h3>
+<blockquote>
+<p>我们使用 FA 和 FB 来表示相邻级别的特征图。</p>
+<p>它们都已被 ReLU 操作激活。我们定义一个基本减法单位（SU）：</p>
+<p><img loading="lazy" src="https://i0.imgs.ovh/2023/11/12/nLYSJ.png" alt="image-20231103191920790"  />
+</p>
+<p>其中是逐元素减法运算，然后计算绝对值，Conv(·) 表示卷积层。直接对元素位置特征进行单尺度减法只是为了建立孤立像素级别上的差异关系，没有考虑病灶可能具有区域聚类的特征。与带有单尺度减法单元的MSNet MICCAI版本[27]相比，我们设计了一个强大的层内多尺度减法单元（MSU），并将MSNet改进为M2SNet。如图3所示，我们利用大小为1×1、3×3和5×5的固定全一权重的多尺度卷积滤波器根据像素-像素和区域区域模式计算细节和结构差异值。使用具有固定参数的多尺度滤波器不仅可以直接捕获匹配空间位置处的初始特征对之间的多尺度差异线索，而且可以在不引入额外参数负担的情况下实现高效训练。因此，M2SNet可以保持与MSNet相同的低计算量，并获得更高精度的性能。整个多尺度减法过程可以表述为：</p>
+<p><img loading="lazy" src="https://i0.imgs.ovh/2023/11/12/nLddW.png" alt="image-20231103192112177"  />
+</p>
+<p>其中 Filter(·) n×n 表示大小为 n × n 的完整滤波器（卷积）。 MSU可以捕获FA和FB的互补信息，并突出它们从纹理到结构的差异，从而为解码器提供更丰富的信息。</p>
+<p>为了获得跨多个特征级别的高阶互补信息，我们水平和垂直连接多个MSU来计算一系列具有不同阶数和感受野的差分特征。多尺度减法模块中多尺度的细节可以在图2中找到。我们聚合了相应级别和任意级别之间的特定尺度特征（MSi 1 ）和跨尺度差分特征（MSi n6=1）。其他级别生成互补增强特征（CEi）。这个过程可以表述如下：</p>
+<p><img loading="lazy" src="https://i0.imgs.ovh/2023/11/12/nLD2v.png" alt="image-20231103192218740"  />
+</p>
+<p>最后，所有CEi参与解码，然后对息肉区域进行分割。</p>
+</blockquote>
+<p>这里就是介绍一下MSU</p>
+<h3 id="lossnet">LossNet<a hidden class="anchor" aria-hidden="true" href="#lossnet">#</a></h3>
+<blockquote>
+<p>在所提出的模型中，总训练损失可以写为：</p>
+<p><img loading="lazy" src="https://i0.imgs.ovh/2023/11/12/nLEhe.png" alt="image-20231103192433270"  />
+</p>
+<p>其中L w IoU和L w BCE表示加权IoU损失和二元交叉熵（BCE）损失，它们已在分割任务中广泛采用。我们使用与[4]、[44]、[45]中相同的定义，它们的有效性已在这些工作中得到验证。与它们不同的是，我们额外使用LossNet来进一步优化从细节到结构的分割。</p>
+<p>具体来说，我们使用 ImageNet 预训练分类网络，例如 VGG-16，分别提取预测和地面实况的多尺度特征。然后，它们的特征差异计算为损失 Lf ：</p>
+<p><img loading="lazy" src="https://i0.imgs.ovh/2023/11/12/nLTU3.png" alt="image-20231103192518893"  />
+</p>
+<p>令 F i P 和 F i G 分别表示从预测和地面实况中提取的第 i 层特征图。 l i f 计算为其欧几里德距离（L2-Loss），该距离在像素级别进行监督：</p>
+<p><img loading="lazy" src="https://i0.imgs.ovh/2023/11/12/nLG6O.png" alt="image-20231103192544929"  />
+</p>
+<p>从图4中可以看出，低层特征图包含丰富的边界信息，高层特征图描述位置信息。因此，LossNet可以在特征层面产生全面的监督。</p>
+</blockquote>
+
+
+  </div>
+
+
+
+  <footer class="post-footer">
+    <ul class="post-tags">
+      <li><a href="https://swimmingliu.github.io/tags/unet/">Unet</a></li>
+    </ul>
+<nav class="paginav">
+  <a class="prev" href="https://swimmingliu.github.io/posts/papernotes/2023-acc-unet/">
+    <span class="title">« Prev</span>
+    <br>
+    <span>ACC-UNet: A Completely Convolutional UNet model for the 2020s (MICCAI2023)</span>
+  </a>
+  <a class="next" href="https://swimmingliu.github.io/posts/papernotes/2023-ege-unet%E8%AE%BA%E6%96%87%E7%AC%94%E8%AE%B0/">
+    <span class="title">Next »</span>
+    <br>
+    <span>EGE-UNet: an Efficient Group Enhanced UNet for skin lesion segmentation</span>
+  </a>
+</nav>
+
+  </footer>
+</article>
+    </main>
+    
+<footer class="footer">
+    <span>&copy; 2023 <a href="https://swimmingliu.github.io/">SwimmingLiu&#39;s Blog</a></span>
+    <span>
+        Powered by
+        <a href="https://gohugo.io/" rel="noopener noreferrer" target="_blank">Hugo</a> &
+        <a href="https://github.com/adityatelange/hugo-PaperMod/" rel="noopener" target="_blank">PaperMod</a>
+    </span>
+</footer>
+<a href="#top" aria-label="go to top" title="Go to Top (Alt + G)" class="top-link" id="top-link" accesskey="g">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 6" fill="currentColor">
+        <path d="M12 6H0l6-6z" />
+    </svg>
+</a>
+
+<script>
+    let menu = document.getElementById('menu')
+    if (menu) {
+        menu.scrollLeft = localStorage.getItem("menu-scroll-position");
+        menu.onscroll = function () {
+            localStorage.setItem("menu-scroll-position", menu.scrollLeft);
+        }
+    }
+
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener("click", function (e) {
+            e.preventDefault();
+            var id = this.getAttribute("href").substr(1);
+            if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView({
+                    behavior: "smooth"
+                });
+            } else {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView();
+            }
+            if (id === "top") {
+                history.replaceState(null, null, " ");
+            } else {
+                history.pushState(null, null, `#${id}`);
+            }
+        });
+    });
+
+</script>
+<script>
+    var mybutton = document.getElementById("top-link");
+    window.onscroll = function () {
+        if (document.body.scrollTop > 800 || document.documentElement.scrollTop > 800) {
+            mybutton.style.visibility = "visible";
+            mybutton.style.opacity = "1";
+        } else {
+            mybutton.style.visibility = "hidden";
+            mybutton.style.opacity = "0";
+        }
+    };
+
+</script>
+<script>
+    document.getElementById("theme-toggle").addEventListener("click", () => {
+        if (document.body.className.includes("dark")) {
+            document.body.classList.remove('dark');
+            localStorage.setItem("pref-theme", 'light');
+        } else {
+            document.body.classList.add('dark');
+            localStorage.setItem("pref-theme", 'dark');
+        }
+    })
+
+</script>
+<script>
+    document.querySelectorAll('pre > code').forEach((codeblock) => {
+        const container = codeblock.parentNode.parentNode;
+
+        const copybutton = document.createElement('button');
+        copybutton.classList.add('copy-code');
+        copybutton.innerHTML = 'copy';
+
+        function copyingDone() {
+            copybutton.innerHTML = 'copied!';
+            setTimeout(() => {
+                copybutton.innerHTML = 'copy';
+            }, 2000);
+        }
+
+        copybutton.addEventListener('click', (cb) => {
+            if ('clipboard' in navigator) {
+                navigator.clipboard.writeText(codeblock.textContent);
+                copyingDone();
+                return;
+            }
+
+            const range = document.createRange();
+            range.selectNodeContents(codeblock);
+            const selection = window.getSelection();
+            selection.removeAllRanges();
+            selection.addRange(range);
+            try {
+                document.execCommand('copy');
+                copyingDone();
+            } catch (e) { };
+            selection.removeRange(range);
+        });
+
+        if (container.classList.contains("highlight")) {
+            container.appendChild(copybutton);
+        } else if (container.parentNode.firstChild == container) {
+            
+        } else if (codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.nodeName == "TABLE") {
+            
+            codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.appendChild(copybutton);
+        } else {
+            
+            codeblock.parentNode.appendChild(copybutton);
+        }
+    });
+</script>
+</body>
+
+</html>

@@ -1,0 +1,4 @@
+---
+title: "📓 Diary"
+hidemeta: true
+---

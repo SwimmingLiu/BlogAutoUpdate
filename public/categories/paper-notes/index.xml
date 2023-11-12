@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/">
+  <channel>
+    <title>📝 Paper Notes on SwimmingLiu&#39;s Blog</title>
+    <link>https://swimmingliu.github.io/categories/paper-notes/</link>
+    <description>Recent content in 📝 Paper Notes on SwimmingLiu&#39;s Blog</description>
+    <image>
+      <title>SwimmingLiu&#39;s Blog</title>
+      <url>https://swimmingliu.github.io/papermod-cover.png</url>
+      <link>https://swimmingliu.github.io/papermod-cover.png</link>
+    </image>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en</language>
+    <lastBuildDate>Sat, 11 Nov 2023 19:51:21 +0800</lastBuildDate><atom:link href="https://swimmingliu.github.io/categories/paper-notes/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>EGE-UNet: an Efficient Group Enhanced UNet for skin lesion segmentation</title>
+      <link>https://swimmingliu.github.io/posts/papernotes/2023-ege-unet%E8%AE%BA%E6%96%87%E7%AC%94%E8%AE%B0/</link>
+      <pubDate>Sat, 11 Nov 2023 19:51:21 +0800</pubDate>
+      
+      <guid>https://swimmingliu.github.io/posts/papernotes/2023-ege-unet%E8%AE%BA%E6%96%87%E7%AC%94%E8%AE%B0/</guid>
+      <description>EGE-UNet: an Efficient Group Enhanced UNet for skin lesion segmentation 1. Abstract 目前的医学图像分割模型大多是 Transformer + Unet，这些模型的大量参数和计算负载使得它们不适合移动健康应用。
+作者提出的EGE-UNet 模型轻量、高效。（与 TransFuse 相比，参数和计算成本分别降低了 494 倍和 160 倍，模型参数量只有50KB）
+创新点：组多轴哈达玛产品注意力模块（GHPA）和组聚合桥模块（GAB）。
+1.GHPA 对输入特征进行分组，并在不同轴上执行哈达玛产品注意力机制（HPA），以从不同角度提取病理信息。
+2.GAB 通过对低级特征、高级特征以及解码器在每个阶段生成的掩码进行分组，有效地融合了多尺度信息。
+2. Introduction 背景: 恶性黑色素瘤是世界上增长最快的癌症之一。据美国癌症协会估计，2020 年约有 100,350 例新发病例，超过 6,500 例死亡。因此，自动化皮肤病变分割系统势在必行，因为它可以帮助医疗专业人员快速识别病变区域并促进后续治疗过程。
+相同方式可引入脑瘤、肺癌。
+为了提高分割性能，最近的研究倾向于采用具有更大参数和计算复杂度的模块，例如结合视觉变换器（ViT）的自注意力机制[7]。例如，Swin-UNet [4]，基于Swin Transformer [11]，利用自注意力机制的特征提取能力来提高分割性能。 TransUNet [5] 开创了用于医学图像分割的 CNN 和 ViT 的串行融合。 TransFuse [26]采用双路径结构，利用 CNN 和 ViT 分别捕获局部和全局信息。UTNetV2[8]利用混合分层架构、高效的双向注意力和语义图来实现全局多尺度特征融合，结合了CNN和ViT的优点。 TransBTS [23] 将自注意力引入脑肿瘤分割任务中，并用它来聚合高级信息。
+Abstract提到当前医学分割模型大部分是Transformer + Unet，这里做出具体阐述。
+先前的工作通过引入复杂的模块来提高性能，但忽略了实际医疗环境中计算资源的限制。因此，迫切需要为移动医疗中的分割任务设计一种低参数、低计算负载的模型。最近，UNeXt [22] 结合了 UNet [18] 和 MLP [21] 开发了一种轻量级模型，该模型可以获得优异的性能，同时减少参数和计算量。此外，MALUNet [19]通过减少模型通道数并引入多个注意力模块来减小模型大小，从而比 UNeXt 具有更好的皮肤病变分割性能。然而，尽管MALUNet大大减少了参数数量和计算量，但其分割性能仍然低于一些大型模型，例如TransFuse。因此，在本研究中，我们提出了 EGE-UNet，这是一种轻量级皮肤病变分割模型，可实现最先进的效果，同时显着降低参数和计算成本。此外，据我们所知，这是第一个将参数减少到大约 50KB 的工作。</description>
+    </item>
+    
+  </channel>
+</rss>

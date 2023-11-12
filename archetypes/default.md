@@ -22,7 +22,7 @@ slug: ""
 draft: false # 是否为草稿
 comments: true
 showToc: true # 显示目录
-TocOpen: true # 自动展开目录
+TocOpen: false # 自动展开目录
 autonumbering: true # 目录自动编号
 hidemeta: false # 是否隐藏文章的元信息，如发布日期、作者等
 disableShare: true # 底部不显示分享栏

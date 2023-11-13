@@ -96,8 +96,8 @@ params:
           url: https://space.bilibili.com/156805097
         - name: email
           url: "mailto:SwimmingLiu@outlook.com"
-        - name: Rss
-          url: "index.xml"
+        - name: tiktok
+          url: "https://v.douyin.com/iRABBfeY"
 
 
     # label:

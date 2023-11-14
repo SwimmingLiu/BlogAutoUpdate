@@ -17,7 +17,7 @@ hidemeta: true
         align-items: center; 
         display:flex;
         flex-direction: column;
-        justify-content: flex-start;
+        justify-content: top;
     }
     .rightBox{
         width:100%;

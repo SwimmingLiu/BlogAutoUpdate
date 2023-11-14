@@ -4,9 +4,6 @@ hidemeta: true
 <style>
 
 @media screen and (max-width: 768px){
-    *{
-        border:1px solid red;
-    }
     .container{
         display:flex;
         flex-direction: column;

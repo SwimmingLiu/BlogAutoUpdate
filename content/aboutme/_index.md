@@ -1,16 +1,90 @@
 ---
 hidemeta: true
 ---
-<div class="container" style=" display:flex;flex-direction: row;justify-content: between-space">
-        <div class="leftBox" style="width:35vw;height:300px;display: inline-block; justify-self: center;align-items: center;display:flex;flex-direction: row;justify-content: center;">
-              <img src="https://i0.imgs.ovh/2023/11/12/nLRSp.png" width=224 height=224/>
+<style>
+
+@media screen and (max-width: 768px){
+    *{
+        border:1px solid red;
+    }
+    .container{
+        display:flex;
+        flex-direction: column;
+        justify-content: center;
+        height:70vh;
+    }
+    .leftBox{
+        width:100%;
+        height:30vh;
+        display: inline-block; 
+        align-items: center; 
+        display:flex;
+        flex-direction: column;
+        justify-content: flex-start;
+    }
+    .rightBox{
+        width:100%;
+        height:20vh;
+        display: inline-block;
+        align-items: center; 
+        display:flex;
+        flex-direction: column;
+        justify-content: flex-start;
+    }
+    .introBox{
+        font-size: 12px;
+    }
+    .introBox > span{
+        font-weight: bold;
+        font-size: 18px; 
+        color: cadetblue;
+    }
+}
+@media screen and (min-width: 768px){
+    .container{
+        display:flex;
+        flex-direction: column;
+        justify-content: center;
+    }
+    .leftBox{
+        width:100%;
+        height:40vh;
+        display: inline-block; 
+        align-items: center; 
+        display:flex;
+        flex-direction: column;
+        justify-content: flex-start;
+    }
+    .rightBox{
+        width:100%;
+        height:40vh;
+        display: inline-block;
+        align-items: center; 
+        display:flex;
+        flex-direction: column;
+        justify-content: flex-start;
+    }
+    .introBox{
+        font-size: 14px;
+    }
+    .introBox > span{
+        font-weight: bold;
+        font-size: 24px; 
+        color: cadetblue;
+    }
+}
+</style>
+
+<div class="container">
+        <div class="leftBox">
+              <img src="https://i0.imgs.ovh/2023/11/12/nLRSp.png" width=200 height=200/>
         </div>
-        <div class="rightBox" style="width:65vw;height:300px;display: inline-block;justify-self: center;align-items: center;display:flex;flex-direction: row;justify-content: center;">
-            <p style="font-size: 14px;">
-            <span style="font-weight: bold;font-size: 24px; color: cadetblue;">SwimmingLiu 👨🏻‍🎓</span> <br/>
-            Master in ZSTU, Majoring <span style="font-weight: bold;font-size: 24px; color: cadetblue;">Computer Science 💻</span> <br/>
-            Exploring the wolrd with <span style="font-weight: bold;font-size: 24px; color: cadetblue;">Computer Vision 🌎</span> 
-            </p>
+        <div class="rightBox">
+            <center class="introBox">
+            <span >SwimmingLiu 👨🏻‍🎓</span> <br/>
+            Master in ZSTU, Majoring <span>Computer Science 💻</span> <br/>
+            Exploring the wolrd with <span>Computer Vision 🌎</span> 
+            </center>
         </div>
 </div>
 

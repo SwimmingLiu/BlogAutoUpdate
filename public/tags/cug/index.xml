@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/">
   <channel>
-    <title>📓 Diary on SwimmingLiu&#39;s Blog</title>
-    <link>https://swimmingliu.github.io/posts/diary/</link>
-    <description>Recent content in 📓 Diary on SwimmingLiu&#39;s Blog</description>
+    <title>CUG on SwimmingLiu&#39;s Blog</title>
+    <link>https://swimmingliu.github.io/tags/cug/</link>
+    <description>Recent content in CUG on SwimmingLiu&#39;s Blog</description>
     <image>
       <title>SwimmingLiu&#39;s Blog</title>
       <url>https://swimmingliu.github.io/papermod-cover.png</url>
@@ -11,7 +11,7 @@
     </image>
     <generator>Hugo -- gohugo.io</generator>
     <language>en</language>
-    <lastBuildDate>Mon, 20 Nov 2023 12:25:57 +0800</lastBuildDate><atom:link href="https://swimmingliu.github.io/posts/diary/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Mon, 20 Nov 2023 12:25:57 +0800</lastBuildDate><atom:link href="https://swimmingliu.github.io/tags/cug/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>2023 地大服务器</title>
       <link>https://swimmingliu.github.io/posts/diary/2023-%E5%9C%B0%E5%A4%A7%E6%9C%8D%E5%8A%A1%E5%99%A8/</link>

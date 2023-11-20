@@ -11,7 +11,25 @@
     </image>
     <generator>Hugo -- gohugo.io</generator>
     <language>en</language>
-    <lastBuildDate>Sun, 12 Nov 2023 16:32:06 +0800</lastBuildDate><atom:link href="https://swimmingliu.github.io/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Mon, 20 Nov 2023 12:25:57 +0800</lastBuildDate><atom:link href="https://swimmingliu.github.io/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>2023 地大服务器</title>
+      <link>https://swimmingliu.github.io/posts/diary/2023-%E5%9C%B0%E5%A4%A7%E6%9C%8D%E5%8A%A1%E5%99%A8/</link>
+      <pubDate>Mon, 20 Nov 2023 12:25:57 +0800</pubDate>
+      
+      <guid>https://swimmingliu.github.io/posts/diary/2023-%E5%9C%B0%E5%A4%A7%E6%9C%8D%E5%8A%A1%E5%99%A8/</guid>
+      <description>地大服务器使用教程 1. 服务器环境介绍 NVIDIA RTX 3090 (24GB) NVIDIA RTX 2080 Ti (11GB) 2. 配置实验环境 2.1 Conda环境安装 每位同学都会分配个人用户，大家在自己的用户上使用Conda进行环境配置。
+Conda安装教程：https://blog.csdn.net/JineD/article/details/129507719
+大家按照教程步骤安装即可, 由于安装时间较长, 视频中暂不进行演示。
+2.2 Conda环境配置 （以YOLOv8为例） # 创建conda环境 名为yolov8_lyj python版本为3.9 conda create -n yolov8_lyj python=3.9 # 激活环境 conda activate yolov8_lyj # 选择合适的路径，克隆github项目代码 git clone https://github.com/ultralytics/ultralytics # 进入到项目路径下 cd ultralytics/ # 安装相关依赖包 pip install -r requirements.txt -i https://pypi.tuna.tsinghua.edu.cn/simple 2.3 准备数据集 下载需要训练的数据集 （最好找顶刊/顶会论文中的公开数据集）
+按照算法指定的数据集格式，对数据集格式进行调整。
+​	目标检测中数据集格式之间的相互转换：（VOC、COCO、YOLO格式）
+​	https://zhuanlan.zhihu.com/p/461488682
+2.4 开始实验 在算法中指定数据集的存放路径 （相对/绝对路径均可）
+初始化算法的参数
+batch-size 批处理大小： 每一次处理图片的个数，根据显卡内存进行调整 workers 载入数据进程数： 每一次调用多少个进程来载入数据 device 选择显卡设备： &amp;#39;0&amp;#39;使用3090，&amp;#39;1&amp;#39;使用2080ti，&amp;#39;0,1&amp;#39;使用两张卡 开始训练 # 运行训练代码 python mian.</description>
+    </item>
+    
     <item>
       <title>ACC-UNet: A Completely Convolutional UNet model for the 2020s (MICCAI2023)</title>
       <link>https://swimmingliu.github.io/posts/papernotes/2023-acc-unet/</link>

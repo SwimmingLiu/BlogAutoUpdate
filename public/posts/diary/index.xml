@@ -13,7 +13,7 @@
     <language>en</language>
     <lastBuildDate>Mon, 20 Nov 2023 12:25:57 +0800</lastBuildDate><atom:link href="https://swimmingliu.github.io/posts/diary/index.xml" rel="self" type="application/rss+xml" />
     <item>
-      <title>2023 地大服务器</title>
+      <title>地大服务器使用教程</title>
       <link>https://swimmingliu.github.io/posts/diary/2023-%E5%9C%B0%E5%A4%A7%E6%9C%8D%E5%8A%A1%E5%99%A8/</link>
       <pubDate>Mon, 20 Nov 2023 12:25:57 +0800</pubDate>
       
@@ -27,7 +27,7 @@ Conda安装教程：https://blog.csdn.net/JineD/article/details/129507719
 ​	https://zhuanlan.zhihu.com/p/461488682
 2.4 开始实验 在算法中指定数据集的存放路径 （相对/绝对路径均可）
 初始化算法的参数
-batch-size 批处理大小： 每一次处理图片的个数，根据显卡内存进行调整 workers 载入数据进程数： 每一次调用多少个进程来载入数据 device 选择显卡设备： &amp;#39;0&amp;#39;使用3090，&amp;#39;1&amp;#39;使用2080ti，&amp;#39;0,1&amp;#39;使用两张卡 开始训练 # 运行训练代码 python mian.</description>
+batch-size 批处理大小：每一次处理图片的个数，根据显卡内存进行调整 workers 载入数据进程数：每一次调用多少个进程来载入数据 device 选择显卡设备：&amp;#39;0&amp;#39;使用3090，&amp;#39;1&amp;#39;使用2080ti，&amp;#39;0,1&amp;#39;使用两张卡 开始训练 # 运行训练代码 python mian.</description>
     </item>
     
   </channel>

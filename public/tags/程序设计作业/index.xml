@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/">
+  <channel>
+    <title>程序设计作业 on SwimmingLiu&#39;s Blog</title>
+    <link>https://swimmingliu.github.io/tags/%E7%A8%8B%E5%BA%8F%E8%AE%BE%E8%AE%A1%E4%BD%9C%E4%B8%9A/</link>
+    <description>Recent content in 程序设计作业 on SwimmingLiu&#39;s Blog</description>
+    <image>
+      <title>SwimmingLiu&#39;s Blog</title>
+      <url>https://swimmingliu.github.io/papermod-cover.png</url>
+      <link>https://swimmingliu.github.io/papermod-cover.png</link>
+    </image>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en</language>
+    <lastBuildDate>Sat, 02 Dec 2023 21:40:07 +0800</lastBuildDate><atom:link href="https://swimmingliu.github.io/tags/%E7%A8%8B%E5%BA%8F%E8%AE%BE%E8%AE%A1%E4%BD%9C%E4%B8%9A/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>程序设计作业接口文档</title>
+      <link>https://swimmingliu.github.io/posts/diary/2023-%E7%A8%8B%E5%BA%8F%E8%AE%BE%E8%AE%A1%E4%BD%9C%E4%B8%9A%E6%8E%A5%E5%8F%A3%E6%96%87%E6%A1%A3/</link>
+      <pubDate>Sat, 02 Dec 2023 21:40:07 +0800</pubDate>
+      
+      <guid>https://swimmingliu.github.io/posts/diary/2023-%E7%A8%8B%E5%BA%8F%E8%AE%BE%E8%AE%A1%E4%BD%9C%E4%B8%9A%E6%8E%A5%E5%8F%A3%E6%96%87%E6%A1%A3/</guid>
+      <description>程序设计作业接口文档 统一返回格式
+{ code: ...,	# 状态码 msg: ...,	# 描述信息 data: { # 数据 ... } } code = { 200 == 成功, 500 == 失败, } msg = { success == 成功 fail == 失败 ... } data = { key : value } 前端 虚拟换衣功能 @请求格式 （请求后端） # 前后端需统一样例图片id { userId: ...&amp;lt;int&amp;gt;,	# 标识哪个用户的请求 isUploadCloth: ...&amp;lt;bool&amp;gt;, # 若上传衣服图片使用base64，否则用id isUploadPerson: ...&amp;lt;bool&amp;gt;, # 若上传人物图片使用base64，否则用id clothData: ...&amp;lt;base64||null&amp;gt;, # 衣服图片base64编码 personData: .</description>
+    </item>
+    
+  </channel>
+</rss>

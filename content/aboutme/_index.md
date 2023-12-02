@@ -34,7 +34,7 @@ hidemeta: true
     .introBox > span{
         font-weight: bold;
         font-size: 18px; 
-        color: cadetblue;
+        color: black;
     }
 }
 @media screen and (min-width: 768px){
@@ -67,7 +67,7 @@ hidemeta: true
     .introBox > span{
         font-weight: bold;
         font-size: 24px; 
-        color: cadetblue;
+        color: black;
     }
 }
 </style>
@@ -78,9 +78,9 @@ hidemeta: true
         </div>
         <div class="rightBox">
             <center class="introBox">
-            <span >SwimmingLiu 👨🏻‍🎓</span> <br/>
-            Master in ZSTU, Majoring <span>Computer Science 💻</span> <br/>
-            Exploring the wolrd with <span>Computer Vision 🌎</span> 
+            <span>SwimmingLiu 👨🏻‍🎓</span> <br/>
+            Master in  <span>ZSTU</span>, Majoring <span>Computer Science 💻</span> <br/>
+            Exploring the <span>World</span> with <span>Computer Vision 🌎</span> 
             </center>
         </div>
 </div>

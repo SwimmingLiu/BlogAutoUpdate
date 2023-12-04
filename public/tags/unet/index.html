@@ -55,7 +55,8 @@
         }
 
     </style>
-</noscript><meta property="og:title" content="Unet" />
+</noscript>
+<meta property="og:title" content="Unet" />
 <meta property="og:description" content="" />
 <meta property="og:type" content="website" />
 <meta property="og:url" content="https://swimmingliu.github.io/tags/unet/" /><meta property="og:image" content="https://swimmingliu.github.io/papermod-cover.png"/>
@@ -161,6 +162,28 @@
     </a>
   </h1>
 </header>
+
+<article class="post-entry tag-entry"> 
+  <header class="entry-header">
+    <h2>Uncertainty-Aware Attention Mechanism:利用不确定性感知注意机制进行肺结节分割和不确定区域预测
+    </h2>
+  </header>
+  <div class="entry-content">
+    <p>Abstract 放射科医生拥有不同的培训和临床经验，导致肺结节的分割注释存在差异，从而导致分割的不确定性。传统方法通常选择单个注释作为学习目标或尝试学习包含多个注释的潜在空间。
+然而，这些方法无法利用多个注释之间的共识和分歧所固有的有价值的信息。在本文中，我们提出了一种不确定性感知注意机制（UAAM），它利用多个注释之间的共识和分歧来促进更好的分割。为此，我们引入了多置信度掩模（MCM），它结合了低置信度（LC）掩模和高置信度（HC）掩模。 LC 掩模表示分割置信度较低的区域，放射科医生可能有不同的分割选择。继UAAM之后，我们进一步设计了一个不确定性引导多置信分割网络（UGMCS-Net），它包含三个模块：一个捕获肺结节一般特征的特征提取模块，一个为肺结节产生三个特征的不确定性感知模块。注释的并集、交集和注释集，以及一个交集并集约束模块，该模块使用三个特征之间的距离来平衡最终分割和 MCM 的预测。为了全面展示我们方法的性能，我们提出了 LIDC-IDRI 上的复杂结节验证，它测试了 UGMCS-Net 对使用常规方法难以分割的肺结节的分割性能。实验结果表明，我们的方法可以显着提高传统方法难以分割的结节的分割性能。
+INTRODUCTION 肺结节分割在肺癌计算机辅助诊断 (CAD) 系统中至关重要 [1]，可提供结节大小、形状和其他重要医学特征等关键信息。然而，对于深度学习方法的一般训练和测试范例，每个结节图像数据只有一个由一名放射科医生描绘的注释掩模[2]-[6]。因此**，网络每次只能提供结节区域**的单个预测。
+然而，在临床实践中，不同的放射科医生由于其不同的培训和临床经验可能会为肺结节提供不同的分割注释[7]-[9]。
+因此，基于单一注释的传统方法无法反映临床经验的多样性，限制了深度学习方法的应用。
+解决放射科医生之间注释不同问题的一个直接解决方案是为每个肺结节图像合并多个注释。这导致了另一个问题：多个注释不可避免地会带来不确定性和冲突，因为放射科医生可能会对同一区域进行不同的注释。为了克服这个问题，Kohl 等人在 2018 年提出了一种概率 U-Net，它利用条件变分自动编码器将多个分割变体编码到低维潜在空间中 [8]、[10]。通过从该空间采样，网络可以影响相应的分割图。基于这项研究，Hu等人提出将真实不确定性与概率UNet相结合，这可以提高预测不确定性估计、样本准确性和样本多样性[7]。这些方法依赖于潜在空间和该空间中的随机样本。因此，这些方法只能通过多次预测来提供不确定区域。
+在本文中，我们提出了一个论点，即多个注释之间的不确定性遵循特定的模式。
+为了演示这种现象，我们引入了多重置信掩码 (MCM)，它结合了高置信度 (HC) 掩码和低置信度 (LC) 掩码，如图 1 所示。 A. 交叉掩码等于 HC mask，代表所有注释的交集。
+联合掩码是所有注释的联合。 LC掩模是交集掩模和并集掩模之间的差异。当在 LIDC-IDRI 数据集 [11] 上计算 HC 和 LC 的 Hounsfield 单位 (HU) 核估计时，如图 1.B 所示，我们可以观察到 LC 和 HC 掩模之间的 HU 分布存在明显区别。具体地，LC区域具有比HC区域更低的HU值。从像素分布来看，HU值越低，对应区域的密度越低。就CT图像特征而言，LC区域主要由结节边缘、毛刺和磨玻璃特征等边界相关特征组成，而HC区域主要分布在结节核心内。因此，我们提出了这样的假设：导致放射科医生之间差异的区域主要与低密度组织和边界相关特征有关。
+与其他方法不同，我们建议利用 MCM (多重置信掩码) ** 和注释集作为具有不同分割确定性的特征的学习指导**，有助于更好的分割性能。我们将这种训练称为UncertaintyAware Attention Mechanism，如图2所示。按照这种机制，我们进一步设计了用于肺结节分割的Uncertainty-Guide Multi-Confidence Segmentation Network（UGMCS-Net）。
+UGMCS-Net 包含三个模块：基于 U-Net 的特征提取模块、不确定性感知模块和交集并集约束模块。...</p>
+  </div>
+  <footer class="entry-footer"><span title='2023-12-04 16:28:11 +0800 CST'>December 4, 2023</span>&nbsp;·&nbsp;5 min&nbsp;·&nbsp;SwimmingLiu</footer>
+  <a class="entry-link" aria-label="post link to Uncertainty-Aware Attention Mechanism:利用不确定性感知注意机制进行肺结节分割和不确定区域预测" href="https://swimmingliu.github.io/posts/papernotes/2023-uncertainty-aware-attentionmechanism/"></a>
+</article>
 
 <article class="post-entry tag-entry"> 
   <header class="entry-header">

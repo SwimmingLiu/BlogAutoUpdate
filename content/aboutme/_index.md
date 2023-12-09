@@ -36,19 +36,7 @@ hidemeta: true
             background-image: url("https://i.imgs.ovh/2023/11/12/nLRSp.md.png");
             background-size:100% 100%;
         }
-        .introImg:hover{
-            animation: rotate 1s linear infinite;
-        }
-        @keyframes rotate {
-            0% {
-                transform: rotate(0deg);
-                /*从0度开始*/
-            }
-            100% {
-                transform: rotate(360deg);
-                /*360度结束*/
-            }
-        }
+
         .introBox{
             font-size: 15px;
             font-family: 'Times New Roman', Times, serif;

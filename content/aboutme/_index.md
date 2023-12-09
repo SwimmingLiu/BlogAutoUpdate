@@ -75,7 +75,7 @@ hidemeta: true
     
 <div class="container">
             <div class="leftBox">
-                  <img src="https://i0.imgs.ovh/2023/11/12/nLRSp.png" width=200 height=200/>
+                  <img src="https://i.imgs.ovh/2023/11/12/nLRSp.md.png" width=200 height=200/>
             </div>
             <div class="rightBox">
                 <center class="introBox">

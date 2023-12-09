@@ -36,8 +36,11 @@ hidemeta: true
             background-image: url("https://i.imgs.ovh/2023/11/12/nLRSp.md.png");
             background-size:100% 100%;
         }
-
         .introBox{
+            display: flex; 
+            flex-direction: column;
+            justify-content: space-around;
+            
             font-size: 15px;
             font-family: 'Times New Roman', Times, serif;
         }
@@ -46,7 +49,7 @@ hidemeta: true
         }
         .specialSpan{
             font-weight: bold;
-            font-size: 16px; 
+            font-size: 15px; 
             color: black;
         }
     }

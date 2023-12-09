@@ -6,68 +6,114 @@ hidemeta: true
 
     @media screen and (max-width: 768px){
         .container{
+            margin-top: 100px;
             display:flex;
             flex-direction: column;
             justify-content: center;
-            height:70vh;
+            align-items:center;
+            width:100%;
         }
         .leftBox{
-            width:100%;
-            height:30vh;
-            display: inline-block; 
-            align-items: center; 
-            display:flex;
+            display: flex; 
             flex-direction: column;
-            justify-self:flex-start;
+            justify-content: center;
+            align-items: center; 
+            
         }
         .rightBox{
-            width:100%;
-            height:20vh;
-            display: inline-block;
-            align-items: center; 
+            margin-top:30px;
+            box-sizing: border-box;
+            padding: 10px;
             display:flex;
             flex-direction: column;
             justify-content: flex-start;
         }
-        .introBox{
-            font-size: 12px;
+        .introImg{
+            border-radius: 50%;
+            box-sizing: border-box;
+            width: 25vh;
+            height: 25vh ;
+            background-image: url("https://i.imgs.ovh/2023/11/12/nLRSp.md.png");
+            background-size:100% 100%;
         }
-        .introBox > span{
+        .introImg:hover{
+            animation: rotate 1s linear infinite;
+        }
+        @keyframes rotate {
+            0% {
+                transform: rotate(0deg);
+                /*从0度开始*/
+            }
+            100% {
+                transform: rotate(360deg);
+                /*360度结束*/
+            }
+        }
+        .introBox{
+            font-size: 15px;
+            font-family: 'Times New Roman', Times, serif;
+        }
+        .specialSpan{
             font-weight: bold;
-            font-size: 18px; 
+            font-size: 15px; 
             color: black;
         }
     }
     @media screen and (min-width: 768px){
+
         .container{
+            margin-top: 100px;
             display:flex;
-            flex-direction: column;
+            flex-direction: row;
             justify-content: center;
+            width:100%;
         }
         .leftBox{
-            width:100%;
-            height:40vh;
-            display: inline-block; 
-            align-items: center; 
-            display:flex;
+            width: 30%;
+            display: flex; 
             flex-direction: column;
-            justify-content: flex-start;
-        }
-        .rightBox{
-            width:100%;
-            height:40vh;
-            display: inline-block;
+            justify-content: center;
             align-items: center; 
+            
+        }
+        .introImg{
+            border-radius: 50%;
+            box-sizing: border-box;
+            width: 16vw;
+            height: 16vw;
+            background-image: url("https://i.imgs.ovh/2023/11/12/nLRSp.md.png");
+            background-size:100% 100%;
+        }
+        .introImg:hover{
+            animation: rotate 1s linear infinite;
+        }
+        @keyframes rotate {
+            0% {
+                transform: rotate(0deg);
+                /*从0度开始*/
+            }
+            100% {
+                transform: rotate(360deg);
+                /*360度结束*/
+            }
+        }
+
+        .rightBox{
+            margin-left:30px;
+            box-sizing: border-box;
+            padding: 10px;
+            width:70%;
             display:flex;
             flex-direction: column;
             justify-content: flex-start;
         }
         .introBox{
-            font-size: 14px;
+            font-size: 18px;
+            font-family: 'Times New Roman', Times, serif;
         }
-        .introBox > span{
+        .specialSpan{
             font-weight: bold;
-            font-size: 24px; 
+            font-size: 20px; 
             color: black;
         }
     }
@@ -75,21 +121,37 @@ hidemeta: true
     
 <div class="container">
             <div class="leftBox">
-                  <img src="https://i.imgs.ovh/2023/11/12/nLRSp.md.png" width=200 height=200/>
+                  <div class="introImg"></div>
             </div>
             <div class="rightBox">
-                <center class="introBox">
-                <span>SwimmingLiu 👨🏻‍🎓</span> <br/>
-                Master in  <span>ZSTU</span>, Majoring <span>Computer Science 💻</span> <br/>
-                Exploring the <span>World</span> with <span>Computer Vision 🌎</span> 
-                </center>
+                <div class="introBox">
+                    <div>
+                        <span>Name:</span>
+                        <span class="specialSpan"> 𝓢𝔀𝓲𝓶𝓶𝓲𝓷𝓰𝓛𝓲𝓾 👨🏻‍🎓</span>
+                    </div>
+                    <div>
+                        <span>Country:</span>
+                        <span class="specialSpan"> 𝓒𝓱𝓲𝓷𝓪 🇨🇳</span>
+                    </div>
+                    <div>
+                        <span>Age:</span>
+                        <span class="specialSpan"> 𝟮𝟯 </span>Years Old 👦🏻
+                    </div>
+                    <div>
+                        <span>Education:</span> Study in <span class="specialSpan">𝓩𝓢𝓣𝓤 🏫</span>
+                    </div>
+                    <div>
+                        <span style="color:transparent;">Education:</span> Majoring <span class="specialSpan">𝓒𝓸𝓶𝓹𝓾𝓽𝓮𝓻 𝓢𝓬𝓲𝓮𝓷𝓬𝓮 💻</span>
+                    </div>
+                    <div>
+                        Exploring the <span class="specialSpan">𝓦𝓸𝓻𝓵𝓭</span> with <span class="specialSpan">𝓒𝓸𝓶𝓹𝓾𝓽𝓮𝓻 𝓥𝓲𝓼𝓲𝓸𝓷 🌎</span> 
+                    </div>
+                </div>
             </div>
 </div>
     
 <script>
-    
-    
-        // 监听 body 元素的 classList 变化
+     // 监听 body 元素的 classList 变化
     const bodyObserver = new MutationObserver(mutations => {
       mutations.forEach(mutation => {
         if (mutation.type === 'attributes' && mutation.attributeName === 'class') {
@@ -131,3 +193,4 @@ hidemeta: true
     bodyObserver.observe(document.body, { attributes: true });
     
 </script>
+    

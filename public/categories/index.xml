@@ -2,31 +2,31 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/">
   <channel>
     <title>Categories on SwimmingLiu&#39;s Blog</title>
-    <link>https://swimmingliu.github.io/categories/</link>
+    <link>https://swimmingliu.cn/categories/</link>
     <description>Recent content in Categories on SwimmingLiu&#39;s Blog</description>
     <image>
       <title>SwimmingLiu&#39;s Blog</title>
-      <url>https://swimmingliu.github.io/papermod-cover.png</url>
-      <link>https://swimmingliu.github.io/papermod-cover.png</link>
+      <url>https://swimmingliu.cn/papermod-cover.png</url>
+      <link>https://swimmingliu.cn/papermod-cover.png</link>
     </image>
     <generator>Hugo -- gohugo.io</generator>
     <language>en</language>
-    <lastBuildDate>Mon, 04 Dec 2023 16:28:11 +0800</lastBuildDate><atom:link href="https://swimmingliu.github.io/categories/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Mon, 04 Dec 2023 16:28:11 +0800</lastBuildDate><atom:link href="https://swimmingliu.cn/categories/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>📝 Paper Notes</title>
-      <link>https://swimmingliu.github.io/categories/paper-notes/</link>
+      <link>https://swimmingliu.cn/categories/paper-notes/</link>
       <pubDate>Mon, 04 Dec 2023 16:28:11 +0800</pubDate>
       
-      <guid>https://swimmingliu.github.io/categories/paper-notes/</guid>
+      <guid>https://swimmingliu.cn/categories/paper-notes/</guid>
       <description></description>
     </item>
     
     <item>
       <title>📓 Diary</title>
-      <link>https://swimmingliu.github.io/categories/diary/</link>
+      <link>https://swimmingliu.cn/categories/diary/</link>
       <pubDate>Sat, 02 Dec 2023 21:40:07 +0800</pubDate>
       
-      <guid>https://swimmingliu.github.io/categories/diary/</guid>
+      <guid>https://swimmingliu.cn/categories/diary/</guid>
       <description></description>
     </item>
     

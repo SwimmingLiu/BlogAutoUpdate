@@ -1,5 +1,5 @@
-baseURL: "https://swimmingliu.github.io/" # if your site is in 'https', then make sure your base url isn't written using 'http' otherwise your sitemap would contain http (as opposeed to https) URLs. This would affect Google indexing of your URLs.
-title: SwimmingLiu's Blog
+baseURL: "https://swimmingliu.cn/" # if your site is in 'https', then make sure your base url isn't written using 'http' otherwise your sitemap would contain http (as opposeed to https) URLs. This would affect Google indexing of your URLs.
+title: SwimmingLiu's Blog 
 paginate: 5
 theme: PaperMod
 
@@ -75,11 +75,11 @@ params:
 
     profileMode:
         enabled: true
-        title: 
+        title: 𝓢𝔀𝓲𝓶𝓶𝓲𝓷𝓰𝓛𝓲𝓾'𝓼 𝓑𝓵𝓸𝓰
         imageUrl: "https://i.imgs.ovh/2023/11/12/nLRSp.md.png"
-        imageTitle: my image
-        imageWidth: 240
-        imageHeight: 240
+        imageTitle: 𝓢𝔀𝓲𝓶𝓶𝓲𝓷𝓰𝓛𝓲𝓾
+        imageWidth: 200
+        imageHeight: 200
         buttons:
             - name: 📝 Paper Notes
               url: posts/papernotes
@@ -100,10 +100,10 @@ params:
           url: "https://v.douyin.com/iRABBfeY"
 
 
-    # label:
-    #     text: "Home"
-    #     icon: icon.png
-    #     iconHeight: 35
+    label:
+        text: "𝓢𝔀𝓲𝓶𝓶𝓲𝓷𝓰𝓛𝓲𝓾'𝓼 𝓑𝓵𝓸𝓰"
+        icon: images/swimmingliu_icon.png
+        iconHeight: 30
 
     # analytics:
     #     google:

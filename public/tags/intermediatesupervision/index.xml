@@ -2,22 +2,22 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/">
   <channel>
     <title>IntermediateSupervision on SwimmingLiu&#39;s Blog</title>
-    <link>https://swimmingliu.github.io/tags/intermediatesupervision/</link>
+    <link>https://swimmingliu.cn/tags/intermediatesupervision/</link>
     <description>Recent content in IntermediateSupervision on SwimmingLiu&#39;s Blog</description>
     <image>
       <title>SwimmingLiu&#39;s Blog</title>
-      <url>https://swimmingliu.github.io/papermod-cover.png</url>
-      <link>https://swimmingliu.github.io/papermod-cover.png</link>
+      <url>https://swimmingliu.cn/papermod-cover.png</url>
+      <link>https://swimmingliu.cn/papermod-cover.png</link>
     </image>
     <generator>Hugo -- gohugo.io</generator>
     <language>en</language>
-    <lastBuildDate>Tue, 28 Nov 2023 14:55:47 +0800</lastBuildDate><atom:link href="https://swimmingliu.github.io/tags/intermediatesupervision/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Tue, 28 Nov 2023 14:55:47 +0800</lastBuildDate><atom:link href="https://swimmingliu.cn/tags/intermediatesupervision/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>Prior Attention Network: 用于医学图像中多病灶分割的预先注意网络</title>
-      <link>https://swimmingliu.github.io/posts/papernotes/2022-priorattentionnetwork/</link>
+      <link>https://swimmingliu.cn/posts/papernotes/2022-priorattentionnetwork/</link>
       <pubDate>Tue, 28 Nov 2023 14:55:47 +0800</pubDate>
       
-      <guid>https://swimmingliu.github.io/posts/papernotes/2022-priorattentionnetwork/</guid>
+      <guid>https://swimmingliu.cn/posts/papernotes/2022-priorattentionnetwork/</guid>
       <description>Prior Attention Network: 用于医学图像中多病灶分割的预先注意网络 Abstract 医学图像中邻近组织的多种类型病变的准确分割在临床实践中具有重要意义。基于从粗到精策略的卷积神经网络（CNN）已广泛应用于该领域。然而，由于组织的大小、对比度和高类间相似性的不确定性，多病灶分割仍然具有挑战性。此外，普遍采用的级联策略对硬件要求较高，限制了临床部署的潜力。为了解决上述问题，我们提出了一种新颖的先验注意网络（PANet），它遵循从粗到细的策略来在医学图像中执行多病灶分割。所提出的网络通过在网络中插入与病变相关的空间注意机制，在单个网络中实现了两个步骤的分割。此外，我们还提出了中间监督策略，用于生成与病变相关的注意力来获取感兴趣区域（ROI），这加速了收敛并明显提高了分割性能。我们在两个应用中研究了所提出的分割框架：肺部 CT 切片中多发性肺部感染的 2D 分割和脑 MRI 中多发性病变的 3D 分割。实验结果表明，与级联网络相比，在 2D 和 3D 分割任务中，我们提出的网络以更少的计算成本实现了更好的性能。所提出的网络可以被视为 2D 和 3D 任务中多病灶分割的通用解决方案。源代码可在 https://github.com/hsiangyuzhao/PANet 获取
 问题导向：
 ①组织的大小、对比度和高类间相似性的不确定性

@@ -6,7 +6,7 @@ hidemeta: true
 
     @media screen and (max-width: 768px){
         .container{
-            margin-top: 100px;
+            margin-top: 50px;
             display:flex;
             flex-direction: column;
             justify-content: center;
@@ -41,9 +41,12 @@ hidemeta: true
             font-size: 15px;
             font-family: 'Times New Roman', Times, serif;
         }
+        .introText{
+            color: transparent;
+        }
         .specialSpan{
             font-weight: bold;
-            font-size: 15px; 
+            font-size: 16px; 
             color: black;
         }
     }
@@ -99,6 +102,9 @@ hidemeta: true
             font-size: 18px;
             font-family: 'Times New Roman', Times, serif;
         }
+        .introText{
+            color: transparent;
+        }
         .specialSpan{
             font-weight: bold;
             font-size: 20px; 
@@ -118,18 +124,18 @@ hidemeta: true
                         <span class="specialSpan"> 𝓢𝔀𝓲𝓶𝓶𝓲𝓷𝓰𝓛𝓲𝓾 👨🏻‍🎓</span>
                     </div>
                     <div>
-                        <span>Country:</span>
-                        <span class="specialSpan"> 𝓒𝓱𝓲𝓷𝓪 🇨🇳</span>
-                    </div>
-                    <div>
                         <span>Age:</span>
                         <span class="specialSpan"> 𝟮𝟯 </span>Years Old 👦🏻
+                    </div>
+                    <div>
+                        <span>Country:</span>
+                        <span class="specialSpan"> 𝓒𝓱𝓲𝓷𝓪 🇨🇳</span>
                     </div>
                     <div>
                         <span>Education:</span> Study in <span class="specialSpan">𝓩𝓢𝓣𝓤 🏫</span>
                     </div>
                     <div>
-                        <span style="color:transparent;">Education:</span> Majoring <span class="specialSpan">𝓒𝓸𝓶𝓹𝓾𝓽𝓮𝓻 𝓢𝓬𝓲𝓮𝓷𝓬𝓮 💻</span>
+                        <span class="introText">Education:</span> Majoring <span class="specialSpan">𝓒𝓸𝓶𝓹𝓾𝓽𝓮𝓻 𝓢𝓬𝓲𝓮𝓷𝓬𝓮 💻</span>
                     </div>
                     <div>
                         Exploring the <span class="specialSpan">𝓦𝓸𝓻𝓵𝓭</span> with <span class="specialSpan">𝓒𝓸𝓶𝓹𝓾𝓽𝓮𝓻 𝓥𝓲𝓼𝓲𝓸𝓷 🌎</span> 
@@ -172,6 +178,10 @@ hidemeta: true
                     }
                 }
                 }
+          }
+          const introText = document.querySelector('.introText');
+          if (introText){
+            introText.style.color = 'transparent';
           }
         }
       );

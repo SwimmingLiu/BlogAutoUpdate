@@ -7,7 +7,7 @@
 <meta name="robots" content="index, follow">
 <title>SwimmingLiu&#39;s Blog</title>
 <meta name="keywords" content="">
-<meta name="description" content="Name:𝓢𝔀𝓲𝓶𝓶𝓲𝓷𝓰𝓛𝓲𝓾 👨🏻‍🎓Country:𝓒𝓱𝓲𝓷𝓪 🇨🇳Age:𝟮𝟯 Years Old 👦🏻Education: Study in 𝓩𝓢𝓣𝓤 🏫Education: Majoring 𝓒𝓸𝓶𝓹𝓾𝓽𝓮𝓻 𝓢𝓬𝓲𝓮𝓷𝓬𝓮 💻Exploring the 𝓦𝓸𝓻𝓵𝓭 with 𝓒𝓸𝓶𝓹𝓾𝓽𝓮𝓻 𝓥𝓲𝓼𝓲𝓸𝓷 🌎 ">
+<meta name="description" content="Name:𝓢𝔀𝓲𝓶𝓶𝓲𝓷𝓰𝓛𝓲𝓾 👨🏻‍🎓Age:𝟮𝟯 Years Old 👦🏻Country:𝓒𝓱𝓲𝓷𝓪 🇨🇳Education: Study in 𝓩𝓢𝓣𝓤 🏫Education: Majoring 𝓒𝓸𝓶𝓹𝓾𝓽𝓮𝓻 𝓢𝓬𝓲𝓮𝓷𝓬𝓮 💻Exploring the 𝓦𝓸𝓻𝓵𝓭 with 𝓒𝓸𝓶𝓹𝓾𝓽𝓮𝓻 𝓥𝓲𝓼𝓲𝓸𝓷 🌎 ">
 <meta name="author" content="👨🏻‍🎓 SwimmingLiu">
 <link rel="canonical" href="https://swimmingliu.cn/aboutme/">
 <link crossorigin="anonymous" href="/assets/css/stylesheet.51b7e6db2372c8de650f196f41f33c808ff730382e980defab00b41721a6e2d2.css" integrity="sha256-Ubfm2yNyyN5lDxlvQfM8gI/3MDgumA3vqwC0FyGm4tI=" rel="preload stylesheet" as="style">
@@ -170,7 +170,7 @@
 
     @media screen and (max-width: 768px){
         .container{
-            margin-top: 100px;
+            margin-top: 50px;
             display:flex;
             flex-direction: column;
             justify-content: center;
@@ -205,9 +205,12 @@
             font-size: 15px;
             font-family: 'Times New Roman', Times, serif;
         }
+        .introText{
+            color: transparent;
+        }
         .specialSpan{
             font-weight: bold;
-            font-size: 15px; 
+            font-size: 16px; 
             color: black;
         }
     }
@@ -263,6 +266,9 @@
             font-size: 18px;
             font-family: 'Times New Roman', Times, serif;
         }
+        .introText{
+            color: transparent;
+        }
         .specialSpan{
             font-weight: bold;
             font-size: 20px; 
@@ -281,18 +287,18 @@
                         <span class="specialSpan"> 𝓢𝔀𝓲𝓶𝓶𝓲𝓷𝓰𝓛𝓲𝓾 👨🏻‍🎓</span>
                     </div>
                     <div>
-                        <span>Country:</span>
-                        <span class="specialSpan"> 𝓒𝓱𝓲𝓷𝓪 🇨🇳</span>
-                    </div>
-                    <div>
                         <span>Age:</span>
                         <span class="specialSpan"> 𝟮𝟯 </span>Years Old 👦🏻
+                    </div>
+                    <div>
+                        <span>Country:</span>
+                        <span class="specialSpan"> 𝓒𝓱𝓲𝓷𝓪 🇨🇳</span>
                     </div>
                     <div>
                         <span>Education:</span> Study in <span class="specialSpan">𝓩𝓢𝓣𝓤 🏫</span>
                     </div>
                     <div>
-                        <span style="color:transparent;">Education:</span> Majoring <span class="specialSpan">𝓒𝓸𝓶𝓹𝓾𝓽𝓮𝓻 𝓢𝓬𝓲𝓮𝓷𝓬𝓮 💻</span>
+                        <span class="introText">Education:</span> Majoring <span class="specialSpan">𝓒𝓸𝓶𝓹𝓾𝓽𝓮𝓻 𝓢𝓬𝓲𝓮𝓷𝓬𝓮 💻</span>
                     </div>
                     <div>
                         Exploring the <span class="specialSpan">𝓦𝓸𝓻𝓵𝓭</span> with <span class="specialSpan">𝓒𝓸𝓶𝓹𝓾𝓽𝓮𝓻 𝓥𝓲𝓼𝓲𝓸𝓷 🌎</span> 
@@ -334,6 +340,10 @@
                     }
                 }
                 }
+          }
+          const introText = document.querySelector('.introText');
+          if (introText){
+            introText.style.color = 'transparent';
           }
         }
       );

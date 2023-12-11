@@ -10,7 +10,7 @@
 <meta name="description" content="Name:𝓢𝔀𝓲𝓶𝓶𝓲𝓷𝓰𝓛𝓲𝓾 👨🏻‍🎓Age:𝟮𝟯 Years Old 👦🏻Country:𝓒𝓱𝓲𝓷𝓪 🇨🇳Education: Study in 𝓩𝓢𝓣𝓤 🏫Education: Majoring 𝓒𝓸𝓶𝓹𝓾𝓽𝓮𝓻 𝓢𝓬𝓲𝓮𝓷𝓬𝓮 💻Exploring the 𝓦𝓸𝓻𝓵𝓭 with 𝓒𝓸𝓶𝓹𝓾𝓽𝓮𝓻 𝓥𝓲𝓼𝓲𝓸𝓷 🌎 ">
 <meta name="author" content="👨🏻‍🎓 SwimmingLiu">
 <link rel="canonical" href="https://swimmingliu.cn/aboutme/">
-<link crossorigin="anonymous" href="/assets/css/stylesheet.51b7e6db2372c8de650f196f41f33c808ff730382e980defab00b41721a6e2d2.css" integrity="sha256-Ubfm2yNyyN5lDxlvQfM8gI/3MDgumA3vqwC0FyGm4tI=" rel="preload stylesheet" as="style">
+<link crossorigin="anonymous" href="/assets/css/stylesheet.91a7894c287c51ea21fee929f33a8e20984d3e212a8a054097b8c940810ca6bb.css" integrity="sha256-kaeJTCh8Ueoh/ukp8zqOIJhNPiEqigVAl7jJQIEMprs=" rel="preload stylesheet" as="style">
 <link rel="icon" href="https://swimmingliu.cn/favicon.ico">
 <link rel="icon" type="image/png" sizes="16x16" href="https://swimmingliu.cn/favicon-16x16.png">
 <link rel="icon" type="image/png" sizes="32x32" href="https://swimmingliu.cn/favicon-32x32.png">
@@ -310,51 +310,37 @@
             </div>
 </div>
 <script>
-     // 监听 body 元素的 classList 变化
-    const bodyObserver = new MutationObserver(mutations => {
-      mutations.forEach(mutation => {
-        if (mutation.type === 'attributes' && mutation.attributeName === 'class') {
-          const bodyClass = document.body.classList;
-          // 检查 body 的 class 是否包含特定的类名
-    
-          if (bodyClass.contains('dark')) {
-            // 修改 introBox 类中的字体颜色
-            const introBox = document.querySelector('.introBox');
-            if (introBox) {
-                const spanElements = introBox.querySelectorAll('span');
-                if (spanElements) {
-                    // 修改所有 span 元素的颜色
-                    spanElements.forEach(spanElement => {
-                    spanElement.style.color = 'white';
-                    });
-                }
-            }
-          }
-          else{
-             // 修改 introBox 类中的字体颜色
-             const introBox = document.querySelector('.introBox');
-            if (introBox) {
-                    const spanElements = introBox.querySelectorAll('span');
-                    if (spanElements) {
-                        // 修改所有 span 元素的颜色
-                        spanElements.forEach(spanElement => {
-                        spanElement.style.color = 'black';
-                        });
-                    }
-                }
-                }
-          }
-          const introText = document.querySelector('.introText');
-          if (introText){
-            introText.style.color = 'transparent';
-          }
-        }
-      );
-    });
-    
+    // 定义一个函数，根据 body 的 class 设置 span 的颜色
+    function setSpanColor() {
+    const bodyClass = document.body.classList;
+    const introBox = document.querySelector('.introBox');
+    const spanElements = introBox.querySelectorAll('span');
+
+    if (bodyClass.contains('dark')) {
+        spanElements.forEach(spanElement => {
+        spanElement.style.color = 'white';
+        });
+    } else {
+        spanElements.forEach(spanElement => {
+        spanElement.style.color = 'black';
+        });
+    }
+    }
+
+    // 调用函数以确保初始状态正确
+    setSpanColor();
+
     // 开始观察 body 元素的 classList 变化
+    const bodyObserver = new MutationObserver(mutations => {
+    mutations.forEach(mutation => {
+        if (mutation.type === 'attributes' && mutation.attributeName === 'class') {
+        setSpanColor();
+        }
+    });
+    });
+
     bodyObserver.observe(document.body, { attributes: true });
-    
+
 </script>
 
 

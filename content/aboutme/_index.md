@@ -148,50 +148,36 @@ hidemeta: true
 </div>
     
 <script>
-     // 监听 body 元素的 classList 变化
-    const bodyObserver = new MutationObserver(mutations => {
-      mutations.forEach(mutation => {
-        if (mutation.type === 'attributes' && mutation.attributeName === 'class') {
-          const bodyClass = document.body.classList;
-          // 检查 body 的 class 是否包含特定的类名
-    
-          if (bodyClass.contains('dark')) {
-            // 修改 introBox 类中的字体颜色
-            const introBox = document.querySelector('.introBox');
-            if (introBox) {
-                const spanElements = introBox.querySelectorAll('span');
-                if (spanElements) {
-                    // 修改所有 span 元素的颜色
-                    spanElements.forEach(spanElement => {
-                    spanElement.style.color = 'white';
-                    });
-                }
-            }
-          }
-          else{
-             // 修改 introBox 类中的字体颜色
-             const introBox = document.querySelector('.introBox');
-            if (introBox) {
-                    const spanElements = introBox.querySelectorAll('span');
-                    if (spanElements) {
-                        // 修改所有 span 元素的颜色
-                        spanElements.forEach(spanElement => {
-                        spanElement.style.color = 'black';
-                        });
-                    }
-                }
-                }
-          }
-          const introText = document.querySelector('.introText');
-          if (introText){
-            introText.style.color = 'transparent';
-          }
-        }
-      );
-    });
-    
+    // 定义一个函数，根据 body 的 class 设置 span 的颜色
+    function setSpanColor() {
+    const bodyClass = document.body.classList;
+    const introBox = document.querySelector('.introBox');
+    const spanElements = introBox.querySelectorAll('span');
+
+    if (bodyClass.contains('dark')) {
+        spanElements.forEach(spanElement => {
+        spanElement.style.color = 'white';
+        });
+    } else {
+        spanElements.forEach(spanElement => {
+        spanElement.style.color = 'black';
+        });
+    }
+    }
+
+    // 调用函数以确保初始状态正确
+    setSpanColor();
+
     // 开始观察 body 元素的 classList 变化
+    const bodyObserver = new MutationObserver(mutations => {
+    mutations.forEach(mutation => {
+        if (mutation.type === 'attributes' && mutation.attributeName === 'class') {
+        setSpanColor();
+        }
+    });
+    });
+
     bodyObserver.observe(document.body, { attributes: true });
-    
+
 </script>
     

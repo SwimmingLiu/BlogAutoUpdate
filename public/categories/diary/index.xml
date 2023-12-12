@@ -11,7 +11,21 @@
     </image>
     <generator>Hugo -- gohugo.io</generator>
     <language>en</language>
-    <lastBuildDate>Sat, 02 Dec 2023 21:40:07 +0800</lastBuildDate><atom:link href="https://swimmingliu.cn/categories/diary/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Tue, 12 Dec 2023 12:18:57 +0800</lastBuildDate><atom:link href="https://swimmingliu.cn/categories/diary/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>MovieKGQA: 基于知识图谱和neo4j图数据库的电影知识问答系统</title>
+      <link>https://swimmingliu.cn/posts/diary/2023-moviekgqa/</link>
+      <pubDate>Tue, 12 Dec 2023 12:18:57 +0800</pubDate>
+      
+      <guid>https://swimmingliu.cn/posts/diary/2023-moviekgqa/</guid>
+      <description>Introduction 基于知识图谱和neo4j图数据库的电影知识问答系统
+Workflow DataBase 爬取豆瓣TOP1000电影信息数据
+Frontend 获取用户输入的信息 （语音输入 / 文本输入） 向电影知识问答后端服务器发送请求 获取返回结果 (成功 -&amp;gt; 4 / 失败 -&amp;gt; 5) 如果返回结果包含image信息，则显示图片和文字，否则只显示文字 请求基于gpt的AI模型服务器，并显示返回结果 Backend ​	[准备工作] 训练 TF-IDF 向量算法和朴素贝叶斯分类器，用于预测用户文本所属的问题类别
+接受前端请求，获取用户输入信息 使用分词库解析用户输入的文本词性，提取关键词 根据贝叶斯分类器，分类出用户文本的问题类型 结合关键词与问题类别，在 Neo4j 中查询问题的答案 返回查询结果 （若问题类型为 演员信息 / 电影介绍，则附加图片url） WorkFlow Graph Frame DataBase Frontend Backend Reference Frontend 微信小程序：微信聊天机器人
+BackEnd 基于知识图谱的电影知识问答系统
+电影知识库问答机器人</description>
+    </item>
+    
     <item>
       <title>程序设计作业接口文档</title>
       <link>https://swimmingliu.cn/posts/diary/2023-%E7%A8%8B%E5%BA%8F%E8%AE%BE%E8%AE%A1%E4%BD%9C%E4%B8%9A%E6%8E%A5%E5%8F%A3%E6%96%87%E6%A1%A3/</link>

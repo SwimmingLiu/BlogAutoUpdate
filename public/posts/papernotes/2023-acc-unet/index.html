@@ -13,7 +13,7 @@
 原始的 UNet 模型包含对称的编码器-解码器架构（图 1a）并采用跳跃连接，这为解码器提供了在编码器的池化操作期间可能丢失的空间信息。尽管通过简单串联的信息传播提高了性能，但编码器-解码器特征图之间可能存在语义差距。这导致了第二类 UNet 的发展（图 1b）。 U-Net&#43;&#43; [26] 利用密集连接，而 MultiResUNet [11] 在跳过连接上添加了额外的卷积块作为潜在的补救措施。到目前为止，UNet 的历史上所有创新都是使用 CNN 进行的。然而，2020 年的十年给计算机视觉领域带来了根本性的变化。 CNN 在视觉领域的长期主导地位被视觉转换器打破了 [7]。 Swin Transformers [15] 进一步针对一般视觉应用调整了变压器。因此，UNet 模型开始采用 Transformer [5]。 Swin-Unet [9] 用 Swin Transformer 块取代了卷积块，从而开创了一类新的模型（图 1c）。尽管如此，CNN 在图像分割方面仍然具有各种优点，导致了融合这两者的发展[2]。这种混合类 UNet 模型（图 1d）在编码器-解码器中采用卷积块，并沿跳跃连接使用变换器层。 UCTransNet [22]和MCTrans[24]是此类的两个代表性模型。最后，还尝试开发全变压器 UNet 架构（图 1e），例如，SMESwin Unet [27] 在编码器-解码器块和跳跃连接中都使用变压器。">
 <meta name="author" content="SwimmingLiu">
 <link rel="canonical" href="https://swimmingliu.cn/posts/papernotes/2023-acc-unet/">
-<link crossorigin="anonymous" href="/assets/css/stylesheet.91a7894c287c51ea21fee929f33a8e20984d3e212a8a054097b8c940810ca6bb.css" integrity="sha256-kaeJTCh8Ueoh/ukp8zqOIJhNPiEqigVAl7jJQIEMprs=" rel="preload stylesheet" as="style">
+<link crossorigin="anonymous" href="/assets/css/stylesheet.56574d0b8d57cdd0d704dd823c3ab0e600bd78cf5a999377277390417d6b2f3e.css" integrity="sha256-VldNC41XzdDXBN2CPDqw5gC9eM9amZN3J3OQQX1rLz4=" rel="preload stylesheet" as="style">
 <link rel="icon" href="https://swimmingliu.cn/images/swimmingliu_icon.png">
 <link rel="icon" type="image/png" sizes="16x16" href="https://swimmingliu.cn/images/swimmingliu_icon.png">
 <link rel="icon" type="image/png" sizes="32x32" href="https://swimmingliu.cn/images/swimmingliu_icon.png">

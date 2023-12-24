@@ -25,13 +25,13 @@ Introduction 医学图像分割对于疾病的准确筛查和患者的预后具�
 一个网络、监督空间注意力机制、参数和计算成本方面比当前网络更高效。
 Related Work 1）图像分割的网络结构：用于图像分割的典型卷积神经网络通常由一个卷积特征提取器组成，其拓扑类似于常见的分类网络，自动从输入图像中提取特征，并进行基于卷积的操作以生成最终的密集预测。在自然图像分割领域，FCN [2]、DeepLab [8]、PSPNet [9] 和 SegNet [10] 因其性能和效率而颇受欢迎。对于医学分割，U-Net [3] 在许多任务中相当流行，并且已被修改为许多改进版本，例如 Attention U-Net [11]、U-Net&#43;&#43; [12]、V-Net [13] 和H-DenseUNet [14]在某些领域获得更好的性能。">
 <meta name="author" content="SwimmingLiu">
-<link rel="canonical" href="https://swimmingliu.netlify.app/posts/papernotes/2022-priorattentionnetwork/">
+<link rel="canonical" href="https://swimmingliu.cn/posts/papernotes/2022-priorattentionnetwork/">
 <link crossorigin="anonymous" href="/assets/css/stylesheet.56574d0b8d57cdd0d704dd823c3ab0e600bd78cf5a999377277390417d6b2f3e.css" integrity="sha256-VldNC41XzdDXBN2CPDqw5gC9eM9amZN3J3OQQX1rLz4=" rel="preload stylesheet" as="style">
-<link rel="icon" href="https://swimmingliu.netlify.app/images/swimmingliu_icon.png">
-<link rel="icon" type="image/png" sizes="16x16" href="https://swimmingliu.netlify.app/images/swimmingliu_icon.png">
-<link rel="icon" type="image/png" sizes="32x32" href="https://swimmingliu.netlify.app/images/swimmingliu_icon.png">
-<link rel="apple-touch-icon" href="https://swimmingliu.netlify.app/images/swimmingliu_icon.png">
-<link rel="mask-icon" href="https://swimmingliu.netlify.app/images/swimmingliu_icon.png">
+<link rel="icon" href="https://swimmingliu.cn/images/swimmingliu_icon.png">
+<link rel="icon" type="image/png" sizes="16x16" href="https://swimmingliu.cn/images/swimmingliu_icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="https://swimmingliu.cn/images/swimmingliu_icon.png">
+<link rel="apple-touch-icon" href="https://swimmingliu.cn/images/swimmingliu_icon.png">
+<link rel="mask-icon" href="https://swimmingliu.cn/images/swimmingliu_icon.png">
 <meta name="theme-color" content="#2e2e33">
 <meta name="msapplication-TileColor" content="#2e2e33">
 <noscript>
@@ -90,12 +90,12 @@ Introduction 医学图像分割对于疾病的准确筛查和患者的预后具�
 一个网络、监督空间注意力机制、参数和计算成本方面比当前网络更高效。
 Related Work 1）图像分割的网络结构：用于图像分割的典型卷积神经网络通常由一个卷积特征提取器组成，其拓扑类似于常见的分类网络，自动从输入图像中提取特征，并进行基于卷积的操作以生成最终的密集预测。在自然图像分割领域，FCN [2]、DeepLab [8]、PSPNet [9] 和 SegNet [10] 因其性能和效率而颇受欢迎。对于医学分割，U-Net [3] 在许多任务中相当流行，并且已被修改为许多改进版本，例如 Attention U-Net [11]、U-Net&#43;&#43; [12]、V-Net [13] 和H-DenseUNet [14]在某些领域获得更好的性能。" />
 <meta property="og:type" content="article" />
-<meta property="og:url" content="https://swimmingliu.netlify.app/posts/papernotes/2022-priorattentionnetwork/" /><meta property="og:image" content="https://swimmingliu.netlify.app/papermod-cover.png"/><meta property="article:section" content="posts" />
+<meta property="og:url" content="https://swimmingliu.cn/posts/papernotes/2022-priorattentionnetwork/" /><meta property="og:image" content="https://swimmingliu.cn/papermod-cover.png"/><meta property="article:section" content="posts" />
 <meta property="article:published_time" content="2023-11-28T14:55:47+08:00" />
 <meta property="article:modified_time" content="2023-11-28T14:55:47+08:00" />
 
 <meta name="twitter:card" content="summary_large_image"/>
-<meta name="twitter:image" content="https://swimmingliu.netlify.app/papermod-cover.png"/>
+<meta name="twitter:image" content="https://swimmingliu.cn/papermod-cover.png"/>
 
 <meta name="twitter:title" content="Prior Attention Network: 用于医学图像中多病灶分割的预先注意网络"/>
 <meta name="twitter:description" content="Prior Attention Network: 用于医学图像中多病灶分割的预先注意网络 Abstract 医学图像中邻近组织的多种类型病变的准确分割在临床实践中具有重要意义。基于从粗到精策略的卷积神经网络（CNN）已广泛应用于该领域。然而，由于组织的大小、对比度和高类间相似性的不确定性，多病灶分割仍然具有挑战性。此外，普遍采用的级联策略对硬件要求较高，限制了临床部署的潜力。为了解决上述问题，我们提出了一种新颖的先验注意网络（PANet），它遵循从粗到细的策略来在医学图像中执行多病灶分割。所提出的网络通过在网络中插入与病变相关的空间注意机制，在单个网络中实现了两个步骤的分割。此外，我们还提出了中间监督策略，用于生成与病变相关的注意力来获取感兴趣区域（ROI），这加速了收敛并明显提高了分割性能。我们在两个应用中研究了所提出的分割框架：肺部 CT 切片中多发性肺部感染的 2D 分割和脑 MRI 中多发性病变的 3D 分割。实验结果表明，与级联网络相比，在 2D 和 3D 分割任务中，我们提出的网络以更少的计算成本实现了更好的性能。所提出的网络可以被视为 2D 和 3D 任务中多病灶分割的通用解决方案。源代码可在 https://github.com/hsiangyuzhao/PANet 获取
@@ -126,19 +126,19 @@ Related Work 1）图像分割的网络结构：用于图像分割的典型卷积
       "@type": "ListItem",
       "position":  1 ,
       "name": "📚 Posts",
-      "item": "https://swimmingliu.netlify.app/posts/"
+      "item": "https://swimmingliu.cn/posts/"
     }, 
     {
       "@type": "ListItem",
       "position":  2 ,
       "name": "📝 Paper Notes",
-      "item": "https://swimmingliu.netlify.app/posts/papernotes/"
+      "item": "https://swimmingliu.cn/posts/papernotes/"
     }, 
     {
       "@type": "ListItem",
       "position":  3 ,
       "name": "Prior Attention Network: 用于医学图像中多病灶分割的预先注意网络",
-      "item": "https://swimmingliu.netlify.app/posts/papernotes/2022-priorattentionnetwork/"
+      "item": "https://swimmingliu.cn/posts/papernotes/2022-priorattentionnetwork/"
     }
   ]
 }
@@ -164,14 +164,14 @@ Related Work 1）图像分割的网络结构：用于图像分割的典型卷积
   }],
   "mainEntityOfPage": {
     "@type": "WebPage",
-    "@id": "https://swimmingliu.netlify.app/posts/papernotes/2022-priorattentionnetwork/"
+    "@id": "https://swimmingliu.cn/posts/papernotes/2022-priorattentionnetwork/"
   },
   "publisher": {
     "@type": "Organization",
     "name": "SwimmingLiu's Blog",
     "logo": {
       "@type": "ImageObject",
-      "url": "https://swimmingliu.netlify.app/images/swimmingliu_icon.png"
+      "url": "https://swimmingliu.cn/images/swimmingliu_icon.png"
     }
   }
 }
@@ -193,8 +193,8 @@ Related Work 1）图像分割的网络结构：用于图像分割的典型卷积
 <header class="header">
     <nav class="nav">
         <div class="logo">
-            <a href="https://swimmingliu.netlify.app/" accesskey="h" title="𝓢𝔀𝓲𝓶𝓶𝓲𝓷𝓰𝓛𝓲𝓾&#39;𝓼 𝓑𝓵𝓸𝓰 (Alt + H)">
-                <img src="https://swimmingliu.netlify.app/images/swimmingliu_icon.png" alt="" aria-label="logo"
+            <a href="https://swimmingliu.cn/" accesskey="h" title="𝓢𝔀𝓲𝓶𝓶𝓲𝓷𝓰𝓛𝓲𝓾&#39;𝓼 𝓑𝓵𝓸𝓰 (Alt + H)">
+                <img src="https://swimmingliu.cn/images/swimmingliu_icon.png" alt="" aria-label="logo"
                     height="30">𝓢𝔀𝓲𝓶𝓶𝓲𝓷𝓰𝓛𝓲𝓾&#39;𝓼 𝓑𝓵𝓸𝓰</a>
             <div class="logo-switches">
                 <button id="theme-toggle" accesskey="t" title="(Alt + T)">
@@ -221,27 +221,27 @@ Related Work 1）图像分割的网络结构：用于图像分割的典型卷积
         </div>
         <ul id="menu">
             <li>
-                <a href="https://swimmingliu.netlify.app/index.html" title="🏡 Home">
+                <a href="https://swimmingliu.cn/index.html" title="🏡 Home">
                     <span>🏡 Home</span>
                 </a>
             </li>
             <li>
-                <a href="https://swimmingliu.netlify.app/search/" title="🔍 Search">
+                <a href="https://swimmingliu.cn/search/" title="🔍 Search">
                     <span>🔍 Search</span>
                 </a>
             </li>
             <li>
-                <a href="https://swimmingliu.netlify.app/posts/" title="🗒️ Posts">
+                <a href="https://swimmingliu.cn/posts/" title="🗒️ Posts">
                     <span>🗒️ Posts</span>
                 </a>
             </li>
             <li>
-                <a href="https://swimmingliu.netlify.app/archives/" title="📃 Archive">
+                <a href="https://swimmingliu.cn/archives/" title="📃 Archive">
                     <span>📃 Archive</span>
                 </a>
             </li>
             <li>
-                <a href="https://swimmingliu.netlify.app/aboutme/" title="👨🏻‍🎓 About Me">
+                <a href="https://swimmingliu.cn/aboutme/" title="👨🏻‍🎓 About Me">
                     <span>👨🏻‍🎓 About Me</span>
                 </a>
             </li>
@@ -263,7 +263,7 @@ Related Work 1）图像分割的网络结构：用于图像分割的典型卷积
 
 <article class="post-single">
   <header class="post-header">
-    <div class="breadcrumbs"><a href="https://swimmingliu.netlify.app/">Home</a>&nbsp;»&nbsp;<a href="https://swimmingliu.netlify.app/posts/">📚 Posts</a>&nbsp;»&nbsp;<a href="https://swimmingliu.netlify.app/posts/papernotes/">📝 Paper Notes</a></div>
+    <div class="breadcrumbs"><a href="https://swimmingliu.cn/">Home</a>&nbsp;»&nbsp;<a href="https://swimmingliu.cn/posts/">📚 Posts</a>&nbsp;»&nbsp;<a href="https://swimmingliu.cn/posts/papernotes/">📝 Paper Notes</a></div>
     <h1 class="post-title">
       Prior Attention Network: 用于医学图像中多病灶分割的预先注意网络
     </h1>
@@ -567,17 +567,17 @@ Related Work 1）图像分割的网络结构：用于图像分割的典型卷积
 
   <footer class="post-footer">
     <ul class="post-tags">
-      <li><a href="https://swimmingliu.netlify.app/tags/unet/">Unet</a></li>
-      <li><a href="https://swimmingliu.netlify.app/tags/deepsupervision/">DeepSupervision</a></li>
-      <li><a href="https://swimmingliu.netlify.app/tags/intermediatesupervision/">IntermediateSupervision</a></li>
+      <li><a href="https://swimmingliu.cn/tags/unet/">Unet</a></li>
+      <li><a href="https://swimmingliu.cn/tags/deepsupervision/">DeepSupervision</a></li>
+      <li><a href="https://swimmingliu.cn/tags/intermediatesupervision/">IntermediateSupervision</a></li>
     </ul>
 <nav class="paginav">
-  <a class="prev" href="https://swimmingliu.netlify.app/posts/diary/2023-%E7%A8%8B%E5%BA%8F%E8%AE%BE%E8%AE%A1%E4%BD%9C%E4%B8%9A%E6%8E%A5%E5%8F%A3%E6%96%87%E6%A1%A3/">
+  <a class="prev" href="https://swimmingliu.cn/posts/diary/2023-%E7%A8%8B%E5%BA%8F%E8%AE%BE%E8%AE%A1%E4%BD%9C%E4%B8%9A%E6%8E%A5%E5%8F%A3%E6%96%87%E6%A1%A3/">
     <span class="title">« Prev</span>
     <br>
     <span>程序设计作业接口文档</span>
   </a>
-  <a class="next" href="https://swimmingliu.netlify.app/posts/diary/2023-%E5%9C%B0%E5%A4%A7%E6%9C%8D%E5%8A%A1%E5%99%A8/">
+  <a class="next" href="https://swimmingliu.cn/posts/diary/2023-%E5%9C%B0%E5%A4%A7%E6%9C%8D%E5%8A%A1%E5%99%A8/">
     <span class="title">Next »</span>
     <br>
     <span>地大服务器使用教程</span>
@@ -589,7 +589,7 @@ Related Work 1）图像分割的网络结构：用于图像分割的典型卷积
     </main>
     
 <footer class="footer">
-    <span>&copy; 2023 <a href="https://swimmingliu.netlify.app/">SwimmingLiu&#39;s Blog</a></span>
+    <span>&copy; 2023 <a href="https://swimmingliu.cn/">SwimmingLiu&#39;s Blog</a></span>
     <span>
         Powered by
         <a href="https://gohugo.io/" rel="noopener noreferrer" target="_blank">Hugo</a> &

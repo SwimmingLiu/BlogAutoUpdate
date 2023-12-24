@@ -22,13 +22,13 @@ Introduction 作为计算机辅助诊断系统中的重要作用，精确的医�
 RELATED WORK Medical Image Segmentation Network 根据不同器官或病变的特点，我们将现有的医学图像分割方法分为两类：医学通用的和医学专用的。随着U-Net[2]在医学图像分割领域取得稳定的性能，带有编码器-解码器的U形结构已成为基本的分割基线。 U-Net&#43;&#43;[9]集成了长连接和短连接，可以减少编码器和解码器子网络的特征图之间的语义差距。对于注意力 U-Net [28]，注意力门嵌入在编码器和解码器块之间的每个过渡层中，它可以自动学习关注不同形状和大小的目标结构。最近，Transformer [29]架构在许多自然语言处理任务中取得了成功。一些作品[7]、[8]探讨了其对医学视觉任务的有效性。 UTNet [7] 是一种简单但功能强大的混合变压器架构，它在编码器和解码器中应用自注意力模块，以最小的开销捕获不同规模的远程依赖关系。另一个具有代表性的基于 Transformer 的模型是 TransUNet [8]，它通过将图像特征视为序列来编码强全局上下文，并通过 U 形混合架构设计利用低级 CNN 特征。
 医学特定方法。在息肉分割任务中，SFA [30]和PraNet [4]专注于恢复息肉与其周围粘膜之间的清晰边界。前者提出了共享编码器和两个相互约束的解码器下的选择性特征聚合结构和边界敏感损失函数。后者利用反向注意模块来建立区域和边界线索之间的关系。此外，Ji等人[31]利用时空信息构建视频息肉分割模型。在COVID-19肺部感染任务中，Paluru等人[32]提出了一种基于变形深度嵌入的轻量级CNN来分割COVID-19胸部CT图像中的异常。 Inf-Net [33] 构建隐式反向注意力和显式边缘注意力来对边界进行建模。 BCS-Net [34]具有三个渐进边界上下文语义重建块，可以帮助解码器捕获肺部感染的零散区域。在乳腺分割任务中，Byra等人[35]通过注意力机制开发了选择性核来调整U-Net的感受野，可以进一步提高乳腺肿瘤的分割精度。 Chen 等人 [36] 提出了一种嵌套 U 网，通过利用不同的深度和共享权重来实现乳腺肿瘤的稳健表示。">
 <meta name="author" content="SwimmingLiu">
-<link rel="canonical" href="https://swimmingliu.netlify.app/posts/papernotes/2023-m2snet/">
+<link rel="canonical" href="https://swimmingliu.cn/posts/papernotes/2023-m2snet/">
 <link crossorigin="anonymous" href="/assets/css/stylesheet.56574d0b8d57cdd0d704dd823c3ab0e600bd78cf5a999377277390417d6b2f3e.css" integrity="sha256-VldNC41XzdDXBN2CPDqw5gC9eM9amZN3J3OQQX1rLz4=" rel="preload stylesheet" as="style">
-<link rel="icon" href="https://swimmingliu.netlify.app/images/swimmingliu_icon.png">
-<link rel="icon" type="image/png" sizes="16x16" href="https://swimmingliu.netlify.app/images/swimmingliu_icon.png">
-<link rel="icon" type="image/png" sizes="32x32" href="https://swimmingliu.netlify.app/images/swimmingliu_icon.png">
-<link rel="apple-touch-icon" href="https://swimmingliu.netlify.app/images/swimmingliu_icon.png">
-<link rel="mask-icon" href="https://swimmingliu.netlify.app/images/swimmingliu_icon.png">
+<link rel="icon" href="https://swimmingliu.cn/images/swimmingliu_icon.png">
+<link rel="icon" type="image/png" sizes="16x16" href="https://swimmingliu.cn/images/swimmingliu_icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="https://swimmingliu.cn/images/swimmingliu_icon.png">
+<link rel="apple-touch-icon" href="https://swimmingliu.cn/images/swimmingliu_icon.png">
+<link rel="mask-icon" href="https://swimmingliu.cn/images/swimmingliu_icon.png">
 <meta name="theme-color" content="#2e2e33">
 <meta name="msapplication-TileColor" content="#2e2e33">
 <noscript>
@@ -84,12 +84,12 @@ Introduction 作为计算机辅助诊断系统中的重要作用，精确的医�
 RELATED WORK Medical Image Segmentation Network 根据不同器官或病变的特点，我们将现有的医学图像分割方法分为两类：医学通用的和医学专用的。随着U-Net[2]在医学图像分割领域取得稳定的性能，带有编码器-解码器的U形结构已成为基本的分割基线。 U-Net&#43;&#43;[9]集成了长连接和短连接，可以减少编码器和解码器子网络的特征图之间的语义差距。对于注意力 U-Net [28]，注意力门嵌入在编码器和解码器块之间的每个过渡层中，它可以自动学习关注不同形状和大小的目标结构。最近，Transformer [29]架构在许多自然语言处理任务中取得了成功。一些作品[7]、[8]探讨了其对医学视觉任务的有效性。 UTNet [7] 是一种简单但功能强大的混合变压器架构，它在编码器和解码器中应用自注意力模块，以最小的开销捕获不同规模的远程依赖关系。另一个具有代表性的基于 Transformer 的模型是 TransUNet [8]，它通过将图像特征视为序列来编码强全局上下文，并通过 U 形混合架构设计利用低级 CNN 特征。
 医学特定方法。在息肉分割任务中，SFA [30]和PraNet [4]专注于恢复息肉与其周围粘膜之间的清晰边界。前者提出了共享编码器和两个相互约束的解码器下的选择性特征聚合结构和边界敏感损失函数。后者利用反向注意模块来建立区域和边界线索之间的关系。此外，Ji等人[31]利用时空信息构建视频息肉分割模型。在COVID-19肺部感染任务中，Paluru等人[32]提出了一种基于变形深度嵌入的轻量级CNN来分割COVID-19胸部CT图像中的异常。 Inf-Net [33] 构建隐式反向注意力和显式边缘注意力来对边界进行建模。 BCS-Net [34]具有三个渐进边界上下文语义重建块，可以帮助解码器捕获肺部感染的零散区域。在乳腺分割任务中，Byra等人[35]通过注意力机制开发了选择性核来调整U-Net的感受野，可以进一步提高乳腺肿瘤的分割精度。 Chen 等人 [36] 提出了一种嵌套 U 网，通过利用不同的深度和共享权重来实现乳腺肿瘤的稳健表示。" />
 <meta property="og:type" content="article" />
-<meta property="og:url" content="https://swimmingliu.netlify.app/posts/papernotes/2023-m2snet/" /><meta property="og:image" content="https://swimmingliu.netlify.app/papermod-cover.png"/><meta property="article:section" content="posts" />
+<meta property="og:url" content="https://swimmingliu.cn/posts/papernotes/2023-m2snet/" /><meta property="og:image" content="https://swimmingliu.cn/papermod-cover.png"/><meta property="article:section" content="posts" />
 <meta property="article:published_time" content="2023-11-12T16:25:03+08:00" />
 <meta property="article:modified_time" content="2023-11-12T16:25:03+08:00" />
 
 <meta name="twitter:card" content="summary_large_image"/>
-<meta name="twitter:image" content="https://swimmingliu.netlify.app/papermod-cover.png"/>
+<meta name="twitter:image" content="https://swimmingliu.cn/papermod-cover.png"/>
 
 <meta name="twitter:title" content="M2SNet: Multi-scale in Multi-scale Subtraction Network for Medical Image Segmentation"/>
 <meta name="twitter:description" content="(2023) M2SNet: 新颖多尺度模块 &#43; 智能损失函数 = 通用图像分割SOTA网络 Abstract 准确的医学图像分割对于早期医学诊断至关重要。大多数现有方法基于U形结构，并使用逐元素加法或串联在解码器中逐步融合不同级别的特征。然而，这两种操作都容易产生大量冗余信息，从而削弱不同级别特征之间的互补性，导致病灶定位不准确和边缘模糊。为了应对这一挑战，我们提出了一种通用的多尺度减法网络（M2SNet）来完成医学图像的多样化分割。具体来说，我们首先设计一个基本减法单元（SU）来产生编码器中相邻级别之间的差异特征。接下来，我们将单尺度 SU 扩展到层内多尺度 SU，它可以为解码器提供像素级和结构级差异信息。
@@ -117,19 +117,19 @@ RELATED WORK Medical Image Segmentation Network 根据不同器官或病变的�
       "@type": "ListItem",
       "position":  1 ,
       "name": "📚 Posts",
-      "item": "https://swimmingliu.netlify.app/posts/"
+      "item": "https://swimmingliu.cn/posts/"
     }, 
     {
       "@type": "ListItem",
       "position":  2 ,
       "name": "📝 Paper Notes",
-      "item": "https://swimmingliu.netlify.app/posts/papernotes/"
+      "item": "https://swimmingliu.cn/posts/papernotes/"
     }, 
     {
       "@type": "ListItem",
       "position":  3 ,
       "name": "M2SNet: Multi-scale in Multi-scale Subtraction Network for Medical Image Segmentation",
-      "item": "https://swimmingliu.netlify.app/posts/papernotes/2023-m2snet/"
+      "item": "https://swimmingliu.cn/posts/papernotes/2023-m2snet/"
     }
   ]
 }
@@ -155,14 +155,14 @@ RELATED WORK Medical Image Segmentation Network 根据不同器官或病变的�
   }],
   "mainEntityOfPage": {
     "@type": "WebPage",
-    "@id": "https://swimmingliu.netlify.app/posts/papernotes/2023-m2snet/"
+    "@id": "https://swimmingliu.cn/posts/papernotes/2023-m2snet/"
   },
   "publisher": {
     "@type": "Organization",
     "name": "SwimmingLiu's Blog",
     "logo": {
       "@type": "ImageObject",
-      "url": "https://swimmingliu.netlify.app/images/swimmingliu_icon.png"
+      "url": "https://swimmingliu.cn/images/swimmingliu_icon.png"
     }
   }
 }
@@ -184,8 +184,8 @@ RELATED WORK Medical Image Segmentation Network 根据不同器官或病变的�
 <header class="header">
     <nav class="nav">
         <div class="logo">
-            <a href="https://swimmingliu.netlify.app/" accesskey="h" title="𝓢𝔀𝓲𝓶𝓶𝓲𝓷𝓰𝓛𝓲𝓾&#39;𝓼 𝓑𝓵𝓸𝓰 (Alt + H)">
-                <img src="https://swimmingliu.netlify.app/images/swimmingliu_icon.png" alt="" aria-label="logo"
+            <a href="https://swimmingliu.cn/" accesskey="h" title="𝓢𝔀𝓲𝓶𝓶𝓲𝓷𝓰𝓛𝓲𝓾&#39;𝓼 𝓑𝓵𝓸𝓰 (Alt + H)">
+                <img src="https://swimmingliu.cn/images/swimmingliu_icon.png" alt="" aria-label="logo"
                     height="30">𝓢𝔀𝓲𝓶𝓶𝓲𝓷𝓰𝓛𝓲𝓾&#39;𝓼 𝓑𝓵𝓸𝓰</a>
             <div class="logo-switches">
                 <button id="theme-toggle" accesskey="t" title="(Alt + T)">
@@ -212,27 +212,27 @@ RELATED WORK Medical Image Segmentation Network 根据不同器官或病变的�
         </div>
         <ul id="menu">
             <li>
-                <a href="https://swimmingliu.netlify.app/index.html" title="🏡 Home">
+                <a href="https://swimmingliu.cn/index.html" title="🏡 Home">
                     <span>🏡 Home</span>
                 </a>
             </li>
             <li>
-                <a href="https://swimmingliu.netlify.app/search/" title="🔍 Search">
+                <a href="https://swimmingliu.cn/search/" title="🔍 Search">
                     <span>🔍 Search</span>
                 </a>
             </li>
             <li>
-                <a href="https://swimmingliu.netlify.app/posts/" title="🗒️ Posts">
+                <a href="https://swimmingliu.cn/posts/" title="🗒️ Posts">
                     <span>🗒️ Posts</span>
                 </a>
             </li>
             <li>
-                <a href="https://swimmingliu.netlify.app/archives/" title="📃 Archive">
+                <a href="https://swimmingliu.cn/archives/" title="📃 Archive">
                     <span>📃 Archive</span>
                 </a>
             </li>
             <li>
-                <a href="https://swimmingliu.netlify.app/aboutme/" title="👨🏻‍🎓 About Me">
+                <a href="https://swimmingliu.cn/aboutme/" title="👨🏻‍🎓 About Me">
                     <span>👨🏻‍🎓 About Me</span>
                 </a>
             </li>
@@ -254,7 +254,7 @@ RELATED WORK Medical Image Segmentation Network 根据不同器官或病变的�
 
 <article class="post-single">
   <header class="post-header">
-    <div class="breadcrumbs"><a href="https://swimmingliu.netlify.app/">Home</a>&nbsp;»&nbsp;<a href="https://swimmingliu.netlify.app/posts/">📚 Posts</a>&nbsp;»&nbsp;<a href="https://swimmingliu.netlify.app/posts/papernotes/">📝 Paper Notes</a></div>
+    <div class="breadcrumbs"><a href="https://swimmingliu.cn/">Home</a>&nbsp;»&nbsp;<a href="https://swimmingliu.cn/posts/">📚 Posts</a>&nbsp;»&nbsp;<a href="https://swimmingliu.cn/posts/papernotes/">📝 Paper Notes</a></div>
     <h1 class="post-title">
       M2SNet: Multi-scale in Multi-scale Subtraction Network for Medical Image Segmentation
     </h1>
@@ -446,15 +446,15 @@ RELATED WORK Medical Image Segmentation Network 根据不同器官或病变的�
 
   <footer class="post-footer">
     <ul class="post-tags">
-      <li><a href="https://swimmingliu.netlify.app/tags/unet/">Unet</a></li>
+      <li><a href="https://swimmingliu.cn/tags/unet/">Unet</a></li>
     </ul>
 <nav class="paginav">
-  <a class="prev" href="https://swimmingliu.netlify.app/posts/papernotes/2023-acc-unet/">
+  <a class="prev" href="https://swimmingliu.cn/posts/papernotes/2023-acc-unet/">
     <span class="title">« Prev</span>
     <br>
     <span>ACC-UNet: A Completely Convolutional UNet model for the 2020s (MICCAI2023)</span>
   </a>
-  <a class="next" href="https://swimmingliu.netlify.app/posts/papernotes/2023-ege-unet%E8%AE%BA%E6%96%87%E7%AC%94%E8%AE%B0/">
+  <a class="next" href="https://swimmingliu.cn/posts/papernotes/2023-ege-unet%E8%AE%BA%E6%96%87%E7%AC%94%E8%AE%B0/">
     <span class="title">Next »</span>
     <br>
     <span>EGE-UNet: an Efficient Group Enhanced UNet for skin lesion segmentation</span>
@@ -466,7 +466,7 @@ RELATED WORK Medical Image Segmentation Network 根据不同器官或病变的�
     </main>
     
 <footer class="footer">
-    <span>&copy; 2023 <a href="https://swimmingliu.netlify.app/">SwimmingLiu&#39;s Blog</a></span>
+    <span>&copy; 2023 <a href="https://swimmingliu.cn/">SwimmingLiu&#39;s Blog</a></span>
     <span>
         Powered by
         <a href="https://gohugo.io/" rel="noopener noreferrer" target="_blank">Hugo</a> &

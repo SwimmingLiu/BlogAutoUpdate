@@ -2,22 +2,22 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/">
   <channel>
     <title>📓 Diary on SwimmingLiu&#39;s Blog</title>
-    <link>https://swimmingliu.netlify.app/posts/diary/</link>
+    <link>https://swimmingliu.cn/posts/diary/</link>
     <description>Recent content in 📓 Diary on SwimmingLiu&#39;s Blog</description>
     <image>
       <title>SwimmingLiu&#39;s Blog</title>
-      <url>https://swimmingliu.netlify.app/papermod-cover.png</url>
-      <link>https://swimmingliu.netlify.app/papermod-cover.png</link>
+      <url>https://swimmingliu.cn/papermod-cover.png</url>
+      <link>https://swimmingliu.cn/papermod-cover.png</link>
     </image>
     <generator>Hugo -- gohugo.io</generator>
     <language>en</language>
-    <lastBuildDate>Tue, 12 Dec 2023 12:18:57 +0800</lastBuildDate><atom:link href="https://swimmingliu.netlify.app/posts/diary/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Tue, 12 Dec 2023 12:18:57 +0800</lastBuildDate><atom:link href="https://swimmingliu.cn/posts/diary/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>MovieKGQA: 基于知识图谱和neo4j图数据库的电影知识问答系统</title>
-      <link>https://swimmingliu.netlify.app/posts/diary/2023-moviekgqa/</link>
+      <link>https://swimmingliu.cn/posts/diary/2023-moviekgqa/</link>
       <pubDate>Tue, 12 Dec 2023 12:18:57 +0800</pubDate>
       
-      <guid>https://swimmingliu.netlify.app/posts/diary/2023-moviekgqa/</guid>
+      <guid>https://swimmingliu.cn/posts/diary/2023-moviekgqa/</guid>
       <description>Introduction 基于知识图谱和neo4j图数据库的电影知识问答系统
 Workflow DataBase 爬取豆瓣TOP1000电影信息数据
 Frontend 获取用户输入的信息 （语音输入 / 文本输入） 向电影知识问答后端服务器发送请求 获取返回结果 (成功 -&amp;gt; 4 / 失败 -&amp;gt; 5) 如果返回结果包含image信息，则显示图片和文字，否则只显示文字 请求基于gpt的AI模型服务器，并显示返回结果 Backend ​	[准备工作] 训练 TF-IDF 向量算法和朴素贝叶斯分类器，用于预测用户文本所属的问题类别
@@ -28,20 +28,20 @@ BackEnd 基于知识图谱的电影知识问答系统
     
     <item>
       <title>程序设计作业接口文档</title>
-      <link>https://swimmingliu.netlify.app/posts/diary/2023-%E7%A8%8B%E5%BA%8F%E8%AE%BE%E8%AE%A1%E4%BD%9C%E4%B8%9A%E6%8E%A5%E5%8F%A3%E6%96%87%E6%A1%A3/</link>
+      <link>https://swimmingliu.cn/posts/diary/2023-%E7%A8%8B%E5%BA%8F%E8%AE%BE%E8%AE%A1%E4%BD%9C%E4%B8%9A%E6%8E%A5%E5%8F%A3%E6%96%87%E6%A1%A3/</link>
       <pubDate>Sat, 02 Dec 2023 21:40:07 +0800</pubDate>
       
-      <guid>https://swimmingliu.netlify.app/posts/diary/2023-%E7%A8%8B%E5%BA%8F%E8%AE%BE%E8%AE%A1%E4%BD%9C%E4%B8%9A%E6%8E%A5%E5%8F%A3%E6%96%87%E6%A1%A3/</guid>
+      <guid>https://swimmingliu.cn/posts/diary/2023-%E7%A8%8B%E5%BA%8F%E8%AE%BE%E8%AE%A1%E4%BD%9C%E4%B8%9A%E6%8E%A5%E5%8F%A3%E6%96%87%E6%A1%A3/</guid>
       <description>程序设计作业接口文档 统一返回格式
 { code: ...,	# 状态码 msg: ...,	# 描述信息 data: { # 数据 ... } } code = { 200 == 成功, 500 == 失败, } msg = { success == 成功 fail == 失败 ... } data = { key : value } 前端 虚拟换衣功能 @请求格式 （请求后端） # 前后端需统一样例图片id { userId: ...&amp;lt;int&amp;gt;,	# 标识哪个用户的请求 isUploadCloth: ...&amp;lt;bool&amp;gt;, # 若上传衣服图片使用base64，否则用id isUploadPerson: ...&amp;lt;bool&amp;gt;, # 若上传人物图片使用base64，否则用id clothData: ...&amp;lt;base64||null&amp;gt;, # 衣服图片base64编码 personData: .</description>
     </item>
     
     <item>
       <title>地大服务器使用教程</title>
-      <link>https://swimmingliu.netlify.app/posts/diary/2023-%E5%9C%B0%E5%A4%A7%E6%9C%8D%E5%8A%A1%E5%99%A8/</link>
+      <link>https://swimmingliu.cn/posts/diary/2023-%E5%9C%B0%E5%A4%A7%E6%9C%8D%E5%8A%A1%E5%99%A8/</link>
       <pubDate>Mon, 20 Nov 2023 12:25:57 +0800</pubDate>
       
-      <guid>https://swimmingliu.netlify.app/posts/diary/2023-%E5%9C%B0%E5%A4%A7%E6%9C%8D%E5%8A%A1%E5%99%A8/</guid>
+      <guid>https://swimmingliu.cn/posts/diary/2023-%E5%9C%B0%E5%A4%A7%E6%9C%8D%E5%8A%A1%E5%99%A8/</guid>
       <description>地大服务器使用教程 1. 服务器环境介绍 NVIDIA RTX 3090 (24GB) NVIDIA RTX 2080 Ti (11GB) 2. 配置实验环境 2.1 Conda环境安装 每位同学都会分配个人用户，大家在自己的用户上使用Conda进行环境配置。
 Conda安装教程：https://blog.csdn.net/JineD/article/details/129507719
 大家按照教程步骤安装即可, 由于安装时间较长, 视频中暂不进行演示。

@@ -18,13 +18,13 @@
 Abstract提到当前医学分割模型大部分是Transformer &#43; Unet，这里做出具体阐述。
 先前的工作通过引入复杂的模块来提高性能，但忽略了实际医疗环境中计算资源的限制。因此，迫切需要为移动医疗中的分割任务设计一种低参数、低计算负载的模型。最近，UNeXt [22] 结合了 UNet [18] 和 MLP [21] 开发了一种轻量级模型，该模型可以获得优异的性能，同时减少参数和计算量。此外，MALUNet [19]通过减少模型通道数并引入多个注意力模块来减小模型大小，从而比 UNeXt 具有更好的皮肤病变分割性能。然而，尽管MALUNet大大减少了参数数量和计算量，但其分割性能仍然低于一些大型模型，例如TransFuse。因此，在本研究中，我们提出了 EGE-UNet，这是一种轻量级皮肤病变分割模型，可实现最先进的效果，同时显着降低参数和计算成本。此外，据我们所知，这是第一个将参数减少到大约 50KB 的工作。">
 <meta name="author" content="SwimmingLiu">
-<link rel="canonical" href="https://swimmingliu.cn/posts/papernotes/2023-ege-unet%E8%AE%BA%E6%96%87%E7%AC%94%E8%AE%B0/">
+<link rel="canonical" href="https://swimmingliu.netlify.app/posts/papernotes/2023-ege-unet%E8%AE%BA%E6%96%87%E7%AC%94%E8%AE%B0/">
 <link crossorigin="anonymous" href="/assets/css/stylesheet.56574d0b8d57cdd0d704dd823c3ab0e600bd78cf5a999377277390417d6b2f3e.css" integrity="sha256-VldNC41XzdDXBN2CPDqw5gC9eM9amZN3J3OQQX1rLz4=" rel="preload stylesheet" as="style">
-<link rel="icon" href="https://swimmingliu.cn/images/swimmingliu_icon.png">
-<link rel="icon" type="image/png" sizes="16x16" href="https://swimmingliu.cn/images/swimmingliu_icon.png">
-<link rel="icon" type="image/png" sizes="32x32" href="https://swimmingliu.cn/images/swimmingliu_icon.png">
-<link rel="apple-touch-icon" href="https://swimmingliu.cn/images/swimmingliu_icon.png">
-<link rel="mask-icon" href="https://swimmingliu.cn/images/swimmingliu_icon.png">
+<link rel="icon" href="https://swimmingliu.netlify.app/images/swimmingliu_icon.png">
+<link rel="icon" type="image/png" sizes="16x16" href="https://swimmingliu.netlify.app/images/swimmingliu_icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="https://swimmingliu.netlify.app/images/swimmingliu_icon.png">
+<link rel="apple-touch-icon" href="https://swimmingliu.netlify.app/images/swimmingliu_icon.png">
+<link rel="mask-icon" href="https://swimmingliu.netlify.app/images/swimmingliu_icon.png">
 <meta name="theme-color" content="#2e2e33">
 <meta name="msapplication-TileColor" content="#2e2e33">
 <noscript>
@@ -76,12 +76,12 @@ Abstract提到当前医学分割模型大部分是Transformer &#43; Unet，这�
 Abstract提到当前医学分割模型大部分是Transformer &#43; Unet，这里做出具体阐述。
 先前的工作通过引入复杂的模块来提高性能，但忽略了实际医疗环境中计算资源的限制。因此，迫切需要为移动医疗中的分割任务设计一种低参数、低计算负载的模型。最近，UNeXt [22] 结合了 UNet [18] 和 MLP [21] 开发了一种轻量级模型，该模型可以获得优异的性能，同时减少参数和计算量。此外，MALUNet [19]通过减少模型通道数并引入多个注意力模块来减小模型大小，从而比 UNeXt 具有更好的皮肤病变分割性能。然而，尽管MALUNet大大减少了参数数量和计算量，但其分割性能仍然低于一些大型模型，例如TransFuse。因此，在本研究中，我们提出了 EGE-UNet，这是一种轻量级皮肤病变分割模型，可实现最先进的效果，同时显着降低参数和计算成本。此外，据我们所知，这是第一个将参数减少到大约 50KB 的工作。" />
 <meta property="og:type" content="article" />
-<meta property="og:url" content="https://swimmingliu.cn/posts/papernotes/2023-ege-unet%E8%AE%BA%E6%96%87%E7%AC%94%E8%AE%B0/" /><meta property="og:image" content="https://swimmingliu.cn/papermod-cover.png"/><meta property="article:section" content="posts" />
+<meta property="og:url" content="https://swimmingliu.netlify.app/posts/papernotes/2023-ege-unet%E8%AE%BA%E6%96%87%E7%AC%94%E8%AE%B0/" /><meta property="og:image" content="https://swimmingliu.netlify.app/papermod-cover.png"/><meta property="article:section" content="posts" />
 <meta property="article:published_time" content="2023-11-11T19:51:21+08:00" />
 <meta property="article:modified_time" content="2023-11-11T19:51:21+08:00" />
 
 <meta name="twitter:card" content="summary_large_image"/>
-<meta name="twitter:image" content="https://swimmingliu.cn/papermod-cover.png"/>
+<meta name="twitter:image" content="https://swimmingliu.netlify.app/papermod-cover.png"/>
 
 <meta name="twitter:title" content="EGE-UNet: an Efficient Group Enhanced UNet for skin lesion segmentation"/>
 <meta name="twitter:description" content="EGE-UNet: an Efficient Group Enhanced UNet for skin lesion segmentation 1. Abstract 目前的医学图像分割模型大多是 Transformer &#43; Unet，这些模型的大量参数和计算负载使得它们不适合移动健康应用。
@@ -105,19 +105,19 @@ Abstract提到当前医学分割模型大部分是Transformer &#43; Unet，这�
       "@type": "ListItem",
       "position":  1 ,
       "name": "📚 Posts",
-      "item": "https://swimmingliu.cn/posts/"
+      "item": "https://swimmingliu.netlify.app/posts/"
     }, 
     {
       "@type": "ListItem",
       "position":  2 ,
       "name": "📝 Paper Notes",
-      "item": "https://swimmingliu.cn/posts/papernotes/"
+      "item": "https://swimmingliu.netlify.app/posts/papernotes/"
     }, 
     {
       "@type": "ListItem",
       "position":  3 ,
       "name": "EGE-UNet: an Efficient Group Enhanced UNet for skin lesion segmentation",
-      "item": "https://swimmingliu.cn/posts/papernotes/2023-ege-unet%E8%AE%BA%E6%96%87%E7%AC%94%E8%AE%B0/"
+      "item": "https://swimmingliu.netlify.app/posts/papernotes/2023-ege-unet%E8%AE%BA%E6%96%87%E7%AC%94%E8%AE%B0/"
     }
   ]
 }
@@ -143,14 +143,14 @@ Abstract提到当前医学分割模型大部分是Transformer &#43; Unet，这�
   }],
   "mainEntityOfPage": {
     "@type": "WebPage",
-    "@id": "https://swimmingliu.cn/posts/papernotes/2023-ege-unet%E8%AE%BA%E6%96%87%E7%AC%94%E8%AE%B0/"
+    "@id": "https://swimmingliu.netlify.app/posts/papernotes/2023-ege-unet%E8%AE%BA%E6%96%87%E7%AC%94%E8%AE%B0/"
   },
   "publisher": {
     "@type": "Organization",
     "name": "SwimmingLiu's Blog",
     "logo": {
       "@type": "ImageObject",
-      "url": "https://swimmingliu.cn/images/swimmingliu_icon.png"
+      "url": "https://swimmingliu.netlify.app/images/swimmingliu_icon.png"
     }
   }
 }
@@ -172,8 +172,8 @@ Abstract提到当前医学分割模型大部分是Transformer &#43; Unet，这�
 <header class="header">
     <nav class="nav">
         <div class="logo">
-            <a href="https://swimmingliu.cn/" accesskey="h" title="𝓢𝔀𝓲𝓶𝓶𝓲𝓷𝓰𝓛𝓲𝓾&#39;𝓼 𝓑𝓵𝓸𝓰 (Alt + H)">
-                <img src="https://swimmingliu.cn/images/swimmingliu_icon.png" alt="" aria-label="logo"
+            <a href="https://swimmingliu.netlify.app/" accesskey="h" title="𝓢𝔀𝓲𝓶𝓶𝓲𝓷𝓰𝓛𝓲𝓾&#39;𝓼 𝓑𝓵𝓸𝓰 (Alt + H)">
+                <img src="https://swimmingliu.netlify.app/images/swimmingliu_icon.png" alt="" aria-label="logo"
                     height="30">𝓢𝔀𝓲𝓶𝓶𝓲𝓷𝓰𝓛𝓲𝓾&#39;𝓼 𝓑𝓵𝓸𝓰</a>
             <div class="logo-switches">
                 <button id="theme-toggle" accesskey="t" title="(Alt + T)">
@@ -200,27 +200,27 @@ Abstract提到当前医学分割模型大部分是Transformer &#43; Unet，这�
         </div>
         <ul id="menu">
             <li>
-                <a href="https://swimmingliu.cn/index.html" title="🏡 Home">
+                <a href="https://swimmingliu.netlify.app/index.html" title="🏡 Home">
                     <span>🏡 Home</span>
                 </a>
             </li>
             <li>
-                <a href="https://swimmingliu.cn/search/" title="🔍 Search">
+                <a href="https://swimmingliu.netlify.app/search/" title="🔍 Search">
                     <span>🔍 Search</span>
                 </a>
             </li>
             <li>
-                <a href="https://swimmingliu.cn/posts/" title="🗒️ Posts">
+                <a href="https://swimmingliu.netlify.app/posts/" title="🗒️ Posts">
                     <span>🗒️ Posts</span>
                 </a>
             </li>
             <li>
-                <a href="https://swimmingliu.cn/archives/" title="📃 Archive">
+                <a href="https://swimmingliu.netlify.app/archives/" title="📃 Archive">
                     <span>📃 Archive</span>
                 </a>
             </li>
             <li>
-                <a href="https://swimmingliu.cn/aboutme/" title="👨🏻‍🎓 About Me">
+                <a href="https://swimmingliu.netlify.app/aboutme/" title="👨🏻‍🎓 About Me">
                     <span>👨🏻‍🎓 About Me</span>
                 </a>
             </li>
@@ -242,7 +242,7 @@ Abstract提到当前医学分割模型大部分是Transformer &#43; Unet，这�
 
 <article class="post-single">
   <header class="post-header">
-    <div class="breadcrumbs"><a href="https://swimmingliu.cn/">Home</a>&nbsp;»&nbsp;<a href="https://swimmingliu.cn/posts/">📚 Posts</a>&nbsp;»&nbsp;<a href="https://swimmingliu.cn/posts/papernotes/">📝 Paper Notes</a></div>
+    <div class="breadcrumbs"><a href="https://swimmingliu.netlify.app/">Home</a>&nbsp;»&nbsp;<a href="https://swimmingliu.netlify.app/posts/">📚 Posts</a>&nbsp;»&nbsp;<a href="https://swimmingliu.netlify.app/posts/papernotes/">📝 Paper Notes</a></div>
     <h1 class="post-title">
       EGE-UNet: an Efficient Group Enhanced UNet for skin lesion segmentation
     </h1>
@@ -464,10 +464,10 @@ Abstract提到当前医学分割模型大部分是Transformer &#43; Unet，这�
 
   <footer class="post-footer">
     <ul class="post-tags">
-      <li><a href="https://swimmingliu.cn/tags/unet/">Unet</a></li>
+      <li><a href="https://swimmingliu.netlify.app/tags/unet/">Unet</a></li>
     </ul>
 <nav class="paginav">
-  <a class="prev" href="https://swimmingliu.cn/posts/papernotes/2023-m2snet/">
+  <a class="prev" href="https://swimmingliu.netlify.app/posts/papernotes/2023-m2snet/">
     <span class="title">« Prev</span>
     <br>
     <span>M2SNet: Multi-scale in Multi-scale Subtraction Network for Medical Image Segmentation</span>
@@ -479,7 +479,7 @@ Abstract提到当前医学分割模型大部分是Transformer &#43; Unet，这�
     </main>
     
 <footer class="footer">
-    <span>&copy; 2023 <a href="https://swimmingliu.cn/">SwimmingLiu&#39;s Blog</a></span>
+    <span>&copy; 2023 <a href="https://swimmingliu.netlify.app/">SwimmingLiu&#39;s Blog</a></span>
     <span>
         Powered by
         <a href="https://gohugo.io/" rel="noopener noreferrer" target="_blank">Hugo</a> &

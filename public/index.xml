@@ -1,14 +1,9 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
-<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/">
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>This is my content on SwimmingLiu&#39;s Blog</title>
+    <title>This is my content on </title>
     <link>https://swimmingliu.cn/</link>
-    <description>Recent content in This is my content on SwimmingLiu&#39;s Blog</description>
-    <image>
-      <title>SwimmingLiu&#39;s Blog</title>
-      <url>https://swimmingliu.cn/papermod-cover.png</url>
-      <link>https://swimmingliu.cn/papermod-cover.png</link>
-    </image>
+    <description>Recent content in This is my content on </description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en</language>
     <lastBuildDate>Tue, 12 Dec 2023 12:18:57 +0800</lastBuildDate><atom:link href="https://swimmingliu.cn/index.xml" rel="self" type="application/rss+xml" />
@@ -166,7 +161,23 @@ Abstract提到当前医学分割模型大部分是Transformer + Unet，这里做
 先前的工作通过引入复杂的模块来提高性能，但忽略了实际医疗环境中计算资源的限制。因此，迫切需要为移动医疗中的分割任务设计一种低参数、低计算负载的模型。最近，UNeXt [22] 结合了 UNet [18] 和 MLP [21] 开发了一种轻量级模型，该模型可以获得优异的性能，同时减少参数和计算量。此外，MALUNet [19]通过减少模型通道数并引入多个注意力模块来减小模型大小，从而比 UNeXt 具有更好的皮肤病变分割性能。然而，尽管MALUNet大大减少了参数数量和计算量，但其分割性能仍然低于一些大型模型，例如TransFuse。因此，在本研究中，我们提出了 EGE-UNet，这是一种轻量级皮肤病变分割模型，可实现最先进的效果，同时显着降低参数和计算成本。此外，据我们所知，这是第一个将参数减少到大约 50KB 的工作。</description>
     </item>
     
+    <item>
+      <title>⏱ timeline</title>
+      <link>https://swimmingliu.cn/archives/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://swimmingliu.cn/archives/</guid>
+      <description>archives</description>
+    </item>
     
+    <item>
+      <title>🔍 Search</title>
+      <link>https://swimmingliu.cn/search/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://swimmingliu.cn/search/</guid>
+      <description>search</description>
+    </item>
     
   </channel>
 </rss>

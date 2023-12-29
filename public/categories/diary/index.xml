@@ -1,14 +1,9 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
-<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/">
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>📓 Diary on SwimmingLiu&#39;s Blog</title>
+    <title>📓 Diary on </title>
     <link>https://swimmingliu.cn/categories/diary/</link>
-    <description>Recent content in 📓 Diary on SwimmingLiu&#39;s Blog</description>
-    <image>
-      <title>SwimmingLiu&#39;s Blog</title>
-      <url>https://swimmingliu.cn/papermod-cover.png</url>
-      <link>https://swimmingliu.cn/papermod-cover.png</link>
-    </image>
+    <description>Recent content in 📓 Diary on </description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en</language>
     <lastBuildDate>Tue, 12 Dec 2023 12:18:57 +0800</lastBuildDate><atom:link href="https://swimmingliu.cn/categories/diary/index.xml" rel="self" type="application/rss+xml" />

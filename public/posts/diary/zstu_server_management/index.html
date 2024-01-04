@@ -5,16 +5,11 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 <meta name="robots" content="index, follow">
-<title>MovieKGQA: 基于知识图谱和neo4j图数据库的电影知识问答系统 | SwimmingLiu&#39;s Blog</title>
-<meta name="keywords" content="Mini Programs, Movie KGQA">
-<meta name="description" content="Introduction 基于知识图谱和neo4j图数据库的电影知识问答系统
-Workflow DataBase 爬取豆瓣TOP1000电影信息数据
-Frontend 获取用户输入的信息 （语音输入 / 文本输入） 向电影知识问答后端服务器发送请求 获取返回结果 (成功 -&gt; 4 / 失败 -&gt; 5) 如果返回结果包含image信息，则显示图片和文字，否则只显示文字 请求基于gpt的AI模型服务器，并显示返回结果 Backend ​	[准备工作] 训练 TF-IDF 向量算法和朴素贝叶斯分类器，用于预测用户文本所属的问题类别
-接受前端请求，获取用户输入信息 使用分词库解析用户输入的文本词性，提取关键词 根据贝叶斯分类器，分类出用户文本的问题类型 结合关键词与问题类别，在 Neo4j 中查询问题的答案 返回查询结果 （若问题类型为 演员信息 / 电影介绍，则附加图片url） WorkFlow Graph Frame DataBase Frontend Backend Reference Frontend 微信小程序：微信聊天机器人
-BackEnd 基于知识图谱的电影知识问答系统
-电影知识库问答机器人">
+<title>ZSTU Server Management | SwimmingLiu&#39;s Blog</title>
+<meta name="keywords" content="Server Management, FRP">
+<meta name="description" content="FRP配置 跳板机 # frps.ini 配置 [common] bind_port = 7000 #frps服务监听的端口 token = 123 # 链接口令 ./frps -c frps.ini # 启动frps 服务器 # frpc.ini [common] server_addr = x.x.x.x # 此处为 跳板机 的公网ip server_port = 7000 # 跳板机上frps服务监听的端口 token = 123 # 链接口令 [ssh] type = tcp local_ip = 127.0.0.1 local_port = 22 # 需要暴露的内网机器的端口 remote_port = 6000 # 暴露的内网机器的端口在vps上的端口 SSH连接 ssh -p 6969 swimmingliu@server.ip # 普通ssh 连接 ssh swimmingliu@server.ip 6969	# xshell ssh连接 用户管理 添加用户 sudo adduser xxx 删除用户 sudo deluser xxx 科学上网 export http_proxy=http://127.">
 <meta name="author" content="SwimmingLiu">
-<link rel="canonical" href="https://swimmingliu.netlify.app/posts/diary/2023-moviekgqa/">
+<link rel="canonical" href="https://swimmingliu.netlify.app/posts/diary/zstu_server_management/">
 <link crossorigin="anonymous" href="/assets/css/stylesheet.56574d0b8d57cdd0d704dd823c3ab0e600bd78cf5a999377277390417d6b2f3e.css" integrity="sha256-VldNC41XzdDXBN2CPDqw5gC9eM9amZN3J3OQQX1rLz4=" rel="preload stylesheet" as="style">
 <link rel="icon" href="https://swimmingliu.netlify.app/images/swimmingliu_icon.png">
 <link rel="icon" type="image/png" sizes="16x16" href="https://swimmingliu.netlify.app/images/swimmingliu_icon.png">
@@ -85,28 +80,18 @@ BackEnd 基于知识图谱的电影知识问答系统
     });
 </script>
 
-<meta property="og:title" content="MovieKGQA: 基于知识图谱和neo4j图数据库的电影知识问答系统" />
-<meta property="og:description" content="Introduction 基于知识图谱和neo4j图数据库的电影知识问答系统
-Workflow DataBase 爬取豆瓣TOP1000电影信息数据
-Frontend 获取用户输入的信息 （语音输入 / 文本输入） 向电影知识问答后端服务器发送请求 获取返回结果 (成功 -&gt; 4 / 失败 -&gt; 5) 如果返回结果包含image信息，则显示图片和文字，否则只显示文字 请求基于gpt的AI模型服务器，并显示返回结果 Backend ​	[准备工作] 训练 TF-IDF 向量算法和朴素贝叶斯分类器，用于预测用户文本所属的问题类别
-接受前端请求，获取用户输入信息 使用分词库解析用户输入的文本词性，提取关键词 根据贝叶斯分类器，分类出用户文本的问题类型 结合关键词与问题类别，在 Neo4j 中查询问题的答案 返回查询结果 （若问题类型为 演员信息 / 电影介绍，则附加图片url） WorkFlow Graph Frame DataBase Frontend Backend Reference Frontend 微信小程序：微信聊天机器人
-BackEnd 基于知识图谱的电影知识问答系统
-电影知识库问答机器人" />
+<meta property="og:title" content="ZSTU Server Management" />
+<meta property="og:description" content="FRP配置 跳板机 # frps.ini 配置 [common] bind_port = 7000 #frps服务监听的端口 token = 123 # 链接口令 ./frps -c frps.ini # 启动frps 服务器 # frpc.ini [common] server_addr = x.x.x.x # 此处为 跳板机 的公网ip server_port = 7000 # 跳板机上frps服务监听的端口 token = 123 # 链接口令 [ssh] type = tcp local_ip = 127.0.0.1 local_port = 22 # 需要暴露的内网机器的端口 remote_port = 6000 # 暴露的内网机器的端口在vps上的端口 SSH连接 ssh -p 6969 swimmingliu@server.ip # 普通ssh 连接 ssh swimmingliu@server.ip 6969	# xshell ssh连接 用户管理 添加用户 sudo adduser xxx 删除用户 sudo deluser xxx 科学上网 export http_proxy=http://127." />
 <meta property="og:type" content="article" />
-<meta property="og:url" content="https://swimmingliu.netlify.app/posts/diary/2023-moviekgqa/" /><meta property="og:image" content="https://swimmingliu.netlify.app/papermod-cover.png"/><meta property="article:section" content="posts" />
-<meta property="article:published_time" content="2023-12-12T12:18:57+08:00" />
-<meta property="article:modified_time" content="2023-12-12T12:18:57+08:00" />
+<meta property="og:url" content="https://swimmingliu.netlify.app/posts/diary/zstu_server_management/" /><meta property="og:image" content="https://swimmingliu.netlify.app/papermod-cover.png"/><meta property="article:section" content="posts" />
+<meta property="article:published_time" content="2024-01-04T21:36:25+08:00" />
+<meta property="article:modified_time" content="2024-01-04T21:36:25+08:00" />
 
 <meta name="twitter:card" content="summary_large_image"/>
 <meta name="twitter:image" content="https://swimmingliu.netlify.app/papermod-cover.png"/>
 
-<meta name="twitter:title" content="MovieKGQA: 基于知识图谱和neo4j图数据库的电影知识问答系统"/>
-<meta name="twitter:description" content="Introduction 基于知识图谱和neo4j图数据库的电影知识问答系统
-Workflow DataBase 爬取豆瓣TOP1000电影信息数据
-Frontend 获取用户输入的信息 （语音输入 / 文本输入） 向电影知识问答后端服务器发送请求 获取返回结果 (成功 -&gt; 4 / 失败 -&gt; 5) 如果返回结果包含image信息，则显示图片和文字，否则只显示文字 请求基于gpt的AI模型服务器，并显示返回结果 Backend ​	[准备工作] 训练 TF-IDF 向量算法和朴素贝叶斯分类器，用于预测用户文本所属的问题类别
-接受前端请求，获取用户输入信息 使用分词库解析用户输入的文本词性，提取关键词 根据贝叶斯分类器，分类出用户文本的问题类型 结合关键词与问题类别，在 Neo4j 中查询问题的答案 返回查询结果 （若问题类型为 演员信息 / 电影介绍，则附加图片url） WorkFlow Graph Frame DataBase Frontend Backend Reference Frontend 微信小程序：微信聊天机器人
-BackEnd 基于知识图谱的电影知识问答系统
-电影知识库问答机器人"/>
+<meta name="twitter:title" content="ZSTU Server Management"/>
+<meta name="twitter:description" content="FRP配置 跳板机 # frps.ini 配置 [common] bind_port = 7000 #frps服务监听的端口 token = 123 # 链接口令 ./frps -c frps.ini # 启动frps 服务器 # frpc.ini [common] server_addr = x.x.x.x # 此处为 跳板机 的公网ip server_port = 7000 # 跳板机上frps服务监听的端口 token = 123 # 链接口令 [ssh] type = tcp local_ip = 127.0.0.1 local_port = 22 # 需要暴露的内网机器的端口 remote_port = 6000 # 暴露的内网机器的端口在vps上的端口 SSH连接 ssh -p 6969 swimmingliu@server.ip # 普通ssh 连接 ssh swimmingliu@server.ip 6969	# xshell ssh连接 用户管理 添加用户 sudo adduser xxx 删除用户 sudo deluser xxx 科学上网 export http_proxy=http://127."/>
 
 
 <script type="application/ld+json">
@@ -129,8 +114,8 @@ BackEnd 基于知识图谱的电影知识问答系统
     {
       "@type": "ListItem",
       "position":  3 ,
-      "name": "MovieKGQA: 基于知识图谱和neo4j图数据库的电影知识问答系统",
-      "item": "https://swimmingliu.netlify.app/posts/diary/2023-moviekgqa/"
+      "name": "ZSTU Server Management",
+      "item": "https://swimmingliu.netlify.app/posts/diary/zstu_server_management/"
     }
   ]
 }
@@ -139,24 +124,24 @@ BackEnd 基于知识图谱的电影知识问答系统
 {
   "@context": "https://schema.org",
   "@type": "BlogPosting",
-  "headline": "MovieKGQA: 基于知识图谱和neo4j图数据库的电影知识问答系统",
-  "name": "MovieKGQA: 基于知识图谱和neo4j图数据库的电影知识问答系统",
-  "description": "Introduction 基于知识图谱和neo4j图数据库的电影知识问答系统\nWorkflow DataBase 爬取豆瓣TOP1000电影信息数据\nFrontend 获取用户输入的信息 （语音输入 / 文本输入） 向电影知识问答后端服务器发送请求 获取返回结果 (成功 -\u0026gt; 4 / 失败 -\u0026gt; 5) 如果返回结果包含image信息，则显示图片和文字，否则只显示文字 请求基于gpt的AI模型服务器，并显示返回结果 Backend ​\t[准备工作] 训练 TF-IDF 向量算法和朴素贝叶斯分类器，用于预测用户文本所属的问题类别\n接受前端请求，获取用户输入信息 使用分词库解析用户输入的文本词性，提取关键词 根据贝叶斯分类器，分类出用户文本的问题类型 结合关键词与问题类别，在 Neo4j 中查询问题的答案 返回查询结果 （若问题类型为 演员信息 / 电影介绍，则附加图片url） WorkFlow Graph Frame DataBase Frontend Backend Reference Frontend 微信小程序：微信聊天机器人\nBackEnd 基于知识图谱的电影知识问答系统\n电影知识库问答机器人",
+  "headline": "ZSTU Server Management",
+  "name": "ZSTU Server Management",
+  "description": "FRP配置 跳板机 # frps.ini 配置 [common] bind_port = 7000 #frps服务监听的端口 token = 123 # 链接口令 ./frps -c frps.ini # 启动frps 服务器 # frpc.ini [common] server_addr = x.x.x.x # 此处为 跳板机 的公网ip server_port = 7000 # 跳板机上frps服务监听的端口 token = 123 # 链接口令 [ssh] type = tcp local_ip = 127.0.0.1 local_port = 22 # 需要暴露的内网机器的端口 remote_port = 6000 # 暴露的内网机器的端口在vps上的端口 SSH连接 ssh -p 6969 swimmingliu@server.ip # 普通ssh 连接 ssh swimmingliu@server.ip 6969\t# xshell ssh连接 用户管理 添加用户 sudo adduser xxx 删除用户 sudo deluser xxx 科学上网 export http_proxy=http://127.",
   "keywords": [
-    "Mini Programs", "Movie KGQA"
+    "Server Management", "FRP"
   ],
-  "articleBody": "Introduction 基于知识图谱和neo4j图数据库的电影知识问答系统\nWorkflow DataBase 爬取豆瓣TOP1000电影信息数据\nFrontend 获取用户输入的信息 （语音输入 / 文本输入） 向电影知识问答后端服务器发送请求 获取返回结果 (成功 -\u003e 4 / 失败 -\u003e 5) 如果返回结果包含image信息，则显示图片和文字，否则只显示文字 请求基于gpt的AI模型服务器，并显示返回结果 Backend ​\t[准备工作] 训练 TF-IDF 向量算法和朴素贝叶斯分类器，用于预测用户文本所属的问题类别\n接受前端请求，获取用户输入信息 使用分词库解析用户输入的文本词性，提取关键词 根据贝叶斯分类器，分类出用户文本的问题类型 结合关键词与问题类别，在 Neo4j 中查询问题的答案 返回查询结果 （若问题类型为 演员信息 / 电影介绍，则附加图片url） WorkFlow Graph Frame DataBase Frontend Backend Reference Frontend 微信小程序：微信聊天机器人\nBackEnd 基于知识图谱的电影知识问答系统\n电影知识库问答机器人\n",
-  "wordCount" : "50",
+  "articleBody": "FRP配置 跳板机 # frps.ini 配置 [common] bind_port = 7000 #frps服务监听的端口 token = 123 # 链接口令 ./frps -c frps.ini # 启动frps 服务器 # frpc.ini [common] server_addr = x.x.x.x # 此处为 跳板机 的公网ip server_port = 7000 # 跳板机上frps服务监听的端口 token = 123 # 链接口令 [ssh] type = tcp local_ip = 127.0.0.1 local_port = 22 # 需要暴露的内网机器的端口 remote_port = 6000 # 暴露的内网机器的端口在vps上的端口 SSH连接 ssh -p 6969 swimmingliu@server.ip # 普通ssh 连接 ssh swimmingliu@server.ip 6969\t# xshell ssh连接 用户管理 添加用户 sudo adduser xxx 删除用户 sudo deluser xxx 科学上网 export http_proxy=http://127.0.0.1:7890 export https_proxy=http://127.0.0.1:7890 Anaconda3 安装和配置 安装Anaconda3 wget --user-agent=\"Mozilla\" https://mirrors.tuna.tsinghua.edu.cn/anaconda/archive/Anaconda3-2023.07-1-Linux-x86_64.sh bash Anaconda3-2023.07-1-Linux-x86_64.sh # https://mirrors.tuna.tsinghua.edu.cn/anaconda/archive 清华源 配置之前的envs cp -r old_envs_path anaconda/envs/\t#迁移之前的envs环境 完结撒花❀❀❀ ",
+  "wordCount" : "104",
   "inLanguage": "en",
-  "datePublished": "2023-12-12T12:18:57+08:00",
-  "dateModified": "2023-12-12T12:18:57+08:00",
+  "datePublished": "2024-01-04T21:36:25+08:00",
+  "dateModified": "2024-01-04T21:36:25+08:00",
   "author":[{
     "@type": "Person",
     "name": "SwimmingLiu"
   }],
   "mainEntityOfPage": {
     "@type": "WebPage",
-    "@id": "https://swimmingliu.netlify.app/posts/diary/2023-moviekgqa/"
+    "@id": "https://swimmingliu.netlify.app/posts/diary/zstu_server_management/"
   },
   "publisher": {
     "@type": "Organization",
@@ -257,9 +242,9 @@ BackEnd 基于知识图谱的电影知识问答系统
   <header class="post-header">
     <div class="breadcrumbs"><a href="https://swimmingliu.netlify.app/">Home</a>&nbsp;»&nbsp;<a href="https://swimmingliu.netlify.app/posts/">📚 Posts</a>&nbsp;»&nbsp;<a href="https://swimmingliu.netlify.app/posts/diary/">📓 Diary</a></div>
     <h1 class="post-title">
-      MovieKGQA: 基于知识图谱和neo4j图数据库的电影知识问答系统
+      ZSTU Server Management
     </h1>
-    <div class="post-meta"><span title='2023-12-12 12:18:57 +0800 CST'>December 12, 2023</span>&nbsp;·&nbsp;1 min&nbsp;·&nbsp;SwimmingLiu
+    <div class="post-meta"><span title='2024-01-04 21:36:25 +0800 CST'>January 4, 2024</span>&nbsp;·&nbsp;1 min&nbsp;·&nbsp;SwimmingLiu
 
 </div>
   </header> <aside id="toc-container" class="toc-container wide">
@@ -271,39 +256,36 @@ BackEnd 基于知识图谱的电影知识问答系统
 
             <div class="inner"><ul>
                     <li>
-                        <a href="#introduction" aria-label="Introduction">Introduction</a></li>
-                    <li>
-                        <a href="#workflow" aria-label="Workflow">Workflow</a><ul>
+                        <a href="#frp%e9%85%8d%e7%bd%ae" aria-label="FRP配置">FRP配置</a><ul>
                             
                     <li>
-                        <a href="#database" aria-label="DataBase">DataBase</a></li>
+                        <a href="#%e8%b7%b3%e6%9d%bf%e6%9c%ba" aria-label="跳板机">跳板机</a></li>
                     <li>
-                        <a href="#frontend" aria-label="Frontend">Frontend</a></li>
-                    <li>
-                        <a href="#backend" aria-label="Backend">Backend</a></li>
-                    <li>
-                        <a href="#workflow-graph" aria-label="WorkFlow Graph">WorkFlow Graph</a></li></ul>
+                        <a href="#%e6%9c%8d%e5%8a%a1%e5%99%a8" aria-label="服务器">服务器</a></li></ul>
                     </li>
                     <li>
-                        <a href="#frame" aria-label="Frame">Frame</a><ul>
+                        <a href="#ssh%e8%bf%9e%e6%8e%a5" aria-label="SSH连接">SSH连接</a></li>
+                    <li>
+                        <a href="#%e7%94%a8%e6%88%b7%e7%ae%a1%e7%90%86" aria-label="用户管理">用户管理</a><ul>
                             
                     <li>
-                        <a href="#database-1" aria-label="DataBase">DataBase</a></li>
+                        <a href="#%e6%b7%bb%e5%8a%a0%e7%94%a8%e6%88%b7" aria-label="添加用户">添加用户</a></li>
                     <li>
-                        <a href="#frontend-1" aria-label="Frontend">Frontend</a></li>
-                    <li>
-                        <a href="#backend-1" aria-label="Backend">Backend</a></li></ul>
+                        <a href="#%e5%88%a0%e9%99%a4%e7%94%a8%e6%88%b7" aria-label="删除用户">删除用户</a></li></ul>
                     </li>
                     <li>
-                        <a href="#reference" aria-label="Reference">Reference</a><ul>
+                        <a href="#%e7%a7%91%e5%ad%a6%e4%b8%8a%e7%bd%91" aria-label="科学上网">科学上网</a></li>
+                    <li>
+                        <a href="#anaconda3-%e5%ae%89%e8%a3%85%e5%92%8c%e9%85%8d%e7%bd%ae" aria-label="Anaconda3 安装和配置">Anaconda3 安装和配置</a><ul>
                             
                     <li>
-                        <a href="#frontend-2" aria-label="Frontend">Frontend</a></li>
+                        <a href="#%e5%ae%89%e8%a3%85anaconda3" aria-label="安装Anaconda3">安装Anaconda3</a></li>
                     <li>
-                        <a href="#backend-2" aria-label="BackEnd">BackEnd</a>
+                        <a href="#%e9%85%8d%e7%bd%ae%e4%b9%8b%e5%89%8d%e7%9a%84envs" aria-label="配置之前的envs">配置之前的envs</a></li></ul>
                     </li>
-                </ul>
-                </li>
+                    <li>
+                        <a href="#%e5%ae%8c%e7%bb%93%e6%92%92%e8%8a%b1" aria-label="完结撒花❀❀❀">完结撒花❀❀❀</a>
+                    </li>
                 </ul>
             </div>
         </details>
@@ -369,55 +351,44 @@ BackEnd 基于知识图谱的电影知识问答系统
     }
 </script>
 
-  <div class="post-content"><h2 id="introduction">Introduction<a hidden class="anchor" aria-hidden="true" href="#introduction">#</a></h2>
-<p>基于知识图谱和neo4j图数据库的电影知识问答系统</p>
-<div style="display:flex; justify-content: space-around; ">
-<img src="https://i.imgs.ovh/2023/12/12/mM4uR.png" alt="image-20231212102658908" style="box-shadow: 0 0 10px rgba(200, 200, 200);" width=30% height:300px/>
-<img src="https://i.imgs.ovh/2023/12/12/mM58p.png" alt="image-20231212102738360" style="box-shadow: 0 0 10px rgba(200, 200, 200);" width=30% height:300px/>
-<img src="https://i.imgs.ovh/2023/12/12/mMdFT.png" alt="image-20231212103113278" style="" width=30% height:300px/>
-</div>
-<h2 id="workflow">Workflow<a hidden class="anchor" aria-hidden="true" href="#workflow">#</a></h2>
-<h3 id="database">DataBase<a hidden class="anchor" aria-hidden="true" href="#database">#</a></h3>
-<p>爬取豆瓣TOP1000电影信息数据</p>
-<h3 id="frontend">Frontend<a hidden class="anchor" aria-hidden="true" href="#frontend">#</a></h3>
-<ol>
-<li>获取用户输入的信息 （语音输入 / 文本输入）</li>
-<li>向电影知识问答后端服务器发送请求</li>
-<li>获取返回结果  (成功 -&gt; 4 / 失败 -&gt; 5)</li>
-<li>如果返回结果包含image信息，则显示图片和文字，否则只显示文字</li>
-<li>请求基于gpt的AI模型服务器，并显示返回结果</li>
-</ol>
-<h3 id="backend">Backend<a hidden class="anchor" aria-hidden="true" href="#backend">#</a></h3>
-<p>​	[准备工作]  训练 TF-IDF 向量算法和朴素贝叶斯分类器，用于预测用户文本所属的问题类别</p>
-<ol>
-<li>接受前端请求，获取用户输入信息</li>
-<li>使用分词库解析用户输入的文本词性，提取关键词</li>
-<li>根据贝叶斯分类器，分类出用户文本的问题类型</li>
-<li>结合关键词与问题类别，在 Neo4j 中查询问题的答案</li>
-<li>返回查询结果 （若问题类型为 演员信息 / 电影介绍，则附加图片url）</li>
-</ol>
-<h3 id="workflow-graph">WorkFlow Graph<a hidden class="anchor" aria-hidden="true" href="#workflow-graph">#</a></h3>
-<p><img loading="lazy" src="https://i.imgs.ovh/2023/12/29/0IEuW.png" alt="workflow graph"  />
-</p>
-<h2 id="frame">Frame<a hidden class="anchor" aria-hidden="true" href="#frame">#</a></h2>
-<h3 id="database-1">DataBase<a hidden class="anchor" aria-hidden="true" href="#database-1">#</a></h3>
-<p><a href="https://neo4j.com/"><img loading="lazy" src="https://img.shields.io/badge/neo4j-test?style=for-the-badge&amp;logo=neo4j&amp;logoColor=white&amp;color=blue" alt="Neo4j"  />
-</a></p>
-<h3 id="frontend-1">Frontend<a hidden class="anchor" aria-hidden="true" href="#frontend-1">#</a></h3>
-<p><a href="https://developers.weixin.qq.com/"><img loading="lazy" src="https://img.shields.io/badge/wechat%20mini%20programs-test?style=for-the-badge&amp;logo=wechat&amp;logoColor=white&amp;color=%2320B2AA" alt="wechat mini programs"  />
-</a></p>
-<h3 id="backend-1">Backend<a hidden class="anchor" aria-hidden="true" href="#backend-1">#</a></h3>
-<p><a href="https://www.python.org/"><img loading="lazy" src="https://img.shields.io/badge/python-3776ab?style=for-the-badge&amp;logo=python&amp;logoColor=ffd343" alt="Python"  />
-</a><a href="https://flask.palletsprojects.com/"><img loading="lazy" src="https://img.shields.io/badge/flask-3e4349?style=for-the-badge&amp;logo=flask&amp;logoColor=ffffff" alt="Flask"  />
-</a><a href="https://scikit-learn.org/stable/index.html"><img loading="lazy" src="https://img.shields.io/badge/sklearn-test?style=for-the-badge&amp;logo=scikit-learn&amp;logoColor=white&amp;color=orange" alt="Scikit-learn"  />
-</a><a href="https://github.com/fxsjy/jieba"><img loading="lazy" src="https://img.shields.io/badge/jieba-3776ab?style=for-the-badge&amp;logo=python&amp;logoColor=ffd343" alt="Jieba"  />
-</a></p>
-<h2 id="reference">Reference<a hidden class="anchor" aria-hidden="true" href="#reference">#</a></h2>
-<h3 id="frontend-2">Frontend<a hidden class="anchor" aria-hidden="true" href="#frontend-2">#</a></h3>
-<p><a href="https://github.com/JzheTang/wechat_robot_app">微信小程序：微信聊天机器人</a></p>
-<h3 id="backend-2">BackEnd<a hidden class="anchor" aria-hidden="true" href="#backend-2">#</a></h3>
-<p><a href="https://github.com/mrcaidev/kgqa">基于知识图谱的电影知识问答系统</a></p>
-<p><a href="https://github.com/futurehear/chatbot">电影知识库问答机器人</a></p>
+  <div class="post-content"><h2 id="frp配置">FRP配置<a hidden class="anchor" aria-hidden="true" href="#frp配置">#</a></h2>
+<h3 id="跳板机">跳板机<a hidden class="anchor" aria-hidden="true" href="#跳板机">#</a></h3>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="c1"># frps.ini 配置</span>
+</span></span><span class="line"><span class="cl"><span class="o">[</span>common<span class="o">]</span>
+</span></span><span class="line"><span class="cl"><span class="nv">bind_port</span> <span class="o">=</span> <span class="m">7000</span> <span class="c1">#frps服务监听的端口</span>
+</span></span><span class="line"><span class="cl"><span class="nv">token</span> <span class="o">=</span> <span class="m">123</span> <span class="c1"># 链接口令</span>
+</span></span></code></pre></div><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">./frps -c frps.ini <span class="c1"># 启动frps</span>
+</span></span></code></pre></div><h3 id="服务器">服务器<a hidden class="anchor" aria-hidden="true" href="#服务器">#</a></h3>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="c1"># frpc.ini</span>
+</span></span><span class="line"><span class="cl"><span class="o">[</span>common<span class="o">]</span>
+</span></span><span class="line"><span class="cl"><span class="nv">server_addr</span> <span class="o">=</span> x.x.x.x <span class="c1"># 此处为 跳板机 的公网ip</span>
+</span></span><span class="line"><span class="cl"><span class="nv">server_port</span> <span class="o">=</span> <span class="m">7000</span> <span class="c1"># 跳板机上frps服务监听的端口</span>
+</span></span><span class="line"><span class="cl"><span class="nv">token</span> <span class="o">=</span> <span class="m">123</span> <span class="c1"># 链接口令</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="o">[</span>ssh<span class="o">]</span>
+</span></span><span class="line"><span class="cl"><span class="nb">type</span> <span class="o">=</span> tcp
+</span></span><span class="line"><span class="cl"><span class="nv">local_ip</span> <span class="o">=</span> 127.0.0.1 
+</span></span><span class="line"><span class="cl"><span class="nv">local_port</span> <span class="o">=</span> <span class="m">22</span> <span class="c1"># 需要暴露的内网机器的端口</span>
+</span></span><span class="line"><span class="cl"><span class="nv">remote_port</span> <span class="o">=</span> <span class="m">6000</span> <span class="c1"># 暴露的内网机器的端口在vps上的端口</span>
+</span></span></code></pre></div><h2 id="ssh连接">SSH连接<a hidden class="anchor" aria-hidden="true" href="#ssh连接">#</a></h2>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">ssh -p <span class="m">6969</span> swimmingliu@server.ip <span class="c1"># 普通ssh 连接</span>
+</span></span><span class="line"><span class="cl">ssh swimmingliu@server.ip 6969	  <span class="c1"># xshell ssh连接</span>
+</span></span></code></pre></div><h2 id="用户管理">用户管理<a hidden class="anchor" aria-hidden="true" href="#用户管理">#</a></h2>
+<h3 id="添加用户">添加用户<a hidden class="anchor" aria-hidden="true" href="#添加用户">#</a></h3>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">sudo adduser xxx
+</span></span></code></pre></div><h3 id="删除用户">删除用户<a hidden class="anchor" aria-hidden="true" href="#删除用户">#</a></h3>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">sudo deluser xxx
+</span></span></code></pre></div><h2 id="科学上网">科学上网<a hidden class="anchor" aria-hidden="true" href="#科学上网">#</a></h2>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="nb">export</span> <span class="nv">http_proxy</span><span class="o">=</span>http://127.0.0.1:7890
+</span></span><span class="line"><span class="cl"><span class="nb">export</span> <span class="nv">https_proxy</span><span class="o">=</span>http://127.0.0.1:7890
+</span></span></code></pre></div><h2 id="anaconda3-安装和配置">Anaconda3 安装和配置<a hidden class="anchor" aria-hidden="true" href="#anaconda3-安装和配置">#</a></h2>
+<h3 id="安装anaconda3">安装Anaconda3<a hidden class="anchor" aria-hidden="true" href="#安装anaconda3">#</a></h3>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">wget --user-agent<span class="o">=</span><span class="s2">&#34;Mozilla&#34;</span> https://mirrors.tuna.tsinghua.edu.cn/anaconda/archive/Anaconda3-2023.07-1-Linux-x86_64.sh
+</span></span><span class="line"><span class="cl">bash Anaconda3-2023.07-1-Linux-x86_64.sh
+</span></span><span class="line"><span class="cl"><span class="c1"># https://mirrors.tuna.tsinghua.edu.cn/anaconda/archive 清华源</span>
+</span></span></code></pre></div><h3 id="配置之前的envs">配置之前的envs<a hidden class="anchor" aria-hidden="true" href="#配置之前的envs">#</a></h3>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">cp -r old_envs_path anaconda/envs/		<span class="c1">#迁移之前的envs环境</span>
+</span></span></code></pre></div><h2 id="完结撒花">完结撒花❀❀❀<a hidden class="anchor" aria-hidden="true" href="#完结撒花">#</a></h2>
 
 
   </div>
@@ -426,19 +397,14 @@ BackEnd 基于知识图谱的电影知识问答系统
 
   <footer class="post-footer">
     <ul class="post-tags">
-      <li><a href="https://swimmingliu.netlify.app/tags/kgqa/">KGQA</a></li>
-      <li><a href="https://swimmingliu.netlify.app/tags/wechat-mini-programs/">Wechat Mini Programs</a></li>
+      <li><a href="https://swimmingliu.netlify.app/tags/server/">Server</a></li>
+      <li><a href="https://swimmingliu.netlify.app/tags/zstu/">ZSTU</a></li>
     </ul>
 <nav class="paginav">
-  <a class="prev" href="https://swimmingliu.netlify.app/posts/diary/zstu_server_management/">
-    <span class="title">« Prev</span>
-    <br>
-    <span>ZSTU Server Management</span>
-  </a>
-  <a class="next" href="https://swimmingliu.netlify.app/posts/papernotes/2023-unet_v2/">
+  <a class="next" href="https://swimmingliu.netlify.app/posts/diary/2023-moviekgqa/">
     <span class="title">Next »</span>
     <br>
-    <span>U-NET V2: RETHINKING THE SKIP CONNECTIONS OF U-NET FOR MEDICAL IMAGE SEGMENTATION</span>
+    <span>MovieKGQA: 基于知识图谱和neo4j图数据库的电影知识问答系统</span>
   </a>
 </nav>
 

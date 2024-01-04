@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/">
+  <channel>
+    <title>ZSTU on SwimmingLiu&#39;s Blog</title>
+    <link>https://swimmingliu.netlify.app/tags/zstu/</link>
+    <description>Recent content in ZSTU on SwimmingLiu&#39;s Blog</description>
+    <image>
+      <title>SwimmingLiu&#39;s Blog</title>
+      <url>https://swimmingliu.netlify.app/papermod-cover.png</url>
+      <link>https://swimmingliu.netlify.app/papermod-cover.png</link>
+    </image>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en</language>
+    <lastBuildDate>Thu, 04 Jan 2024 21:36:25 +0800</lastBuildDate><atom:link href="https://swimmingliu.netlify.app/tags/zstu/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>ZSTU Server Management</title>
+      <link>https://swimmingliu.netlify.app/posts/diary/zstu_server_management/</link>
+      <pubDate>Thu, 04 Jan 2024 21:36:25 +0800</pubDate>
+      
+      <guid>https://swimmingliu.netlify.app/posts/diary/zstu_server_management/</guid>
+      <description>FRP配置 跳板机 # frps.ini 配置 [common] bind_port = 7000 #frps服务监听的端口 token = 123 # 链接口令 ./frps -c frps.ini # 启动frps 服务器 # frpc.ini [common] server_addr = x.x.x.x # 此处为 跳板机 的公网ip server_port = 7000 # 跳板机上frps服务监听的端口 token = 123 # 链接口令 [ssh] type = tcp local_ip = 127.0.0.1 local_port = 22 # 需要暴露的内网机器的端口 remote_port = 6000 # 暴露的内网机器的端口在vps上的端口 SSH连接 ssh -p 6969 swimmingliu@server.ip # 普通ssh 连接 ssh swimmingliu@server.ip 6969	# xshell ssh连接 用户管理 添加用户 sudo adduser xxx 删除用户 sudo deluser xxx 科学上网 export http_proxy=http://127.</description>
+    </item>
+    
+  </channel>
+</rss>

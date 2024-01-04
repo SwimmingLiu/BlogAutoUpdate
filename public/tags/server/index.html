@@ -5,11 +5,11 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 <meta name="robots" content="index, follow">
-<title>Tags | SwimmingLiu&#39;s Blog</title>
+<title>Server | SwimmingLiu&#39;s Blog</title>
 <meta name="keywords" content="">
 <meta name="description" content="">
 <meta name="author" content="👨🏻‍🎓 SwimmingLiu">
-<link rel="canonical" href="https://swimmingliu.netlify.app/tags/">
+<link rel="canonical" href="https://swimmingliu.netlify.app/tags/server/">
 <link crossorigin="anonymous" href="/assets/css/stylesheet.56574d0b8d57cdd0d704dd823c3ab0e600bd78cf5a999377277390417d6b2f3e.css" integrity="sha256-VldNC41XzdDXBN2CPDqw5gC9eM9amZN3J3OQQX1rLz4=" rel="preload stylesheet" as="style">
 <link rel="icon" href="https://swimmingliu.netlify.app/images/swimmingliu_icon.png">
 <link rel="icon" type="image/png" sizes="16x16" href="https://swimmingliu.netlify.app/images/swimmingliu_icon.png">
@@ -18,7 +18,7 @@
 <link rel="mask-icon" href="https://swimmingliu.netlify.app/images/swimmingliu_icon.png">
 <meta name="theme-color" content="#2e2e33">
 <meta name="msapplication-TileColor" content="#2e2e33">
-<link rel="alternate" type="application/rss+xml" href="https://swimmingliu.netlify.app/tags/index.xml">
+<link rel="alternate" type="application/rss+xml" href="https://swimmingliu.netlify.app/tags/server/index.xml">
 <noscript>
     <style>
         #theme-toggle,
@@ -56,15 +56,15 @@
 
     </style>
 </noscript>
-<meta property="og:title" content="Tags" />
+<meta property="og:title" content="Server" />
 <meta property="og:description" content="" />
 <meta property="og:type" content="website" />
-<meta property="og:url" content="https://swimmingliu.netlify.app/tags/" /><meta property="og:image" content="https://swimmingliu.netlify.app/papermod-cover.png"/>
+<meta property="og:url" content="https://swimmingliu.netlify.app/tags/server/" /><meta property="og:image" content="https://swimmingliu.netlify.app/papermod-cover.png"/>
 
 <meta name="twitter:card" content="summary_large_image"/>
 <meta name="twitter:image" content="https://swimmingliu.netlify.app/papermod-cover.png"/>
 
-<meta name="twitter:title" content="Tags"/>
+<meta name="twitter:title" content="Server"/>
 <meta name="twitter:description" content=""/>
 
 </head>
@@ -150,40 +150,32 @@
         </ul>
     </nav>
 </header>
-<main class="main">
-<header class="page-header">
-    <h1>Tags</h1>
+<main class="main"> 
+<header class="page-header"><div class="breadcrumbs"><a href="https://swimmingliu.netlify.app/">Home</a>&nbsp;»&nbsp;<a href="https://swimmingliu.netlify.app/tags/">Tags</a></div>
+  <h1>
+    Server
+    <a href="/tags/server/index.xml" title="RSS" aria-label="RSS">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+        stroke-linecap="round" stroke-linejoin="round" height="23">
+        <path d="M4 11a9 9 0 0 1 9 9" />
+        <path d="M4 4a16 16 0 0 1 16 16" />
+        <circle cx="5" cy="19" r="1" />
+      </svg>
+    </a>
+  </h1>
 </header>
 
-<ul class="terms-tags">
-    <li>
-        <a href="https://swimmingliu.netlify.app/tags/cug/">CUG <sup><strong><sup>1</sup></strong></sup> </a>
-    </li>
-    <li>
-        <a href="https://swimmingliu.netlify.app/tags/deepsupervision/">DeepSupervision <sup><strong><sup>1</sup></strong></sup> </a>
-    </li>
-    <li>
-        <a href="https://swimmingliu.netlify.app/tags/intermediatesupervision/">IntermediateSupervision <sup><strong><sup>1</sup></strong></sup> </a>
-    </li>
-    <li>
-        <a href="https://swimmingliu.netlify.app/tags/kgqa/">KGQA <sup><strong><sup>1</sup></strong></sup> </a>
-    </li>
-    <li>
-        <a href="https://swimmingliu.netlify.app/tags/server/">Server <sup><strong><sup>1</sup></strong></sup> </a>
-    </li>
-    <li>
-        <a href="https://swimmingliu.netlify.app/tags/unet/">Unet <sup><strong><sup>6</sup></strong></sup> </a>
-    </li>
-    <li>
-        <a href="https://swimmingliu.netlify.app/tags/wechat-mini-programs/">Wechat Mini Programs <sup><strong><sup>1</sup></strong></sup> </a>
-    </li>
-    <li>
-        <a href="https://swimmingliu.netlify.app/tags/zstu/">ZSTU <sup><strong><sup>1</sup></strong></sup> </a>
-    </li>
-    <li>
-        <a href="https://swimmingliu.netlify.app/tags/%E7%A8%8B%E5%BA%8F%E8%AE%BE%E8%AE%A1%E4%BD%9C%E4%B8%9A/">程序设计作业 <sup><strong><sup>1</sup></strong></sup> </a>
-    </li>
-</ul>
+<article class="post-entry tag-entry"> 
+  <header class="entry-header">
+    <h2>ZSTU Server Management
+    </h2>
+  </header>
+  <div class="entry-content">
+    <p>FRP配置 跳板机 # frps.ini 配置 [common] bind_port = 7000 #frps服务监听的端口 token = 123 # 链接口令 ./frps -c frps.ini # 启动frps 服务器 # frpc.ini [common] server_addr = x.x.x.x # 此处为 跳板机 的公网ip server_port = 7000 # 跳板机上frps服务监听的端口 token = 123 # 链接口令 [ssh] type = tcp local_ip = 127.0.0.1 local_port = 22 # 需要暴露的内网机器的端口 remote_port = 6000 # 暴露的内网机器的端口在vps上的端口 SSH连接 ssh -p 6969 swimmingliu@server.ip # 普通ssh 连接 ssh swimmingliu@server.ip 6969	# xshell ssh连接 用户管理 添加用户 sudo adduser xxx 删除用户 sudo deluser xxx 科学上网 export http_proxy=http://127....</p>
+  </div>
+  <footer class="entry-footer"><span title='2024-01-04 21:36:25 +0800 CST'>January 4, 2024</span>&nbsp;·&nbsp;1 min&nbsp;·&nbsp;SwimmingLiu</footer>
+  <a class="entry-link" aria-label="post link to ZSTU Server Management" href="https://swimmingliu.netlify.app/posts/diary/zstu_server_management/"></a>
+</article>
     </main>
     
 <footer class="footer">

@@ -16,13 +16,13 @@ Introduction 随着现代深度神经网络的进步，语义图像分割取得�
 在本文中，我们提出了 U-Net v2，这是一种基于 U-Net 的新分割框架，具有简单且高效的跳跃连接。我们的模型首先使用 CNN 或 Transformer 编码器提取多级特征图。接下来，对于第 i 层的特征图，我们通过简单的哈达玛乘积操作显式地注入高层特征（包含更多语义信息）和低层特征（捕获更精细的细节），从而增强语义和细节第 i 级特征。随后，细化的特征被传输到解码器进行分辨率重建和分割。我们的方法可以无缝集成到任何编码器-解码器网络中。
 我们使用公开的数据集在两个医学图像分割任务（皮肤病变分割和息肉分割）上评估我们的新方法。实验结果表明，我们的 U-Net v2 在这些分割任务中始终优于最先进的方法，同时保持 FLOP 和 GPU 内存效率。">
 <meta name="author" content="SwimmingLiu">
-<link rel="canonical" href="https://swimmingliu.cn/posts/papernotes/2023-unet_v2/">
+<link rel="canonical" href="https://swimmingliu.netlify.app/posts/papernotes/2023-unet_v2/">
 <link crossorigin="anonymous" href="/assets/css/stylesheet.56574d0b8d57cdd0d704dd823c3ab0e600bd78cf5a999377277390417d6b2f3e.css" integrity="sha256-VldNC41XzdDXBN2CPDqw5gC9eM9amZN3J3OQQX1rLz4=" rel="preload stylesheet" as="style">
-<link rel="icon" href="https://swimmingliu.cn/images/swimmingliu_icon.png">
-<link rel="icon" type="image/png" sizes="16x16" href="https://swimmingliu.cn/images/swimmingliu_icon.png">
-<link rel="icon" type="image/png" sizes="32x32" href="https://swimmingliu.cn/images/swimmingliu_icon.png">
-<link rel="apple-touch-icon" href="https://swimmingliu.cn/images/swimmingliu_icon.png">
-<link rel="mask-icon" href="https://swimmingliu.cn/images/swimmingliu_icon.png">
+<link rel="icon" href="https://swimmingliu.netlify.app/images/swimmingliu_icon.png">
+<link rel="icon" type="image/png" sizes="16x16" href="https://swimmingliu.netlify.app/images/swimmingliu_icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="https://swimmingliu.netlify.app/images/swimmingliu_icon.png">
+<link rel="apple-touch-icon" href="https://swimmingliu.netlify.app/images/swimmingliu_icon.png">
+<link rel="mask-icon" href="https://swimmingliu.netlify.app/images/swimmingliu_icon.png">
 <meta name="theme-color" content="#2e2e33">
 <meta name="msapplication-TileColor" content="#2e2e33">
 <noscript>
@@ -97,12 +97,12 @@ Introduction 随着现代深度神经网络的进步，语义图像分割取得�
 在本文中，我们提出了 U-Net v2，这是一种基于 U-Net 的新分割框架，具有简单且高效的跳跃连接。我们的模型首先使用 CNN 或 Transformer 编码器提取多级特征图。接下来，对于第 i 层的特征图，我们通过简单的哈达玛乘积操作显式地注入高层特征（包含更多语义信息）和低层特征（捕获更精细的细节），从而增强语义和细节第 i 级特征。随后，细化的特征被传输到解码器进行分辨率重建和分割。我们的方法可以无缝集成到任何编码器-解码器网络中。
 我们使用公开的数据集在两个医学图像分割任务（皮肤病变分割和息肉分割）上评估我们的新方法。实验结果表明，我们的 U-Net v2 在这些分割任务中始终优于最先进的方法，同时保持 FLOP 和 GPU 内存效率。" />
 <meta property="og:type" content="article" />
-<meta property="og:url" content="https://swimmingliu.cn/posts/papernotes/2023-unet_v2/" /><meta property="og:image" content="https://swimmingliu.cn/papermod-cover.png"/><meta property="article:section" content="posts" />
+<meta property="og:url" content="https://swimmingliu.netlify.app/posts/papernotes/2023-unet_v2/" /><meta property="og:image" content="https://swimmingliu.netlify.app/papermod-cover.png"/><meta property="article:section" content="posts" />
 <meta property="article:published_time" content="2023-12-11T20:49:32+08:00" />
 <meta property="article:modified_time" content="2023-12-11T20:49:32+08:00" />
 
 <meta name="twitter:card" content="summary_large_image"/>
-<meta name="twitter:image" content="https://swimmingliu.cn/papermod-cover.png"/>
+<meta name="twitter:image" content="https://swimmingliu.netlify.app/papermod-cover.png"/>
 
 <meta name="twitter:title" content="U-NET V2: RETHINKING THE SKIP CONNECTIONS OF U-NET FOR MEDICAL IMAGE SEGMENTATION"/>
 <meta name="twitter:description" content="Abstract 在本文中，我们介绍了 U-Net v2，这是一种用于医学图像分割的新的稳健且高效的 U-Net 变体。它的目的是增强语义信息在低级特征中的注入，同时用更精细的细节来细化高级特征。对于输入图像，我们首先使用深度神经网络编码器提取多级特征。接下来，我们通过注入来自更高级别特征的语义信息并通过 Hadamard 乘积集成来自较低级别特征的更精细的细节来增强每个级别的特征图。我们新颖的跳跃连接赋予所有级别的功能以丰富的语义特征和复杂的细节。改进后的特征随后被传输到解码器以进行进一步处理和分割。我们的方法可以无缝集成到任何编码器-解码器网络中。我们在几个公共医学图像分割数据集上评估了我们的方法，用于皮肤病变分割和息肉分割，实验结果证明了我们的新方法相对于最先进的方法的分割准确性，同时保留了内存和计算效率。代码位于：https://github.com/yaoppeng/U-Net_v2。
@@ -124,19 +124,19 @@ Introduction 随着现代深度神经网络的进步，语义图像分割取得�
       "@type": "ListItem",
       "position":  1 ,
       "name": "📚 Posts",
-      "item": "https://swimmingliu.cn/posts/"
+      "item": "https://swimmingliu.netlify.app/posts/"
     }, 
     {
       "@type": "ListItem",
       "position":  2 ,
       "name": "📝 Paper Notes",
-      "item": "https://swimmingliu.cn/posts/papernotes/"
+      "item": "https://swimmingliu.netlify.app/posts/papernotes/"
     }, 
     {
       "@type": "ListItem",
       "position":  3 ,
       "name": "U-NET V2: RETHINKING THE SKIP CONNECTIONS OF U-NET FOR MEDICAL IMAGE SEGMENTATION",
-      "item": "https://swimmingliu.cn/posts/papernotes/2023-unet_v2/"
+      "item": "https://swimmingliu.netlify.app/posts/papernotes/2023-unet_v2/"
     }
   ]
 }
@@ -162,14 +162,14 @@ Introduction 随着现代深度神经网络的进步，语义图像分割取得�
   }],
   "mainEntityOfPage": {
     "@type": "WebPage",
-    "@id": "https://swimmingliu.cn/posts/papernotes/2023-unet_v2/"
+    "@id": "https://swimmingliu.netlify.app/posts/papernotes/2023-unet_v2/"
   },
   "publisher": {
     "@type": "Organization",
     "name": "SwimmingLiu's Blog",
     "logo": {
       "@type": "ImageObject",
-      "url": "https://swimmingliu.cn/images/swimmingliu_icon.png"
+      "url": "https://swimmingliu.netlify.app/images/swimmingliu_icon.png"
     }
   }
 }
@@ -191,8 +191,8 @@ Introduction 随着现代深度神经网络的进步，语义图像分割取得�
 <header class="header">
     <nav class="nav">
         <div class="logo">
-            <a href="https://swimmingliu.cn/" accesskey="h" title="𝓢𝔀𝓲𝓶𝓶𝓲𝓷𝓰𝓛𝓲𝓾&#39;𝓼 𝓑𝓵𝓸𝓰 (Alt + H)">
-                <img src="https://swimmingliu.cn/images/swimmingliu_icon.png" alt="" aria-label="logo"
+            <a href="https://swimmingliu.netlify.app/" accesskey="h" title="𝓢𝔀𝓲𝓶𝓶𝓲𝓷𝓰𝓛𝓲𝓾&#39;𝓼 𝓑𝓵𝓸𝓰 (Alt + H)">
+                <img src="https://swimmingliu.netlify.app/images/swimmingliu_icon.png" alt="" aria-label="logo"
                     height="30">𝓢𝔀𝓲𝓶𝓶𝓲𝓷𝓰𝓛𝓲𝓾&#39;𝓼 𝓑𝓵𝓸𝓰</a>
             <div class="logo-switches">
                 <button id="theme-toggle" accesskey="t" title="(Alt + T)">
@@ -219,27 +219,27 @@ Introduction 随着现代深度神经网络的进步，语义图像分割取得�
         </div>
         <ul id="menu">
             <li>
-                <a href="https://swimmingliu.cn/index.html" title="🏡 Home">
+                <a href="https://swimmingliu.netlify.app/index.html" title="🏡 Home">
                     <span>🏡 Home</span>
                 </a>
             </li>
             <li>
-                <a href="https://swimmingliu.cn/search/" title="🔍 Search">
+                <a href="https://swimmingliu.netlify.app/search/" title="🔍 Search">
                     <span>🔍 Search</span>
                 </a>
             </li>
             <li>
-                <a href="https://swimmingliu.cn/posts/" title="🗒️ Posts">
+                <a href="https://swimmingliu.netlify.app/posts/" title="🗒️ Posts">
                     <span>🗒️ Posts</span>
                 </a>
             </li>
             <li>
-                <a href="https://swimmingliu.cn/archives/" title="📃 Archive">
+                <a href="https://swimmingliu.netlify.app/archives/" title="📃 Archive">
                     <span>📃 Archive</span>
                 </a>
             </li>
             <li>
-                <a href="https://swimmingliu.cn/aboutme/" title="👨🏻‍🎓 About Me">
+                <a href="https://swimmingliu.netlify.app/aboutme/" title="👨🏻‍🎓 About Me">
                     <span>👨🏻‍🎓 About Me</span>
                 </a>
             </li>
@@ -261,7 +261,7 @@ Introduction 随着现代深度神经网络的进步，语义图像分割取得�
 
 <article class="post-single">
   <header class="post-header">
-    <div class="breadcrumbs"><a href="https://swimmingliu.cn/">Home</a>&nbsp;»&nbsp;<a href="https://swimmingliu.cn/posts/">📚 Posts</a>&nbsp;»&nbsp;<a href="https://swimmingliu.cn/posts/papernotes/">📝 Paper Notes</a></div>
+    <div class="breadcrumbs"><a href="https://swimmingliu.netlify.app/">Home</a>&nbsp;»&nbsp;<a href="https://swimmingliu.netlify.app/posts/">📚 Posts</a>&nbsp;»&nbsp;<a href="https://swimmingliu.netlify.app/posts/papernotes/">📝 Paper Notes</a></div>
     <h1 class="post-title">
       U-NET V2: RETHINKING THE SKIP CONNECTIONS OF U-NET FOR MEDICAL IMAGE SEGMENTATION
     </h1>
@@ -475,15 +475,15 @@ ISIC 数据集：使用两<strong>个皮肤病变分割数据集</strong>：ISIC
 
   <footer class="post-footer">
     <ul class="post-tags">
-      <li><a href="https://swimmingliu.cn/tags/unet/">Unet</a></li>
+      <li><a href="https://swimmingliu.netlify.app/tags/unet/">Unet</a></li>
     </ul>
 <nav class="paginav">
-  <a class="prev" href="https://swimmingliu.cn/posts/diary/2023-moviekgqa/">
+  <a class="prev" href="https://swimmingliu.netlify.app/posts/diary/2023-moviekgqa/">
     <span class="title">« Prev</span>
     <br>
     <span>MovieKGQA: 基于知识图谱和neo4j图数据库的电影知识问答系统</span>
   </a>
-  <a class="next" href="https://swimmingliu.cn/posts/papernotes/2023-uncertainty-aware-attentionmechanism/">
+  <a class="next" href="https://swimmingliu.netlify.app/posts/papernotes/2023-uncertainty-aware-attentionmechanism/">
     <span class="title">Next »</span>
     <br>
     <span>Uncertainty-Aware Attention Mechanism:利用不确定性感知注意机制进行肺结节分割和不确定区域预测</span>
@@ -495,7 +495,7 @@ ISIC 数据集：使用两<strong>个皮肤病变分割数据集</strong>：ISIC
     </main>
     
 <footer class="footer">
-    <span>&copy; 2023 <a href="https://swimmingliu.cn/">SwimmingLiu&#39;s Blog</a></span>
+    <span>&copy; 2024 <a href="https://swimmingliu.netlify.app/">SwimmingLiu&#39;s Blog</a></span>
     <span>
         Powered by
         <a href="https://gohugo.io/" rel="noopener noreferrer" target="_blank">Hugo</a> &

@@ -2,76 +2,94 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/">
   <channel>
     <title>Tags on SwimmingLiu&#39;s Blog</title>
-    <link>https://swimmingliu.cn/tags/</link>
+    <link>https://swimmingliu.netlify.app/tags/</link>
     <description>Recent content in Tags on SwimmingLiu&#39;s Blog</description>
     <image>
       <title>SwimmingLiu&#39;s Blog</title>
-      <url>https://swimmingliu.cn/papermod-cover.png</url>
-      <link>https://swimmingliu.cn/papermod-cover.png</link>
+      <url>https://swimmingliu.netlify.app/papermod-cover.png</url>
+      <link>https://swimmingliu.netlify.app/papermod-cover.png</link>
     </image>
     <generator>Hugo -- gohugo.io</generator>
     <language>en</language>
-    <lastBuildDate>Tue, 12 Dec 2023 12:18:57 +0800</lastBuildDate><atom:link href="https://swimmingliu.cn/tags/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Thu, 04 Jan 2024 21:36:25 +0800</lastBuildDate><atom:link href="https://swimmingliu.netlify.app/tags/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Server</title>
+      <link>https://swimmingliu.netlify.app/tags/server/</link>
+      <pubDate>Thu, 04 Jan 2024 21:36:25 +0800</pubDate>
+      
+      <guid>https://swimmingliu.netlify.app/tags/server/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>ZSTU</title>
+      <link>https://swimmingliu.netlify.app/tags/zstu/</link>
+      <pubDate>Thu, 04 Jan 2024 21:36:25 +0800</pubDate>
+      
+      <guid>https://swimmingliu.netlify.app/tags/zstu/</guid>
+      <description></description>
+    </item>
+    
     <item>
       <title>KGQA</title>
-      <link>https://swimmingliu.cn/tags/kgqa/</link>
+      <link>https://swimmingliu.netlify.app/tags/kgqa/</link>
       <pubDate>Tue, 12 Dec 2023 12:18:57 +0800</pubDate>
       
-      <guid>https://swimmingliu.cn/tags/kgqa/</guid>
+      <guid>https://swimmingliu.netlify.app/tags/kgqa/</guid>
       <description></description>
     </item>
     
     <item>
       <title>Wechat Mini Programs</title>
-      <link>https://swimmingliu.cn/tags/wechat-mini-programs/</link>
+      <link>https://swimmingliu.netlify.app/tags/wechat-mini-programs/</link>
       <pubDate>Tue, 12 Dec 2023 12:18:57 +0800</pubDate>
       
-      <guid>https://swimmingliu.cn/tags/wechat-mini-programs/</guid>
+      <guid>https://swimmingliu.netlify.app/tags/wechat-mini-programs/</guid>
       <description></description>
     </item>
     
     <item>
       <title>Unet</title>
-      <link>https://swimmingliu.cn/tags/unet/</link>
+      <link>https://swimmingliu.netlify.app/tags/unet/</link>
       <pubDate>Mon, 11 Dec 2023 20:49:32 +0800</pubDate>
       
-      <guid>https://swimmingliu.cn/tags/unet/</guid>
+      <guid>https://swimmingliu.netlify.app/tags/unet/</guid>
       <description></description>
     </item>
     
     <item>
       <title>程序设计作业</title>
-      <link>https://swimmingliu.cn/tags/%E7%A8%8B%E5%BA%8F%E8%AE%BE%E8%AE%A1%E4%BD%9C%E4%B8%9A/</link>
+      <link>https://swimmingliu.netlify.app/tags/%E7%A8%8B%E5%BA%8F%E8%AE%BE%E8%AE%A1%E4%BD%9C%E4%B8%9A/</link>
       <pubDate>Sat, 02 Dec 2023 21:40:07 +0800</pubDate>
       
-      <guid>https://swimmingliu.cn/tags/%E7%A8%8B%E5%BA%8F%E8%AE%BE%E8%AE%A1%E4%BD%9C%E4%B8%9A/</guid>
+      <guid>https://swimmingliu.netlify.app/tags/%E7%A8%8B%E5%BA%8F%E8%AE%BE%E8%AE%A1%E4%BD%9C%E4%B8%9A/</guid>
       <description></description>
     </item>
     
     <item>
       <title>DeepSupervision</title>
-      <link>https://swimmingliu.cn/tags/deepsupervision/</link>
+      <link>https://swimmingliu.netlify.app/tags/deepsupervision/</link>
       <pubDate>Tue, 28 Nov 2023 14:55:47 +0800</pubDate>
       
-      <guid>https://swimmingliu.cn/tags/deepsupervision/</guid>
+      <guid>https://swimmingliu.netlify.app/tags/deepsupervision/</guid>
       <description></description>
     </item>
     
     <item>
       <title>IntermediateSupervision</title>
-      <link>https://swimmingliu.cn/tags/intermediatesupervision/</link>
+      <link>https://swimmingliu.netlify.app/tags/intermediatesupervision/</link>
       <pubDate>Tue, 28 Nov 2023 14:55:47 +0800</pubDate>
       
-      <guid>https://swimmingliu.cn/tags/intermediatesupervision/</guid>
+      <guid>https://swimmingliu.netlify.app/tags/intermediatesupervision/</guid>
       <description></description>
     </item>
     
     <item>
       <title>CUG</title>
-      <link>https://swimmingliu.cn/tags/cug/</link>
+      <link>https://swimmingliu.netlify.app/tags/cug/</link>
       <pubDate>Mon, 20 Nov 2023 12:25:57 +0800</pubDate>
       
-      <guid>https://swimmingliu.cn/tags/cug/</guid>
+      <guid>https://swimmingliu.netlify.app/tags/cug/</guid>
       <description></description>
     </item>
     

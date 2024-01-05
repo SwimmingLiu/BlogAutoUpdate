@@ -45,7 +45,7 @@ https://blog.csdn.net/m0_67400972/article/details/125346023 # 安装教程
 
 ## 添加Xshell连接
 
-![image-20240105113129928](E:\李杨课题组\论文笔记\image-20240105113129928.png)
+![image-20240105113129928](https://i.imgs.ovh/2024/01/05/B6xRW.png)
 
 其中 `server.ip` 为服务器公网ip地址，端口为 `6969` 
 
@@ -57,11 +57,11 @@ https://blog.csdn.net/m0_67400972/article/details/125346023 # 安装教程
 bash AnacondaAnaconda3-2023.07-1-Linux-x86_64.sh # 安装anaconda3
 ```
 
-![image-20240105113942737](E:\李杨课题组\论文笔记\image-20240105113942737.png)
+![image-20240105113942737](https://i.imgs.ovh/2024/01/05/B6KTv.png)
 
 输入 `yes` 后， 再按回车键 即可
 
-![image-20240105114146047](E:\李杨课题组\论文笔记\image-20240105114146047.png)
+![image-20240105114146047](https://i.imgs.ovh/2024/01/05/B6one.png)
 
 ## 初始化Anaconda3
 
@@ -80,7 +80,7 @@ export http_proxy=http://127.0.0.1:7890
 export https_proxy=http://127.0.0.1:7890
 ```
 
-![image-20240105115600487](E:\李杨课题组\论文笔记\image-20240105115600487.png)
+![image-20240105115600487](https://i.imgs.ovh/2024/01/05/B6So3.png)
 
 ## 远程桌面连接
 

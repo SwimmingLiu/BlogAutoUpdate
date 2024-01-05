@@ -2,22 +2,22 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/">
   <channel>
     <title>CUG on SwimmingLiu&#39;s Blog</title>
-    <link>https://swimmingliu.netlify.app/tags/cug/</link>
+    <link>https://swimmingliu.cn/tags/cug/</link>
     <description>Recent content in CUG on SwimmingLiu&#39;s Blog</description>
     <image>
       <title>SwimmingLiu&#39;s Blog</title>
-      <url>https://swimmingliu.netlify.app/papermod-cover.png</url>
-      <link>https://swimmingliu.netlify.app/papermod-cover.png</link>
+      <url>https://swimmingliu.cn/papermod-cover.png</url>
+      <link>https://swimmingliu.cn/papermod-cover.png</link>
     </image>
     <generator>Hugo -- gohugo.io</generator>
     <language>en</language>
-    <lastBuildDate>Mon, 20 Nov 2023 12:25:57 +0800</lastBuildDate><atom:link href="https://swimmingliu.netlify.app/tags/cug/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Mon, 20 Nov 2023 12:25:57 +0800</lastBuildDate><atom:link href="https://swimmingliu.cn/tags/cug/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>地大服务器使用教程</title>
-      <link>https://swimmingliu.netlify.app/posts/diary/2023-%E5%9C%B0%E5%A4%A7%E6%9C%8D%E5%8A%A1%E5%99%A8/</link>
+      <link>https://swimmingliu.cn/posts/diary/2023-%E5%9C%B0%E5%A4%A7%E6%9C%8D%E5%8A%A1%E5%99%A8/</link>
       <pubDate>Mon, 20 Nov 2023 12:25:57 +0800</pubDate>
       
-      <guid>https://swimmingliu.netlify.app/posts/diary/2023-%E5%9C%B0%E5%A4%A7%E6%9C%8D%E5%8A%A1%E5%99%A8/</guid>
+      <guid>https://swimmingliu.cn/posts/diary/2023-%E5%9C%B0%E5%A4%A7%E6%9C%8D%E5%8A%A1%E5%99%A8/</guid>
       <description>地大服务器使用教程 1. 服务器环境介绍 NVIDIA RTX 3090 (24GB) NVIDIA RTX 2080 Ti (11GB) 2. 配置实验环境 2.1 Conda环境安装 每位同学都会分配个人用户，大家在自己的用户上使用Conda进行环境配置。
 Conda安装教程：https://blog.csdn.net/JineD/article/details/129507719
 大家按照教程步骤安装即可, 由于安装时间较长, 视频中暂不进行演示。

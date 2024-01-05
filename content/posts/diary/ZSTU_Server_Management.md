@@ -70,8 +70,8 @@ remote_port = 6000 # 暴露的内网机器的端口在vps上的端口
 ## SSH连接
 
 ```bash
-ssh -p 6969 swimmingliu@server.ip # 普通ssh 连接
-ssh swimmingliu@server.ip 6969	  # xshell ssh连接
+ssh -p 6000 swimmingliu@server.ip # 普通ssh 连接
+ssh swimmingliu@server.ip 6000	  # xshell ssh连接
 ```
 
 ## 用户管理

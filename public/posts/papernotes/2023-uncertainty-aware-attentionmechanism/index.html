@@ -414,7 +414,7 @@ UGMCS-Net 包含三个模块：基于 U-Net 的特征提取模块、不确定性
 <p>为了演示这种现象，我们引入了<strong>多重置信掩码</strong> (MCM)，它结合了<strong>高置信度 (HC) 掩码</strong>和低置信度 (LC) 掩码，如图 1 所示。 A. 交叉掩码等于 <strong>HC mask</strong>，代表<strong>所有注释的交集</strong>。</p>
 <p><strong>联合掩码是所有注释的联合</strong>。 <strong>LC掩模是交集掩模和并集掩模之间的差异</strong>。当在 LIDC-IDRI 数据集 [11] 上计算 HC 和 LC 的 Hounsfield 单位 (HU) 核估计时，<strong>如图 1.B 所示，我们可以观察到 LC 和 HC 掩模之间的 HU 分布存在明显区别</strong>。具体地，LC区域具有比HC区域更低的HU值。从像素分布来看，<strong>HU值越低，对应区域的密度越低</strong>。就CT图像特征而言，LC区域<strong>主要由结节边缘、毛刺和磨玻璃特征等边界相关特征组成</strong>，而<strong>HC区域主要分布在结节核心内</strong>。因此，我们提出了这样的假设：导致放射科医生之间差异的区域主要与<strong>低密度组织和边界相关特征</strong>有关。</p>
 </blockquote>
-<p><img loading="lazy" src="https://i.imgs.ovh/2023/12/04/327b2.png" alt="image-20231130203343980"  />
+<p><img loading="lazy" src="https://oss.swimmingliu.cn/327b2.png" alt="image-20231130203343980"  />
 </p>
 <blockquote>
 <p>与其他方法不同，我们建议利用 <strong>MCM (多重置信掩码) ** 和注释集作为具有</strong>不同分割确定性的特征的学习指导**，有助于更好的分割性能。我们将这种训练称为<strong>UncertaintyAware Attention Mechanism</strong>，如图2所示。按照这种机制，我们进一步设计了用于肺结节分割的<strong>Uncertainty-Guide Multi-Confidence Segmentation Network</strong>（UGMCS-Net）。</p>
@@ -423,7 +423,7 @@ UGMCS-Net 包含三个模块：基于 U-Net 的特征提取模块、不确定性
 <p>首先，标签分为交集标签( $L_\cap$ )、并集标签 ( $L_\cup$ )、原始标签 (L)。</p>
 <p>其次，HC (consensus) 表示   $L_\cap$ 、 LC（disagreement）表示   $L_\cup$  -  $L_\cap$。</p>
 <p>MCM (Multi Confidence Mask) 表示 HC 和 LC的统称</p>
-<p><img loading="lazy" src="https://i.imgs.ovh/2023/12/04/32O4j.png" alt="image-20231130204638230"  />
+<p><img loading="lazy" src="https://oss.swimmingliu.cn/32O4j.png" alt="image-20231130204638230"  />
 </p>
 <blockquote>
 <p>首先，特征提取模块从输入的<strong>CT图像</strong>中提取<strong>通用特征图R</strong>。其次，不确定性感知模块在标签的交集、并集、和原标签的指导下，将通用特征图R转换为三个独立的特征图$R_{LC}$、$R_{HC}$和$R_{Uni}$。 $R_{LC}$、$R_{HC}$用于预测并集掩码和交集掩码，并将结果组合为MCM。$R_{Uni}$用于预测初步分割结果。我们稍后使用 $\cup(X)$, $\cap(X)$, $X_{Uni}$ 来表示预测的并集掩码、交集掩码和初步分割结果。第三，约束模块使用来自$R_{LC}$、$R_{HC}$ 和 $R_{Uni}$的特征感知注意块捕获首选特征，然后用特征距离约束最终预测$X_S$，确保分割结果以合理的方式受到约束。为了更好地利用多个注释，我们还引入了多注释融合损失来优化 $X_{Uni}$和 $X_S$，它计算预测和所有注释之间的平均 BCE 损失。</p>
@@ -456,7 +456,7 @@ UGMCS-Net 包含三个模块：基于 U-Net 的特征提取模块、不确定性
 <p>在图 3 中，我们展示了 UncertaintyGuided Multi-Confidence Segmentation Network (UGMCSNet) 的架构。该网络以<strong>肺结节 CT 图像作为输入</strong>，并产生两个输出：<strong>预测的多置信度掩模（MCM）<strong>和</strong>最终的分割 $X_S$</strong>。 MCM 结合了预测的并集 $\cup(X)$ 和交集 $\cap(X)$。网络的学习目标是注释集 GT，以及它们的 Union Mask $\cup(GT)$ 和 Intersection Mask $\cap(GT)$。输入图像及其相应的掩模的尺寸为 50 × 50 像素，通过从<strong>带有官方注释的 LIDC-IDRI 数据集裁剪获得</strong>。在输入网络之前，输入图像和掩模的大小被调整为 <strong>3 × 64 × 64</strong> 像素的尺寸。</p>
 <p>UGMCS-Net 包含三个模块：<strong>(1) 特征提取模块，(2) 不确定性感知模块，(3) 交并并约束模块</strong>。<strong>特征提取模块可以使用任何基于UNet结构的分割网络，初步获得形状为32×64×64的特征图R</strong>。本文使用具有五个下采样和上采样层的Attention U-Net [4] 。每个上采样层由两个卷积层和一个注意力块组成。不确定性感知模块分析 R 并生成$R_{LC}$、$R_{HC}$和$R_{Uni}$。然后将这些特征图输入 MCM BCE Loss Block 和 Multiple Annotation Loss Block，生成初始的 $\cup(X)$、$\cap(X)$ 和合理的分割 $X_{Uni}$。计算并集以 $\cup(X)$、$\cap(X)$获得 MCM。 Intersection-Union Constraining Module 学习 $R_{LC}$、$R_{HC}$和$R_{Uni}$的不同特征，并将这三个特征融合到$R_{final}$ 中。然后该模块通过分析RF ianl提供更合理的最终分割$X_S$。</p>
 </blockquote>
-<p><img loading="lazy" src="https://i.imgs.ovh/2023/12/04/32RXI.png" alt="image-20231204102934021"  />
+<p><img loading="lazy" src="https://oss.swimmingliu.cn/32RXI.png" alt="image-20231204102934021"  />
 </p>
 <h3 id="32-uncertainty-aware-module">3.2 Uncertainty-Aware Module<a hidden class="anchor" aria-hidden="true" href="#32-uncertainty-aware-module">#</a></h3>
 <blockquote>
@@ -469,12 +469,12 @@ UGMCS-Net 包含三个模块：基于 U-Net 的特征提取模块、不确定性
 <p>如上所述，$\cup(GT)$和$\cap(GT)$ 是UAM的学习目标。具体地，$\cup(GT)$表示所有可能是结节组织的区域，表示置$\cap(GT)$信度最高的结节区域。为了在极端情况之间实现平衡，我们进一步开发了一个新模块，称为交集并集约束模块（IUCM）。</p>
 <p>该模块旨在捕获所有三个学习目标的特征，并产生更合理的分割预测，可以在极端情况之间取得平衡。</p>
 </blockquote>
-<p><img loading="lazy" src="https://i.imgs.ovh/2023/12/04/32cBV.png" alt="image-20231204112217541"  />
+<p><img loading="lazy" src="https://oss.swimmingliu.cn/32cBV.png" alt="image-20231204112217541"  />
 </p>
 <blockquote>
 <p>如图 4 所示，IUCM 将 $R_{LC}$、$R_{HC}$和$R_{Uni}$作为输入，并将对应的   $R_{LC}^{\prime}$、$R_{HC}^{\prime}$和$R_{Uni}^{\prime}$与特征感知注意块 (FAAB) 对应。  $R_{LC}^{\prime}$、$R_{HC}^{\prime}$和$R_{Uni}^{\prime}$的尺寸相同，均为 32 × 32 × 32。FAAB 是基于自注意力块 [22] 和特征感知滤波器构建的。</p>
 <p>这些注意力块使用不同的特征感知滤波器处理$R_{LC}$、$R_{HC}$和$R_{Uni}$，使<strong>网络能够针对不同的学习目标制定不同的学习偏好</strong>，并<strong>获得更多有助于分割的图像特</strong>征[23]、[24]。更具体地说，假设输入$R_z$，FAAB的过程可以总结为：</p>
-<p><img loading="lazy" src="https://i.imgs.ovh/2023/12/04/32e1J.png" alt="image-20231204112629166"  />
+<p><img loading="lazy" src="https://oss.swimmingliu.cn/32e1J.png" alt="image-20231204112629166"  />
 </p>
 <p>其中 z ∈ {Uni, LC, HC},A表示自注意力架构。 <strong>Г</strong>是一个特征感知滤波器，在本研究中，$R_{Uni}$和$R_{LC}$的Г是Gabor[25]，$R_{HC}$的Г是Otsu[26]。 Γ(A($R_z$)) 与$R_z$逐像素相加，以便网络可以从输入中保留更多信息。</p>
 <p>通过对数据集和Hounsfield Unit Kernel Estimations的观察，我们可以看到，$R_{HC}$主要是密度较高的实性结节，而$R_{LC}$则包括更多的低密度组织（如毛刺），主要分布在结节的边缘。 Otsu对密度特征敏感，可以帮助网络更准确地识别高密度组织。因此，我们应用 Otsu 从 $R_{HC}$ 中提取 $R_{HC}^{\prime}$。同时，Gabor对图像边缘敏感，能够提供良好的方向选择和尺度选择特征，从而能够捕获图像局部区域多个方向的局部结构特征。因此，我们选择Gabor从$R_{LC}$和$R_{Uni}$中提取$R_{LC}^{\prime}$和$R_{Uni}^{\prime}$。关于过滤器选择的消融研究将在第四节中提供。</p>
@@ -485,19 +485,19 @@ UGMCS-Net 包含三个模块：基于 U-Net 的特征提取模块、不确定性
 <blockquote>
 <p>在图 3 中，UGMCS-Net 包含两个优化：MCM BCE 损失块和多注释损失块。</p>
 <p>MCM BCE Loss Block 计算$\cup(X)$ 和 $\cup(GT)$之间; $\cap(X)$ 和$\cap{(GT)}$之间的 BCE 损失可表示为：</p>
-<p><img loading="lazy" src="https://i.imgs.ovh/2023/12/04/32gvW.png" alt="image-20231204114117368"  />
+<p><img loading="lazy" src="https://oss.swimmingliu.cn/32gvW.png" alt="image-20231204114117368"  />
 </p>
 <p>我们使用多注释融合损失来优化多注释损失块中的$X_{Uni}$和$X_S$，表示为Φ。在我们之前的工作中，只选择了一组注释来优化$X_{Uni}$和$X_S$，这导致其他注释中有价值的信息丢失。</p>
 <p>本研究引入了多重注释融合损失，它将预测与所有可能的注释进行比较。</p>
 <p>首先，$R_{Uni}$和$R_F$最终产生$X_{Uni}$和$X_S$。其次，如图 5 所示，多注释融合损失函数计算优化对象（$X_{Uni}$和$X_S$）与注释集之间的 BCE 损失，并合并这些损失的平均值。根据我们的设计，$X_{Uni}$应该倾向于整个注释集，XS应该从注释集中学习足够的信息并产生平衡所有注释的分割，因此我们选择使用多注释融合损失来优化$X_{Uni}$和$X_S$。我们有：</p>
-<p><img loading="lazy" src="https://i.imgs.ovh/2023/12/04/3213v.png" alt="image-20231204114829902"  />
+<p><img loading="lazy" src="https://oss.swimmingliu.cn/3213v.png" alt="image-20231204114829902"  />
 </p>
 <p>网络的损失融合可以定义为：</p>
-<p><img loading="lazy" src="https://i.imgs.ovh/2023/12/04/32JQe.png" alt="image-20231204114911276"  />
+<p><img loading="lazy" src="https://oss.swimmingliu.cn/32JQe.png" alt="image-20231204114911276"  />
 </p>
 <p>其中 α1、α2 和 α3 是预定义参数。根据经验，本文中α1设置为0.5，α2设置为0.5，α3设置为1。重量选择的消融研究将在第四节中显示。</p>
 </blockquote>
-<p><img loading="lazy" src="https://i.imgs.ovh/2023/12/04/32zT3.png" alt="image-20231204114942666"  />
+<p><img loading="lazy" src="https://oss.swimmingliu.cn/32zT3.png" alt="image-20231204114942666"  />
 </p>
 <h2 id="experiment">EXPERIMENT<a hidden class="anchor" aria-hidden="true" href="#experiment">#</a></h2>
 <h3 id="41-dataset-and-experimental-settings">4.1 Dataset and Experimental Settings<a hidden class="anchor" aria-hidden="true" href="#41-dataset-and-experimental-settings">#</a></h3>
@@ -510,7 +510,7 @@ UGMCS-Net 包含三个模块：基于 U-Net 的特征提取模块、不确定性
 <blockquote>
 <p>每个结节的相关注释Label1，它是注释集中的第一个。 Probabilistic U-Net是一种基于VAE的模糊分割方法，因此我们取其四个样本的平均值作为最终的分割结果。本研究使用三个指标来评估网络对病变区域的预测能力：平均 Dice 相似系数（DSC）、交集交集（IoU）和归一化表面 Dice（NSD）[35]。在表 I 中，所有方法均使用 Label1 进行评估。</p>
 </blockquote>
-<p><img loading="lazy" src="https://i.imgs.ovh/2023/12/04/32il9.png" alt="image-20231204115626299"  />
+<p><img loading="lazy" src="https://oss.swimmingliu.cn/32il9.png" alt="image-20231204115626299"  />
 </p>
 <p>这实验数据太丰富了把！！！</p>
 <blockquote>
@@ -518,7 +518,7 @@ UGMCS-Net 包含三个模块：基于 U-Net 的特征提取模块、不确定性
 <p>图6显示了上述方法的<strong>部分分割结果</strong>。输入列中的<strong>红色框表示感兴趣的区域或结节容易出错的分割位置</strong>。<strong>结节(a)-(c)包含许多低密度区域</strong>，<strong>结节(d)-(f)在其边界处具有不规则形状</strong>，<strong>例如毛刺迹象，并且结节(g)-(h)具有空腔</strong>。 UGMCS-Net 对这些区域的分割明显比其他方法更符合病灶的实际形状。</p>
 </blockquote>
 <p>对比实验结果的套话 （可以学习一下）</p>
-<p><img loading="lazy" src="https://i.imgs.ovh/2023/12/04/32jbO.png" alt="image-20231204120024637"  />
+<p><img loading="lazy" src="https://oss.swimmingliu.cn/32jbO.png" alt="image-20231204120024637"  />
 </p>
 <p>（U-Net、Attention U-Net、R2U-Net、Channel U-Net、Nested U-Net、UGS-Net 和 UGMCS-Net 的分割结果。输入列对应的红色框表示分割时应注意的特征或结节容易出错的位置。 UGMCS-Net 列中的红色框表示 UGMCS-Net 在这些位置的分割细节。绿色框表示次优分割结果的不足之处。最后一栏是相应结节的直径，单位为毫米）</p>
 <p>这个定性结果的对比方法，值得学习。</p>
@@ -528,7 +528,7 @@ UGMCS-Net 包含三个模块：基于 U-Net 的特征提取模块、不确定性
 <p>值得注意的是，图6（g）-（h）中，标注中没有空洞，但UGMCS-Net得到的分割结果反映了空洞特征。我们选择保留这些特征有两个原因：（1）常见结节组织的密度高于肺实质。但肺结节内的空腔密度极低，甚至是空的。</p>
 <p>我们可以将它们视为结节的一部分，也可以不视为结节的一部分。 (2) 分割图应提供更多有关结节特征的信息。空腔是重要的特征，因此保留这些空腔是更好的选择。如果需要，可以使用 cv2.findContours 等方法轻松去除预测中的空洞。</p>
 </blockquote>
-<p><img loading="lazy" src="https://i.imgs.ovh/2023/12/04/3245H.png" alt="image-20231204120231502"  />
+<p><img loading="lazy" src="https://oss.swimmingliu.cn/3245H.png" alt="image-20231204120231502"  />
 </p>
 <blockquote>
 <p>表II，UGMCS-Net对于U-Net、Attention UNet、UGS-Net在Dice和IoU分数中的p值远小于0.05，并且t值的绝对值较大，表明UGMCS-Net在性能上明显优于U-Net、Attention U-Net和UGS-Net。</p>
@@ -541,13 +541,13 @@ UGMCS-Net 包含三个模块：基于 U-Net 的特征提取模块、不确定性
 <p>上面的实验是基于注释集中的第一个注释Label1 。为了消除掩码选择的影响，我们还提供了 U-Net、Attention U-Net、UGS-Net 和 UGMCS-Net 在标注集中的第二个标签 Label2 上的性能。表III中列出的实验结果表明UGMCS-Net在Label2上保持了其优越的性能。这意味着所提出的方法可以在不同的掩模选择上保持稳定的性能。在传统的训练方法中，每个结节都被分配一个单一的掩模，无法为具有复杂结构特征的结节提供足够的信息。</p>
 <p>在我们的网络中，每个结节与 2-4 个掩模相关联。通过整合多重注释融合损失，我们将更全面的信息注入到学习过程中。它对于分割具有复杂结构和低密度纹理的结节特别有益。因此，多重注释融合损失显着提高了性能，特别是对于具有复杂结构的结节。</p>
 </blockquote>
-<p><img loading="lazy" src="https://i.imgs.ovh/2023/12/04/32YXD.png" alt="image-20231204120611087"  />
+<p><img loading="lazy" src="https://oss.swimmingliu.cn/32YXD.png" alt="image-20231204120611087"  />
 </p>
 <h3 id="43-uncertain-region-prediction">4.3 Uncertain Region Prediction<a hidden class="anchor" aria-hidden="true" href="#43-uncertain-region-prediction">#</a></h3>
 <blockquote>
 <p>除了能够分割结节之外，UGMCS-Net 还可以预测更有可能是结节组织的区域和可能性较低的区域。图 7 说明了预测结果 $\cup(X)$和$\cap(X)$、最终分割结果 $X_S$ 以及生成的 MCM’。在MCM’和MCM+UGSNet中，红色表示高置信度区域，蓝色表示低置信度区域，绿色对应于最终分割$X_S$。在理想情况下，$X_S$应有效地在高置信度和低置信度区域之间取得平衡。</p>
 </blockquote>
-<p><img loading="lazy" src="https://i.imgs.ovh/2023/12/04/32dBo.png" alt="image-20231204121554528"  />
+<p><img loading="lazy" src="https://oss.swimmingliu.cn/32dBo.png" alt="image-20231204121554528"  />
 （预测交集$\cap(X)$、预测并集$\cup(X)$、最终分割$X_S$ 和 MCM 由 UGMCS-Net 生成。 MCM 中的颜色用于更好的可视化，红色表示$\cap(X)$，蓝色表示$\cup(X)$。此外，最终的分割在 MCM 中表示并标记为绿色以方便比较。红色框表示不易区分的结节区域或特征。最后一栏是相应结节的直径（以毫米为单位）)</p>
 <blockquote>
 <p>根据图 7，我们的最终分割结果位于高置信度区域和低置信度区域这两种极端情况之间。这些中间结果表明（1）我们的预测认识到所有潜在的注释，并且（2）预测被限制在$\cap(X)$和$\cup(X)$之间。</p>
@@ -556,20 +556,20 @@ UGMCS-Net 包含三个模块：基于 U-Net 的特征提取模块、不确定性
 <p>（3）MCM可以更好地<strong>分割结节的低密度组织</strong>（图7.（i）-（l）），该区域常见于<strong>磨玻璃结节</strong>，是造成<strong>专家标记差异的主要区域</strong>。 UGMCSNet通过对注释集GT和union mask $\cup(GT)$的研究，可以最大程度地识别低密度组织，这对于磨玻璃结节的诊断很有帮助。</p>
 <p>由于LC掩模尺寸较小，传统的定量评估指标如DSC和IoU不足以衡量MCM的预测质量。为了解决这个问题，我们将预测的 HC 和 LC 掩模的 HU 分布与实际的 HC 和 LC 掩模进行比较。我们假设UGMCS-Net能够合理地预测不同区域的不确定性程度。因此，预测的 HC 和 LC 掩模的 HU 值分布应与实际分布相似。图8显示预测曲线与实际曲线吻合较好，表明我们预测的区域不确定性水平在统计上是可靠的。</p>
 </blockquote>
-<p><img loading="lazy" src="https://i.imgs.ovh/2023/12/04/328JA.png" alt="image-20231204154532727"  />
+<p><img loading="lazy" src="https://oss.swimmingliu.cn/328JA.png" alt="image-20231204154532727"  />
 </p>
 <h3 id="44--ablation-study">4.4  Ablation Study<a hidden class="anchor" aria-hidden="true" href="#44--ablation-study">#</a></h3>
 <p>我真的要被这个工作量给吓鼠了，太能做实验了把</p>
 <blockquote>
 <p>模块的消融研究：如果不指出实用性，我们会在每个部分进行五倍验证。为了更好地利用多个注释的信息并增强 $R_{LC}$ 、 $R_{HC}$ 和 $R{final}$ 之间的关系，我们用<strong>多注释融合损失和交叉联合约束模块</strong>更新了 UGMCS-Net。为了进一步证明这两个模块的贡献，我们基于 UGMCS-Net 构建了 UGMCS-$Φ_a$、UGMCS-$Φ_b$、UGMCS-$Φ_a$+$Φ_b$ 和 UGMCS-IUCM 进行消融实验。在UGMCS-$Φ_a$中，多注释融合损失仅应用于$\cup(X)$;在UGMCS-$Φ_b$中，Multiple Annotation Fusion Loss仅应用于网络XS的最终输出；在UGMCS-$Φ_a$+$Φ_b$ 中，多重注释融合损失应用于$\cup(X)$和$X_S$；在UGMCS-IUCM中，我们使用USG-Net中的Intersection-Union约束模块，但没有多重注释融合损失。</p>
 </blockquote>
-<p><img loading="lazy" src="https://i.imgs.ovh/2023/12/04/32Dv5.png" alt="image-20231204155110671"  />
+<p><img loading="lazy" src="https://oss.swimmingliu.cn/32Dv5.png" alt="image-20231204155110671"  />
 </p>
 <blockquote>
 <p>我们的 UGMCS-Net 及其四种变体的性能列于<strong>表 IV</strong>，“-”表示 Attention U-Net。 V1是指没有IUCM和多重注释融合损失的UGS-Net，它作为其他变体的基础网络。</p>
 <p>结果表明：（1）UGMCS-$Φ_a$、UGMCS-$Φ_b$网络相对于UGMCS-Net的性能改进表明，所有<strong>标注信息的融合</strong>可以使网络<strong>更准确地捕获结节区域</strong>并获得更好的分割性能。 (2) UGMCS-$Φ_a$+$Φ_b$ 网络的 DSC、IoU 和 NSD 高于 UGMCS-$Φ_a$、UGMCS-$Φ_b$网络，表明同时<strong>对 UAM 和最终输出使用多重注释融合损失</strong>优于单独使用其中之一。 (3) 我们的 UGMCS-Net 优于UGMCS-$Φ_a$+$Φ_b$和 UGMCS-IUCM，证明了<strong>交集并集约束模块的有效性</strong>。尽管仅添加交集-并集约束模块（UGMCS-IUCM）时网络的<strong>定量性能略有下降</strong>，但观察到了<strong>显着的定性改进</strong>，这将在后面讨论。此外，UGMCS-Net的优越性能表明，<strong>多重注释融合损失和交叉联合约束模块</strong>可以相互增强，约束不确定性并促进更好的分割性能。</p>
 </blockquote>
-<p><img loading="lazy" src="https://i.imgs.ovh/2023/12/04/32qRX.png" alt="image-20231204155940420"  />
+<p><img loading="lazy" src="https://oss.swimmingliu.cn/32qRX.png" alt="image-20231204155940420"  />
 </p>
 <blockquote>
 <p>为了进一步验证<strong>多注释融合损失和交叉联合约束模块</strong>的有效性，我们在图 9 中使用 Grad-CAM [36]、[37] 演示了特征图可视化。<strong>每种情况下的结果代表了网络的最终预测</strong>。 <strong>M3、M2和M1分别表示不同网络配置下倒数第三个、第二个和第一个卷积层的视觉特征图</strong>。基于图9，我们观察到：（1）当将多重注释融合损失应用于$\cup(X)$或$X_S$时，网络对低密度组织的识别能力显着提高（UGMCS-$Φ_a$和UGMCS-$Φ_b$，结节A-D)； （2）$\cup(X)$或$X_S$中同时使用Multiple Annotation Fusion Loss，可以在<strong>提高对低密度组织的敏感性</strong>的基础上，使网络勾勒出结节边界更加清晰（UGMCS-$Φ_a$+$Φ_b$网络，结节A-D）。 (3) I<strong>ntersectionUnion Constraining Module</strong>使网络能够学习更多的边界特征，例如<strong>spiculation（毛刺）</strong>（UGMCS-IUCM网络，Nodule A-C）。 （4）当同时使用Multiple Annotation Fusion Loss和Intersection-Union Constraining Module时，<strong>网络注意力转移到结节边界</strong>，<strong>勾画出更加合理完整的结节区域</strong>（UGMCS-Net，Nodule A-E）。</p>
@@ -577,12 +577,12 @@ UGMCS-Net 包含三个模块：基于 U-Net 的特征提取模块、不确定性
 <p>（2）复杂结节仅占结节总数的一小部分，因此IUCM无法显着提高模型在各项指标上的得分。 (3)数据集中仍然存在一些失败案例。如图10所示，在这些情况下，UGMCS-IUCM和UGMCS-Net获得的分割掩模包含更多的结节组织并且是更准确的病变区域，但它们的DSC分数较低。</p>
 <p>由于不同医生领域的知识偏差会影响groundtruth，因此对于分割任务来说，获得更准确、更合理的分割掩模通常比更高的度量分数更有意义。</p>
 </blockquote>
-<p><img loading="lazy" src="https://i.imgs.ovh/2023/12/04/329TU.png" alt="image-20231204160632604"  />
+<p><img loading="lazy" src="https://oss.swimmingliu.cn/329TU.png" alt="image-20231204160632604"  />
 </p>
 <blockquote>
 <p>表V显示了加入UAM和IUCM后模型复杂度的增加。显然，UAM 和 IUCM 可以使模型以很少的计算成本获得更好的性能。</p>
 </blockquote>
-<p><img loading="lazy" src="https://i.imgs.ovh/2023/12/04/32Nn0.png" alt="image-20231204160703563"  />
+<p><img loading="lazy" src="https://oss.swimmingliu.cn/32Nn0.png" alt="image-20231204160703563"  />
 </p>
 <blockquote>
 <p><strong>Backbone 的消融研究</strong>：我们测试 U-Net 和 R2U-Net 作为三个模块的骨干。如表六所示，以U-Net为骨干的模型在DSC、IoU和NSD上分别获得了87.04%、78.07%和94.50%的分数。</p>
@@ -590,22 +590,22 @@ UGMCS-Net 包含三个模块：基于 U-Net 的特征提取模块、不确定性
 <p>我们之前的工作评估了 nnU-Net [22] 作为骨干网络。</p>
 <p>这个网络在这个任务中有两个缺点：（1）它占用了太多的计算资源，（2）我们只有 1860 个结节，这可能会导致过度拟合。为了平衡计算资源和性能增益，我们在本工作中选择 Attention U-Net。</p>
 </blockquote>
-<p><img loading="lazy" src="https://i.imgs.ovh/2023/12/04/32aoC.png" alt="image-20231204160804827"  />
+<p><img loading="lazy" src="https://oss.swimmingliu.cn/32aoC.png" alt="image-20231204160804827"  />
 </p>
 <blockquote>
 <p><strong>交叉点联合约束模块中滤波器的消融研究</strong>：在第 III-C 节中，我们讨论了 Otsu 对密度特征的敏感性，使模型能够准确识别高密度组织。因此，我们利用 Otsu 的方法来提取 $R_{HC}$ 的特征。相反，Gabor对图像边缘敏感并提供有效的方向和尺度选择特征，被选择用于 $R_{LC}$的特征提取。在这些部分中，我们进行了涉及 Fold1 上 IntersectionUnion 约束模块内的五个过滤器设置的实验。表 VII 概述了这些设置。如表 VII 所示，我们的最终配置产生了最高的 DSC 分数。</p>
 </blockquote>
-<p><img loading="lazy" src="https://i.imgs.ovh/2023/12/04/32v5t.png" alt="image-20231204161040265"  />
+<p><img loading="lazy" src="https://oss.swimmingliu.cn/32v5t.png" alt="image-20231204161040265"  />
 </p>
 <p>我们在图 11 中提供了 $R_{LC}^{\prime}$ 和  $R_{HC}^{\prime}$ 的特征可视化。可以看出， $R_{LC}^{\prime}$  的可视化更多地集中在结节的边缘，其中包含更多的低置信度区域。相比之下， $R_{HC}^{\prime}$ 的可视化更关注结节的核心，具有更高的分割置信度。这些可视化结果重新证明了我们过滤器设计的有效性。</p>
-<p><img loading="lazy" src="https://i.imgs.ovh/2023/12/04/3FCrm.png" alt="image-20231204161143824"  />
+<p><img loading="lazy" src="https://oss.swimmingliu.cn/3FCrm.png" alt="image-20231204161143824"  />
 </p>
 <blockquote>
 <p><strong>参数消融研究</strong>：在方程 4 中，存在三个手动设置的参数：α1 指定为 0.5，α2 指定为 0.5，α3 指定为 1。在本节中，我们进行五重验证并说明这些参数选择背后的基本原理。</p>
 <p>如表VIII所示，当α1设置为0.5，α2设置为0.5，α3设置为1时，所提出的方法达到其峰值性能。值得注意的是，α3代表最终分割的权重，这意味着XS在训练过程中发挥着重要作用。</p>
 <p>此外，我们对三个分支的概率图加权平均融合进行了实验，希望网络能够为IUCM中的每个分支选择合适的权重。然而，我们观察到与 $R_{Uni}$ 对应的分支可以为结节分割提供更通用的特征，并且比其他两个分支显得“更强”。因此，其他两个分支的权重往往会减少到 0。根据这些观察结果，我们选择直接融合概率图。</p>
 </blockquote>
-<p><img loading="lazy" src="https://i.imgs.ovh/2023/12/04/3FPBN.png" alt="image-20231204161331974"  />
+<p><img loading="lazy" src="https://oss.swimmingliu.cn/3FPBN.png" alt="image-20231204161331974"  />
 </p>
 <h3 id="45-complex-nodule-validation">4.5 Complex-Nodule Validation<a hidden class="anchor" aria-hidden="true" href="#45-complex-nodule-validation">#</a></h3>
 <blockquote>
@@ -613,10 +613,10 @@ UGMCS-Net 包含三个模块：基于 U-Net 的特征提取模块、不确定性
 <p>UGMCS-Net 在复杂结节上的性能提升是显而易见的。与Attention U-Net相比，对于U-Net上DSC分数低于60%的结节，UGMCS-$Φ_a$+$Φ_b$导致平均DSC分数提高1.58%，UGMCS-IUCM使平均DSC分数提高5.12%，UGMCS-平均 DSC 得分净产量增加了 5.45%。对于 U-Net 上 DSC 得分在 60% 到 70% 之间的结节，UGMCS-$Φ_a$+$Φ_b$、UGMCS-IUCM 和 UGMCS-Net 的平均 DSC 得分分别提高了 0.69%、3.11% 和 5.07%。同样，对于 U-Net 上 DSC 分数在 70% 至 80% 之间的结节，UGMCS-$Φ_a$+$Φ_b$、UGMCS-IUCM 和 UGMCS-Net 的平均 DSC 分数相应提高了 0.14%、1.52% 和 1.64%。从上述差异可以看出，UGMCS-IUCM对于复杂结节有很大程度的性能提升。根据表一，我们的网络在整个数据集上仅将 DSC 提高了 0.89%，但相对于 U-Net 上 DSC 分数低于 60% 的结节而言，相对于 Attention U-Net 具有很大的性能提升。这是因为具有复杂结构的结节仅占所有数据的一小部分。</p>
 <p>图12显示了<strong>一些复杂结节</strong>的分割结果。红色下标是UGMCS-Net的分段DSC，黑色下标是UNet的DSC。可以看出，U-Net分割DSC得分低于60%的结节是一些<strong>低密度或毛玻璃组织</strong>。 UGMCS-Net在这些结节中的显着改进表明UGMCS-Net可以更好地学习结节低密度组织的特征并更准确地<strong>分割低密度结节病变区域</strong>。当U-Net分割DSC得分低于70%时，可以观察到除了一些低密度结节外，一些结节还存在<strong>不规则空洞、毛刺、组织</strong>内突然出现<strong>亮点或肺壁过亮</strong>。 UGMCS-Net在这些结节上令人信服的分割性能反映了UGMCS-Net对边界特征、密度差异的学习能力以及良好的抗噪声能力。当U-Net分割DSC得分低于80%时，我们观察到许多新结节具有更多的实体组织。在这种情况下，UGMCS-Net可以准确地确定结节区域。此外，对于大多数结节，UGMCS-Net的分割结果反映了更多的语义特征，具有更强的可解释性。</p>
 </blockquote>
-<p><img loading="lazy" src="https://i.imgs.ovh/2023/12/04/3FVJR.png" alt="image-20231204161759604"  />
+<p><img loading="lazy" src="https://oss.swimmingliu.cn/3FVJR.png" alt="image-20231204161759604"  />
 </p>
 <p>复杂结节验证中的分割性能分析。 UGMCS-$Φ_a$+$Φ_b$、UGMCS-IUCM 和 UGMCS-Net 平均 DSC 和 IoU 后面是与 Attention U-Net 相应度量的差值（绿色数字）。所有指标均以百分比表示。</p>
-<p><img loading="lazy" src="https://i.imgs.ovh/2023/12/04/3FLyp.png" alt="image-20231204161811195"  />
+<p><img loading="lazy" src="https://oss.swimmingliu.cn/3FLyp.png" alt="image-20231204161811195"  />
 </p>
 <p>（复杂结节验证：该验证测试了 UGMCS-Net 对 U-Net 难以分割的肺结节进行三个级别的分割性能。每张CT图像的最后两个掩模分别是UGMCS-Net和U-Net的分割结果。U-Net的分割结果以黑色显示，UGMCS-Net以红色显示。所有指标均以百分比表示。）</p>
 <h2 id="discussions">DISCUSSIONS<a hidden class="anchor" aria-hidden="true" href="#discussions">#</a></h2>
@@ -667,11 +667,14 @@ UGMCS-Net 包含三个模块：基于 U-Net 的特征提取模块、不确定性
     </main>
     
 <footer class="footer">
-    <span>&copy; 2024 <a href="https://swimmingliu.cn/">SwimmingLiu&#39;s Blog</a></span>
+    <span>&copy; 2023-2024 <a href="https://swimmingliu.cn/">SwimmingLiu&#39;s Blog</a></span>
     <span>
         Powered by
         <a href="https://gohugo.io/" rel="noopener noreferrer" target="_blank">Hugo</a> &
         <a href="https://github.com/adityatelange/hugo-PaperMod/" rel="noopener" target="_blank">PaperMod</a>
+    </span>
+    <span>
+        <a href="https://beian.miit.gov.cn/">浙ICP备2024056260号</a>
     </span>
 </footer>
 <a href="#top" aria-label="go to top" title="Go to Top (Alt + G)" class="top-link" id="top-link" accesskey="g">

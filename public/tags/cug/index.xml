@@ -27,7 +27,7 @@ Conda安装教程：https://blog.csdn.net/JineD/article/details/129507719
 ​	https://zhuanlan.zhihu.com/p/461488682
 2.4 开始实验 在算法中指定数据集的存放路径 （相对/绝对路径均可）
 初始化算法的参数
-batch-size 批处理大小：每一次处理图片的个数，根据显卡内存进行调整 epochs	迭代次数：算法总共需要训练的轮次 workers 载入数据进程数：每一次调用多少个进程来载入数据 device 选择显卡设备： &amp;#39;0&amp;#39;使用3090，&amp;#39;1&amp;#39;使用2080ti，&amp;#39;0,1&amp;#39;使用两张卡 开始训练 # 运行训练代码 python mian.</description>
+batch-size 批处理大小：每一次处理图片的个数，根据显卡内存进行调整epochs	迭代次数：算法总共需要训练的轮次workers 载入数据进程数：每一次调用多少个进程来载入数据device 选择显卡设备： &amp;#39;0&amp;#39;使用3090，&amp;#39;1&amp;#39;使用2080ti，&amp;#39;0,1&amp;#39;使用两张卡 开始训练 # 运行训练代码 python mian.</description>
     </item>
     
   </channel>

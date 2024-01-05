@@ -399,7 +399,7 @@ Abstract提到当前医学分割模型大部分是Transformer &#43; Unet，这�
 <p>与 UNet 中的简单跳跃连接相比，EGE-UNet 在编码器和解码器之间的每个阶段都采用了 GAB。</p>
 <p>利用深度监督生成不同规模的掩模预测，这些预测用于损失函数并作为 GAB 的输入之一。</p>
 <p>通过集成这些高级模块，EGE-UNet 显着减少了参数和计算负载，同时与之前的方法相比增强了分割性能。</p>
-<p><img loading="lazy" src="https://i0.imgs.ovh/2023/11/12/nL0HA.png" alt="image-20231021142745286"  />
+<p><img loading="lazy" src="https://oss.swimmingliu.cn/nL0HA.png" alt="image-20231021142745286"  />
 </p>
 <h3 id="32-ghpa-group-multi-axis-hadamard-product-attention-module">3.2 GHPA (Group multi-axis Hadamard Product Attention module)<a hidden class="anchor" aria-hidden="true" href="#32-ghpa-group-multi-axis-hadamard-product-attention-module">#</a></h3>
 <blockquote>
@@ -413,7 +413,7 @@ Abstract提到当前医学分割模型大部分是Transformer &#43; Unet，这�
 <p>第二步，将 x1, x2, x3 的对应切片分别使用双线插值法（bilinear）在Pxy, Pzx, Pzy中进行插值。</p>
 <p>第三步，对插值后的Pxy, Pzx, Pzy，进行深度可分离卷积，然后分别和x1, x2, x3进行哈达玛乘积</p>
 <p>第四步，连接4组特征信息，然后经过深度可分离卷积融合特征。</p>
-<p><img loading="lazy" src="https://i0.imgs.ovh/2023/11/12/nLBo5.png" alt="image-20231022142317783"  />
+<p><img loading="lazy" src="https://oss.swimmingliu.cn/nLBo5.png" alt="image-20231022142317783"  />
 </p>
 <h3 id="33-gab-group-aggregation-bridge-module">3.3 GAB (Group Aggregation Bridge module)<a hidden class="anchor" aria-hidden="true" href="#33-gab-group-aggregation-bridge-module">#</a></h3>
 <blockquote>
@@ -425,13 +425,13 @@ Abstract提到当前医学分割模型大部分是Transformer &#43; Unet，这�
 <p>其次，沿通道维度将两个特征映射分为四组。（对应不同空洞卷积的扩张率：d1 = 1, d2 = 2, d3 = 5, d4 = 7）</p>
 <p>并将每一组的低级特、高级特征和掩码连接起来，总共四组融合特征。</p>
 <p>最后，将四组特征进行连接，并进行1x1卷积得到输出。</p>
-<p><img loading="lazy" src="https://i0.imgs.ovh/2023/11/12/nLIYs.png" alt="image-20231022145558617"  />
+<p><img loading="lazy" src="https://oss.swimmingliu.cn/nLIYs.png" alt="image-20231022145558617"  />
 </p>
 <h3 id="34-loss-function">3.4 Loss Function<a hidden class="anchor" aria-hidden="true" href="#34-loss-function">#</a></h3>
 <blockquote>
 <p>在本研究中，由于不同的GAB需要不同尺度的掩模信息，因此采用深度监督来计算不同阶段的损失函数，以生成更准确的掩模信息。我们的损失函数可以表示为方程（1）和（2）。其中 Bce 和 Dice 表示二元交叉熵和dice损失。 λi是不同阶段的权重。在本文中，我们默认将i=0到i=5之间的λi设置为1、0.5、0.4、0.3、0.2、0.1。</p>
 </blockquote>
-<p><img loading="lazy" src="https://i0.imgs.ovh/2023/11/12/nLs2X.png" alt="image-20231022150445506"  />
+<p><img loading="lazy" src="https://oss.swimmingliu.cn/nLs2X.png" alt="image-20231022150445506"  />
 </p>
 <p>分为6个阶段，逐一计算每个阶段的损失。然后按照权重对损失进行求和。</p>
 <h2 id="4experiments">4.Experiments<a hidden class="anchor" aria-hidden="true" href="#4experiments">#</a></h2>
@@ -443,13 +443,13 @@ Abstract提到当前医学分割模型大部分是Transformer &#43; Unet，这�
 <p>​	<strong>在公共皮肤病变分割数据集（ISIC2017 和 ISIC2018 ）进行对比实验，在ISIC2018进行消融实验</strong></p>
 <p><strong>采用并集平均交集 (mIoU)、Dice 相似度得分 (DSC) 作为评估指标</strong></p>
 <h3 id="42-comparison-experiments">4.2 Comparison Experiments<a hidden class="anchor" aria-hidden="true" href="#42-comparison-experiments">#</a></h3>
-<p><img loading="lazy" src="https://i0.imgs.ovh/2023/11/12/nLxIU.png" alt="image-20231022164845223"  />
+<p><img loading="lazy" src="https://oss.swimmingliu.cn/nLxIU.png" alt="image-20231022164845223"  />
 </p>
 <h3 id="43-ablation-experiments">4.3 Ablation Experiments<a hidden class="anchor" aria-hidden="true" href="#43-ablation-experiments">#</a></h3>
-<p><img loading="lazy" src="https://i0.imgs.ovh/2023/11/12/nLKz0.png" alt="image-20231022164916666"  />
+<p><img loading="lazy" src="https://oss.swimmingliu.cn/nLKz0.png" alt="image-20231022164916666"  />
 </p>
 <h3 id="44-qualitative-comparisons">4.4 Qualitative Comparisons<a hidden class="anchor" aria-hidden="true" href="#44-qualitative-comparisons">#</a></h3>
-<p><img loading="lazy" src="https://i0.imgs.ovh/2023/11/12/nLoCC.png" alt="image-20231022164944831"  />
+<p><img loading="lazy" src="https://oss.swimmingliu.cn/nLoCC.png" alt="image-20231022164944831"  />
 </p>
 <h2 id="5-conclusions">5. ConClusions<a hidden class="anchor" aria-hidden="true" href="#5-conclusions">#</a></h2>
 <blockquote>
@@ -479,11 +479,14 @@ Abstract提到当前医学分割模型大部分是Transformer &#43; Unet，这�
     </main>
     
 <footer class="footer">
-    <span>&copy; 2024 <a href="https://swimmingliu.cn/">SwimmingLiu&#39;s Blog</a></span>
+    <span>&copy; 2023-2024 <a href="https://swimmingliu.cn/">SwimmingLiu&#39;s Blog</a></span>
     <span>
         Powered by
         <a href="https://gohugo.io/" rel="noopener noreferrer" target="_blank">Hugo</a> &
         <a href="https://github.com/adityatelange/hugo-PaperMod/" rel="noopener" target="_blank">PaperMod</a>
+    </span>
+    <span>
+        <a href="https://beian.miit.gov.cn/">浙ICP备2024056260号</a>
     </span>
 </footer>
 <a href="#top" aria-label="go to top" title="Go to Top (Alt + G)" class="top-link" id="top-link" accesskey="g">

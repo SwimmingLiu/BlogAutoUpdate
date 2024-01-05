@@ -384,7 +384,7 @@ Introduction 随着现代深度神经网络的进步，语义图像分割取得�
 然而，基于 U-Net 的模型中的这些连接在<strong>集成低级和高级特征方面</strong>可能<strong>不够有效</strong>。例如，在 ResNet [7] 中，深度神经网络是作为<strong>多个浅层网络的集合</strong>而形成的，并且<strong>显式添加的残差连接</strong>表明，即使在百万规模的训练中，网络也很难学习<strong>恒等映射函数图像</strong>数据集。</p>
 <p><strong>对于编码器提取的特征，低级特征通常保留更多细节，但缺乏足够的语义信息，并且可能包含不需要的噪声</strong>。相反，<strong>高级特征包含更多语义信息，但由于分辨率显着降低而缺乏精确的细节（例如对象边界）</strong>。通过<strong>串联简单地融合特征</strong>将在<strong>很大程度上依赖于网络的学习能力</strong>，这<strong>通常与训练数据集的大小成正比</strong>。这是一个具有挑战性的问题，特别是在医学成像领域，<strong>通常受到有限数据的限制</strong>。这种信息融合是<strong>通过密集连接跨多个级别连接低级和高级特征</strong>来实现的，可能会限制来自<strong>不同级别的信息的贡献</strong>并可能引入噪声。另一方面，尽管<strong>引入的额外卷积并没有显着增加参数数量</strong>，但 <strong>GPU 内存消耗将会增加</strong>，因为必须<strong>存储所有中间特征图和相应的梯度</strong>以进行前向传递和后向梯度计算。这会导致 <strong>GPU 内存使用量</strong>和<strong>浮点运算 (FLOP) 增加</strong>。</p>
 </blockquote>
-<p><img loading="lazy" src="https://i.imgs.ovh/2023/12/11/mCdvu.png" alt="image-20231211193109745"  />
+<p><img loading="lazy" src="https://oss.swimmingliu.cn/mCdvu.png" alt="image-20231211193109745"  />
 </p>
 <p>(a) U-Net v2 模型的整体架构，由<strong>编码器、SDI（语义和细节注入）模块和解码器</strong>组成。 (b) SDI模块的架构。为简单起见，我们仅显示第三级特征的细化（l = 3）。 <strong>SmoothConv 表示用于特征平滑的 3 × 3 卷积</strong>。$\bigotimes$ 表示哈达玛积。</p>
 <blockquote>
@@ -400,19 +400,19 @@ Introduction 随着现代深度神经网络的进步，语义图像分割取得�
 <h3 id="22-semantics-and-detail-infusion-sdi-module">2.2 Semantics and Detail Infusion (SDI) Module<a hidden class="anchor" aria-hidden="true" href="#22-semantics-and-detail-infusion-sdi-module">#</a></h3>
 <blockquote>
 <p>利用编码器生成的分层特征图，我们首先将空间和通道注意机制[11]应用于每个级别 i 的特征 $ f^0_i$。此过程使特征能够集成局部空间信息和全局通道信息，如下所示：</p>
-<p><img loading="lazy" src="https://i.imgs.ovh/2023/12/11/mCDfl.png" alt="image-20231211200846055"  />
+<p><img loading="lazy" src="https://oss.swimmingliu.cn/mCDfl.png" alt="image-20231211200846055"  />
 </p>
 <p>其中$f^1_i$表示第 i 层处理后的特征图，$φ^s_i$ 和 $\phi^c_i$ 分别表示第 i 层<strong>空间注意力和通道注意力</strong>的参数。此外，我们应用 1 × 1 卷积将$f^1_i$的通道减少到 c，其中 c 是超参数。得到的特征图表示为$f^2_i$，其中 $f^2_i$ ∈ $R^{H_i × W_i × c}$ ，其中$H_i$、$W_i$ 和 c 分别表示 $f^2_i$ 的宽度、高度和通道。</p>
 <p>接下来，我们需要将精炼后的特征图发送到解码器。在每个解码器级别 i，我们使用  $f^2_i$ 作为目标参考。然后，我们调整每个第 j 层的特征图的大小，以匹配与  $f^2_i$  相同的分辨率，公式为：</p>
-<p><img loading="lazy" src="https://i.imgs.ovh/2023/12/11/mCEQd.png" alt="image-20231211201617247"  />
+<p><img loading="lazy" src="https://oss.swimmingliu.cn/mCEQd.png" alt="image-20231211201617247"  />
 </p>
 <p>其中 D 、 I 和 U 分别表示<strong>自适应平均池化、恒等映射和双线性插值</strong>  $f^2_i$ 到 $H_i$、$W_i$ 的分辨率，其中 1 ≤ i，j ≤ M。</p>
 <p>然后，应用 3 × 3 卷积来平滑每个调整大小的特征图 $f^3_{ij}$ ，公式为：</p>
-<p><img loading="lazy" src="https://i.imgs.ovh/2023/12/11/mCTTK.png" alt="image-20231211201928322"  />
+<p><img loading="lazy" src="https://oss.swimmingliu.cn/mCTTK.png" alt="image-20231211201928322"  />
 </p>
 <p>其中$θ_{ij}$表示平滑卷积的参数， $f^4_{ij}$ 是第i层的第j个平滑特征图。</p>
 <p>将所有第 i 级特征图调整为<strong>相同的分辨率后</strong>，我们将<strong>元素级哈达玛积应用于所有调整大小的特征图</strong>，以通过更多语义信息和更精细的细节来增强第 i 级特征，如下所示：</p>
-<p><img loading="lazy" src="https://i.imgs.ovh/2023/12/11/mC9n2.png" alt="image-20231211202225292"  />
+<p><img loading="lazy" src="https://oss.swimmingliu.cn/mC9n2.png" alt="image-20231211202225292"  />
 </p>
 <p>其中$H(·)$表示哈达玛积 (见图1(b))。然后，$f^5_i$ 被分派到第i级解码器以进行进一步的分辨率重建和分割。</p>
 </blockquote>
@@ -432,25 +432,25 @@ ISIC 数据集：使用两<strong>个皮肤病变分割数据集</strong>：ISIC
 <blockquote>
 <p>表 1 列出了 ISIC 数据集上最先进方法的比较结果。如图所示，我们提出的 UNet v2 <strong>将 DSC 分数提高了 1.44% 和 2.48%</strong>，<strong>IoU 分数提高了 2.36% 和 3.90%</strong>。<strong>分别是 ISIC 2017 和 ISIC 2018 数据集</strong>。这些改进证明了我们提出的<strong>将语义信息和更精细的细节</strong>注入<strong>每个特征图的方法的有效性</strong>。</p>
 </blockquote>
-<p><img loading="lazy" src="https://i.imgs.ovh/2023/12/11/mCGbj.png" alt="image-20231211202650574"  />
+<p><img loading="lazy" src="https://oss.swimmingliu.cn/mCGbj.png" alt="image-20231211202650574"  />
 </p>
 <blockquote>
 <p>表 2 列出了<strong>息肉分割数据集</strong>上最先进方法的比较结果。如图所示，我们提出的 U-Net v2 在 <strong>Kavasir-SEG、ClinicDB、ColonDB 和 ETIS 上优于 Poly-PVT</strong> [14]数据集，<strong>DSC 得分分别提高了 1.1%、0.7%、0.4% 和 0.3%</strong>。这强调了我们提出的方法在<strong>将语义信息和更精细的细节注入每个级别的特征图中的一致有效性</strong>。</p>
 </blockquote>
-<p><img loading="lazy" src="https://i.imgs.ovh/2023/12/11/mCN5I.png" alt="image-20231211202835003"  />
+<p><img loading="lazy" src="https://oss.swimmingliu.cn/mCN5I.png" alt="image-20231211202835003"  />
 </p>
 <h3 id="34-ablation-study">3.4 Ablation Study<a hidden class="anchor" aria-hidden="true" href="#34-ablation-study">#</a></h3>
 <blockquote>
 <p>我们使用 <strong>ISIC 2017 和 ColonDB</strong> 数据集进行消融研究，以检查 <strong>U-Net v2 的有效性</strong>，如表 3 所示。具体来说，我们使用 <strong>PVT [22] 模型作为 UNet++ [5] 的编码器</strong>。请注意，当我们的 SDI 模块被移除时，<strong>U-Net v2 将恢复为具有 PVT 主干的普通 U-Net</strong>。 **SC 表示 SDI 模块内的空间和通道关注点。**从表 3 可以看出，与不带 SDI 的 U-Net v2（即带 PVT 编码器的 U-Net）相比，<strong>UNet++ 的性能略有下降</strong>。</p>
 <p>这种下降可能归因于<strong>密集连接生成的多级特征的简单串联</strong>，这可能会<strong>混淆模型并引入噪声</strong>。表 3 表明 SDI 模块对整体性能贡献最大，突出显示我们提出的跳跃连接（即 SDI）持续带来性能改进。</p>
 </blockquote>
-<p><img loading="lazy" src="https://i.imgs.ovh/2023/12/11/mCvrV.png" alt="image-20231211203117751"  />
+<p><img loading="lazy" src="https://oss.swimmingliu.cn/mCvrV.png" alt="image-20231211203117751"  />
 </p>
 <h3 id="35-qualitative-results">3.5 Qualitative Results<a hidden class="anchor" aria-hidden="true" href="#35-qualitative-results">#</a></h3>
 <blockquote>
 <p>图 2 给出了 ISIC 2017 数据集的一些定性示例，这表明我们的 U-Net v2 能够<strong>将语义信息和更精细的细节</strong>合并到<strong>每个级别的特征图</strong>中。因此，我们的分割模型可以捕获对象边界的更精细的细节。</p>
 </blockquote>
-<p><img loading="lazy" src="https://i.imgs.ovh/2023/12/11/mCyBJ.png" alt="image-20231211203515499"  />
+<p><img loading="lazy" src="https://oss.swimmingliu.cn/mCyBJ.png" alt="image-20231211203515499"  />
 </p>
 <h3 id="36-computation-gpu-memory-and-inference-time">3.6 Computation, GPU Memory, and Inference Time<a hidden class="anchor" aria-hidden="true" href="#36-computation-gpu-memory-and-inference-time">#</a></h3>
 <blockquote>
@@ -459,7 +459,7 @@ ISIC 数据集：使用两<strong>个皮肤病变分割数据集</strong>：ISIC
 <p>从表4中可以看出，<strong>UNet++引入了更多的参数</strong>，并且由于<strong>在密集前向过程中存储中间变量</strong>（例如特征图），其<strong>GPU内存使用量更大</strong>。通常，此类中间变量比参数消耗更多的 GPU 内存。</p>
 <p>此外，<strong>U-Net v2 的 FLOPs 和 FPS 也优于</strong> UNet++。与 U-Net (PVT) 相比，我们的 U-Net v2 的 FPS 降低是有限的。</p>
 </blockquote>
-<p><img loading="lazy" src="https://i.imgs.ovh/2023/12/11/mPCJW.png" alt="image-20231211203713548"  />
+<p><img loading="lazy" src="https://oss.swimmingliu.cn/mPCJW.png" alt="image-20231211203713548"  />
 </p>
 <h2 id="conclusion">Conclusion<a hidden class="anchor" aria-hidden="true" href="#conclusion">#</a></h2>
 <blockquote>
@@ -495,11 +495,14 @@ ISIC 数据集：使用两<strong>个皮肤病变分割数据集</strong>：ISIC
     </main>
     
 <footer class="footer">
-    <span>&copy; 2024 <a href="https://swimmingliu.cn/">SwimmingLiu&#39;s Blog</a></span>
+    <span>&copy; 2023-2024 <a href="https://swimmingliu.cn/">SwimmingLiu&#39;s Blog</a></span>
     <span>
         Powered by
         <a href="https://gohugo.io/" rel="noopener noreferrer" target="_blank">Hugo</a> &
         <a href="https://github.com/adityatelange/hugo-PaperMod/" rel="noopener" target="_blank">PaperMod</a>
+    </span>
+    <span>
+        <a href="https://beian.miit.gov.cn/">浙ICP备2024056260号</a>
     </span>
 </footer>
 <a href="#top" aria-label="go to top" title="Go to Top (Alt + G)" class="top-link" id="top-link" accesskey="g">

@@ -56,7 +56,7 @@ cover:
 >
 > **联合掩码是所有注释的联合**。 **LC掩模是交集掩模和并集掩模之间的差异**。当在 LIDC-IDRI 数据集 [11] 上计算 HC 和 LC 的 Hounsfield 单位 (HU) 核估计时，**如图 1.B 所示，我们可以观察到 LC 和 HC 掩模之间的 HU 分布存在明显区别**。具体地，LC区域具有比HC区域更低的HU值。从像素分布来看，**HU值越低，对应区域的密度越低**。就CT图像特征而言，LC区域**主要由结节边缘、毛刺和磨玻璃特征等边界相关特征组成**，而**HC区域主要分布在结节核心内**。因此，我们提出了这样的假设：导致放射科医生之间差异的区域主要与**低密度组织和边界相关特征**有关。
 
-![image-20231130203343980](https://i.imgs.ovh/2023/12/04/327b2.png)
+![image-20231130203343980](https://oss.swimmingliu.cn/327b2.png)
 
 > 与其他方法不同，我们建议利用 **MCM (多重置信掩码) ** 和注释集作为具有**不同分割确定性的特征的学习指导**，有助于更好的分割性能。我们将这种训练称为**UncertaintyAware Attention Mechanism**，如图2所示。按照这种机制，我们进一步设计了用于肺结节分割的**Uncertainty-Guide Multi-Confidence Segmentation Network**（UGMCS-Net）。
 >
@@ -68,7 +68,7 @@ cover:
 
 MCM (Multi Confidence Mask) 表示 HC 和 LC的统称
 
-![image-20231130204638230](https://i.imgs.ovh/2023/12/04/32O4j.png)
+![image-20231130204638230](https://oss.swimmingliu.cn/32O4j.png)
 
 > 首先，特征提取模块从输入的**CT图像**中提取**通用特征图R**。其次，不确定性感知模块在标签的交集、并集、和原标签的指导下，将通用特征图R转换为三个独立的特征图$R_{LC}$、$R_{HC}$和$R_{Uni}$。 $R_{LC}$、$R_{HC}$用于预测并集掩码和交集掩码，并将结果组合为MCM。$R_{Uni}$用于预测初步分割结果。我们稍后使用 $\cup(X)$, $\cap(X)$, $X_{Uni}$ 来表示预测的并集掩码、交集掩码和初步分割结果。第三，约束模块使用来自$R_{LC}$、$R_{HC}$ 和 $R_{Uni}$的特征感知注意块捕获首选特征，然后用特征距离约束最终预测$X_S$，确保分割结果以合理的方式受到约束。为了更好地利用多个注释，我们还引入了多注释融合损失来优化 $X_{Uni}$和 $X_S$，它计算预测和所有注释之间的平均 BCE 损失。
 >
@@ -112,7 +112,7 @@ MCM (Multi Confidence Mask) 表示 HC 和 LC的统称
 >
 > UGMCS-Net 包含三个模块：**(1) 特征提取模块，(2) 不确定性感知模块，(3) 交并并约束模块**。**特征提取模块可以使用任何基于UNet结构的分割网络，初步获得形状为32×64×64的特征图R**。本文使用具有五个下采样和上采样层的Attention U-Net [4] 。每个上采样层由两个卷积层和一个注意力块组成。不确定性感知模块分析 R 并生成$R_{LC}$、$R_{HC}$和$R_{Uni}$。然后将这些特征图输入 MCM BCE Loss Block 和 Multiple Annotation Loss Block，生成初始的 $\cup(X)$、$\cap(X)$ 和合理的分割 $X_{Uni}$。计算并集以 $\cup(X)$、$\cap(X)$获得 MCM。 Intersection-Union Constraining Module 学习 $R_{LC}$、$R_{HC}$和$R_{Uni}$的不同特征，并将这三个特征融合到$R_{final}$ 中。然后该模块通过分析RF ianl提供更合理的最终分割$X_S$。
 
-![image-20231204102934021](https://i.imgs.ovh/2023/12/04/32RXI.png)
+![image-20231204102934021](https://oss.swimmingliu.cn/32RXI.png)
 
 ### 3.2 Uncertainty-Aware Module
 
@@ -128,13 +128,13 @@ MCM (Multi Confidence Mask) 表示 HC 和 LC的统称
 >
 > 该模块旨在捕获所有三个学习目标的特征，并产生更合理的分割预测，可以在极端情况之间取得平衡。
 
-![image-20231204112217541](https://i.imgs.ovh/2023/12/04/32cBV.png)
+![image-20231204112217541](https://oss.swimmingliu.cn/32cBV.png)
 
 > 如图 4 所示，IUCM 将 $R_{LC}$、$R_{HC}$和$R_{Uni}$作为输入，并将对应的   $R_{LC}^{\prime}$、$R_{HC}^{\prime}$和$R_{Uni}^{\prime}$与特征感知注意块 (FAAB) 对应。  $R_{LC}^{\prime}$、$R_{HC}^{\prime}$和$R_{Uni}^{\prime}$的尺寸相同，均为 32 × 32 × 32。FAAB 是基于自注意力块 [22] 和特征感知滤波器构建的。
 >
 > 这些注意力块使用不同的特征感知滤波器处理$R_{LC}$、$R_{HC}$和$R_{Uni}$，使**网络能够针对不同的学习目标制定不同的学习偏好**，并**获得更多有助于分割的图像特**征[23]、[24]。更具体地说，假设输入$R_z$，FAAB的过程可以总结为：
 >
-> ![image-20231204112629166](https://i.imgs.ovh/2023/12/04/32e1J.png)
+> ![image-20231204112629166](https://oss.swimmingliu.cn/32e1J.png)
 >
 > 其中 z ∈ {Uni, LC, HC},A表示自注意力架构。 **Г**是一个特征感知滤波器，在本研究中，$R_{Uni}$和$R_{LC}$的Г是Gabor[25]，$R_{HC}$的Г是Otsu[26]。 Γ(A($R_z$)) 与$R_z$逐像素相加，以便网络可以从输入中保留更多信息。
 >
@@ -150,7 +150,7 @@ MCM (Multi Confidence Mask) 表示 HC 和 LC的统称
 >
 > MCM BCE Loss Block 计算$\cup(X)$ 和 $\cup(GT)$之间; $\cap(X)$ 和$\cap{(GT)}$之间的 BCE 损失可表示为：
 >
-> ![image-20231204114117368](https://i.imgs.ovh/2023/12/04/32gvW.png)
+> ![image-20231204114117368](https://oss.swimmingliu.cn/32gvW.png)
 >
 > 我们使用多注释融合损失来优化多注释损失块中的$X_{Uni}$和$X_S$，表示为Φ。在我们之前的工作中，只选择了一组注释来优化$X_{Uni}$和$X_S$，这导致其他注释中有价值的信息丢失。
 >
@@ -158,15 +158,15 @@ MCM (Multi Confidence Mask) 表示 HC 和 LC的统称
 >
 > 首先，$R_{Uni}$和$R_F$最终产生$X_{Uni}$和$X_S$。其次，如图 5 所示，多注释融合损失函数计算优化对象（$X_{Uni}$和$X_S$）与注释集之间的 BCE 损失，并合并这些损失的平均值。根据我们的设计，$X_{Uni}$应该倾向于整个注释集，XS应该从注释集中学习足够的信息并产生平衡所有注释的分割，因此我们选择使用多注释融合损失来优化$X_{Uni}$和$X_S$。我们有：
 >
-> ![image-20231204114829902](https://i.imgs.ovh/2023/12/04/3213v.png)
+> ![image-20231204114829902](https://oss.swimmingliu.cn/3213v.png)
 >
 > 网络的损失融合可以定义为：
 >
-> ![image-20231204114911276](https://i.imgs.ovh/2023/12/04/32JQe.png)
+> ![image-20231204114911276](https://oss.swimmingliu.cn/32JQe.png)
 >
 > 其中 α1、α2 和 α3 是预定义参数。根据经验，本文中α1设置为0.5，α2设置为0.5，α3设置为1。重量选择的消融研究将在第四节中显示。
 
-![image-20231204114942666](https://i.imgs.ovh/2023/12/04/32zT3.png)
+![image-20231204114942666](https://oss.swimmingliu.cn/32zT3.png)
 
 ## EXPERIMENT
 
@@ -182,7 +182,7 @@ MCM (Multi Confidence Mask) 表示 HC 和 LC的统称
 
 > 每个结节的相关注释Label1，它是注释集中的第一个。 Probabilistic U-Net是一种基于VAE的模糊分割方法，因此我们取其四个样本的平均值作为最终的分割结果。本研究使用三个指标来评估网络对病变区域的预测能力：平均 Dice 相似系数（DSC）、交集交集（IoU）和归一化表面 Dice（NSD）[35]。在表 I 中，所有方法均使用 Label1 进行评估。
 
-![image-20231204115626299](https://i.imgs.ovh/2023/12/04/32il9.png)
+![image-20231204115626299](https://oss.swimmingliu.cn/32il9.png)
 
 这实验数据太丰富了把！！！
 
@@ -192,7 +192,7 @@ MCM (Multi Confidence Mask) 表示 HC 和 LC的统称
 
 对比实验结果的套话 （可以学习一下）
 
-![image-20231204120024637](https://i.imgs.ovh/2023/12/04/32jbO.png)
+![image-20231204120024637](https://oss.swimmingliu.cn/32jbO.png)
 
 （U-Net、Attention U-Net、R2U-Net、Channel U-Net、Nested U-Net、UGS-Net 和 UGMCS-Net 的分割结果。输入列对应的红色框表示分割时应注意的特征或结节容易出错的位置。 UGMCS-Net 列中的红色框表示 UGMCS-Net 在这些位置的分割细节。绿色框表示次优分割结果的不足之处。最后一栏是相应结节的直径，单位为毫米）
 
@@ -206,7 +206,7 @@ MCM (Multi Confidence Mask) 表示 HC 和 LC的统称
 >
 > 我们可以将它们视为结节的一部分，也可以不视为结节的一部分。 (2) 分割图应提供更多有关结节特征的信息。空腔是重要的特征，因此保留这些空腔是更好的选择。如果需要，可以使用 cv2.findContours 等方法轻松去除预测中的空洞。
 
-![image-20231204120231502](https://i.imgs.ovh/2023/12/04/3245H.png)
+![image-20231204120231502](https://oss.swimmingliu.cn/3245H.png)
 
 > 表II，UGMCS-Net对于U-Net、Attention UNet、UGS-Net在Dice和IoU分数中的p值远小于0.05，并且t值的绝对值较大，表明UGMCS-Net在性能上明显优于U-Net、Attention U-Net和UGS-Net。
 
@@ -217,13 +217,13 @@ MCM (Multi Confidence Mask) 表示 HC 和 LC的统称
 >
 > 在我们的网络中，每个结节与 2-4 个掩模相关联。通过整合多重注释融合损失，我们将更全面的信息注入到学习过程中。它对于分割具有复杂结构和低密度纹理的结节特别有益。因此，多重注释融合损失显着提高了性能，特别是对于具有复杂结构的结节。
 
-![image-20231204120611087](https://i.imgs.ovh/2023/12/04/32YXD.png)
+![image-20231204120611087](https://oss.swimmingliu.cn/32YXD.png)
 
 ### 4.3 Uncertain Region Prediction
 
 > 除了能够分割结节之外，UGMCS-Net 还可以预测更有可能是结节组织的区域和可能性较低的区域。图 7 说明了预测结果 $\cup(X)$和$\cap(X)$、最终分割结果 $X_S$ 以及生成的 MCM’。在MCM’和MCM+UGSNet中，红色表示高置信度区域，蓝色表示低置信度区域，绿色对应于最终分割$X_S$。在理想情况下，$X_S$应有效地在高置信度和低置信度区域之间取得平衡。
 
-![image-20231204121554528](https://i.imgs.ovh/2023/12/04/32dBo.png)（预测交集$\cap(X)$、预测并集$\cup(X)$、最终分割$X_S$ 和 MCM 由 UGMCS-Net 生成。 MCM 中的颜色用于更好的可视化，红色表示$\cap(X)$，蓝色表示$\cup(X)$。此外，最终的分割在 MCM 中表示并标记为绿色以方便比较。红色框表示不易区分的结节区域或特征。最后一栏是相应结节的直径（以毫米为单位）)
+![image-20231204121554528](https://oss.swimmingliu.cn/32dBo.png)（预测交集$\cap(X)$、预测并集$\cup(X)$、最终分割$X_S$ 和 MCM 由 UGMCS-Net 生成。 MCM 中的颜色用于更好的可视化，红色表示$\cap(X)$，蓝色表示$\cup(X)$。此外，最终的分割在 MCM 中表示并标记为绿色以方便比较。红色框表示不易区分的结节区域或特征。最后一栏是相应结节的直径（以毫米为单位）)
 
 > 根据图 7，我们的最终分割结果位于高置信度区域和低置信度区域这两种极端情况之间。这些中间结果表明（1）我们的预测认识到所有潜在的注释，并且（2）预测被限制在$\cap(X)$和$\cup(X)$之间。
 >
@@ -235,7 +235,7 @@ MCM (Multi Confidence Mask) 表示 HC 和 LC的统称
 >
 > 由于LC掩模尺寸较小，传统的定量评估指标如DSC和IoU不足以衡量MCM的预测质量。为了解决这个问题，我们将预测的 HC 和 LC 掩模的 HU 分布与实际的 HC 和 LC 掩模进行比较。我们假设UGMCS-Net能够合理地预测不同区域的不确定性程度。因此，预测的 HC 和 LC 掩模的 HU 值分布应与实际分布相似。图8显示预测曲线与实际曲线吻合较好，表明我们预测的区域不确定性水平在统计上是可靠的。
 
-![image-20231204154532727](https://i.imgs.ovh/2023/12/04/328JA.png)
+![image-20231204154532727](https://oss.swimmingliu.cn/328JA.png)
 
 ### 4.4  Ablation Study
 
@@ -243,13 +243,13 @@ MCM (Multi Confidence Mask) 表示 HC 和 LC的统称
 
 > 模块的消融研究：如果不指出实用性，我们会在每个部分进行五倍验证。为了更好地利用多个注释的信息并增强 $R_{LC}$ 、 $R_{HC}$ 和 $R{final}$ 之间的关系，我们用**多注释融合损失和交叉联合约束模块**更新了 UGMCS-Net。为了进一步证明这两个模块的贡献，我们基于 UGMCS-Net 构建了 UGMCS-$Φ_a$、UGMCS-$Φ_b$、UGMCS-$Φ_a$+$Φ_b$ 和 UGMCS-IUCM 进行消融实验。在UGMCS-$Φ_a$中，多注释融合损失仅应用于$\cup(X)$;在UGMCS-$Φ_b$中，Multiple Annotation Fusion Loss仅应用于网络XS的最终输出；在UGMCS-$Φ_a$+$Φ_b$ 中，多重注释融合损失应用于$\cup(X)$和$X_S$；在UGMCS-IUCM中，我们使用USG-Net中的Intersection-Union约束模块，但没有多重注释融合损失。
 
-![image-20231204155110671](https://i.imgs.ovh/2023/12/04/32Dv5.png)
+![image-20231204155110671](https://oss.swimmingliu.cn/32Dv5.png)
 
 > 我们的 UGMCS-Net 及其四种变体的性能列于**表 IV**，“-”表示 Attention U-Net。 V1是指没有IUCM和多重注释融合损失的UGS-Net，它作为其他变体的基础网络。
 >
 > 结果表明：（1）UGMCS-$Φ_a$、UGMCS-$Φ_b$网络相对于UGMCS-Net的性能改进表明，所有**标注信息的融合**可以使网络**更准确地捕获结节区域**并获得更好的分割性能。 (2) UGMCS-$Φ_a$+$Φ_b$ 网络的 DSC、IoU 和 NSD 高于 UGMCS-$Φ_a$、UGMCS-$Φ_b$网络，表明同时**对 UAM 和最终输出使用多重注释融合损失**优于单独使用其中之一。 (3) 我们的 UGMCS-Net 优于UGMCS-$Φ_a$+$Φ_b$和 UGMCS-IUCM，证明了**交集并集约束模块的有效性**。尽管仅添加交集-并集约束模块（UGMCS-IUCM）时网络的**定量性能略有下降**，但观察到了**显着的定性改进**，这将在后面讨论。此外，UGMCS-Net的优越性能表明，**多重注释融合损失和交叉联合约束模块**可以相互增强，约束不确定性并促进更好的分割性能。
 
-![image-20231204155940420](https://i.imgs.ovh/2023/12/04/32qRX.png)
+![image-20231204155940420](https://oss.swimmingliu.cn/32qRX.png)
 
 > 为了进一步验证**多注释融合损失和交叉联合约束模块**的有效性，我们在图 9 中使用 Grad-CAM [36]、[37] 演示了特征图可视化。**每种情况下的结果代表了网络的最终预测**。 **M3、M2和M1分别表示不同网络配置下倒数第三个、第二个和第一个卷积层的视觉特征图**。基于图9，我们观察到：（1）当将多重注释融合损失应用于$\cup(X)$或$X_S$时，网络对低密度组织的识别能力显着提高（UGMCS-$Φ_a$和UGMCS-$Φ_b$，结节A-D)； （2）$\cup(X)$或$X_S$中同时使用Multiple Annotation Fusion Loss，可以在**提高对低密度组织的敏感性**的基础上，使网络勾勒出结节边界更加清晰（UGMCS-$Φ_a$+$Φ_b$网络，结节A-D）。 (3) I**ntersectionUnion Constraining Module**使网络能够学习更多的边界特征，例如**spiculation（毛刺）**（UGMCS-IUCM网络，Nodule A-C）。 （4）当同时使用Multiple Annotation Fusion Loss和Intersection-Union Constraining Module时，**网络注意力转移到结节边界**，**勾画出更加合理完整的结节区域**（UGMCS-Net，Nodule A-E）。
 >
@@ -259,11 +259,11 @@ MCM (Multi Confidence Mask) 表示 HC 和 LC的统称
 >
 > 由于不同医生领域的知识偏差会影响groundtruth，因此对于分割任务来说，获得更准确、更合理的分割掩模通常比更高的度量分数更有意义。
 
-![image-20231204160632604](https://i.imgs.ovh/2023/12/04/329TU.png)
+![image-20231204160632604](https://oss.swimmingliu.cn/329TU.png)
 
 > 表V显示了加入UAM和IUCM后模型复杂度的增加。显然，UAM 和 IUCM 可以使模型以很少的计算成本获得更好的性能。
 
-![image-20231204160703563](https://i.imgs.ovh/2023/12/04/32Nn0.png)
+![image-20231204160703563](https://oss.swimmingliu.cn/32Nn0.png)
 
 > **Backbone 的消融研究**：我们测试 U-Net 和 R2U-Net 作为三个模块的骨干。如表六所示，以U-Net为骨干的模型在DSC、IoU和NSD上分别获得了87.04%、78.07%和94.50%的分数。
 >
@@ -273,15 +273,15 @@ MCM (Multi Confidence Mask) 表示 HC 和 LC的统称
 >
 > 这个网络在这个任务中有两个缺点：（1）它占用了太多的计算资源，（2）我们只有 1860 个结节，这可能会导致过度拟合。为了平衡计算资源和性能增益，我们在本工作中选择 Attention U-Net。
 
-![image-20231204160804827](https://i.imgs.ovh/2023/12/04/32aoC.png)
+![image-20231204160804827](https://oss.swimmingliu.cn/32aoC.png)
 
 > **交叉点联合约束模块中滤波器的消融研究**：在第 III-C 节中，我们讨论了 Otsu 对密度特征的敏感性，使模型能够准确识别高密度组织。因此，我们利用 Otsu 的方法来提取 $R_{HC}$ 的特征。相反，Gabor对图像边缘敏感并提供有效的方向和尺度选择特征，被选择用于 $R_{LC}$的特征提取。在这些部分中，我们进行了涉及 Fold1 上 IntersectionUnion 约束模块内的五个过滤器设置的实验。表 VII 概述了这些设置。如表 VII 所示，我们的最终配置产生了最高的 DSC 分数。
 
-![image-20231204161040265](https://i.imgs.ovh/2023/12/04/32v5t.png)
+![image-20231204161040265](https://oss.swimmingliu.cn/32v5t.png)
 
 我们在图 11 中提供了 $R_{LC}^{\prime}$ 和  $R_{HC}^{\prime}$ 的特征可视化。可以看出， $R_{LC}^{\prime}$  的可视化更多地集中在结节的边缘，其中包含更多的低置信度区域。相比之下， $R_{HC}^{\prime}$ 的可视化更关注结节的核心，具有更高的分割置信度。这些可视化结果重新证明了我们过滤器设计的有效性。
 
-![image-20231204161143824](https://i.imgs.ovh/2023/12/04/3FCrm.png)
+![image-20231204161143824](https://oss.swimmingliu.cn/3FCrm.png)
 
 > **参数消融研究**：在方程 4 中，存在三个手动设置的参数：α1 指定为 0.5，α2 指定为 0.5，α3 指定为 1。在本节中，我们进行五重验证并说明这些参数选择背后的基本原理。
 >
@@ -289,7 +289,7 @@ MCM (Multi Confidence Mask) 表示 HC 和 LC的统称
 >
 > 此外，我们对三个分支的概率图加权平均融合进行了实验，希望网络能够为IUCM中的每个分支选择合适的权重。然而，我们观察到与 $R_{Uni}$ 对应的分支可以为结节分割提供更通用的特征，并且比其他两个分支显得“更强”。因此，其他两个分支的权重往往会减少到 0。根据这些观察结果，我们选择直接融合概率图。
 
-![image-20231204161331974](https://i.imgs.ovh/2023/12/04/3FPBN.png)
+![image-20231204161331974](https://oss.swimmingliu.cn/3FPBN.png)
 
 ### 4.5 Complex-Nodule Validation
 
@@ -299,11 +299,11 @@ MCM (Multi Confidence Mask) 表示 HC 和 LC的统称
 >
 > 图12显示了**一些复杂结节**的分割结果。红色下标是UGMCS-Net的分段DSC，黑色下标是UNet的DSC。可以看出，U-Net分割DSC得分低于60%的结节是一些**低密度或毛玻璃组织**。 UGMCS-Net在这些结节中的显着改进表明UGMCS-Net可以更好地学习结节低密度组织的特征并更准确地**分割低密度结节病变区域**。当U-Net分割DSC得分低于70%时，可以观察到除了一些低密度结节外，一些结节还存在**不规则空洞、毛刺、组织**内突然出现**亮点或肺壁过亮**。 UGMCS-Net在这些结节上令人信服的分割性能反映了UGMCS-Net对边界特征、密度差异的学习能力以及良好的抗噪声能力。当U-Net分割DSC得分低于80%时，我们观察到许多新结节具有更多的实体组织。在这种情况下，UGMCS-Net可以准确地确定结节区域。此外，对于大多数结节，UGMCS-Net的分割结果反映了更多的语义特征，具有更强的可解释性。
 
-![image-20231204161759604](https://i.imgs.ovh/2023/12/04/3FVJR.png)
+![image-20231204161759604](https://oss.swimmingliu.cn/3FVJR.png)
 
 复杂结节验证中的分割性能分析。 UGMCS-$Φ_a$+$Φ_b$、UGMCS-IUCM 和 UGMCS-Net 平均 DSC 和 IoU 后面是与 Attention U-Net 相应度量的差值（绿色数字）。所有指标均以百分比表示。
 
-![image-20231204161811195](https://i.imgs.ovh/2023/12/04/3FLyp.png)
+![image-20231204161811195](https://oss.swimmingliu.cn/3FLyp.png)
 
 （复杂结节验证：该验证测试了 UGMCS-Net 对 U-Net 难以分割的肺结节进行三个级别的分割性能。每张CT图像的最后两个掩模分别是UGMCS-Net和U-Net的分割结果。U-Net的分割结果以黑色显示，UGMCS-Net以红色显示。所有指标均以百分比表示。）
 

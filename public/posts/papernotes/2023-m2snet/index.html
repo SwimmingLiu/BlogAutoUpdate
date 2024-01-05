@@ -406,20 +406,20 @@ RELATED WORK Medical Image Segmentation Network 根据不同器官或病变的�
 <p>LossNet权重就0.1 （ 感觉这个是为了创新而创新）</p>
 <h2 id="method">METHOD<a hidden class="anchor" aria-hidden="true" href="#method">#</a></h2>
 <p>Encoder: Res2Net + Connection: MMSB + Decoder: Plus</p>
-<p><img loading="lazy" src="https://i0.imgs.ovh/2023/11/12/nL5MV.png" alt="image-20231103191513189"  />
+<p><img loading="lazy" src="https://oss.swimmingliu.cn/nL5MV.png" alt="image-20231103191513189"  />
 </p>
 <h3 id="multi-scale-in-multi-scale-subtraction-module">Multi-scale in Multi-scale Subtraction Module<a hidden class="anchor" aria-hidden="true" href="#multi-scale-in-multi-scale-subtraction-module">#</a></h3>
 <blockquote>
 <p>我们使用 FA 和 FB 来表示相邻级别的特征图。</p>
 <p>它们都已被 ReLU 操作激活。我们定义一个基本减法单位（SU）：</p>
-<p><img loading="lazy" src="https://i0.imgs.ovh/2023/11/12/nLYSJ.png" alt="image-20231103191920790"  />
+<p><img loading="lazy" src="https://oss.swimmingliu.cn/nLYSJ.png" alt="image-20231103191920790"  />
 </p>
 <p>其中是逐元素减法运算，然后计算绝对值，Conv(·) 表示卷积层。直接对元素位置特征进行单尺度减法只是为了建立孤立像素级别上的差异关系，没有考虑病灶可能具有区域聚类的特征。与带有单尺度减法单元的MSNet MICCAI版本[27]相比，我们设计了一个强大的层内多尺度减法单元（MSU），并将MSNet改进为M2SNet。如图3所示，我们利用大小为1×1、3×3和5×5的固定全一权重的多尺度卷积滤波器根据像素-像素和区域区域模式计算细节和结构差异值。使用具有固定参数的多尺度滤波器不仅可以直接捕获匹配空间位置处的初始特征对之间的多尺度差异线索，而且可以在不引入额外参数负担的情况下实现高效训练。因此，M2SNet可以保持与MSNet相同的低计算量，并获得更高精度的性能。整个多尺度减法过程可以表述为：</p>
-<p><img loading="lazy" src="https://i0.imgs.ovh/2023/11/12/nLddW.png" alt="image-20231103192112177"  />
+<p><img loading="lazy" src="https://oss.swimmingliu.cn/nLddW.png" alt="image-20231103192112177"  />
 </p>
 <p>其中 Filter(·) n×n 表示大小为 n × n 的完整滤波器（卷积）。 MSU可以捕获FA和FB的互补信息，并突出它们从纹理到结构的差异，从而为解码器提供更丰富的信息。</p>
 <p>为了获得跨多个特征级别的高阶互补信息，我们水平和垂直连接多个MSU来计算一系列具有不同阶数和感受野的差分特征。多尺度减法模块中多尺度的细节可以在图2中找到。我们聚合了相应级别和任意级别之间的特定尺度特征（MSi 1 ）和跨尺度差分特征（MSi n6=1）。其他级别生成互补增强特征（CEi）。这个过程可以表述如下：</p>
-<p><img loading="lazy" src="https://i0.imgs.ovh/2023/11/12/nLD2v.png" alt="image-20231103192218740"  />
+<p><img loading="lazy" src="https://oss.swimmingliu.cn/nLD2v.png" alt="image-20231103192218740"  />
 </p>
 <p>最后，所有CEi参与解码，然后对息肉区域进行分割。</p>
 </blockquote>
@@ -427,14 +427,14 @@ RELATED WORK Medical Image Segmentation Network 根据不同器官或病变的�
 <h3 id="lossnet">LossNet<a hidden class="anchor" aria-hidden="true" href="#lossnet">#</a></h3>
 <blockquote>
 <p>在所提出的模型中，总训练损失可以写为：</p>
-<p><img loading="lazy" src="https://i0.imgs.ovh/2023/11/12/nLEhe.png" alt="image-20231103192433270"  />
+<p><img loading="lazy" src="https://oss.swimmingliu.cn/nLEhe.png" alt="image-20231103192433270"  />
 </p>
 <p>其中L w IoU和L w BCE表示加权IoU损失和二元交叉熵（BCE）损失，它们已在分割任务中广泛采用。我们使用与[4]、[44]、[45]中相同的定义，它们的有效性已在这些工作中得到验证。与它们不同的是，我们额外使用LossNet来进一步优化从细节到结构的分割。</p>
 <p>具体来说，我们使用 ImageNet 预训练分类网络，例如 VGG-16，分别提取预测和地面实况的多尺度特征。然后，它们的特征差异计算为损失 Lf ：</p>
-<p><img loading="lazy" src="https://i0.imgs.ovh/2023/11/12/nLTU3.png" alt="image-20231103192518893"  />
+<p><img loading="lazy" src="https://oss.swimmingliu.cn/nLTU3.png" alt="image-20231103192518893"  />
 </p>
 <p>令 F i P 和 F i G 分别表示从预测和地面实况中提取的第 i 层特征图。 l i f 计算为其欧几里德距离（L2-Loss），该距离在像素级别进行监督：</p>
-<p><img loading="lazy" src="https://i0.imgs.ovh/2023/11/12/nLG6O.png" alt="image-20231103192544929"  />
+<p><img loading="lazy" src="https://oss.swimmingliu.cn/nLG6O.png" alt="image-20231103192544929"  />
 </p>
 <p>从图4中可以看出，低层特征图包含丰富的边界信息，高层特征图描述位置信息。因此，LossNet可以在特征层面产生全面的监督。</p>
 </blockquote>
@@ -466,11 +466,14 @@ RELATED WORK Medical Image Segmentation Network 根据不同器官或病变的�
     </main>
     
 <footer class="footer">
-    <span>&copy; 2024 <a href="https://swimmingliu.cn/">SwimmingLiu&#39;s Blog</a></span>
+    <span>&copy; 2023-2024 <a href="https://swimmingliu.cn/">SwimmingLiu&#39;s Blog</a></span>
     <span>
         Powered by
         <a href="https://gohugo.io/" rel="noopener noreferrer" target="_blank">Hugo</a> &
         <a href="https://github.com/adityatelange/hugo-PaperMod/" rel="noopener" target="_blank">PaperMod</a>
+    </span>
+    <span>
+        <a href="https://beian.miit.gov.cn/">浙ICP备2024056260号</a>
     </span>
 </footer>
 <a href="#top" aria-label="go to top" title="Go to Top (Alt + G)" class="top-link" id="top-link" accesskey="g">

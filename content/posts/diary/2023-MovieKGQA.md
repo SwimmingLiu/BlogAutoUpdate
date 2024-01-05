@@ -72,7 +72,7 @@ cover:
 
 ### WorkFlow Graph
 
-![workflow graph](https://i.imgs.ovh/2023/12/29/0IEuW.png)
+![workflow graph](https://oss.swimmingliu.cn/0IEuW.png)
 
 ## Frame
 

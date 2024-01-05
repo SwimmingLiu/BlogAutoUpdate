@@ -132,6 +132,11 @@ params:
     #     minMatchCharLength: 0
     #     limit: 10 # refer: https://www.fusejs.io/api/methods.html#search
     #     keys: ["title", "permalink", "summary", "content"]
+    
+    StartYear: 2023 # 底部开始年份
+    FilingNo: 浙ICP备2024056260号 # 底部备案号
+    # PublicSecurityIconLink: 填自己的公安图标链接 # 填自己的公安图标链接,可用绝对路径，相对路径如 img/beian.png
+    # PublicNetworkSecurity: 填自己的公网安备 # 底部公网安备号    
 
 markup:
     goldmark:

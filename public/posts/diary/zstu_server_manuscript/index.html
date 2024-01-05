@@ -5,11 +5,17 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 <meta name="robots" content="index, follow">
-<title>ZSTU Server Management | SwimmingLiu&#39;s Blog</title>
-<meta name="keywords" content="Server Management, FRP">
-<meta name="description" content="FRP配置 跳板机 # frps.ini 配置 [common] bind_port = 7000 #frps服务监听的端口 token = 123 # 链接口令 ./frps -c frps.ini # 启动frps 服务器 # frpc.ini [common] server_addr = x.x.x.x # 此处为 跳板机 的公网ip server_port = 7000 # 跳板机上frps服务监听的端口 token = 123 # 链接口令 [ssh] type = tcp local_ip = 127.0.0.1 local_port = 22 # 需要暴露的内网机器的端口 remote_port = 6000 # 暴露的内网机器的端口在vps上的端口 SSH连接 ssh -p 6969 swimmingliu@server.ip # 普通ssh 连接 ssh swimmingliu@server.ip 6969	# xshell ssh连接 用户管理 添加用户 sudo adduser xxx 删除用户 sudo deluser xxx 科学上网 export http_proxy=http://127.">
+<title>ZSTU服务器使用教程 (Yang Li Lab) | SwimmingLiu&#39;s Blog</title>
+<meta name="keywords" content="Server Management">
+<meta name="description" content="安装 Xshell 和 Xftp https://www.netsarang.com/en/xshell-download/ # Xshell下载连接 https://blog.csdn.net/m0_67400972/article/details/125346023 # 安装教程 添加Xshell连接 其中 server.ip 为服务器公网ip地址，端口为 6969
+安装Anaconda3 每个用户均被分配 AnacondaAnaconda3-2023.07-1-Linux-x86_64.sh 于主目录
+bash AnacondaAnaconda3-2023.07-1-Linux-x86_64.sh # 安装anaconda3 输入 yes 后， 再按回车键 即可
+初始化Anaconda3 conda init bash	# 初始化conda 然后重新使用Xshell 连接即可
+科学上网 下载外网文件、克隆Github项目等操作，必须使用科学上网
+export http_proxy=http://127.0.0.1:7890 export https_proxy=http://127.0.0.1:7890 远程桌面连接 远程连接直接找师兄问 向日葵 和 Teamviewer 密码，连接即可
+注意事项 建议非必要不使用远程连接（由于在同一时间段内，远程连接只能单用户使用） 使用远程连接，请先阅读服务器壁纸上的注意事项 如需上传文件，尽量使用移动硬盘，到918实验室拷贝至服务器上 ">
 <meta name="author" content="SwimmingLiu">
-<link rel="canonical" href="https://swimmingliu.netlify.app/posts/diary/zstu_server_management/">
+<link rel="canonical" href="https://swimmingliu.netlify.app/posts/diary/zstu_server_manuscript/">
 <link crossorigin="anonymous" href="/assets/css/stylesheet.56574d0b8d57cdd0d704dd823c3ab0e600bd78cf5a999377277390417d6b2f3e.css" integrity="sha256-VldNC41XzdDXBN2CPDqw5gC9eM9amZN3J3OQQX1rLz4=" rel="preload stylesheet" as="style">
 <link rel="icon" href="https://swimmingliu.netlify.app/images/swimmingliu_icon.png">
 <link rel="icon" type="image/png" sizes="16x16" href="https://swimmingliu.netlify.app/images/swimmingliu_icon.png">
@@ -80,18 +86,30 @@
     });
 </script>
 
-<meta property="og:title" content="ZSTU Server Management" />
-<meta property="og:description" content="FRP配置 跳板机 # frps.ini 配置 [common] bind_port = 7000 #frps服务监听的端口 token = 123 # 链接口令 ./frps -c frps.ini # 启动frps 服务器 # frpc.ini [common] server_addr = x.x.x.x # 此处为 跳板机 的公网ip server_port = 7000 # 跳板机上frps服务监听的端口 token = 123 # 链接口令 [ssh] type = tcp local_ip = 127.0.0.1 local_port = 22 # 需要暴露的内网机器的端口 remote_port = 6000 # 暴露的内网机器的端口在vps上的端口 SSH连接 ssh -p 6969 swimmingliu@server.ip # 普通ssh 连接 ssh swimmingliu@server.ip 6969	# xshell ssh连接 用户管理 添加用户 sudo adduser xxx 删除用户 sudo deluser xxx 科学上网 export http_proxy=http://127." />
+<meta property="og:title" content="ZSTU服务器使用教程 (Yang Li Lab)" />
+<meta property="og:description" content="安装 Xshell 和 Xftp https://www.netsarang.com/en/xshell-download/ # Xshell下载连接 https://blog.csdn.net/m0_67400972/article/details/125346023 # 安装教程 添加Xshell连接 其中 server.ip 为服务器公网ip地址，端口为 6969
+安装Anaconda3 每个用户均被分配 AnacondaAnaconda3-2023.07-1-Linux-x86_64.sh 于主目录
+bash AnacondaAnaconda3-2023.07-1-Linux-x86_64.sh # 安装anaconda3 输入 yes 后， 再按回车键 即可
+初始化Anaconda3 conda init bash	# 初始化conda 然后重新使用Xshell 连接即可
+科学上网 下载外网文件、克隆Github项目等操作，必须使用科学上网
+export http_proxy=http://127.0.0.1:7890 export https_proxy=http://127.0.0.1:7890 远程桌面连接 远程连接直接找师兄问 向日葵 和 Teamviewer 密码，连接即可
+注意事项 建议非必要不使用远程连接（由于在同一时间段内，远程连接只能单用户使用） 使用远程连接，请先阅读服务器壁纸上的注意事项 如需上传文件，尽量使用移动硬盘，到918实验室拷贝至服务器上 " />
 <meta property="og:type" content="article" />
-<meta property="og:url" content="https://swimmingliu.netlify.app/posts/diary/zstu_server_management/" /><meta property="og:image" content="https://swimmingliu.netlify.app/papermod-cover.png"/><meta property="article:section" content="posts" />
-<meta property="article:published_time" content="2024-01-04T21:36:25+08:00" />
-<meta property="article:modified_time" content="2024-01-04T21:36:25+08:00" />
+<meta property="og:url" content="https://swimmingliu.netlify.app/posts/diary/zstu_server_manuscript/" /><meta property="og:image" content="https://swimmingliu.netlify.app/papermod-cover.png"/><meta property="article:section" content="posts" />
+<meta property="article:published_time" content="2024-01-05T13:47:03+08:00" />
+<meta property="article:modified_time" content="2024-01-05T13:47:03+08:00" />
 
 <meta name="twitter:card" content="summary_large_image"/>
 <meta name="twitter:image" content="https://swimmingliu.netlify.app/papermod-cover.png"/>
 
-<meta name="twitter:title" content="ZSTU Server Management"/>
-<meta name="twitter:description" content="FRP配置 跳板机 # frps.ini 配置 [common] bind_port = 7000 #frps服务监听的端口 token = 123 # 链接口令 ./frps -c frps.ini # 启动frps 服务器 # frpc.ini [common] server_addr = x.x.x.x # 此处为 跳板机 的公网ip server_port = 7000 # 跳板机上frps服务监听的端口 token = 123 # 链接口令 [ssh] type = tcp local_ip = 127.0.0.1 local_port = 22 # 需要暴露的内网机器的端口 remote_port = 6000 # 暴露的内网机器的端口在vps上的端口 SSH连接 ssh -p 6969 swimmingliu@server.ip # 普通ssh 连接 ssh swimmingliu@server.ip 6969	# xshell ssh连接 用户管理 添加用户 sudo adduser xxx 删除用户 sudo deluser xxx 科学上网 export http_proxy=http://127."/>
+<meta name="twitter:title" content="ZSTU服务器使用教程 (Yang Li Lab)"/>
+<meta name="twitter:description" content="安装 Xshell 和 Xftp https://www.netsarang.com/en/xshell-download/ # Xshell下载连接 https://blog.csdn.net/m0_67400972/article/details/125346023 # 安装教程 添加Xshell连接 其中 server.ip 为服务器公网ip地址，端口为 6969
+安装Anaconda3 每个用户均被分配 AnacondaAnaconda3-2023.07-1-Linux-x86_64.sh 于主目录
+bash AnacondaAnaconda3-2023.07-1-Linux-x86_64.sh # 安装anaconda3 输入 yes 后， 再按回车键 即可
+初始化Anaconda3 conda init bash	# 初始化conda 然后重新使用Xshell 连接即可
+科学上网 下载外网文件、克隆Github项目等操作，必须使用科学上网
+export http_proxy=http://127.0.0.1:7890 export https_proxy=http://127.0.0.1:7890 远程桌面连接 远程连接直接找师兄问 向日葵 和 Teamviewer 密码，连接即可
+注意事项 建议非必要不使用远程连接（由于在同一时间段内，远程连接只能单用户使用） 使用远程连接，请先阅读服务器壁纸上的注意事项 如需上传文件，尽量使用移动硬盘，到918实验室拷贝至服务器上 "/>
 
 
 <script type="application/ld+json">
@@ -114,8 +132,8 @@
     {
       "@type": "ListItem",
       "position":  3 ,
-      "name": "ZSTU Server Management",
-      "item": "https://swimmingliu.netlify.app/posts/diary/zstu_server_management/"
+      "name": "ZSTU服务器使用教程 (Yang Li Lab)",
+      "item": "https://swimmingliu.netlify.app/posts/diary/zstu_server_manuscript/"
     }
   ]
 }
@@ -124,24 +142,24 @@
 {
   "@context": "https://schema.org",
   "@type": "BlogPosting",
-  "headline": "ZSTU Server Management",
-  "name": "ZSTU Server Management",
-  "description": "FRP配置 跳板机 # frps.ini 配置 [common] bind_port = 7000 #frps服务监听的端口 token = 123 # 链接口令 ./frps -c frps.ini # 启动frps 服务器 # frpc.ini [common] server_addr = x.x.x.x # 此处为 跳板机 的公网ip server_port = 7000 # 跳板机上frps服务监听的端口 token = 123 # 链接口令 [ssh] type = tcp local_ip = 127.0.0.1 local_port = 22 # 需要暴露的内网机器的端口 remote_port = 6000 # 暴露的内网机器的端口在vps上的端口 SSH连接 ssh -p 6969 swimmingliu@server.ip # 普通ssh 连接 ssh swimmingliu@server.ip 6969\t# xshell ssh连接 用户管理 添加用户 sudo adduser xxx 删除用户 sudo deluser xxx 科学上网 export http_proxy=http://127.",
+  "headline": "ZSTU服务器使用教程 (Yang Li Lab)",
+  "name": "ZSTU服务器使用教程 (Yang Li Lab)",
+  "description": "安装 Xshell 和 Xftp https://www.netsarang.com/en/xshell-download/ # Xshell下载连接 https://blog.csdn.net/m0_67400972/article/details/125346023 # 安装教程 添加Xshell连接 其中 server.ip 为服务器公网ip地址，端口为 6969\n安装Anaconda3 每个用户均被分配 AnacondaAnaconda3-2023.07-1-Linux-x86_64.sh 于主目录\nbash AnacondaAnaconda3-2023.07-1-Linux-x86_64.sh # 安装anaconda3 输入 yes 后， 再按回车键 即可\n初始化Anaconda3 conda init bash\t# 初始化conda 然后重新使用Xshell 连接即可\n科学上网 下载外网文件、克隆Github项目等操作，必须使用科学上网\nexport http_proxy=http://127.0.0.1:7890 export https_proxy=http://127.0.0.1:7890 远程桌面连接 远程连接直接找师兄问 向日葵 和 Teamviewer 密码，连接即可\n注意事项 建议非必要不使用远程连接（由于在同一时间段内，远程连接只能单用户使用） 使用远程连接，请先阅读服务器壁纸上的注意事项 如需上传文件，尽量使用移动硬盘，到918实验室拷贝至服务器上 ",
   "keywords": [
-    "Server Management", "FRP"
+    "Server Management"
   ],
-  "articleBody": "FRP配置 跳板机 # frps.ini 配置 [common] bind_port = 7000 #frps服务监听的端口 token = 123 # 链接口令 ./frps -c frps.ini # 启动frps 服务器 # frpc.ini [common] server_addr = x.x.x.x # 此处为 跳板机 的公网ip server_port = 7000 # 跳板机上frps服务监听的端口 token = 123 # 链接口令 [ssh] type = tcp local_ip = 127.0.0.1 local_port = 22 # 需要暴露的内网机器的端口 remote_port = 6000 # 暴露的内网机器的端口在vps上的端口 SSH连接 ssh -p 6969 swimmingliu@server.ip # 普通ssh 连接 ssh swimmingliu@server.ip 6969\t# xshell ssh连接 用户管理 添加用户 sudo adduser xxx 删除用户 sudo deluser xxx 科学上网 export http_proxy=http://127.0.0.1:7890 export https_proxy=http://127.0.0.1:7890 Anaconda3 安装和配置 安装Anaconda3 wget --user-agent=\"Mozilla\" https://mirrors.tuna.tsinghua.edu.cn/anaconda/archive/Anaconda3-2023.07-1-Linux-x86_64.sh bash Anaconda3-2023.07-1-Linux-x86_64.sh # https://mirrors.tuna.tsinghua.edu.cn/anaconda/archive 清华源 配置之前的envs cp -r old_envs_path anaconda/envs/\t#迁移之前的envs环境 完结撒花❀❀❀ ",
-  "wordCount" : "104",
+  "articleBody": "安装 Xshell 和 Xftp https://www.netsarang.com/en/xshell-download/ # Xshell下载连接 https://blog.csdn.net/m0_67400972/article/details/125346023 # 安装教程 添加Xshell连接 其中 server.ip 为服务器公网ip地址，端口为 6969\n安装Anaconda3 每个用户均被分配 AnacondaAnaconda3-2023.07-1-Linux-x86_64.sh 于主目录\nbash AnacondaAnaconda3-2023.07-1-Linux-x86_64.sh # 安装anaconda3 输入 yes 后， 再按回车键 即可\n初始化Anaconda3 conda init bash\t# 初始化conda 然后重新使用Xshell 连接即可\n科学上网 下载外网文件、克隆Github项目等操作，必须使用科学上网\nexport http_proxy=http://127.0.0.1:7890 export https_proxy=http://127.0.0.1:7890 远程桌面连接 远程连接直接找师兄问 向日葵 和 Teamviewer 密码，连接即可\n注意事项 建议非必要不使用远程连接（由于在同一时间段内，远程连接只能单用户使用） 使用远程连接，请先阅读服务器壁纸上的注意事项 如需上传文件，尽量使用移动硬盘，到918实验室拷贝至服务器上 ",
+  "wordCount" : "52",
   "inLanguage": "en",
-  "datePublished": "2024-01-04T21:36:25+08:00",
-  "dateModified": "2024-01-04T21:36:25+08:00",
+  "datePublished": "2024-01-05T13:47:03+08:00",
+  "dateModified": "2024-01-05T13:47:03+08:00",
   "author":[{
     "@type": "Person",
     "name": "SwimmingLiu"
   }],
   "mainEntityOfPage": {
     "@type": "WebPage",
-    "@id": "https://swimmingliu.netlify.app/posts/diary/zstu_server_management/"
+    "@id": "https://swimmingliu.netlify.app/posts/diary/zstu_server_manuscript/"
   },
   "publisher": {
     "@type": "Organization",
@@ -242,9 +260,9 @@
   <header class="post-header">
     <div class="breadcrumbs"><a href="https://swimmingliu.netlify.app/">Home</a>&nbsp;»&nbsp;<a href="https://swimmingliu.netlify.app/posts/">📚 Posts</a>&nbsp;»&nbsp;<a href="https://swimmingliu.netlify.app/posts/diary/">📓 Diary</a></div>
     <h1 class="post-title">
-      ZSTU Server Management
+      ZSTU服务器使用教程 (Yang Li Lab)
     </h1>
-    <div class="post-meta"><span title='2024-01-04 21:36:25 +0800 CST'>January 4, 2024</span>&nbsp;·&nbsp;1 min&nbsp;·&nbsp;SwimmingLiu
+    <div class="post-meta"><span title='2024-01-05 13:47:03 +0800 CST'>January 5, 2024</span>&nbsp;·&nbsp;1 min&nbsp;·&nbsp;SwimmingLiu
 
 </div>
   </header> <aside id="toc-container" class="toc-container wide">
@@ -256,35 +274,19 @@
 
             <div class="inner"><ul>
                     <li>
-                        <a href="#frp%e9%85%8d%e7%bd%ae" aria-label="FRP配置">FRP配置</a><ul>
-                            
+                        <a href="#%e5%ae%89%e8%a3%85-xshell-%e5%92%8c-xftp" aria-label="安装 Xshell 和 Xftp">安装 Xshell 和 Xftp</a></li>
                     <li>
-                        <a href="#%e8%b7%b3%e6%9d%bf%e6%9c%ba" aria-label="跳板机">跳板机</a></li>
-                    <li>
-                        <a href="#%e6%9c%8d%e5%8a%a1%e5%99%a8" aria-label="服务器">服务器</a></li></ul>
-                    </li>
-                    <li>
-                        <a href="#ssh%e8%bf%9e%e6%8e%a5" aria-label="SSH连接">SSH连接</a></li>
-                    <li>
-                        <a href="#%e7%94%a8%e6%88%b7%e7%ae%a1%e7%90%86" aria-label="用户管理">用户管理</a><ul>
-                            
-                    <li>
-                        <a href="#%e6%b7%bb%e5%8a%a0%e7%94%a8%e6%88%b7" aria-label="添加用户">添加用户</a></li>
-                    <li>
-                        <a href="#%e5%88%a0%e9%99%a4%e7%94%a8%e6%88%b7" aria-label="删除用户">删除用户</a></li></ul>
-                    </li>
-                    <li>
-                        <a href="#%e7%a7%91%e5%ad%a6%e4%b8%8a%e7%bd%91" aria-label="科学上网">科学上网</a></li>
-                    <li>
-                        <a href="#anaconda3-%e5%ae%89%e8%a3%85%e5%92%8c%e9%85%8d%e7%bd%ae" aria-label="Anaconda3 安装和配置">Anaconda3 安装和配置</a><ul>
-                            
+                        <a href="#%e6%b7%bb%e5%8a%a0xshell%e8%bf%9e%e6%8e%a5" aria-label="添加Xshell连接">添加Xshell连接</a></li>
                     <li>
                         <a href="#%e5%ae%89%e8%a3%85anaconda3" aria-label="安装Anaconda3">安装Anaconda3</a></li>
                     <li>
-                        <a href="#%e9%85%8d%e7%bd%ae%e4%b9%8b%e5%89%8d%e7%9a%84envs" aria-label="配置之前的envs">配置之前的envs</a></li></ul>
-                    </li>
+                        <a href="#%e5%88%9d%e5%a7%8b%e5%8c%96anaconda3" aria-label="初始化Anaconda3">初始化Anaconda3</a></li>
                     <li>
-                        <a href="#%e5%ae%8c%e7%bb%93%e6%92%92%e8%8a%b1" aria-label="完结撒花❀❀❀">完结撒花❀❀❀</a>
+                        <a href="#%e7%a7%91%e5%ad%a6%e4%b8%8a%e7%bd%91" aria-label="科学上网">科学上网</a></li>
+                    <li>
+                        <a href="#%e8%bf%9c%e7%a8%8b%e6%a1%8c%e9%9d%a2%e8%bf%9e%e6%8e%a5" aria-label="远程桌面连接">远程桌面连接</a></li>
+                    <li>
+                        <a href="#%e6%b3%a8%e6%84%8f%e4%ba%8b%e9%a1%b9" aria-label="注意事项">注意事项</a>
                     </li>
                 </ul>
             </div>
@@ -351,44 +353,38 @@
     }
 </script>
 
-  <div class="post-content"><h2 id="frp配置">FRP配置<a hidden class="anchor" aria-hidden="true" href="#frp配置">#</a></h2>
-<h3 id="跳板机">跳板机<a hidden class="anchor" aria-hidden="true" href="#跳板机">#</a></h3>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="c1"># frps.ini 配置</span>
-</span></span><span class="line"><span class="cl"><span class="o">[</span>common<span class="o">]</span>
-</span></span><span class="line"><span class="cl"><span class="nv">bind_port</span> <span class="o">=</span> <span class="m">7000</span> <span class="c1">#frps服务监听的端口</span>
-</span></span><span class="line"><span class="cl"><span class="nv">token</span> <span class="o">=</span> <span class="m">123</span> <span class="c1"># 链接口令</span>
-</span></span></code></pre></div><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">./frps -c frps.ini <span class="c1"># 启动frps</span>
-</span></span></code></pre></div><h3 id="服务器">服务器<a hidden class="anchor" aria-hidden="true" href="#服务器">#</a></h3>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="c1"># frpc.ini</span>
-</span></span><span class="line"><span class="cl"><span class="o">[</span>common<span class="o">]</span>
-</span></span><span class="line"><span class="cl"><span class="nv">server_addr</span> <span class="o">=</span> x.x.x.x <span class="c1"># 此处为 跳板机 的公网ip</span>
-</span></span><span class="line"><span class="cl"><span class="nv">server_port</span> <span class="o">=</span> <span class="m">7000</span> <span class="c1"># 跳板机上frps服务监听的端口</span>
-</span></span><span class="line"><span class="cl"><span class="nv">token</span> <span class="o">=</span> <span class="m">123</span> <span class="c1"># 链接口令</span>
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl"><span class="o">[</span>ssh<span class="o">]</span>
-</span></span><span class="line"><span class="cl"><span class="nb">type</span> <span class="o">=</span> tcp
-</span></span><span class="line"><span class="cl"><span class="nv">local_ip</span> <span class="o">=</span> 127.0.0.1 
-</span></span><span class="line"><span class="cl"><span class="nv">local_port</span> <span class="o">=</span> <span class="m">22</span> <span class="c1"># 需要暴露的内网机器的端口</span>
-</span></span><span class="line"><span class="cl"><span class="nv">remote_port</span> <span class="o">=</span> <span class="m">6000</span> <span class="c1"># 暴露的内网机器的端口在vps上的端口</span>
-</span></span></code></pre></div><h2 id="ssh连接">SSH连接<a hidden class="anchor" aria-hidden="true" href="#ssh连接">#</a></h2>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">ssh -p <span class="m">6969</span> swimmingliu@server.ip <span class="c1"># 普通ssh 连接</span>
-</span></span><span class="line"><span class="cl">ssh swimmingliu@server.ip 6969	  <span class="c1"># xshell ssh连接</span>
-</span></span></code></pre></div><h2 id="用户管理">用户管理<a hidden class="anchor" aria-hidden="true" href="#用户管理">#</a></h2>
-<h3 id="添加用户">添加用户<a hidden class="anchor" aria-hidden="true" href="#添加用户">#</a></h3>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">sudo adduser xxx
-</span></span></code></pre></div><h3 id="删除用户">删除用户<a hidden class="anchor" aria-hidden="true" href="#删除用户">#</a></h3>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">sudo deluser xxx
-</span></span></code></pre></div><h2 id="科学上网">科学上网<a hidden class="anchor" aria-hidden="true" href="#科学上网">#</a></h2>
+  <div class="post-content"><h2 id="安装-xshell-和-xftp">安装 Xshell 和 Xftp<a hidden class="anchor" aria-hidden="true" href="#安装-xshell-和-xftp">#</a></h2>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">https://www.netsarang.com/en/xshell-download/ <span class="c1"># Xshell下载连接</span>
+</span></span><span class="line"><span class="cl">https://blog.csdn.net/m0_67400972/article/details/125346023 <span class="c1"># 安装教程</span>
+</span></span></code></pre></div><h2 id="添加xshell连接">添加Xshell连接<a hidden class="anchor" aria-hidden="true" href="#添加xshell连接">#</a></h2>
+<p><img loading="lazy" src="E:%5c%e6%9d%8e%e6%9d%a8%e8%af%be%e9%a2%98%e7%bb%84%5c%e8%ae%ba%e6%96%87%e7%ac%94%e8%ae%b0%5cimage-20240105113129928.png" alt="image-20240105113129928"  />
+</p>
+<p>其中 <code>server.ip</code> 为服务器公网ip地址，端口为 <code>6969</code></p>
+<h2 id="安装anaconda3">安装Anaconda3<a hidden class="anchor" aria-hidden="true" href="#安装anaconda3">#</a></h2>
+<p>每个用户均被分配 <code>AnacondaAnaconda3-2023.07-1-Linux-x86_64.sh </code> 于主目录</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">bash AnacondaAnaconda3-2023.07-1-Linux-x86_64.sh <span class="c1"># 安装anaconda3</span>
+</span></span></code></pre></div><p><img loading="lazy" src="E:%5c%e6%9d%8e%e6%9d%a8%e8%af%be%e9%a2%98%e7%bb%84%5c%e8%ae%ba%e6%96%87%e7%ac%94%e8%ae%b0%5cimage-20240105113942737.png" alt="image-20240105113942737"  />
+</p>
+<p>输入 <code>yes</code> 后， 再按回车键 即可</p>
+<p><img loading="lazy" src="E:%5c%e6%9d%8e%e6%9d%a8%e8%af%be%e9%a2%98%e7%bb%84%5c%e8%ae%ba%e6%96%87%e7%ac%94%e8%ae%b0%5cimage-20240105114146047.png" alt="image-20240105114146047"  />
+</p>
+<h2 id="初始化anaconda3">初始化Anaconda3<a hidden class="anchor" aria-hidden="true" href="#初始化anaconda3">#</a></h2>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">conda init bash	<span class="c1"># 初始化conda</span>
+</span></span></code></pre></div><p>然后重新使用Xshell 连接即可</p>
+<h2 id="科学上网">科学上网<a hidden class="anchor" aria-hidden="true" href="#科学上网">#</a></h2>
+<p>下载外网文件、克隆Github项目等操作，必须使用科学上网</p>
 <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="nb">export</span> <span class="nv">http_proxy</span><span class="o">=</span>http://127.0.0.1:7890
 </span></span><span class="line"><span class="cl"><span class="nb">export</span> <span class="nv">https_proxy</span><span class="o">=</span>http://127.0.0.1:7890
-</span></span></code></pre></div><h2 id="anaconda3-安装和配置">Anaconda3 安装和配置<a hidden class="anchor" aria-hidden="true" href="#anaconda3-安装和配置">#</a></h2>
-<h3 id="安装anaconda3">安装Anaconda3<a hidden class="anchor" aria-hidden="true" href="#安装anaconda3">#</a></h3>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">wget --user-agent<span class="o">=</span><span class="s2">&#34;Mozilla&#34;</span> https://mirrors.tuna.tsinghua.edu.cn/anaconda/archive/Anaconda3-2023.07-1-Linux-x86_64.sh
-</span></span><span class="line"><span class="cl">bash Anaconda3-2023.07-1-Linux-x86_64.sh
-</span></span><span class="line"><span class="cl"><span class="c1"># https://mirrors.tuna.tsinghua.edu.cn/anaconda/archive 清华源</span>
-</span></span></code></pre></div><h3 id="配置之前的envs">配置之前的envs<a hidden class="anchor" aria-hidden="true" href="#配置之前的envs">#</a></h3>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">cp -r old_envs_path anaconda/envs/		<span class="c1">#迁移之前的envs环境</span>
-</span></span></code></pre></div><h2 id="完结撒花">完结撒花❀❀❀<a hidden class="anchor" aria-hidden="true" href="#完结撒花">#</a></h2>
+</span></span></code></pre></div><p><img loading="lazy" src="E:%5c%e6%9d%8e%e6%9d%a8%e8%af%be%e9%a2%98%e7%bb%84%5c%e8%ae%ba%e6%96%87%e7%ac%94%e8%ae%b0%5cimage-20240105115600487.png" alt="image-20240105115600487"  />
+</p>
+<h2 id="远程桌面连接">远程桌面连接<a hidden class="anchor" aria-hidden="true" href="#远程桌面连接">#</a></h2>
+<p>远程连接直接找师兄问 向日葵 和 Teamviewer 密码，连接即可</p>
+<h2 id="注意事项">注意事项<a hidden class="anchor" aria-hidden="true" href="#注意事项">#</a></h2>
+<ol>
+<li>建议非必要不使用远程连接（由于在同一时间段内，远程连接只能单用户使用）</li>
+<li>使用远程连接，请先阅读服务器壁纸上的注意事项</li>
+<li>如需上传文件，尽量使用移动硬盘，到918实验室拷贝至服务器上</li>
+</ol>
 
 
   </div>
@@ -401,15 +397,10 @@
       <li><a href="https://swimmingliu.netlify.app/tags/zstu/">ZSTU</a></li>
     </ul>
 <nav class="paginav">
-  <a class="prev" href="https://swimmingliu.netlify.app/posts/diary/zstu_server_manuscript/">
-    <span class="title">« Prev</span>
-    <br>
-    <span>ZSTU服务器使用教程 (Yang Li Lab)</span>
-  </a>
-  <a class="next" href="https://swimmingliu.netlify.app/posts/diary/2023-moviekgqa/">
+  <a class="next" href="https://swimmingliu.netlify.app/posts/diary/zstu_server_management/">
     <span class="title">Next »</span>
     <br>
-    <span>MovieKGQA: 基于知识图谱和neo4j图数据库的电影知识问答系统</span>
+    <span>ZSTU Server Management</span>
   </a>
 </nav>
 

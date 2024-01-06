@@ -22,7 +22,7 @@
 安装Anaconda3 每个用户均被分配 AnacondaAnaconda3-2023.07-1-Linux-x86_64.sh 于主目录
 bash AnacondaAnaconda3-2023.07-1-Linux-x86_64.sh # 安装anaconda3 输入 yes 后， 再按回车键 即可
 初始化Anaconda3 conda init bash	# 初始化conda 然后重新使用Xshell 连接即可
-科学上网 下载外网文件、克隆Github项目等操作，必须使用科学上网
+Magic Network 下载外网文件、克隆Github项目等操作，必须使用Magic Network
 export http_proxy=http://127.0.0.1:7890 export https_proxy=http://127.0.0.1:7890 远程桌面连接 远程连接直接找师兄问 向日葵 和 Teamviewer 密码，连接即可
 注意事项 建议非必要不使用远程连接（由于在同一时间段内，远程连接只能单用户使用） 使用远程连接，请先阅读服务器壁纸上的注意事项 如需上传文件，尽量使用移动硬盘，到918实验室拷贝至服务器上 </description>
     </item>
@@ -33,7 +33,7 @@ export http_proxy=http://127.0.0.1:7890 export https_proxy=http://127.0.0.1:7890
       <pubDate>Thu, 04 Jan 2024 21:36:25 +0800</pubDate>
       
       <guid>https://swimmingliu.cn/posts/diary/zstu_server_management/</guid>
-      <description>FRP配置 跳板机 # frps.ini 配置 [common] bind_port = 7000 #frps服务监听的端口 token = 123 # 链接口令 ./frps -c frps.ini # 启动frps 服务器 # frpc.ini [common] server_addr = x.x.x.x # 此处为 跳板机 的公网ip server_port = 7000 # 跳板机上frps服务监听的端口 token = 123 # 链接口令 [ssh] type = tcp local_ip = 127.0.0.1 local_port = 22 # 需要暴露的内网机器的端口 remote_port = 6000 # 暴露的内网机器的端口在vps上的端口 SSH连接 ssh -p 6000 swimmingliu@server.ip # 普通ssh 连接 ssh swimmingliu@server.ip 6000	# xshell ssh连接 用户管理 添加用户 sudo adduser xxx 删除用户 sudo deluser xxx 科学上网 export http_proxy=http://127.</description>
+      <description>FRP配置 跳板机 # frps.ini 配置 [common] bind_port = 7000 #frps服务监听的端口 token = 123 # 链接口令 ./frps -c frps.ini # 启动frps 服务器 # frpc.ini [common] server_addr = x.x.x.x # 此处为 跳板机 的公网ip server_port = 7000 # 跳板机上frps服务监听的端口 token = 123 # 链接口令 [ssh] type = tcp local_ip = 127.0.0.1 local_port = 22 # 需要暴露的内网机器的端口 remote_port = 6000 # 暴露的内网机器的端口在vps上的端口 SSH连接 ssh -p 6000 swimmingliu@server.ip # 普通ssh 连接 ssh swimmingliu@server.ip 6000	# xshell ssh连接 用户管理 添加用户 sudo adduser xxx 删除用户 sudo deluser xxx Magic Network export http_proxy=http://127.</description>
     </item>
     
   </channel>

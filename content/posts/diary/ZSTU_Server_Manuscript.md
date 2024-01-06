@@ -71,9 +71,9 @@ conda init bash	# 初始化conda
 
 然后重新使用Xshell 连接即可
 
-## 科学上网
+## Magic Network
 
-下载外网文件、克隆Github项目等操作，必须使用科学上网
+下载外网文件、克隆Github项目等操作，必须使用Magic Network
 
 ```bash
 export http_proxy=http://127.0.0.1:7890

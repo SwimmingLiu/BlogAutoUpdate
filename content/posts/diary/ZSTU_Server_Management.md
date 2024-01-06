@@ -88,7 +88,7 @@ sudo adduser xxx
 sudo deluser xxx
 ```
 
-## 科学上网
+## Magic Network
 
 ```bash
 export http_proxy=http://127.0.0.1:7890

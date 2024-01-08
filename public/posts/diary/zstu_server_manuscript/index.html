@@ -12,8 +12,10 @@
 bash AnacondaAnaconda3-2023.07-1-Linux-x86_64.sh # 安装anaconda3 输入 yes 后， 再按回车键 即可
 初始化Anaconda3 conda init bash	# 初始化conda 然后重新使用Xshell 连接即可
 Magic Network 下载外网文件、克隆Github项目等操作，必须使用Magic Network
-export http_proxy=http://127.0.0.1:7890 export https_proxy=http://127.0.0.1:7890 远程桌面连接 远程连接直接找师兄问 向日葵 和 Teamviewer 密码，连接即可
-注意事项 建议非必要不使用远程连接（由于在同一时间段内，远程连接只能单用户使用） 使用远程连接，请先阅读服务器壁纸上的注意事项 如需上传文件，尽量使用移动硬盘，到918实验室拷贝至服务器上 ">
+export http_proxy=http://127.0.0.1:7890 export https_proxy=http://127.0.0.1:7890 取消Magic Network
+unset http_proxy unset https_proxy 如果使用上面的命令，不能连接Google. 需要远程桌面连接，打开CFW (默认是打开的)
+nohup bash /home/dell/LYJ/Clash/cfw &gt; cfw.out 国内镜像下载 pip 清华源下载
+pip install -i https://pypi.tuna.tsinghua.edu.cn/simple packge # packge为包名 conda 配置镜像">
 <meta name="author" content="SwimmingLiu">
 <link rel="canonical" href="https://swimmingliu.cn/posts/diary/zstu_server_manuscript/">
 <link crossorigin="anonymous" href="/assets/css/stylesheet.56574d0b8d57cdd0d704dd823c3ab0e600bd78cf5a999377277390417d6b2f3e.css" integrity="sha256-VldNC41XzdDXBN2CPDqw5gC9eM9amZN3J3OQQX1rLz4=" rel="preload stylesheet" as="style">
@@ -92,8 +94,10 @@ export http_proxy=http://127.0.0.1:7890 export https_proxy=http://127.0.0.1:7890
 bash AnacondaAnaconda3-2023.07-1-Linux-x86_64.sh # 安装anaconda3 输入 yes 后， 再按回车键 即可
 初始化Anaconda3 conda init bash	# 初始化conda 然后重新使用Xshell 连接即可
 Magic Network 下载外网文件、克隆Github项目等操作，必须使用Magic Network
-export http_proxy=http://127.0.0.1:7890 export https_proxy=http://127.0.0.1:7890 远程桌面连接 远程连接直接找师兄问 向日葵 和 Teamviewer 密码，连接即可
-注意事项 建议非必要不使用远程连接（由于在同一时间段内，远程连接只能单用户使用） 使用远程连接，请先阅读服务器壁纸上的注意事项 如需上传文件，尽量使用移动硬盘，到918实验室拷贝至服务器上 " />
+export http_proxy=http://127.0.0.1:7890 export https_proxy=http://127.0.0.1:7890 取消Magic Network
+unset http_proxy unset https_proxy 如果使用上面的命令，不能连接Google. 需要远程桌面连接，打开CFW (默认是打开的)
+nohup bash /home/dell/LYJ/Clash/cfw &gt; cfw.out 国内镜像下载 pip 清华源下载
+pip install -i https://pypi.tuna.tsinghua.edu.cn/simple packge # packge为包名 conda 配置镜像" />
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://swimmingliu.cn/posts/diary/zstu_server_manuscript/" /><meta property="og:image" content="https://swimmingliu.cn/papermod-cover.png"/><meta property="article:section" content="posts" />
 <meta property="article:published_time" content="2024-01-05T13:47:03+08:00" />
@@ -108,8 +112,10 @@ export http_proxy=http://127.0.0.1:7890 export https_proxy=http://127.0.0.1:7890
 bash AnacondaAnaconda3-2023.07-1-Linux-x86_64.sh # 安装anaconda3 输入 yes 后， 再按回车键 即可
 初始化Anaconda3 conda init bash	# 初始化conda 然后重新使用Xshell 连接即可
 Magic Network 下载外网文件、克隆Github项目等操作，必须使用Magic Network
-export http_proxy=http://127.0.0.1:7890 export https_proxy=http://127.0.0.1:7890 远程桌面连接 远程连接直接找师兄问 向日葵 和 Teamviewer 密码，连接即可
-注意事项 建议非必要不使用远程连接（由于在同一时间段内，远程连接只能单用户使用） 使用远程连接，请先阅读服务器壁纸上的注意事项 如需上传文件，尽量使用移动硬盘，到918实验室拷贝至服务器上 "/>
+export http_proxy=http://127.0.0.1:7890 export https_proxy=http://127.0.0.1:7890 取消Magic Network
+unset http_proxy unset https_proxy 如果使用上面的命令，不能连接Google. 需要远程桌面连接，打开CFW (默认是打开的)
+nohup bash /home/dell/LYJ/Clash/cfw &gt; cfw.out 国内镜像下载 pip 清华源下载
+pip install -i https://pypi.tuna.tsinghua.edu.cn/simple packge # packge为包名 conda 配置镜像"/>
 
 
 <script type="application/ld+json">
@@ -144,12 +150,12 @@ export http_proxy=http://127.0.0.1:7890 export https_proxy=http://127.0.0.1:7890
   "@type": "BlogPosting",
   "headline": "ZSTU服务器使用教程 (Yang Li Lab)",
   "name": "ZSTU服务器使用教程 (Yang Li Lab)",
-  "description": "安装 Xshell 和 Xftp https://www.netsarang.com/en/xshell-download/ # Xshell下载连接 https://blog.csdn.net/m0_67400972/article/details/125346023 # 安装教程 添加Xshell连接 其中 server.ip 为服务器公网ip地址，端口为 6969\n安装Anaconda3 每个用户均被分配 AnacondaAnaconda3-2023.07-1-Linux-x86_64.sh 于主目录\nbash AnacondaAnaconda3-2023.07-1-Linux-x86_64.sh # 安装anaconda3 输入 yes 后， 再按回车键 即可\n初始化Anaconda3 conda init bash\t# 初始化conda 然后重新使用Xshell 连接即可\nMagic Network 下载外网文件、克隆Github项目等操作，必须使用Magic Network\nexport http_proxy=http://127.0.0.1:7890 export https_proxy=http://127.0.0.1:7890 远程桌面连接 远程连接直接找师兄问 向日葵 和 Teamviewer 密码，连接即可\n注意事项 建议非必要不使用远程连接（由于在同一时间段内，远程连接只能单用户使用） 使用远程连接，请先阅读服务器壁纸上的注意事项 如需上传文件，尽量使用移动硬盘，到918实验室拷贝至服务器上 ",
+  "description": "安装 Xshell 和 Xftp https://www.netsarang.com/en/xshell-download/ # Xshell下载连接 https://blog.csdn.net/m0_67400972/article/details/125346023 # 安装教程 添加Xshell连接 其中 server.ip 为服务器公网ip地址，端口为 6969\n安装Anaconda3 每个用户均被分配 AnacondaAnaconda3-2023.07-1-Linux-x86_64.sh 于主目录\nbash AnacondaAnaconda3-2023.07-1-Linux-x86_64.sh # 安装anaconda3 输入 yes 后， 再按回车键 即可\n初始化Anaconda3 conda init bash\t# 初始化conda 然后重新使用Xshell 连接即可\nMagic Network 下载外网文件、克隆Github项目等操作，必须使用Magic Network\nexport http_proxy=http://127.0.0.1:7890 export https_proxy=http://127.0.0.1:7890 取消Magic Network\nunset http_proxy unset https_proxy 如果使用上面的命令，不能连接Google. 需要远程桌面连接，打开CFW (默认是打开的)\nnohup bash /home/dell/LYJ/Clash/cfw \u0026gt; cfw.out 国内镜像下载 pip 清华源下载\npip install -i https://pypi.tuna.tsinghua.edu.cn/simple packge # packge为包名 conda 配置镜像",
   "keywords": [
     "Server Management"
   ],
-  "articleBody": "安装 Xshell 和 Xftp https://www.netsarang.com/en/xshell-download/ # Xshell下载连接 https://blog.csdn.net/m0_67400972/article/details/125346023 # 安装教程 添加Xshell连接 其中 server.ip 为服务器公网ip地址，端口为 6969\n安装Anaconda3 每个用户均被分配 AnacondaAnaconda3-2023.07-1-Linux-x86_64.sh 于主目录\nbash AnacondaAnaconda3-2023.07-1-Linux-x86_64.sh # 安装anaconda3 输入 yes 后， 再按回车键 即可\n初始化Anaconda3 conda init bash\t# 初始化conda 然后重新使用Xshell 连接即可\nMagic Network 下载外网文件、克隆Github项目等操作，必须使用Magic Network\nexport http_proxy=http://127.0.0.1:7890 export https_proxy=http://127.0.0.1:7890 远程桌面连接 远程连接直接找师兄问 向日葵 和 Teamviewer 密码，连接即可\n注意事项 建议非必要不使用远程连接（由于在同一时间段内，远程连接只能单用户使用） 使用远程连接，请先阅读服务器壁纸上的注意事项 如需上传文件，尽量使用移动硬盘，到918实验室拷贝至服务器上 ",
-  "wordCount" : "54",
+  "articleBody": "安装 Xshell 和 Xftp https://www.netsarang.com/en/xshell-download/ # Xshell下载连接 https://blog.csdn.net/m0_67400972/article/details/125346023 # 安装教程 添加Xshell连接 其中 server.ip 为服务器公网ip地址，端口为 6969\n安装Anaconda3 每个用户均被分配 AnacondaAnaconda3-2023.07-1-Linux-x86_64.sh 于主目录\nbash AnacondaAnaconda3-2023.07-1-Linux-x86_64.sh # 安装anaconda3 输入 yes 后， 再按回车键 即可\n初始化Anaconda3 conda init bash\t# 初始化conda 然后重新使用Xshell 连接即可\nMagic Network 下载外网文件、克隆Github项目等操作，必须使用Magic Network\nexport http_proxy=http://127.0.0.1:7890 export https_proxy=http://127.0.0.1:7890 取消Magic Network\nunset http_proxy unset https_proxy 如果使用上面的命令，不能连接Google. 需要远程桌面连接，打开CFW (默认是打开的)\nnohup bash /home/dell/LYJ/Clash/cfw \u003e cfw.out 国内镜像下载 pip 清华源下载\npip install -i https://pypi.tuna.tsinghua.edu.cn/simple packge # packge为包名 conda 配置镜像\nconda config --add channels https://mirrors.tuna.tsinghua.edu.cn/anaconda/pkgs/free/ conda config --add channels https://mirrors.tuna.tsinghua.edu.cn/anaconda/pkgs/main/ # 以上两条是Anaconda官方库的镜像 conda config --add channels https://mirrors.tuna.tsinghua.edu.cn/anaconda/cloud/conda-forge/ # 以上是Anaconda第三方库 Conda Forge的镜像 conda config --add channels https://mirrors.tuna.tsinghua.edu.cn/anaconda/cloud/pytorch/ # 以上是Pytorch的Anaconda第三方镜像 远程桌面连接 远程连接直接找师兄问 向日葵 和 Teamviewer 密码，连接即可\n注意事项 建议非必要不使用远程连接（由于在同一时间段内，远程连接只能单用户使用） 使用远程连接，请先阅读服务器壁纸上的注意事项 如需上传文件，尽量使用移动硬盘，到918实验室拷贝至服务器上 ",
+  "wordCount" : "108",
   "inLanguage": "en",
   "datePublished": "2024-01-05T13:47:03+08:00",
   "dateModified": "2024-01-05T13:47:03+08:00",
@@ -289,6 +295,8 @@ export http_proxy=http://127.0.0.1:7890 export https_proxy=http://127.0.0.1:7890
                     <li>
                         <a href="#magic-network" aria-label="Magic Network">Magic Network</a></li>
                     <li>
+                        <a href="#%e5%9b%bd%e5%86%85%e9%95%9c%e5%83%8f%e4%b8%8b%e8%bd%bd" aria-label="国内镜像下载">国内镜像下载</a></li>
+                    <li>
                         <a href="#%e8%bf%9c%e7%a8%8b%e6%a1%8c%e9%9d%a2%e8%bf%9e%e6%8e%a5" aria-label="远程桌面连接">远程桌面连接</a></li>
                     <li>
                         <a href="#%e6%b3%a8%e6%84%8f%e4%ba%8b%e9%a1%b9" aria-label="注意事项">注意事项</a>
@@ -380,9 +388,25 @@ export http_proxy=http://127.0.0.1:7890 export https_proxy=http://127.0.0.1:7890
 <p>下载外网文件、克隆Github项目等操作，必须使用Magic Network</p>
 <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="nb">export</span> <span class="nv">http_proxy</span><span class="o">=</span>http://127.0.0.1:7890
 </span></span><span class="line"><span class="cl"><span class="nb">export</span> <span class="nv">https_proxy</span><span class="o">=</span>http://127.0.0.1:7890
+</span></span></code></pre></div><p>取消Magic Network</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="nb">unset</span> http_proxy
+</span></span><span class="line"><span class="cl"><span class="nb">unset</span> https_proxy
+</span></span></code></pre></div><p>如果使用上面的命令，不能连接Google. 需要远程桌面连接，打开CFW (默认是打开的)</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">nohup bash /home/dell/LYJ/Clash/cfw &gt; cfw.out
 </span></span></code></pre></div><p><img loading="lazy" src="https://oss.swimmingliu.cn/B6So3.png" alt="image-20240105115600487"  />
 </p>
-<h2 id="远程桌面连接">远程桌面连接<a hidden class="anchor" aria-hidden="true" href="#远程桌面连接">#</a></h2>
+<h2 id="国内镜像下载">国内镜像下载<a hidden class="anchor" aria-hidden="true" href="#国内镜像下载">#</a></h2>
+<p>pip 清华源下载</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">pip install -i https://pypi.tuna.tsinghua.edu.cn/simple packge      <span class="c1"># packge为包名</span>
+</span></span></code></pre></div><p>conda 配置镜像</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">conda config --add channels https://mirrors.tuna.tsinghua.edu.cn/anaconda/pkgs/free/
+</span></span><span class="line"><span class="cl">conda config --add channels https://mirrors.tuna.tsinghua.edu.cn/anaconda/pkgs/main/ 
+</span></span><span class="line"><span class="cl"><span class="c1"># 以上两条是Anaconda官方库的镜像</span>
+</span></span><span class="line"><span class="cl">conda config --add channels https://mirrors.tuna.tsinghua.edu.cn/anaconda/cloud/conda-forge/
+</span></span><span class="line"><span class="cl"><span class="c1"># 以上是Anaconda第三方库 Conda Forge的镜像</span>
+</span></span><span class="line"><span class="cl">conda config --add channels https://mirrors.tuna.tsinghua.edu.cn/anaconda/cloud/pytorch/
+</span></span><span class="line"><span class="cl"><span class="c1"># 以上是Pytorch的Anaconda第三方镜像</span>
+</span></span></code></pre></div><h2 id="远程桌面连接">远程桌面连接<a hidden class="anchor" aria-hidden="true" href="#远程桌面连接">#</a></h2>
 <p>远程连接直接找师兄问 向日葵 和 Teamviewer 密码，连接即可</p>
 <h2 id="注意事项">注意事项<a hidden class="anchor" aria-hidden="true" href="#注意事项">#</a></h2>
 <ol>

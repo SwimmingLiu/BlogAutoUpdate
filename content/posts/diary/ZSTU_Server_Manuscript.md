@@ -80,7 +80,40 @@ export http_proxy=http://127.0.0.1:7890
 export https_proxy=http://127.0.0.1:7890
 ```
 
+取消Magic Network
+
+```bash
+unset http_proxy
+unset https_proxy
+```
+
+如果使用上面的命令，不能连接Google. 需要远程桌面连接，打开CFW (默认是打开的)
+
+```bash
+nohup bash /home/dell/LYJ/Clash/cfw > cfw.out
+```
+
 ![image-20240105115600487](https://oss.swimmingliu.cn/B6So3.png)
+
+## 国内镜像下载
+
+pip 清华源下载
+
+```bash
+pip install -i https://pypi.tuna.tsinghua.edu.cn/simple packge      # packge为包名
+```
+
+conda 配置镜像
+
+```bash
+conda config --add channels https://mirrors.tuna.tsinghua.edu.cn/anaconda/pkgs/free/
+conda config --add channels https://mirrors.tuna.tsinghua.edu.cn/anaconda/pkgs/main/ 
+# 以上两条是Anaconda官方库的镜像
+conda config --add channels https://mirrors.tuna.tsinghua.edu.cn/anaconda/cloud/conda-forge/
+# 以上是Anaconda第三方库 Conda Forge的镜像
+conda config --add channels https://mirrors.tuna.tsinghua.edu.cn/anaconda/cloud/pytorch/
+# 以上是Pytorch的Anaconda第三方镜像
+```
 
 ## 远程桌面连接
 

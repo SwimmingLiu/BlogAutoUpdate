@@ -37,13 +37,11 @@ cover:
     relative: false
 ---
 
-# YOLOSHOW -  YOLOv5 / YOLOv7 / YOLOv8 / YOLOv9  基于 Pyside6 的图形化界面
-
 ## 介绍
 
 ***YOLOSHOW*** 是一款集合了 `YOLOv5` `YOLOv7` `YOLOv8` `YOLOv9` 算法的图形化界面程序. 
 
-[English](https://swimmingliu.cn/posts/diary/yoloshow/)  | 简体中文
+[English](https://github.com/SwimmingLiu/YOLOSHOW/blob/master/README.md)  | 简体中文
 
 ![YOLOSHOW-Screen](https://oss.swimmingliu.cn/YOLOSHOW-SCREEN.png)
 
@@ -56,6 +54,7 @@ B站演示视频 : [YOLOSHOW-YOLOv9/YOLOv8/YOLOv7/YOLOv5 GUI](https://www.bilibi
 - [x] 加入YOLOv9算法
 - [x] 调整UI (菜单栏)
 - [ ] 完成Rtsp功能
+- [ ] 支持实例分割
 
 ## 功能
 
@@ -80,8 +79,8 @@ B站演示视频 : [YOLOSHOW-YOLOv9/YOLOv8/YOLOv7/YOLOv5 GUI](https://www.bilibi
 
 ### 4. 加载超参数配置
 
-1.  程序启动时, 自动加载最近保存的超参数配置.
-2.  程序启动时, 自动保存最近修改的超参数配置.
+1.  程序启动后, 自动加载最近保存的超参数配置.
+2.  程序关闭后, 自动保存最近修改的超参数配置.
 
 ### 5. 保存检测结果
 

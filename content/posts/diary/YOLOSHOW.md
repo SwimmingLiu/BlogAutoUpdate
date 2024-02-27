@@ -37,13 +37,11 @@ cover:
     relative: false
 ---
 
-
-
 ## Introduction
 
 ***YOLOSHOW*** is a graphical user interface (GUI) application embed with`YOLOv5` `YOLOv7` `YOLOv8` `YOLOv9` algorithm. 
 
-English | [简体中文](https://swimmingliu.cn/posts/diary/yoloshow-cn/) 
+English | [简体中文](https://github.com/SwimmingLiu/YOLOSHOW/blob/master/README_cn.md) 
 
 ![YOLOSHOW-Screen](https://oss.swimmingliu.cn/YOLOSHOW-SCREEN.png)
 
@@ -58,6 +56,8 @@ Bilibili Demo Video : [YOLOSHOW-YOLOv9/YOLOv8/YOLOv7/YOLOv5 GUI](https://www.bil
 - [x] Adjust User Interface (Menu Bar)
 
 - [ ] Complete Rtsp Function
+
+- [ ] Support Instance Segmentation
 
 ## Functions
 

@@ -13,14 +13,33 @@
     <language>en</language>
     <lastBuildDate>Sun, 18 Feb 2024 19:30:06 +0800</lastBuildDate><atom:link href="https://swimmingliu.cn/tags/yolo/index.xml" rel="self" type="application/rss+xml" />
     <item>
-      <title>YOLOSHOW - YOLOv5 / YOLOv7 / YOLOv8 GUI based on Pyside6</title>
+      <title>YOLOSHOW - YOLOv5/YOLOv7/YOLOv8/YOLOv9 GUI based on Pyside6</title>
       <link>https://swimmingliu.cn/posts/diary/yoloshow/</link>
       <pubDate>Sun, 18 Feb 2024 19:30:06 +0800</pubDate>
       
       <guid>https://swimmingliu.cn/posts/diary/yoloshow/</guid>
-      <description>Introduction YOLOSHOW is a graphical user interface (GUI) application embed withYOLOv5 YOLOv7 YOLOv8 algorithm.
-Functions 1. Support Image / Video / Webcam / Folder (Batch ) Object Detection Choose Image / Video / Webcam / Folder (Batch ) in the menu bar on the left to detect objects.
-2. Change Models / Hyper Parameters dynamically When the program is running to detect targets, you can change models / hyper Parameters</description>
+      <description>Introduction YOLOSHOW is a graphical user interface (GUI) application embed withYOLOv5 YOLOv7 YOLOv8 YOLOv9 algorithm.
+English | 简体中文
+Demo Video Bilibili Demo Video : YOLOSHOW-YOLOv9/YOLOv8/YOLOv7/YOLOv5 GUI
+Todo List Add YOLOv9 Algorithm
+Adjust User Interface (Menu Bar)
+Complete Rtsp Function
+Support Instance Segmentation （ YOLOv5 &amp;amp; YOLOv8 ）
+Functions 1. Support Image / Video / Webcam / Folder (Batch ) Object Detection Choose Image / Video / Webcam / Folder (Batch ) in the menu bar on the left to detect objects.</description>
+    </item>
+    
+    <item>
+      <title>YOLOSHOW 中文版 - YOLOv5/YOLOv7/YOLOv8/YOLOv9 GUI based on Pyside6</title>
+      <link>https://swimmingliu.cn/posts/diary/yoloshow-cn/</link>
+      <pubDate>Sun, 18 Feb 2024 19:30:06 +0800</pubDate>
+      
+      <guid>https://swimmingliu.cn/posts/diary/yoloshow-cn/</guid>
+      <description>介绍 YOLOSHOW 是一款集合了 YOLOv5 YOLOv7 YOLOv8 YOLOv9 算法的图形化界面程序.
+English | 简体中文
+演示视频 B站演示视频 : YOLOSHOW-YOLOv9/YOLOv8/YOLOv7/YOLOv5 GUI
+待做清单 加入YOLOv9算法 调整UI (菜单栏) 完成Rtsp功能 支持实例分割 （ YOLOv5 &amp;amp; YOLOv8 ） 功能 1. 支持 图片 / 视频 / 摄像头 / 文件夹（批量） 目标检测 选择左侧菜单栏的图片 / 视频 / 摄像头 / 文件夹（批量）进行目标检测
+2. 动态切换模型 / 调整超参数 程序开始检测时，支持动态切换模型 / 调整超参数
+支持动态切换 YOLOv5 / YOLOv7 / YOLOv8 / YOLOv9 模型 支持动态修改 IOU / Confidence / Delay time / line thickness 超参数 3.</description>
     </item>
     
   </channel>

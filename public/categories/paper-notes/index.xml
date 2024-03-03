@@ -11,7 +11,27 @@
     </image>
     <generator>Hugo -- gohugo.io</generator>
     <language>en</language>
-    <lastBuildDate>Fri, 01 Mar 2024 15:26:23 +0800</lastBuildDate><atom:link href="https://swimmingliu.cn/categories/paper-notes/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Sun, 03 Mar 2024 15:37:07 +0800</lastBuildDate><atom:link href="https://swimmingliu.cn/categories/paper-notes/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>A Dual-Branch Framework with Prior Knowledge for Precise Segmentation of Lung Nodules in Challenging CT Scans</title>
+      <link>https://swimmingliu.cn/posts/papernotes/2023-dbnet/</link>
+      <pubDate>Sun, 03 Mar 2024 15:37:07 +0800</pubDate>
+      
+      <guid>https://swimmingliu.cn/posts/papernotes/2023-dbnet/</guid>
+      <description>Abstract 肺癌是全球最致命的癌症之一，早期诊断对于患者的生存至关重要。肺结节是早期肺癌的主要表现，通常通过 CT 扫描进行评估。如今，计算机辅助诊断系统被广泛用于辅助医生进行疾病诊断。肺结节的准确分割受到内部异质性和外部数据因素的影响。为了克服结节的细微、混合、粘附型、良性和不确定类别的分割挑战，提出了一种新的混合手动特征网络，可增强灵敏度和准确性。该方法通过双分支网络框架和多维融合模块集成特征信息。通过使用多个数据源和不同数据质量进行训练和验证，我们的方法在 LUNA16、多厚度切片图像数据集 (Multi-thickness Slice Image dataset)、LIDC 和 UniToChest 上表现出领先的性能，Dice 相似系数达到 86.89%、75.72%、84.12% 和 80.74分别超过了当前大多数肺结节分割方法。我们的方法进一步提高了肺结节分割任务的准确性、可靠性和稳定性，即使是在具有挑战性的 CT 扫描中也是如此。本研究中使用的代码发布在 GitHub 上，可通过以下 URL (https://github.com/BITEWKRER/DBNet) 获取。
+Introduction 肺癌是全球癌症相关死亡的主要原因[1]。仅在美国，预计 2023 年将有 127,070 人死于肺癌，占所有癌症死亡的 21% [2]。不幸的是，超过 50% 的肺癌病例发生在发展中国家或不发达国家，与发达国家相比，这些国家的医疗资源有限[3]。
+为了增加生存机会，早期诊断和治疗肺癌仍然至关重要。在中国，研究表明，小于1厘米的I期肺癌的5年生存率为92%。然而，晚期肺癌的5年生存率低得多，仅为7.0%[4]。利用计算机断层扫描 (CT) 进行肺癌筛查已显示出可大幅降低死亡率的潜力 [5]、[6]。低剂量CT是目前肺癌筛查最常用的方法。此外，移动CT的引入有助于解决欠发达国家和偏远地区缺乏CT扫描仪的问题[6]。由于可能没有明显的症状，检测早期肺癌的存在可能会带来重大挑战。
+这种医学背景数据可以直接借鉴，Chatgpt润色改写就完事儿
+在 CT 图像上识别肺结节提供了疾病的关键指标 [1], [3]。这些结节代表圆形异常，其大小各异，直径范围为 3 至 30 毫米 [7]。为了进一步研究肺结节，美国国家癌症研究所组装了“肺部图像数据库联盟和图像数据库资源计划（LIDC）”数据集[8]。
+欠发达地区设备不足、人员不足，导致医生的诊断和治疗时间有限[9]。在这种情况下，医生的工作量很大、重复且耗时[10]、[5]。此外，由于与CT切片相比，肺部结节性病变占据相对较小的面积，长时间和密集的CT筛查可能会导致**漏检小的、细微的或 GGO (肺磨玻璃结节) **[3]，[6]。为了解决这些问题，计算机辅助诊断系统（CAD）出现并得到了快速发展，特别是随着基于深度学习技术的诊断方法的进步。 CAD系统大大减轻了医生的工作量，最大限度地降低了未发现结节的风险，并提高了肺结节诊断的效率和可靠性。然而，当前用于肺结节分割的 CAD 系统仍然面临一些挑战。
+下面详细阐述了肺结节分割的几个现有挑战，可以从这些挑战入手
+首先，放射科医生标记的肺结节包含九个诊断特征[11]，异质性表型阻碍了肺结节分割的发展。如图1所示，实心结节（a，b）具有清晰的形状和边界，而微妙的GGO结节（e）具有低对比度和模糊的边界[4]，使得网络很容易将它们分类为背景区域。空洞（g）结节降低了网络分割的敏感性，并且由于背景和分割目标之间的极度不平衡，小结节很容易被遗漏[12]。
+由于周围多余的组织结构，血管旁或胸膜旁（c、d、f）可能会导致网络分类错误[13]。此外，部分实性结节（h）比纯GGO更致密，产生更复杂的异质纹理，更容易发展成恶性结节[14]。
+其次，肺结节内部因素造成的分割困难在于医生注释、层厚、数据来源和数据质量。数据质量差或不同医生的经验可能会导致不同的注释和注释者数量。由多名医生注释的病变区域通常更可靠，减少了潜在的临床风险。在资源有限的地区，由于 CT 扫描仪短缺和成像设备陈旧，CT 扫描质量差的情况很常见。较厚的切片更有可能产生“体积平均效应”和伪影，使医生难以达成一致的诊断。即使使用移动 CT 扫描仪也可能无法提供完整的诊断详细信息。最后，目前大多数肺结节分割方法都是基于2D图像，但这些方法忽略了空间关系，因此提出一种有效的3D肺结节分割模型来捕获肺结节的空间位置、纹理和其他详细信息变得越来越重要以避免误诊和漏诊。
+Challenge:
+异质性: 肺结节的形状多异 （实心结节、磨玻璃结节 (GGO) 、空洞结节、血管和胸膜旁边的结节）</description>
+    </item>
+    
     <item>
       <title>YOLOv9: Learning What You Want to Learn Using Programmable Gradient Information</title>
       <link>https://swimmingliu.cn/posts/papernotes/2024-yolov9/</link>

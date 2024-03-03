@@ -193,6 +193,29 @@
 
 <article class="post-entry"> 
   <header class="entry-header">
+    <h2>A Dual-Branch Framework with Prior Knowledge for Precise Segmentation of Lung Nodules in Challenging CT Scans
+    </h2>
+  </header>
+  <div class="entry-content">
+    <p>Abstract 肺癌是全球最致命的癌症之一，早期诊断对于患者的生存至关重要。肺结节是早期肺癌的主要表现，通常通过 CT 扫描进行评估。如今，计算机辅助诊断系统被广泛用于辅助医生进行疾病诊断。肺结节的准确分割受到内部异质性和外部数据因素的影响。为了克服结节的细微、混合、粘附型、良性和不确定类别的分割挑战，提出了一种新的混合手动特征网络，可增强灵敏度和准确性。该方法通过双分支网络框架和多维融合模块集成特征信息。通过使用多个数据源和不同数据质量进行训练和验证，我们的方法在 LUNA16、多厚度切片图像数据集 (Multi-thickness Slice Image dataset)、LIDC 和 UniToChest 上表现出领先的性能，Dice 相似系数达到 86.89%、75.72%、84.12% 和 80.74分别超过了当前大多数肺结节分割方法。我们的方法进一步提高了肺结节分割任务的准确性、可靠性和稳定性，即使是在具有挑战性的 CT 扫描中也是如此。本研究中使用的代码发布在 GitHub 上，可通过以下 URL (https://github.com/BITEWKRER/DBNet) 获取。
+Introduction 肺癌是全球癌症相关死亡的主要原因[1]。仅在美国，预计 2023 年将有 127,070 人死于肺癌，占所有癌症死亡的 21% [2]。不幸的是，超过 50% 的肺癌病例发生在发展中国家或不发达国家，与发达国家相比，这些国家的医疗资源有限[3]。
+为了增加生存机会，早期诊断和治疗肺癌仍然至关重要。在中国，研究表明，小于1厘米的I期肺癌的5年生存率为92%。然而，晚期肺癌的5年生存率低得多，仅为7.0%[4]。利用计算机断层扫描 (CT) 进行肺癌筛查已显示出可大幅降低死亡率的潜力 [5]、[6]。低剂量CT是目前肺癌筛查最常用的方法。此外，移动CT的引入有助于解决欠发达国家和偏远地区缺乏CT扫描仪的问题[6]。由于可能没有明显的症状，检测早期肺癌的存在可能会带来重大挑战。
+这种医学背景数据可以直接借鉴，Chatgpt润色改写就完事儿
+在 CT 图像上识别肺结节提供了疾病的关键指标 [1], [3]。这些结节代表圆形异常，其大小各异，直径范围为 3 至 30 毫米 [7]。为了进一步研究肺结节，美国国家癌症研究所组装了“肺部图像数据库联盟和图像数据库资源计划（LIDC）”数据集[8]。
+欠发达地区设备不足、人员不足，导致医生的诊断和治疗时间有限[9]。在这种情况下，医生的工作量很大、重复且耗时[10]、[5]。此外，由于与CT切片相比，肺部结节性病变占据相对较小的面积，长时间和密集的CT筛查可能会导致**漏检小的、细微的或 GGO (肺磨玻璃结节) **[3]，[6]。为了解决这些问题，计算机辅助诊断系统（CAD）出现并得到了快速发展，特别是随着基于深度学习技术的诊断方法的进步。 CAD系统大大减轻了医生的工作量，最大限度地降低了未发现结节的风险，并提高了肺结节诊断的效率和可靠性。然而，当前用于肺结节分割的 CAD 系统仍然面临一些挑战。
+下面详细阐述了肺结节分割的几个现有挑战，可以从这些挑战入手
+首先，放射科医生标记的肺结节包含九个诊断特征[11]，异质性表型阻碍了肺结节分割的发展。如图1所示，实心结节（a，b）具有清晰的形状和边界，而微妙的GGO结节（e）具有低对比度和模糊的边界[4]，使得网络很容易将它们分类为背景区域。空洞（g）结节降低了网络分割的敏感性，并且由于背景和分割目标之间的极度不平衡，小结节很容易被遗漏[12]。
+由于周围多余的组织结构，血管旁或胸膜旁（c、d、f）可能会导致网络分类错误[13]。此外，部分实性结节（h）比纯GGO更致密，产生更复杂的异质纹理，更容易发展成恶性结节[14]。
+其次，肺结节内部因素造成的分割困难在于医生注释、层厚、数据来源和数据质量。数据质量差或不同医生的经验可能会导致不同的注释和注释者数量。由多名医生注释的病变区域通常更可靠，减少了潜在的临床风险。在资源有限的地区，由于 CT 扫描仪短缺和成像设备陈旧，CT 扫描质量差的情况很常见。较厚的切片更有可能产生“体积平均效应”和伪影，使医生难以达成一致的诊断。即使使用移动 CT 扫描仪也可能无法提供完整的诊断详细信息。最后，目前大多数肺结节分割方法都是基于2D图像，但这些方法忽略了空间关系，因此提出一种有效的3D肺结节分割模型来捕获肺结节的空间位置、纹理和其他详细信息变得越来越重要以避免误诊和漏诊。
+Challenge:
+异质性: 肺结节的形状多异 （实心结节、磨玻璃结节 (GGO) 、空洞结节、血管和胸膜旁边的结节）...</p>
+  </div>
+  <footer class="entry-footer"><span title='2024-03-03 15:37:07 +0800 CST'>March 3, 2024</span>&nbsp;·&nbsp;4 min&nbsp;·&nbsp;SwimmingLiu</footer>
+  <a class="entry-link" aria-label="post link to A Dual-Branch Framework with Prior Knowledge for Precise Segmentation of Lung Nodules in Challenging CT Scans" href="https://swimmingliu.cn/posts/papernotes/2023-dbnet/"></a>
+</article>
+
+<article class="post-entry"> 
+  <header class="entry-header">
     <h2>YOLOv9: Learning What You Want to Learn Using Programmable Gradient Information
     </h2>
   </header>
@@ -287,21 +310,6 @@ Related Work 1）图像分割的网络结构：用于图像分割的典型卷积
   </div>
   <footer class="entry-footer"><span title='2023-11-28 14:55:47 +0800 CST'>November 28, 2023</span>&nbsp;·&nbsp;4 min&nbsp;·&nbsp;SwimmingLiu</footer>
   <a class="entry-link" aria-label="post link to Prior Attention Network: 用于医学图像中多病灶分割的预先注意网络" href="https://swimmingliu.cn/posts/papernotes/2022-priorattentionnetwork/"></a>
-</article>
-
-<article class="post-entry"> 
-  <header class="entry-header">
-    <h2>ACC-UNet: A Completely Convolutional UNet model for the 2020s (MICCAI2023)
-    </h2>
-  </header>
-  <div class="entry-content">
-    <p>ACC-UNet: A Completely Convolutional UNet model for the 2020s (MICCAI2023) 1. Abstract 由于ViT （Vision Transformer）的引入，UNet和Transformer融合已成为大趋势。最近，又有很多研究人员开始重新思考卷积模型，比如将ConvNext嵌入到ResNet，能够达到Swin Transformer的水平。受此启发，作者提出了一个纯粹的卷积UNET模型 （ACC-UNet），并且超越基于Transfomer的模型(如Swin-UNET或UCTransNet)。 作者研究了基于Transfomer的UNET模型优点：长范围依赖关系和跨级别跳过连接。 ACC-UNet结合了卷积神经网络（ConvNets）的内在归纳偏差和Transformer的设计决策 卷积神经网络（ConvNets）的内在归纳偏差：卷积神经网络具有天生的归纳偏差，这意味着它们在处理图像等数据时具有一些固有的假设和特点。例如，卷积神经网络擅长处理局部特征、平移不变性等，这些特点使它们在图像处理任务中表现出色。 Transformer的设计决策：Transformer是一种不同的神经网络架构，它采用了一些独特的设计决策，例如自注意力机制和位置编码等。这些设计决策使得Transformer在处理长距离依赖性、全局关系等方面表现出色，适合处理序列数据和具有远程依赖的任务。 ACC-UNet 在 5 个不同的医学图像分割基准上进行了评估，并且始终优于卷积网络、Transfomer及其混合网络。
-2.Introduction 语义分割是计算机辅助医学图像分析的重要组成部分，可识别并突出显示各种诊断任务中感兴趣的区域。然而，由于涉及图像模态和采集以及病理和生物变化的各种因素，这通常变得复杂[18]。深度学习在这一领域的应用无疑在这方面受益匪浅。最值得注意的是，自推出以来，UNet 模型 [19] 在医学图像分割方面表现出了惊人的功效。结果，UNet 及其衍生品已成为事实上的标准[25]。
-学习一下这里的背景描述
-原始的 UNet 模型包含对称的编码器-解码器架构（图 1a）并采用跳跃连接，这为解码器提供了在编码器的池化操作期间可能丢失的空间信息。尽管通过简单串联的信息传播提高了性能，但编码器-解码器特征图之间可能存在语义差距。这导致了第二类 UNet 的发展（图 1b）。 U-Net&#43;&#43; [26] 利用密集连接，而 MultiResUNet [11] 在跳过连接上添加了额外的卷积块作为潜在的补救措施。到目前为止，UNet 的历史上所有创新都是使用 CNN 进行的。然而，2020 年的十年给计算机视觉领域带来了根本性的变化。 CNN 在视觉领域的长期主导地位被视觉转换器打破了 [7]。 Swin Transformers [15] 进一步针对一般视觉应用调整了变压器。因此，UNet 模型开始采用 Transformer [5]。 Swin-Unet [9] 用 Swin Transformer 块取代了卷积块，从而开创了一类新的模型（图 1c）。尽管如此，CNN 在图像分割方面仍然具有各种优点，导致了融合这两者的发展[2]。这种混合类 UNet 模型（图 1d）在编码器-解码器中采用卷积块，并沿跳跃连接使用变换器层。 UCTransNet [22]和MCTrans[24]是此类的两个代表性模型。最后，还尝试开发全变压器 UNet 架构（图 1e），例如，SMESwin Unet [27] 在编码器-解码器块和跳跃连接中都使用变压器。...</p>
-  </div>
-  <footer class="entry-footer"><span title='2023-11-12 16:32:06 +0800 CST'>November 12, 2023</span>&nbsp;·&nbsp;2 min&nbsp;·&nbsp;SwimmingLiu</footer>
-  <a class="entry-link" aria-label="post link to ACC-UNet: A Completely Convolutional UNet model for the 2020s (MICCAI2023)" href="https://swimmingliu.cn/posts/papernotes/2023-acc-unet/"></a>
 </article>
 <footer class="page-footer">
   <nav class="pagination">

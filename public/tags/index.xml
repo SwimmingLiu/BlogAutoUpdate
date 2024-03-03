@@ -11,7 +11,16 @@
     </image>
     <generator>Hugo -- gohugo.io</generator>
     <language>en</language>
-    <lastBuildDate>Fri, 01 Mar 2024 15:26:23 +0800</lastBuildDate><atom:link href="https://swimmingliu.cn/tags/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Sun, 03 Mar 2024 15:37:07 +0800</lastBuildDate><atom:link href="https://swimmingliu.cn/tags/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Unet</title>
+      <link>https://swimmingliu.cn/tags/unet/</link>
+      <pubDate>Sun, 03 Mar 2024 15:37:07 +0800</pubDate>
+      
+      <guid>https://swimmingliu.cn/tags/unet/</guid>
+      <description></description>
+    </item>
+    
     <item>
       <title>YOLO</title>
       <link>https://swimmingliu.cn/tags/yolo/</link>
@@ -63,15 +72,6 @@
       <pubDate>Tue, 12 Dec 2023 12:18:57 +0800</pubDate>
       
       <guid>https://swimmingliu.cn/tags/wechat-mini-programs/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Unet</title>
-      <link>https://swimmingliu.cn/tags/unet/</link>
-      <pubDate>Mon, 11 Dec 2023 20:49:32 +0800</pubDate>
-      
-      <guid>https://swimmingliu.cn/tags/unet/</guid>
       <description></description>
     </item>
     

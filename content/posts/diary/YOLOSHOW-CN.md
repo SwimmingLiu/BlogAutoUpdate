@@ -1,5 +1,5 @@
 ---
-title: "YOLOSHOW 中文版 - YOLOv5/YOLOv7/YOLOv8/YOLOv9 GUI based on Pyside6"
+title: "YOLOSHOW 中文版 - YOLOv5/YOLOv7/YOLOv8/YOLOv9/RTDETR GUI based on Pyside6"
 date: 2024-02-18T19:30:06+08:00
 lastmod: 2024-02-18T19:30:06+08:00
 author: ["SwimmingLiu"]
@@ -39,22 +39,30 @@ cover:
 
 ## 介绍
 
-***YOLOSHOW*** 是一款集合了 `YOLOv5` `YOLOv7` `YOLOv8` `YOLOv9` 算法的图形化界面程序. 
+***YOLOSHOW*** 是一款集合了 `YOLOv5` `YOLOv7` `YOLOv8` `YOLOv9`  `RT-DETR` 
 
-[English](https://github.com/SwimmingLiu/YOLOSHOW/blob/master/README.md)  | 简体中文
+<p align="center"> 
+  <a href="https://github.com/SwimmingLiu/YOLOSHOW/blob/master/README_cn.md"> English</a> &nbsp; | &nbsp; 简体中文</a>
+ </p>
+
 
 ![YOLOSHOW-Screen](https://oss.swimmingliu.cn/YOLOSHOW-SCREEN.png)
 
 ## 演示视频
 
-B站演示视频 : [YOLOSHOW-YOLOv9/YOLOv8/YOLOv7/YOLOv5 GUI](https://www.bilibili.com/video/BV1BC411x7fW)
+`YOLOSHOW v1.x` : [YOLOSHOW-YOLOv9/YOLOv8/YOLOv7/YOLOv5/RTDETR GUI](https://www.bilibili.com/video/BV1BC411x7fW)
+
+`YOLOSHOW v2.x` : [YOLOSHOWv2.0-YOLOv9/YOLOv8/YOLOv7/YOLOv5/RTDETR GUI](https://www.bilibili.com/video/BV1ZD421E7m3)
 
 ## 待做清单
 
-- [x] 加入YOLOv9算法
+- [x] 加入 `YOLOv9` 算法
 - [x] 调整UI (菜单栏)
 - [x] 完成Rtsp功能
 - [x] 支持实例分割 （ `YOLOv5` & `YOLOv8` ）
+- [x] 加入 `RT-DETR` 算法 ( `Ultralytics` 仓库)
+- [x] 加入模型对比模式（VS Mode）
+- [ ] 支持姿态估计 （ `YOLOv5` & `YOLOv8` ）
 
 ## 功能
 
@@ -66,7 +74,7 @@ B站演示视频 : [YOLOSHOW-YOLOv9/YOLOv8/YOLOv7/YOLOv5 GUI](https://www.bilibi
 
 程序开始检测时，支持动态切换模型 / 调整超参数
 
-1. 支持动态切换 `YOLOv5` / ` YOLOv7` / `YOLOv8` / `YOLOv9` 模型
+1. 支持动态切换  `YOLOv5` / ` YOLOv7` / `YOLOv8` / `YOLOv9` / `RTDETR` / `YOLOv5-seg` / `YOLOv8-seg` 模型
 2. 支持动态修改 `IOU` / `Confidence` / `Delay time ` / `line thickness` 超参数
 
 ### 3. 动态加载模型
@@ -77,7 +85,7 @@ B站演示视频 : [YOLOSHOW-YOLOv9/YOLOv8/YOLOv7/YOLOv5 GUI](https://www.bilibi
 
 **Notice :**  
 
-1. 所有的 `pt` 模型文件命名必须包含 `yolov5` / `yolov7` / `yolov8` / `yolov9` 中的任意一个版本.  (如 `yolov8-test.pt`)
+1. 所有的 `pt` 模型文件命名必须包含 `yolov5` / `yolov7` / `yolov8` / `yolov9` / `rtdetr` 中的任意一个版本.  (如 `yolov8-test.pt`)
 2. 如果是分割类型的 `pt` 文件, 命名中应包含 `yolov5n-seg` / `yolov8s-seg` 中的任意一个版本.  (如 `yolov8n-seg-test.pt`)
 
 ### 4. 加载超参数配置
@@ -92,6 +100,10 @@ B站演示视频 : [YOLOSHOW-YOLOv9/YOLOv8/YOLOv7/YOLOv5 GUI](https://www.bilibi
 ### 6. 同时支持目标检测和实例分割
 
 从 ***YOLOSHOW v1.2*** 起 ，支持目标检测和实例分割多任务。同时支持不同版本的任务切换，如从`YOLOv5` 目标检测任务 切换到 `YOLOv8` 实例分割任务。
+
+### 7. 支持目标检测和实例分割模型对比模式
+
+从 ***YOLOSHOW v2.0*** 起，支持目标检测和实例分割模型对比模式。
 
 ## 运行准备工作
 
@@ -149,8 +161,8 @@ pip install -U Pyside6 -i https://pypi.tuna.tsinghua.edu.cn/simple
 
 ### YOLO 算法
 
-[YOLOv5](https://github.com/ultralytics/yolov5)   [YOLOv7](https://github.com/WongKinYiu/yolov7)  [YOLOv8](https://github.com/ultralytics/ultralytics)  [YOLOv9](https://github.com/WongKinYiu/yolov9) 
+[YOLOv5](https://github.com/ultralytics/yolov5)   [YOLOv7](https://github.com/WongKinYiu/yolov7) 	[YOLOv8](https://github.com/ultralytics/ultralytics)	[YOLOv9](https://github.com/WongKinYiu/yolov9) 
 
 ### YOLO 图形化界面
 
-[YOLOSIDE](https://github.com/Jai-wei/YOLOv8-PySide6-GUI)
+[YOLOSIDE](https://github.com/Jai-wei/YOLOv8-PySide6-GUI)	[PyQt-Fluent-Widgets](https://github.com/zhiyiYo/PyQt-Fluent-Widgets)

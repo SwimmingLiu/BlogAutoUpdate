@@ -5,16 +5,18 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 <meta name="robots" content="index, follow">
-<title>YOLOSHOW - YOLOv5/YOLOv7/YOLOv8/YOLOv9 GUI based on Pyside6 | SwimmingLiu&#39;s Blog</title>
+<title>YOLOSHOW - YOLOv5/YOLOv7/YOLOv8/YOLOv9/RTDETR GUI based on Pyside6 | SwimmingLiu&#39;s Blog</title>
 <meta name="keywords" content="GUI, YOLOSHOW">
-<meta name="description" content="Introduction YOLOSHOW is a graphical user interface (GUI) application embed withYOLOv5 YOLOv7 YOLOv8 YOLOv9 algorithm.
-English | 简体中文
-Demo Video Bilibili Demo Video : YOLOSHOW-YOLOv9/YOLOv8/YOLOv7/YOLOv5 GUI
+<meta name="description" content="Introduction YOLOSHOW is a graphical user interface (GUI) application embed withYOLOv5 YOLOv7 YOLOv8 YOLOv9 RT-DETR algorithm.
+English &nbsp; | &nbsp; 简体中文 Demo Video YOLOSHOW v1.x : YOLOSHOW-YOLOv9/YOLOv8/YOLOv7/YOLOv5/RTDETR GUI
+YOLOSHOW v2.x : YOLOSHOWv2.0-YOLOv9/YOLOv8/YOLOv7/YOLOv5/RTDETR GUI
 Todo List Add YOLOv9 Algorithm
 Adjust User Interface (Menu Bar)
 Complete Rtsp Function
 Support Instance Segmentation （ YOLOv5 &amp; YOLOv8 ）
-Functions 1. Support Image / Video / Webcam / Folder (Batch ) Object Detection Choose Image / Video / Webcam / Folder (Batch ) in the menu bar on the left to detect objects.">
+Add RT-DETR Algorithm ( Ultralytics repo)
+Add Model Comparison Mode（VS Mode）
+Support Pose Estimation （ YOLOv5 &amp; YOLOv8 ）">
 <meta name="author" content="SwimmingLiu">
 <link rel="canonical" href="https://swimmingliu.cn/posts/diary/yoloshow/">
 <link crossorigin="anonymous" href="/assets/css/stylesheet.56574d0b8d57cdd0d704dd823c3ab0e600bd78cf5a999377277390417d6b2f3e.css" integrity="sha256-VldNC41XzdDXBN2CPDqw5gC9eM9amZN3J3OQQX1rLz4=" rel="preload stylesheet" as="style">
@@ -87,15 +89,17 @@ Functions 1. Support Image / Video / Webcam / Folder (Batch ) Object Detection C
     });
 </script>
 
-<meta property="og:title" content="YOLOSHOW - YOLOv5/YOLOv7/YOLOv8/YOLOv9 GUI based on Pyside6" />
-<meta property="og:description" content="Introduction YOLOSHOW is a graphical user interface (GUI) application embed withYOLOv5 YOLOv7 YOLOv8 YOLOv9 algorithm.
-English | 简体中文
-Demo Video Bilibili Demo Video : YOLOSHOW-YOLOv9/YOLOv8/YOLOv7/YOLOv5 GUI
+<meta property="og:title" content="YOLOSHOW - YOLOv5/YOLOv7/YOLOv8/YOLOv9/RTDETR GUI based on Pyside6" />
+<meta property="og:description" content="Introduction YOLOSHOW is a graphical user interface (GUI) application embed withYOLOv5 YOLOv7 YOLOv8 YOLOv9 RT-DETR algorithm.
+English &nbsp; | &nbsp; 简体中文 Demo Video YOLOSHOW v1.x : YOLOSHOW-YOLOv9/YOLOv8/YOLOv7/YOLOv5/RTDETR GUI
+YOLOSHOW v2.x : YOLOSHOWv2.0-YOLOv9/YOLOv8/YOLOv7/YOLOv5/RTDETR GUI
 Todo List Add YOLOv9 Algorithm
 Adjust User Interface (Menu Bar)
 Complete Rtsp Function
 Support Instance Segmentation （ YOLOv5 &amp; YOLOv8 ）
-Functions 1. Support Image / Video / Webcam / Folder (Batch ) Object Detection Choose Image / Video / Webcam / Folder (Batch ) in the menu bar on the left to detect objects." />
+Add RT-DETR Algorithm ( Ultralytics repo)
+Add Model Comparison Mode（VS Mode）
+Support Pose Estimation （ YOLOv5 &amp; YOLOv8 ）" />
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://swimmingliu.cn/posts/diary/yoloshow/" /><meta property="og:image" content="https://swimmingliu.cn/papermod-cover.png"/><meta property="article:section" content="posts" />
 <meta property="article:published_time" content="2024-02-18T19:30:06+08:00" />
@@ -104,15 +108,17 @@ Functions 1. Support Image / Video / Webcam / Folder (Batch ) Object Detection C
 <meta name="twitter:card" content="summary_large_image"/>
 <meta name="twitter:image" content="https://swimmingliu.cn/papermod-cover.png"/>
 
-<meta name="twitter:title" content="YOLOSHOW - YOLOv5/YOLOv7/YOLOv8/YOLOv9 GUI based on Pyside6"/>
-<meta name="twitter:description" content="Introduction YOLOSHOW is a graphical user interface (GUI) application embed withYOLOv5 YOLOv7 YOLOv8 YOLOv9 algorithm.
-English | 简体中文
-Demo Video Bilibili Demo Video : YOLOSHOW-YOLOv9/YOLOv8/YOLOv7/YOLOv5 GUI
+<meta name="twitter:title" content="YOLOSHOW - YOLOv5/YOLOv7/YOLOv8/YOLOv9/RTDETR GUI based on Pyside6"/>
+<meta name="twitter:description" content="Introduction YOLOSHOW is a graphical user interface (GUI) application embed withYOLOv5 YOLOv7 YOLOv8 YOLOv9 RT-DETR algorithm.
+English &nbsp; | &nbsp; 简体中文 Demo Video YOLOSHOW v1.x : YOLOSHOW-YOLOv9/YOLOv8/YOLOv7/YOLOv5/RTDETR GUI
+YOLOSHOW v2.x : YOLOSHOWv2.0-YOLOv9/YOLOv8/YOLOv7/YOLOv5/RTDETR GUI
 Todo List Add YOLOv9 Algorithm
 Adjust User Interface (Menu Bar)
 Complete Rtsp Function
 Support Instance Segmentation （ YOLOv5 &amp; YOLOv8 ）
-Functions 1. Support Image / Video / Webcam / Folder (Batch ) Object Detection Choose Image / Video / Webcam / Folder (Batch ) in the menu bar on the left to detect objects."/>
+Add RT-DETR Algorithm ( Ultralytics repo)
+Add Model Comparison Mode（VS Mode）
+Support Pose Estimation （ YOLOv5 &amp; YOLOv8 ）"/>
 
 
 <script type="application/ld+json">
@@ -135,7 +141,7 @@ Functions 1. Support Image / Video / Webcam / Folder (Batch ) Object Detection C
     {
       "@type": "ListItem",
       "position":  3 ,
-      "name": "YOLOSHOW - YOLOv5/YOLOv7/YOLOv8/YOLOv9 GUI based on Pyside6",
+      "name": "YOLOSHOW - YOLOv5/YOLOv7/YOLOv8/YOLOv9/RTDETR GUI based on Pyside6",
       "item": "https://swimmingliu.cn/posts/diary/yoloshow/"
     }
   ]
@@ -145,14 +151,14 @@ Functions 1. Support Image / Video / Webcam / Folder (Batch ) Object Detection C
 {
   "@context": "https://schema.org",
   "@type": "BlogPosting",
-  "headline": "YOLOSHOW - YOLOv5/YOLOv7/YOLOv8/YOLOv9 GUI based on Pyside6",
-  "name": "YOLOSHOW - YOLOv5\/YOLOv7\/YOLOv8\/YOLOv9 GUI based on Pyside6",
-  "description": "Introduction YOLOSHOW is a graphical user interface (GUI) application embed withYOLOv5 YOLOv7 YOLOv8 YOLOv9 algorithm.\nEnglish | 简体中文\nDemo Video Bilibili Demo Video : YOLOSHOW-YOLOv9/YOLOv8/YOLOv7/YOLOv5 GUI\nTodo List Add YOLOv9 Algorithm\nAdjust User Interface (Menu Bar)\nComplete Rtsp Function\nSupport Instance Segmentation （ YOLOv5 \u0026amp; YOLOv8 ）\nFunctions 1. Support Image / Video / Webcam / Folder (Batch ) Object Detection Choose Image / Video / Webcam / Folder (Batch ) in the menu bar on the left to detect objects.",
+  "headline": "YOLOSHOW - YOLOv5/YOLOv7/YOLOv8/YOLOv9/RTDETR GUI based on Pyside6",
+  "name": "YOLOSHOW - YOLOv5\/YOLOv7\/YOLOv8\/YOLOv9\/RTDETR GUI based on Pyside6",
+  "description": "Introduction YOLOSHOW is a graphical user interface (GUI) application embed withYOLOv5 YOLOv7 YOLOv8 YOLOv9 RT-DETR algorithm.\nEnglish \u0026nbsp; | \u0026nbsp; 简体中文 Demo Video YOLOSHOW v1.x : YOLOSHOW-YOLOv9/YOLOv8/YOLOv7/YOLOv5/RTDETR GUI\nYOLOSHOW v2.x : YOLOSHOWv2.0-YOLOv9/YOLOv8/YOLOv7/YOLOv5/RTDETR GUI\nTodo List Add YOLOv9 Algorithm\nAdjust User Interface (Menu Bar)\nComplete Rtsp Function\nSupport Instance Segmentation （ YOLOv5 \u0026amp; YOLOv8 ）\nAdd RT-DETR Algorithm ( Ultralytics repo)\nAdd Model Comparison Mode（VS Mode）\nSupport Pose Estimation （ YOLOv5 \u0026amp; YOLOv8 ）",
   "keywords": [
     "GUI", "YOLOSHOW"
   ],
-  "articleBody": "Introduction YOLOSHOW is a graphical user interface (GUI) application embed withYOLOv5 YOLOv7 YOLOv8 YOLOv9 algorithm.\nEnglish | 简体中文\nDemo Video Bilibili Demo Video : YOLOSHOW-YOLOv9/YOLOv8/YOLOv7/YOLOv5 GUI\nTodo List Add YOLOv9 Algorithm\nAdjust User Interface (Menu Bar)\nComplete Rtsp Function\nSupport Instance Segmentation （ YOLOv5 \u0026 YOLOv8 ）\nFunctions 1. Support Image / Video / Webcam / Folder (Batch ) Object Detection Choose Image / Video / Webcam / Folder (Batch ) in the menu bar on the left to detect objects.\n2. Change Models / Hyper Parameters dynamically When the program is running to detect targets, you can change models / hyper Parameters\nSupport changing model in YOLOv5 / YOLOv7 / YOLOv8 / YOLOv9 dynamically Support changing IOU / Confidence / Delay time / line thickness dynamically 3. Loading Model Automatically Our program will automatically detect pt files including YOLOv5 Models / YOLOv7 Models / YOLOv8 Models / YOLOv9 Models that were previously added to the ptfiles folder.\nIf you need add the new pt file, please click Import Model button in Settings box to select your pt file. Then our program will put it into ptfiles folder.\nNotice :\nAll pt files are named including yolov5 / yolov7 / yolov8 / yolov9 . (e.g. yolov8-test.pt) If it is a pt file of segmentation mode, please name it including yolov5n-seg / yolov8s-seg . (e.g. yolov8n-seg-test.pt) 4. Loading Configures After startup, the program will automatically loading the last configure parameters. After closedown, the program will save the changed configure parameters. 5. Save Results If you need Save results, please click Save MP4/JPG before detection. Then you can save your detection results in selected path.\n6. Support Object Detection and Instance Segmentation From YOLOSHOW v1.2 ，our work supports both Object Detection and Instance Segmentation。Meanwhile, it also supports task switching between different versions，such as switching from YOLOv5 Object Detection task to YOLOv8 instance task.\nPreparation Experimental environment OS : Windows 11 CPU : Intel(R) Core(TM) i7-10750H CPU @2.60GHz 2.59 GHz GPU : NVIDIA GeForce GTX 1660Ti 6GB 1. Create virtual environment create a virtual environment equipped with python version 3.9, then activate environment.\nconda create -n yoloshow python=3.9 conda activate yoloshow 2. Install Pytorch frame Windows: pip3 install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu118 Linux: pip3 install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu118 Change other pytorch version in 3. Install dependency package Switch the path to the location of the program\ncd {the location of the program} Install dependency package of program\npip install -r requirements.txt -i https://pypi.tuna.tsinghua.edu.cn/simple pip install \"PySide6-Fluent-Widgets[full]\" -i https://pypi.tuna.tsinghua.edu.cn/simple pip install -U Pyside6 -i https://pypi.tuna.tsinghua.edu.cn/simple 4. Add Font Copy all font files *.ttf in fonts folder into C:\\Windows\\Fonts\nFrames Reference YOLO Algorithm YOLOv5 YOLOv7 YOLOv8 YOLOv9\nYOLO Graphical User Interface YOLOSIDE\n",
-  "wordCount" : "450",
+  "articleBody": "Introduction YOLOSHOW is a graphical user interface (GUI) application embed withYOLOv5 YOLOv7 YOLOv8 YOLOv9 RT-DETR algorithm.\nEnglish | 简体中文 Demo Video YOLOSHOW v1.x : YOLOSHOW-YOLOv9/YOLOv8/YOLOv7/YOLOv5/RTDETR GUI\nYOLOSHOW v2.x : YOLOSHOWv2.0-YOLOv9/YOLOv8/YOLOv7/YOLOv5/RTDETR GUI\nTodo List Add YOLOv9 Algorithm\nAdjust User Interface (Menu Bar)\nComplete Rtsp Function\nSupport Instance Segmentation （ YOLOv5 \u0026 YOLOv8 ）\nAdd RT-DETR Algorithm ( Ultralytics repo)\nAdd Model Comparison Mode（VS Mode）\nSupport Pose Estimation （ YOLOv5 \u0026 YOLOv8 ）\nFunctions 1. Support Image / Video / Webcam / Folder (Batch ) Object Detection Choose Image / Video / Webcam / Folder (Batch ) in the menu bar on the left to detect objects.\n2. Change Models / Hyper Parameters dynamically When the program is running to detect targets, you can change models / hyper Parameters\nSupport changing model in YOLOv5 / YOLOv7 / YOLOv8 / YOLOv9 / RTDETR / YOLOv5-seg / YOLOv8-seg dynamically Support changing IOU / Confidence / Delay time / line thickness dynamically 3. Loading Model Automatically Our program will automatically detect pt files including YOLOv5 Models / YOLOv7 Models / YOLOv8 Models / YOLOv9 Models that were previously added to the ptfiles folder.\nIf you need add the new pt file, please click Import Model button in Settings box to select your pt file. Then our program will put it into ptfiles folder.\nNotice :\nAll pt files are named including yolov5 / yolov7 / yolov8 / yolov9 / rtdetr . (e.g. yolov8-test.pt) If it is a pt file of segmentation mode, please name it including yolov5n-seg / yolov8s-seg . (e.g. yolov8n-seg-test.pt) 4. Loading Configures After startup, the program will automatically loading the last configure parameters. After closedown, the program will save the changed configure parameters. 5. Save Results If you need Save results, please click Save MP4/JPG before detection. Then you can save your detection results in selected path.\n6. Support Object Detection and Instance Segmentation From YOLOSHOW v1.2 ，our work supports both Object Detection and Instance Segmentation. Meanwhile, it also supports task switching between different versions，such as switching from YOLOv5 Object Detection task to YOLOv8 instance task.\n7. Support Model Comparison in Both Object Detection and Instance Segmentation From YOLOSHOW v2.0 ，our work supports compare model performance both Object Detection and Instance Segmentation.\nPreparation Experimental environment OS : Windows 11 CPU : Intel(R) Core(TM) i7-10750H CPU @2.60GHz 2.59 GHz GPU : NVIDIA GeForce GTX 1660Ti 6GB 1. Create virtual environment create a virtual environment equipped with python version 3.9, then activate environment.\nconda create -n yoloshow python=3.9 conda activate yoloshow 2. Install Pytorch frame Windows: pip3 install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu118 Linux: pip3 install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu118 Change other pytorch version in 3. Install dependency package Switch the path to the location of the program\ncd {the location of the program} Install dependency package of program\npip install -r requirements.txt -i https://pypi.tuna.tsinghua.edu.cn/simple pip install \"PySide6-Fluent-Widgets[full]\" -i https://pypi.tuna.tsinghua.edu.cn/simple pip install -U Pyside6 -i https://pypi.tuna.tsinghua.edu.cn/simple 4. Add Font Copy all font files *.ttf in fonts folder into C:\\Windows\\Fonts\nFrames Reference YOLO Algorithm YOLOv5 YOLOv7 YOLOv8 YOLOv9\nYOLO Graphical User Interface YOLOSIDE\tPyQt-Fluent-Widgets\n",
+  "wordCount" : "512",
   "inLanguage": "en",
   "datePublished": "2024-02-18T19:30:06+08:00",
   "dateModified": "2024-02-18T19:30:06+08:00",
@@ -268,7 +274,7 @@ Functions 1. Support Image / Video / Webcam / Folder (Batch ) Object Detection C
   <header class="post-header">
     <div class="breadcrumbs"><a href="https://swimmingliu.cn/">Home</a>&nbsp;»&nbsp;<a href="https://swimmingliu.cn/posts/">📚 Posts</a>&nbsp;»&nbsp;<a href="https://swimmingliu.cn/posts/diary/">📓 Diary</a></div>
     <h1 class="post-title">
-      YOLOSHOW - YOLOv5/YOLOv7/YOLOv8/YOLOv9 GUI based on Pyside6
+      YOLOSHOW - YOLOv5/YOLOv7/YOLOv8/YOLOv9/RTDETR GUI based on Pyside6
     </h1>
     <div class="post-meta"><span title='2024-02-18 19:30:06 +0800 CST'>February 18, 2024</span>&nbsp;·&nbsp;3 min&nbsp;·&nbsp;SwimmingLiu
 
@@ -301,7 +307,9 @@ Functions 1. Support Image / Video / Webcam / Folder (Batch ) Object Detection C
                     <li>
                         <a href="#5-save-results" aria-label="5. Save Results">5. Save Results</a></li>
                     <li>
-                        <a href="#6-support-object-detection-and-instance-segmentation" aria-label="6. Support Object Detection and Instance Segmentation">6. Support Object Detection and Instance Segmentation</a></li></ul>
+                        <a href="#6-support-object-detection-and-instance-segmentation" aria-label="6. Support Object Detection and Instance Segmentation">6. Support Object Detection and Instance Segmentation</a></li>
+                    <li>
+                        <a href="#7-support-model-comparison-in-both-object-detection-and-instance-segmentation" aria-label="7. Support Model Comparison in Both Object Detection and Instance Segmentation">7. Support Model Comparison in Both Object Detection and Instance Segmentation</a></li></ul>
                     </li>
                     <li>
                         <a href="#preparation" aria-label="Preparation">Preparation</a><ul>
@@ -395,16 +403,19 @@ Functions 1. Support Image / Video / Webcam / Folder (Batch ) Object Detection C
 </script>
 
   <div class="post-content"><h2 id="introduction">Introduction<a hidden class="anchor" aria-hidden="true" href="#introduction">#</a></h2>
-<p><em><strong>YOLOSHOW</strong></em> is a graphical user interface (GUI) application embed with<code>YOLOv5</code> <code>YOLOv7</code> <code>YOLOv8</code> <code>YOLOv9</code> algorithm.</p>
-<p>English | <a href="https://github.com/SwimmingLiu/YOLOSHOW/blob/master/README_cn.md">简体中文</a></p>
+<p><em><strong>YOLOSHOW</strong></em> is a graphical user interface (GUI) application embed with<code>YOLOv5</code> <code>YOLOv7</code> <code>YOLOv8</code> <code>YOLOv9</code> <code>RT-DETR</code> algorithm.</p>
+ <p align="center"> 
+  English &nbsp; | &nbsp; <a href="https://github.com/SwimmingLiu/YOLOSHOW/blob/master/README_cn.md">简体中文</a>
+ </p>
 <p><img loading="lazy" src="https://oss.swimmingliu.cn/YOLOSHOW-SCREEN.png" alt="YOLOSHOW-Screen"  />
 </p>
 <h2 id="demo-video">Demo Video<a hidden class="anchor" aria-hidden="true" href="#demo-video">#</a></h2>
-<p>Bilibili Demo Video : <a href="https://www.bilibili.com/video/BV1BC411x7fW">YOLOSHOW-YOLOv9/YOLOv8/YOLOv7/YOLOv5 GUI</a></p>
+<p><code>YOLOSHOW v1.x</code> : <a href="https://www.bilibili.com/video/BV1BC411x7fW">YOLOSHOW-YOLOv9/YOLOv8/YOLOv7/YOLOv5/RTDETR GUI</a></p>
+<p><code>YOLOSHOW v2.x</code> : <a href="https://www.bilibili.com/video/BV1ZD421E7m3">YOLOSHOWv2.0-YOLOv9/YOLOv8/YOLOv7/YOLOv5/RTDETR GUI</a></p>
 <h2 id="todo-list">Todo List<a hidden class="anchor" aria-hidden="true" href="#todo-list">#</a></h2>
 <ul>
 <li>
-<p><input checked="" disabled="" type="checkbox"> Add YOLOv9 Algorithm</p>
+<p><input checked="" disabled="" type="checkbox"> Add <code>YOLOv9</code> Algorithm</p>
 </li>
 <li>
 <p><input checked="" disabled="" type="checkbox"> Adjust User Interface (Menu Bar)</p>
@@ -415,6 +426,15 @@ Functions 1. Support Image / Video / Webcam / Folder (Batch ) Object Detection C
 <li>
 <p><input checked="" disabled="" type="checkbox"> Support Instance Segmentation （ <code>YOLOv5</code> &amp; <code>YOLOv8</code> ）</p>
 </li>
+<li>
+<p><input checked="" disabled="" type="checkbox"> Add <code>RT-DETR</code> Algorithm ( <code>Ultralytics</code> repo)</p>
+</li>
+<li>
+<p><input checked="" disabled="" type="checkbox"> Add Model Comparison Mode（VS Mode）</p>
+</li>
+<li>
+<p><input disabled="" type="checkbox"> Support Pose Estimation （ <code>YOLOv5</code> &amp; <code>YOLOv8</code> ）</p>
+</li>
 </ul>
 <h2 id="functions">Functions<a hidden class="anchor" aria-hidden="true" href="#functions">#</a></h2>
 <h3 id="1-support-image--video--webcam--folder-batch--object-detection">1. Support Image / Video / Webcam / Folder (Batch ) Object Detection<a hidden class="anchor" aria-hidden="true" href="#1-support-image--video--webcam--folder-batch--object-detection">#</a></h3>
@@ -422,7 +442,7 @@ Functions 1. Support Image / Video / Webcam / Folder (Batch ) Object Detection C
 <h3 id="2-change-models--hyper-parameters-dynamically">2. Change Models / Hyper Parameters dynamically<a hidden class="anchor" aria-hidden="true" href="#2-change-models--hyper-parameters-dynamically">#</a></h3>
 <p>When the program is running to detect targets, you can change models / hyper Parameters</p>
 <ol>
-<li>Support changing model in <code>YOLOv5</code> / <code> YOLOv7</code> / <code>YOLOv8</code> / <code>YOLOv9</code> dynamically</li>
+<li>Support changing model in <code>YOLOv5</code> / <code> YOLOv7</code> / <code>YOLOv8</code> / <code>YOLOv9</code> / <code>RTDETR</code> / <code>YOLOv5-seg</code> / <code>YOLOv8-seg</code> dynamically</li>
 <li>Support changing <code>IOU</code> / <code>Confidence</code> / <code>Delay time </code> / <code>line thickness</code> dynamically</li>
 </ol>
 <h3 id="3-loading-model-automatically">3. Loading Model Automatically<a hidden class="anchor" aria-hidden="true" href="#3-loading-model-automatically">#</a></h3>
@@ -430,7 +450,7 @@ Functions 1. Support Image / Video / Webcam / Folder (Batch ) Object Detection C
 <p>If you need add the new <code>pt</code> file, please click <code>Import Model</code> button in <code>Settings</code> box to select your <code>pt</code> file. Then our program will put it into  <code>ptfiles</code> folder.</p>
 <p><strong>Notice :</strong></p>
 <ol>
-<li>All <code>pt</code> files are named including <code>yolov5</code> / <code>yolov7</code> / <code>yolov8</code> / <code>yolov9</code> .  (e.g. <code>yolov8-test.pt</code>)</li>
+<li>All <code>pt</code> files are named including <code>yolov5</code> / <code>yolov7</code> / <code>yolov8</code> / <code>yolov9</code> / <code>rtdetr</code> .  (e.g. <code>yolov8-test.pt</code>)</li>
 <li>If it is a <code>pt</code> file of  segmentation mode, please name it including <code>yolov5n-seg</code> / <code>yolov8s-seg</code> .  (e.g. <code>yolov8n-seg-test.pt</code>)</li>
 </ol>
 <h3 id="4-loading-configures">4. Loading Configures<a hidden class="anchor" aria-hidden="true" href="#4-loading-configures">#</a></h3>
@@ -441,7 +461,9 @@ Functions 1. Support Image / Video / Webcam / Folder (Batch ) Object Detection C
 <h3 id="5-save-results">5. Save Results<a hidden class="anchor" aria-hidden="true" href="#5-save-results">#</a></h3>
 <p>If you need Save results, please click <code>Save MP4/JPG</code> before detection. Then you can save your detection results in selected path.</p>
 <h3 id="6-support-object-detection-and-instance-segmentation">6. Support Object Detection and Instance Segmentation<a hidden class="anchor" aria-hidden="true" href="#6-support-object-detection-and-instance-segmentation">#</a></h3>
-<p>From <em><strong>YOLOSHOW v1.2</strong></em> ，our work supports both Object Detection and Instance Segmentation。Meanwhile, it also supports task switching between different versions，such as switching from <code>YOLOv5</code> Object Detection task to <code>YOLOv8</code> instance task.</p>
+<p>From <em><strong>YOLOSHOW v1.2</strong></em> ，our work supports both Object Detection and Instance Segmentation. Meanwhile, it also supports task switching between different versions，such as switching from <code>YOLOv5</code> Object Detection task to <code>YOLOv8</code> instance task.</p>
+<h3 id="7-support-model-comparison-in-both-object-detection-and-instance-segmentation">7. Support Model Comparison in Both Object Detection and Instance Segmentation<a hidden class="anchor" aria-hidden="true" href="#7-support-model-comparison-in-both-object-detection-and-instance-segmentation">#</a></h3>
+<p>From <em><strong>YOLOSHOW v2.0</strong></em> ，our work supports compare model performance both Object Detection and Instance Segmentation.</p>
 <h2 id="preparation">Preparation<a hidden class="anchor" aria-hidden="true" href="#preparation">#</a></h2>
 <h3 id="experimental-environment">Experimental environment<a hidden class="anchor" aria-hidden="true" href="#experimental-environment">#</a></h3>
 <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-Shell" data-lang="Shell"><span class="line"><span class="cl">OS : Windows <span class="m">11</span> 
@@ -474,7 +496,7 @@ Functions 1. Support Image / Video / Webcam / Folder (Batch ) Object Detection C
 <h3 id="yolo-algorithm">YOLO Algorithm<a hidden class="anchor" aria-hidden="true" href="#yolo-algorithm">#</a></h3>
 <p><a href="https://github.com/ultralytics/yolov5">YOLOv5</a>   <a href="https://github.com/WongKinYiu/yolov7">YOLOv7</a>  <a href="https://github.com/ultralytics/ultralytics">YOLOv8</a>  <a href="https://github.com/WongKinYiu/yolov9">YOLOv9</a></p>
 <h3 id="yolo-graphical-user-interface">YOLO Graphical User Interface<a hidden class="anchor" aria-hidden="true" href="#yolo-graphical-user-interface">#</a></h3>
-<p><a href="https://github.com/Jai-wei/YOLOv8-PySide6-GUI">YOLOSIDE</a></p>
+<p><a href="https://github.com/Jai-wei/YOLOv8-PySide6-GUI">YOLOSIDE</a>	<a href="https://github.com/zhiyiYo/PyQt-Fluent-Widgets">PyQt-Fluent-Widgets</a></p>
 
 
   </div>
@@ -495,7 +517,7 @@ Functions 1. Support Image / Video / Webcam / Folder (Batch ) Object Detection C
   <a class="next" href="https://swimmingliu.cn/posts/diary/yoloshow-cn/">
     <span class="title">Next »</span>
     <br>
-    <span>YOLOSHOW 中文版 - YOLOv5/YOLOv7/YOLOv8/YOLOv9 GUI based on Pyside6</span>
+    <span>YOLOSHOW 中文版 - YOLOv5/YOLOv7/YOLOv8/YOLOv9/RTDETR GUI based on Pyside6</span>
   </a>
 </nav>
 

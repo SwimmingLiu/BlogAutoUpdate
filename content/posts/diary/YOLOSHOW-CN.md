@@ -37,8 +37,6 @@ cover:
     relative: false
 ---
 
-# YOLOSHOW -  YOLOv5 / YOLOv7 / YOLOv8 / YOLOv9 / RTDETR  基于 Pyside6 的图形化界面
-
 ## 介绍
 
 ***YOLOSHOW*** 是一款集合了 `YOLOv5` `YOLOv7` `YOLOv8` `YOLOv9`  `RT-DETR` 

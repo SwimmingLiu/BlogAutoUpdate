@@ -34,7 +34,7 @@ languages:
                   url: search/
                   weight: 8
                 - name: 👨🏻‍🎓 About Me
-                  url: aboutme/
+                  url: https://bento.me/swimmingliu
                   weight: 15
                 - name: 🗒️ Posts
                   url: posts/

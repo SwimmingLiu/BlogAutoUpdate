@@ -1,7 +1,7 @@
 ---
 title: "YOLOSHOW - YOLOv5/YOLOv7/YOLOv8/YOLOv9/RTDETR GUI based on Pyside6"
 date: 2024-02-18T19:30:06+08:00
-lastmod: 2024-02-18T19:30:06+08:00
+lastmod: 2024-08-20T10:35:06+08:00
 author: ["SwimmingLiu"]
 
 categories:
@@ -152,8 +152,6 @@ Install dependency package of program
 
 ```shell
 pip install -r requirements.txt -i https://pypi.tuna.tsinghua.edu.cn/simple
-pip install "PySide6-Fluent-Widgets[full]" -i https://pypi.tuna.tsinghua.edu.cn/simple
-pip install -U Pyside6 -i https://pypi.tuna.tsinghua.edu.cn/simple
 ```
 
 ### 4. Add Font

@@ -10,7 +10,7 @@
 <meta name="description" content="📝 Paper Notes - SwimmingLiu&#39;s Blog">
 <meta name="author" content="👨🏻‍🎓 SwimmingLiu">
 <link rel="canonical" href="https://swimmingliu.cn/posts/papernotes/">
-<link crossorigin="anonymous" href="/assets/css/stylesheet.56574d0b8d57cdd0d704dd823c3ab0e600bd78cf5a999377277390417d6b2f3e.css" integrity="sha256-VldNC41XzdDXBN2CPDqw5gC9eM9amZN3J3OQQX1rLz4=" rel="preload stylesheet" as="style">
+<link crossorigin="anonymous" href="/assets/css/stylesheet.d0ba3726344b58c49d5f0d05195743e4438cff79cf2048e07443b1ea4d4fdbf5.css" integrity="sha256-0Lo3JjRLWMSdXw0FGVdD5EOM/3nPIEjgdEOx6k1P2/U=" rel="preload stylesheet" as="style">
 <link rel="icon" href="https://swimmingliu.cn/images/swimmingliu_icon.png">
 <link rel="icon" type="image/png" sizes="16x16" href="https://swimmingliu.cn/images/swimmingliu_icon.png">
 <link rel="icon" type="image/png" sizes="32x32" href="https://swimmingliu.cn/images/swimmingliu_icon.png">
@@ -19,6 +19,7 @@
 <meta name="theme-color" content="#2e2e33">
 <meta name="msapplication-TileColor" content="#2e2e33">
 <link rel="alternate" type="application/rss+xml" href="https://swimmingliu.cn/posts/papernotes/index.xml">
+<link rel="alternate" hreflang="en" href="https://swimmingliu.cn/posts/papernotes/">
 <noscript>
     <style>
         #theme-toggle,
@@ -36,7 +37,7 @@
                 --secondary: rgb(155, 156, 157);
                 --tertiary: rgb(65, 66, 68);
                 --content: rgb(196, 196, 197);
-                --hljs-bg: rgb(46, 46, 51);
+                --code-block-bg: rgb(46, 46, 51);
                 --code-bg: rgb(55, 56, 62);
                 --border: rgb(51, 51, 51);
             }
@@ -59,11 +60,12 @@
 <meta property="og:title" content="📝 Paper Notes" />
 <meta property="og:description" content="" />
 <meta property="og:type" content="website" />
-<meta property="og:url" content="https://swimmingliu.cn/posts/papernotes/" /><meta property="og:image" content="https://swimmingliu.cn/papermod-cover.png"/>
+<meta property="og:url" content="https://swimmingliu.cn/posts/papernotes/" />
+<meta property="og:image" content="https://swimmingliu.cn/papermod-cover.png" />
 
-<meta name="twitter:card" content="summary_large_image"/>
-<meta name="twitter:image" content="https://swimmingliu.cn/papermod-cover.png"/>
 
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:image" content="https://swimmingliu.cn/papermod-cover.png" />
 <meta name="twitter:title" content="📝 Paper Notes"/>
 <meta name="twitter:description" content=""/>
 
@@ -199,14 +201,15 @@
 
 <article class="post-entry"> 
   <header class="entry-header">
-    <h2>ACC-UNet: A Completely Convolutional UNet model for the 2020s (MICCAI2023)
+    <h2 class="entry-hint-parent">ACC-UNet: A Completely Convolutional UNet model for the 2020s (MICCAI2023)
     </h2>
   </header>
   <div class="entry-content">
     <p>ACC-UNet: A Completely Convolutional UNet model for the 2020s (MICCAI2023) 1. Abstract 由于ViT （Vision Transformer）的引入，UNet和Transformer融合已成为大趋势。最近，又有很多研究人员开始重新思考卷积模型，比如将ConvNext嵌入到ResNet，能够达到Swin Transformer的水平。受此启发，作者提出了一个纯粹的卷积UNET模型 （ACC-UNet），并且超越基于Transfomer的模型(如Swin-UNET或UCTransNet)。 作者研究了基于Transfomer的UNET模型优点：长范围依赖关系和跨级别跳过连接。 ACC-UNet结合了卷积神经网络（ConvNets）的内在归纳偏差和Transformer的设计决策 卷积神经网络（ConvNets）的内在归纳偏差：卷积神经网络具有天生的归纳偏差，这意味着它们在处理图像等数据时具有一些固有的假设和特点。例如，卷积神经网络擅长处理局部特征、平移不变性等，这些特点使它们在图像处理任务中表现出色。 Transformer的设计决策：Transformer是一种不同的神经网络架构，它采用了一些独特的设计决策，例如自注意力机制和位置编码等。这些设计决策使得Transformer在处理长距离依赖性、全局关系等方面表现出色，适合处理序列数据和具有远程依赖的任务。 ACC-UNet 在 5 个不同的医学图像分割基准上进行了评估，并且始终优于卷积网络、Transfomer及其混合网络。
 2.Introduction 语义分割是计算机辅助医学图像分析的重要组成部分，可识别并突出显示各种诊断任务中感兴趣的区域。然而，由于涉及图像模态和采集以及病理和生物变化的各种因素，这通常变得复杂[18]。深度学习在这一领域的应用无疑在这方面受益匪浅。最值得注意的是，自推出以来，UNet 模型 [19] 在医学图像分割方面表现出了惊人的功效。结果，UNet 及其衍生品已成为事实上的标准[25]。
 学习一下这里的背景描述
-原始的 UNet 模型包含对称的编码器-解码器架构（图 1a）并采用跳跃连接，这为解码器提供了在编码器的池化操作期间可能丢失的空间信息。尽管通过简单串联的信息传播提高了性能，但编码器-解码器特征图之间可能存在语义差距。这导致了第二类 UNet 的发展（图 1b）。 U-Net&#43;&#43; [26] 利用密集连接，而 MultiResUNet [11] 在跳过连接上添加了额外的卷积块作为潜在的补救措施。到目前为止，UNet 的历史上所有创新都是使用 CNN 进行的。然而，2020 年的十年给计算机视觉领域带来了根本性的变化。 CNN 在视觉领域的长期主导地位被视觉转换器打破了 [7]。 Swin Transformers [15] 进一步针对一般视觉应用调整了变压器。因此，UNet 模型开始采用 Transformer [5]。 Swin-Unet [9] 用 Swin Transformer 块取代了卷积块，从而开创了一类新的模型（图 1c）。尽管如此，CNN 在图像分割方面仍然具有各种优点，导致了融合这两者的发展[2]。这种混合类 UNet 模型（图 1d）在编码器-解码器中采用卷积块，并沿跳跃连接使用变换器层。 UCTransNet [22]和MCTrans[24]是此类的两个代表性模型。最后，还尝试开发全变压器 UNet 架构（图 1e），例如，SMESwin Unet [27] 在编码器-解码器块和跳跃连接中都使用变压器。...</p>
+原始的 UNet 模型包含对称的编码器-解码器架构（图 1a）并采用跳跃连接，这为解码器提供了在编码器的池化操作期间可能丢失的空间信息。尽管通过简单串联的信息传播提高了性能，但编码器-解码器特征图之间可能存在语义差距。这导致了第二类 UNet 的发展（图 1b）。 U-Net&#43;&#43; [26] 利用密集连接，而 MultiResUNet [11] 在跳过连接上添加了额外的卷积块作为潜在的补救措施。到目前为止，UNet 的历史上所有创新都是使用 CNN 进行的。然而，2020 年的十年给计算机视觉领域带来了根本性的变化。 CNN 在视觉领域的长期主导地位被视觉转换器打破了 [7]。 Swin Transformers [15] 进一步针对一般视觉应用调整了变压器。因此，UNet 模型开始采用 Transformer [5]。 Swin-Unet [9] 用 Swin Transformer 块取代了卷积块，从而开创了一类新的模型（图 1c）。尽管如此，CNN 在图像分割方面仍然具有各种优点，导致了融合这两者的发展[2]。这种混合类 UNet 模型（图 1d）在编码器-解码器中采用卷积块，并沿跳跃连接使用变换器层。 UCTransNet [22]和MCTrans[24]是此类的两个代表性模型。最后，还尝试开发全变压器 UNet 架构（图 1e），例如，SMESwin Unet [27] 在编码器-解码器块和跳跃连接中都使用变压器。
+...</p>
   </div>
   <footer class="entry-footer"><span title='2023-11-12 16:32:06 +0800 CST'>November 12, 2023</span>&nbsp;·&nbsp;2 min&nbsp;·&nbsp;SwimmingLiu</footer>
   <a class="entry-link" aria-label="post link to ACC-UNet: A Completely Convolutional UNet model for the 2020s (MICCAI2023)" href="https://swimmingliu.cn/posts/papernotes/2023-acc-unet/"></a>
@@ -214,7 +217,7 @@
 
 <article class="post-entry"> 
   <header class="entry-header">
-    <h2>M2SNet: Multi-scale in Multi-scale Subtraction Network for Medical Image Segmentation
+    <h2 class="entry-hint-parent">M2SNet: Multi-scale in Multi-scale Subtraction Network for Medical Image Segmentation
     </h2>
   </header>
   <div class="entry-content">
@@ -231,7 +234,8 @@ Introduction 作为计算机辅助诊断系统中的重要作用，精确的医�
 多尺度减法单元可以去特征之间的差异信息，消除冗余干扰。
 （也就是说可以用这种办法替换注意力机制）
 RELATED WORK Medical Image Segmentation Network 根据不同器官或病变的特点，我们将现有的医学图像分割方法分为两类：医学通用的和医学专用的。随着U-Net[2]在医学图像分割领域取得稳定的性能，带有编码器-解码器的U形结构已成为基本的分割基线。 U-Net&#43;&#43;[9]集成了长连接和短连接，可以减少编码器和解码器子网络的特征图之间的语义差距。对于注意力 U-Net [28]，注意力门嵌入在编码器和解码器块之间的每个过渡层中，它可以自动学习关注不同形状和大小的目标结构。最近，Transformer [29]架构在许多自然语言处理任务中取得了成功。一些作品[7]、[8]探讨了其对医学视觉任务的有效性。 UTNet [7] 是一种简单但功能强大的混合变压器架构，它在编码器和解码器中应用自注意力模块，以最小的开销捕获不同规模的远程依赖关系。另一个具有代表性的基于 Transformer 的模型是 TransUNet [8]，它通过将图像特征视为序列来编码强全局上下文，并通过 U 形混合架构设计利用低级 CNN 特征。
-医学特定方法。在息肉分割任务中，SFA [30]和PraNet [4]专注于恢复息肉与其周围粘膜之间的清晰边界。前者提出了共享编码器和两个相互约束的解码器下的选择性特征聚合结构和边界敏感损失函数。后者利用反向注意模块来建立区域和边界线索之间的关系。此外，Ji等人[31]利用时空信息构建视频息肉分割模型。在COVID-19肺部感染任务中，Paluru等人[32]提出了一种基于变形深度嵌入的轻量级CNN来分割COVID-19胸部CT图像中的异常。 Inf-Net [33] 构建隐式反向注意力和显式边缘注意力来对边界进行建模。 BCS-Net [34]具有三个渐进边界上下文语义重建块，可以帮助解码器捕获肺部感染的零散区域。在乳腺分割任务中，Byra等人[35]通过注意力机制开发了选择性核来调整U-Net的感受野，可以进一步提高乳腺肿瘤的分割精度。 Chen 等人 [36] 提出了一种嵌套 U 网，通过利用不同的深度和共享权重来实现乳腺肿瘤的稳健表示。...</p>
+医学特定方法。在息肉分割任务中，SFA [30]和PraNet [4]专注于恢复息肉与其周围粘膜之间的清晰边界。前者提出了共享编码器和两个相互约束的解码器下的选择性特征聚合结构和边界敏感损失函数。后者利用反向注意模块来建立区域和边界线索之间的关系。此外，Ji等人[31]利用时空信息构建视频息肉分割模型。在COVID-19肺部感染任务中，Paluru等人[32]提出了一种基于变形深度嵌入的轻量级CNN来分割COVID-19胸部CT图像中的异常。 Inf-Net [33] 构建隐式反向注意力和显式边缘注意力来对边界进行建模。 BCS-Net [34]具有三个渐进边界上下文语义重建块，可以帮助解码器捕获肺部感染的零散区域。在乳腺分割任务中，Byra等人[35]通过注意力机制开发了选择性核来调整U-Net的感受野，可以进一步提高乳腺肿瘤的分割精度。 Chen 等人 [36] 提出了一种嵌套 U 网，通过利用不同的深度和共享权重来实现乳腺肿瘤的稳健表示。
+...</p>
   </div>
   <footer class="entry-footer"><span title='2023-11-12 16:25:03 +0800 CST'>November 12, 2023</span>&nbsp;·&nbsp;1 min&nbsp;·&nbsp;SwimmingLiu</footer>
   <a class="entry-link" aria-label="post link to M2SNet: Multi-scale in Multi-scale Subtraction Network for Medical Image Segmentation" href="https://swimmingliu.cn/posts/papernotes/2023-m2snet/"></a>
@@ -239,7 +243,7 @@ RELATED WORK Medical Image Segmentation Network 根据不同器官或病变的�
 
 <article class="post-entry"> 
   <header class="entry-header">
-    <h2>EGE-UNet: an Efficient Group Enhanced UNet for skin lesion segmentation
+    <h2 class="entry-hint-parent">EGE-UNet: an Efficient Group Enhanced UNet for skin lesion segmentation
     </h2>
   </header>
   <div class="entry-content">
@@ -252,7 +256,8 @@ RELATED WORK Medical Image Segmentation Network 根据不同器官或病变的�
 相同方式可引入脑瘤、肺癌。
 为了提高分割性能，最近的研究倾向于采用具有更大参数和计算复杂度的模块，例如结合视觉变换器（ViT）的自注意力机制[7]。例如，Swin-UNet [4]，基于Swin Transformer [11]，利用自注意力机制的特征提取能力来提高分割性能。 TransUNet [5] 开创了用于医学图像分割的 CNN 和 ViT 的串行融合。 TransFuse [26]采用双路径结构，利用 CNN 和 ViT 分别捕获局部和全局信息。UTNetV2[8]利用混合分层架构、高效的双向注意力和语义图来实现全局多尺度特征融合，结合了CNN和ViT的优点。 TransBTS [23] 将自注意力引入脑肿瘤分割任务中，并用它来聚合高级信息。
 Abstract提到当前医学分割模型大部分是Transformer &#43; Unet，这里做出具体阐述。
-先前的工作通过引入复杂的模块来提高性能，但忽略了实际医疗环境中计算资源的限制。因此，迫切需要为移动医疗中的分割任务设计一种低参数、低计算负载的模型。最近，UNeXt [22] 结合了 UNet [18] 和 MLP [21] 开发了一种轻量级模型，该模型可以获得优异的性能，同时减少参数和计算量。此外，MALUNet [19]通过减少模型通道数并引入多个注意力模块来减小模型大小，从而比 UNeXt 具有更好的皮肤病变分割性能。然而，尽管MALUNet大大减少了参数数量和计算量，但其分割性能仍然低于一些大型模型，例如TransFuse。因此，在本研究中，我们提出了 EGE-UNet，这是一种轻量级皮肤病变分割模型，可实现最先进的效果，同时显着降低参数和计算成本。此外，据我们所知，这是第一个将参数减少到大约 50KB 的工作。...</p>
+先前的工作通过引入复杂的模块来提高性能，但忽略了实际医疗环境中计算资源的限制。因此，迫切需要为移动医疗中的分割任务设计一种低参数、低计算负载的模型。最近，UNeXt [22] 结合了 UNet [18] 和 MLP [21] 开发了一种轻量级模型，该模型可以获得优异的性能，同时减少参数和计算量。此外，MALUNet [19]通过减少模型通道数并引入多个注意力模块来减小模型大小，从而比 UNeXt 具有更好的皮肤病变分割性能。然而，尽管MALUNet大大减少了参数数量和计算量，但其分割性能仍然低于一些大型模型，例如TransFuse。因此，在本研究中，我们提出了 EGE-UNet，这是一种轻量级皮肤病变分割模型，可实现最先进的效果，同时显着降低参数和计算成本。此外，据我们所知，这是第一个将参数减少到大约 50KB 的工作。
+...</p>
   </div>
   <footer class="entry-footer"><span title='2023-11-11 19:51:21 +0800 CST'>November 11, 2023</span>&nbsp;·&nbsp;2 min&nbsp;·&nbsp;SwimmingLiu</footer>
   <a class="entry-link" aria-label="post link to EGE-UNet: an Efficient Group Enhanced UNet for skin lesion segmentation" href="https://swimmingliu.cn/posts/papernotes/2023-ege-unet%E8%AE%BA%E6%96%87%E7%AC%94%E8%AE%B0/"></a>
@@ -267,7 +272,8 @@ Abstract提到当前医学分割模型大部分是Transformer &#43; Unet，这�
     </main>
     
 <footer class="footer">
-    <span>&copy; 2023-2024 <a href="https://swimmingliu.cn/">SwimmingLiu&#39;s Blog</a></span>
+        <span>&copy; 2023-2024 <a href="https://swimmingliu.cn/">SwimmingLiu&#39;s Blog</a></span> · 
+
     <span>
         Powered by
         <a href="https://gohugo.io/" rel="noopener noreferrer" target="_blank">Hugo</a> &

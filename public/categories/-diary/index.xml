@@ -1,0 +1,368 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/">
+  <channel>
+    <title>📓 Diary on SwimmingLiu&#39;s Blog</title>
+    <link>https://swimmingliu.cn/categories/-diary/</link>
+    <description>Recent content in 📓 Diary on SwimmingLiu&#39;s Blog</description>
+    <image>
+      <title>SwimmingLiu&#39;s Blog</title>
+      <url>https://swimmingliu.cn/papermod-cover.png</url>
+      <link>https://swimmingliu.cn/papermod-cover.png</link>
+    </image>
+    <generator>Hugo -- 0.136.0</generator>
+    <language>en</language>
+    <lastBuildDate>Tue, 20 Aug 2024 10:35:06 +0800</lastBuildDate>
+    <atom:link href="https://swimmingliu.cn/categories/-diary/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>YOLOSHOW - YOLOv5/YOLOv7/YOLOv8/YOLOv9/RTDETR GUI based on Pyside6</title>
+      <link>https://swimmingliu.cn/posts/diary/yoloshow/</link>
+      <pubDate>Sun, 18 Feb 2024 19:30:06 +0800</pubDate>
+      <guid>https://swimmingliu.cn/posts/diary/yoloshow/</guid>
+      <description>&lt;h2 id=&#34;introduction&#34;&gt;Introduction&lt;/h2&gt;
+&lt;p&gt;&lt;em&gt;&lt;strong&gt;YOLOSHOW&lt;/strong&gt;&lt;/em&gt; is a graphical user interface (GUI) application embed with&lt;code&gt;YOLOv5&lt;/code&gt; &lt;code&gt;YOLOv7&lt;/code&gt; &lt;code&gt;YOLOv8&lt;/code&gt; &lt;code&gt;YOLOv9&lt;/code&gt; &lt;code&gt;YOLOv10&lt;/code&gt; &lt;code&gt;RT-DETR&lt;/code&gt; algorithm.&lt;/p&gt;
+ &lt;p align=&#34;center&#34;&gt; 
+  English &amp;nbsp; | &amp;nbsp; &lt;a href=&#34;https://github.com/SwimmingLiu/YOLOSHOW/blob/master/README_cn.md&#34;&gt;简体中文&lt;/a&gt;
+ &lt;/p&gt;
+&lt;p&gt;&lt;img loading=&#34;lazy&#34; src=&#34;https://oss.swimmingliu.cn/YOLOSHOW-SCREENSHOT.png&#34; alt=&#34;YOLOSHOW-Screen&#34;  /&gt;
+&lt;/p&gt;
+&lt;h2 id=&#34;demo-video&#34;&gt;Demo Video&lt;/h2&gt;
+&lt;p&gt;&lt;code&gt;YOLOSHOW v1.x&lt;/code&gt; : &lt;a href=&#34;https://www.bilibili.com/video/BV1BC411x7fW&#34;&gt;YOLOSHOW-YOLOv9/YOLOv8/YOLOv7/YOLOv5/RTDETR GUI&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;&lt;code&gt;YOLOSHOW v2.x&lt;/code&gt; : &lt;a href=&#34;https://www.bilibili.com/video/BV1ZD421E7m3&#34;&gt;YOLOSHOWv2.0-YOLOv9/YOLOv8/YOLOv7/YOLOv5/RTDETR GUI&lt;/a&gt;&lt;/p&gt;
+&lt;h2 id=&#34;todo-list&#34;&gt;Todo List&lt;/h2&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;input checked=&#34;&#34; disabled=&#34;&#34; type=&#34;checkbox&#34;&gt; Add &lt;code&gt;YOLOv9&lt;/code&gt; Algorithm&lt;/li&gt;
+&lt;li&gt;&lt;input checked=&#34;&#34; disabled=&#34;&#34; type=&#34;checkbox&#34;&gt; Adjust User Interface (Menu Bar)&lt;/li&gt;
+&lt;li&gt;&lt;input checked=&#34;&#34; disabled=&#34;&#34; type=&#34;checkbox&#34;&gt; Complete Rtsp Function&lt;/li&gt;
+&lt;li&gt;&lt;input checked=&#34;&#34; disabled=&#34;&#34; type=&#34;checkbox&#34;&gt; Support Instance Segmentation （ &lt;code&gt;YOLOv5&lt;/code&gt; &amp;amp; &lt;code&gt;YOLOv8&lt;/code&gt; ）&lt;/li&gt;
+&lt;li&gt;&lt;input checked=&#34;&#34; disabled=&#34;&#34; type=&#34;checkbox&#34;&gt; Add &lt;code&gt;RT-DETR&lt;/code&gt; Algorithm ( &lt;code&gt;Ultralytics&lt;/code&gt; repo)&lt;/li&gt;
+&lt;li&gt;&lt;input checked=&#34;&#34; disabled=&#34;&#34; type=&#34;checkbox&#34;&gt; Add Model Comparison Mode（VS Mode）&lt;/li&gt;
+&lt;li&gt;&lt;input checked=&#34;&#34; disabled=&#34;&#34; type=&#34;checkbox&#34;&gt; Support Pose Estimation （ &lt;code&gt;YOLOv8&lt;/code&gt; ）&lt;/li&gt;
+&lt;li&gt;&lt;input checked=&#34;&#34; disabled=&#34;&#34; type=&#34;checkbox&#34;&gt; Support Http Protocol in Rtsp Function ( Single Mode )&lt;/li&gt;
+&lt;li&gt;&lt;input checked=&#34;&#34; disabled=&#34;&#34; type=&#34;checkbox&#34;&gt; Support Oriented Bounding Boxes ( &lt;code&gt;YOLOv8&lt;/code&gt; )&lt;/li&gt;
+&lt;li&gt;&lt;input checked=&#34;&#34; disabled=&#34;&#34; type=&#34;checkbox&#34;&gt; Add &lt;code&gt;YOLOv10&lt;/code&gt; Algorithm&lt;/li&gt;
+&lt;li&gt;&lt;input checked=&#34;&#34; disabled=&#34;&#34; type=&#34;checkbox&#34;&gt; Support Dragging File Input&lt;/li&gt;
+&lt;li&gt;&lt;input disabled=&#34;&#34; type=&#34;checkbox&#34;&gt; Tracking &amp;amp; Counting ( &lt;code&gt;Industrialization&lt;/code&gt; )&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2 id=&#34;functions&#34;&gt;Functions&lt;/h2&gt;
+&lt;h3 id=&#34;1-support-image--video--webcam--folder-batch--ipcam-object-detection&#34;&gt;1. Support Image / Video / Webcam / Folder (Batch) / IPCam Object Detection&lt;/h3&gt;
+&lt;p&gt;Choose Image / Video / Webcam / Folder (Batch) / IPCam in the menu bar on the left to detect objects.&lt;/p&gt;</description>
+    </item>
+    <item>
+      <title>YOLOSHOW 中文版 - YOLOv5/YOLOv7/YOLOv8/YOLOv9/RTDETR GUI based on Pyside6</title>
+      <link>https://swimmingliu.cn/posts/diary/yoloshow-cn/</link>
+      <pubDate>Sun, 18 Feb 2024 19:30:06 +0800</pubDate>
+      <guid>https://swimmingliu.cn/posts/diary/yoloshow-cn/</guid>
+      <description>&lt;h2 id=&#34;介绍&#34;&gt;介绍&lt;/h2&gt;
+&lt;p&gt;&lt;em&gt;&lt;strong&gt;YOLOSHOW&lt;/strong&gt;&lt;/em&gt; 是一款集合了 &lt;code&gt;YOLOv5&lt;/code&gt; &lt;code&gt;YOLOv7&lt;/code&gt; &lt;code&gt;YOLOv8&lt;/code&gt; &lt;code&gt;YOLOv9&lt;/code&gt;  &lt;code&gt;YOLOv10&lt;/code&gt; &lt;code&gt;RT-DETR&lt;/code&gt; 的图形化界面程序&lt;/p&gt;
+&lt;p align=&#34;center&#34;&gt; 
+  &lt;a href=&#34;https://github.com/SwimmingLiu/YOLOSHOW/blob/master/README.md&#34;&gt; English&lt;/a&gt; &amp;nbsp; | &amp;nbsp; 简体中文&lt;/a&gt;
+ &lt;/p&gt;
+&lt;p&gt;&lt;img loading=&#34;lazy&#34; src=&#34;https://oss.swimmingliu.cn/YOLOSHOW-SCREENSHOT.png&#34; alt=&#34;YOLOSHOW-Screen&#34;  /&gt;
+&lt;/p&gt;
+&lt;h2 id=&#34;演示视频&#34;&gt;演示视频&lt;/h2&gt;
+&lt;p&gt;&lt;code&gt;YOLOSHOW v1.x&lt;/code&gt; : &lt;a href=&#34;https://www.bilibili.com/video/BV1BC411x7fW&#34;&gt;YOLOSHOW-YOLOv9/YOLOv8/YOLOv7/YOLOv5/RTDETR GUI&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;&lt;code&gt;YOLOSHOW v2.x&lt;/code&gt; : &lt;a href=&#34;https://www.bilibili.com/video/BV1ZD421E7m3&#34;&gt;YOLOSHOWv2.0-YOLOv9/YOLOv8/YOLOv7/YOLOv5/RTDETR GUI&lt;/a&gt;&lt;/p&gt;
+&lt;h2 id=&#34;待做清单&#34;&gt;待做清单&lt;/h2&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;input checked=&#34;&#34; disabled=&#34;&#34; type=&#34;checkbox&#34;&gt; 加入 &lt;code&gt;YOLOv9&lt;/code&gt; 算法&lt;/li&gt;
+&lt;li&gt;&lt;input checked=&#34;&#34; disabled=&#34;&#34; type=&#34;checkbox&#34;&gt; 调整UI (菜单栏)&lt;/li&gt;
+&lt;li&gt;&lt;input checked=&#34;&#34; disabled=&#34;&#34; type=&#34;checkbox&#34;&gt; 完成Rtsp功能&lt;/li&gt;
+&lt;li&gt;&lt;input checked=&#34;&#34; disabled=&#34;&#34; type=&#34;checkbox&#34;&gt; 支持实例分割 （ &lt;code&gt;YOLOv5&lt;/code&gt; &amp;amp; &lt;code&gt;YOLOv8&lt;/code&gt; ）&lt;/li&gt;
+&lt;li&gt;&lt;input checked=&#34;&#34; disabled=&#34;&#34; type=&#34;checkbox&#34;&gt; 加入 &lt;code&gt;RT-DETR&lt;/code&gt; 算法 ( &lt;code&gt;Ultralytics&lt;/code&gt; 仓库)&lt;/li&gt;
+&lt;li&gt;&lt;input checked=&#34;&#34; disabled=&#34;&#34; type=&#34;checkbox&#34;&gt; 加入模型对比模式（VS Mode）&lt;/li&gt;
+&lt;li&gt;&lt;input checked=&#34;&#34; disabled=&#34;&#34; type=&#34;checkbox&#34;&gt; 支持姿态估计 （ &lt;code&gt;YOLOv8&lt;/code&gt; ）&lt;/li&gt;
+&lt;li&gt;&lt;input checked=&#34;&#34; disabled=&#34;&#34; type=&#34;checkbox&#34;&gt; 支持 Http 协议 ( Single Mode )&lt;/li&gt;
+&lt;li&gt;&lt;input checked=&#34;&#34; disabled=&#34;&#34; type=&#34;checkbox&#34;&gt; 支持旋转框 ( &lt;code&gt;YOLOv8&lt;/code&gt; )&lt;/li&gt;
+&lt;li&gt;&lt;input checked=&#34;&#34; disabled=&#34;&#34; type=&#34;checkbox&#34;&gt; 加入 &lt;code&gt;YOLOv10&lt;/code&gt; 算法&lt;/li&gt;
+&lt;li&gt;&lt;input checked=&#34;&#34; disabled=&#34;&#34; type=&#34;checkbox&#34;&gt; 支持拖拽文件输入&lt;/li&gt;
+&lt;li&gt;&lt;input disabled=&#34;&#34; type=&#34;checkbox&#34;&gt; 追踪和计数模型 ( &lt;code&gt;工业化&lt;/code&gt; )&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2 id=&#34;功能&#34;&gt;功能&lt;/h2&gt;
+&lt;h3 id=&#34;1-支持-图片--视频--摄像头--文件夹批量-网络摄像头-目标检测&#34;&gt;1. 支持 图片 / 视频 / 摄像头 / 文件夹（批量）/ 网络摄像头 目标检测&lt;/h3&gt;
+&lt;p&gt;选择左侧菜单栏的图片 / 视频 / 摄像头 / 文件夹（批量）/ 网络摄像头 进行目标检测&lt;/p&gt;</description>
+    </item>
+    <item>
+      <title>ZSTU服务器使用教程 (Yang Li Lab)</title>
+      <link>https://swimmingliu.cn/posts/diary/zstu_server_manuscript/</link>
+      <pubDate>Fri, 05 Jan 2024 13:47:03 +0800</pubDate>
+      <guid>https://swimmingliu.cn/posts/diary/zstu_server_manuscript/</guid>
+      <description>&lt;h2 id=&#34;安装-xshell-和-xftp&#34;&gt;安装 Xshell 和 Xftp&lt;/h2&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;https://www.netsarang.com/en/xshell-download/ &lt;span class=&#34;c1&#34;&gt;# Xshell下载连接&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;https://blog.csdn.net/m0_67400972/article/details/125346023 &lt;span class=&#34;c1&#34;&gt;# 安装教程&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h2 id=&#34;添加xshell连接&#34;&gt;添加Xshell连接&lt;/h2&gt;
+&lt;p&gt;&lt;img loading=&#34;lazy&#34; src=&#34;https://oss.swimmingliu.cn/B6xRW.png&#34; alt=&#34;image-20240105113129928&#34;  /&gt;
+&lt;/p&gt;
+&lt;p&gt;其中 &lt;code&gt;server.ip&lt;/code&gt; 为服务器公网ip地址，端口为 &lt;code&gt;6969&lt;/code&gt;&lt;/p&gt;
+&lt;h2 id=&#34;安装anaconda3&#34;&gt;安装Anaconda3&lt;/h2&gt;
+&lt;p&gt;每个用户均被分配 &lt;code&gt;AnacondaAnaconda3-2023.07-1-Linux-x86_64.sh &lt;/code&gt; 于主目录&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;bash AnacondaAnaconda3-2023.07-1-Linux-x86_64.sh &lt;span class=&#34;c1&#34;&gt;# 安装anaconda3&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;&lt;img loading=&#34;lazy&#34; src=&#34;https://oss.swimmingliu.cn/B6KTv.png&#34; alt=&#34;image-20240105113942737&#34;  /&gt;
+&lt;/p&gt;
+&lt;p&gt;输入 &lt;code&gt;yes&lt;/code&gt; 后， 再按回车键 即可&lt;/p&gt;
+&lt;p&gt;&lt;img loading=&#34;lazy&#34; src=&#34;https://oss.swimmingliu.cn/B6one.png&#34; alt=&#34;image-20240105114146047&#34;  /&gt;
+&lt;/p&gt;
+&lt;h2 id=&#34;初始化anaconda3&#34;&gt;初始化Anaconda3&lt;/h2&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;conda init bash	&lt;span class=&#34;c1&#34;&gt;# 初始化conda&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;然后重新使用Xshell 连接即可&lt;/p&gt;
+&lt;h2 id=&#34;magic-network&#34;&gt;Magic Network&lt;/h2&gt;
+&lt;p&gt;下载外网文件、克隆Github项目等操作，必须使用Magic Network&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;nb&#34;&gt;export&lt;/span&gt; &lt;span class=&#34;nv&#34;&gt;http_proxy&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;http://127.0.0.1:7890
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;nb&#34;&gt;export&lt;/span&gt; &lt;span class=&#34;nv&#34;&gt;https_proxy&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;http://127.0.0.1:7890
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;取消Magic Network&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;nb&#34;&gt;unset&lt;/span&gt; http_proxy
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;nb&#34;&gt;unset&lt;/span&gt; https_proxy
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;如果使用上面的命令，不能连接Google. 需要远程桌面连接，打开CFW (默认是打开的)&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;nohup bash /home/dell/LYJ/Clash/cfw &amp;gt; cfw.out
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;&lt;img loading=&#34;lazy&#34; src=&#34;https://oss.swimmingliu.cn/B6So3.png&#34; alt=&#34;image-20240105115600487&#34;  /&gt;
+&lt;/p&gt;
+&lt;h2 id=&#34;国内镜像下载&#34;&gt;国内镜像下载&lt;/h2&gt;
+&lt;p&gt;pip 清华源下载&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;pip install -i https://pypi.tuna.tsinghua.edu.cn/simple packge      &lt;span class=&#34;c1&#34;&gt;# packge为包名&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;conda 配置镜像&lt;/p&gt;</description>
+    </item>
+    <item>
+      <title>ZSTU Server Management</title>
+      <link>https://swimmingliu.cn/posts/diary/zstu_server_management/</link>
+      <pubDate>Thu, 04 Jan 2024 21:36:25 +0800</pubDate>
+      <guid>https://swimmingliu.cn/posts/diary/zstu_server_management/</guid>
+      <description>&lt;h2 id=&#34;frp配置&#34;&gt;FRP配置&lt;/h2&gt;
+&lt;h3 id=&#34;跳板机&#34;&gt;跳板机&lt;/h3&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;c1&#34;&gt;# frps.ini 配置&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;o&#34;&gt;[&lt;/span&gt;common&lt;span class=&#34;o&#34;&gt;]&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;nv&#34;&gt;bind_port&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;m&#34;&gt;7000&lt;/span&gt; &lt;span class=&#34;c1&#34;&gt;#frps服务监听的端口&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;nv&#34;&gt;token&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;m&#34;&gt;123&lt;/span&gt; &lt;span class=&#34;c1&#34;&gt;# 链接口令&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;./frps -c frps.ini &lt;span class=&#34;c1&#34;&gt;# 启动frps&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h3 id=&#34;服务器&#34;&gt;服务器&lt;/h3&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;c1&#34;&gt;# frpc.ini&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;o&#34;&gt;[&lt;/span&gt;common&lt;span class=&#34;o&#34;&gt;]&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;nv&#34;&gt;server_addr&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; x.x.x.x &lt;span class=&#34;c1&#34;&gt;# 此处为 跳板机 的公网ip&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;nv&#34;&gt;server_port&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;m&#34;&gt;7000&lt;/span&gt; &lt;span class=&#34;c1&#34;&gt;# 跳板机上frps服务监听的端口&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;nv&#34;&gt;token&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;m&#34;&gt;123&lt;/span&gt; &lt;span class=&#34;c1&#34;&gt;# 链接口令&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;o&#34;&gt;[&lt;/span&gt;ssh&lt;span class=&#34;o&#34;&gt;]&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;nb&#34;&gt;type&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; tcp
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;nv&#34;&gt;local_ip&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; 127.0.0.1 
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;nv&#34;&gt;local_port&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;m&#34;&gt;22&lt;/span&gt; &lt;span class=&#34;c1&#34;&gt;# 需要暴露的内网机器的端口&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;nv&#34;&gt;remote_port&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;m&#34;&gt;6000&lt;/span&gt; &lt;span class=&#34;c1&#34;&gt;# 暴露的内网机器的端口在vps上的端口&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h2 id=&#34;ssh连接&#34;&gt;SSH连接&lt;/h2&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;ssh -p &lt;span class=&#34;m&#34;&gt;6000&lt;/span&gt; swimmingliu@server.ip &lt;span class=&#34;c1&#34;&gt;# 普通ssh 连接&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;ssh swimmingliu@server.ip 6000	  &lt;span class=&#34;c1&#34;&gt;# xshell ssh连接&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h2 id=&#34;用户管理&#34;&gt;用户管理&lt;/h2&gt;
+&lt;h3 id=&#34;添加用户&#34;&gt;添加用户&lt;/h3&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;sudo adduser xxx
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h3 id=&#34;删除用户&#34;&gt;删除用户&lt;/h3&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;sudo deluser xxx
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h2 id=&#34;magic-network&#34;&gt;Magic Network&lt;/h2&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;nb&#34;&gt;export&lt;/span&gt; &lt;span class=&#34;nv&#34;&gt;http_proxy&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;http://127.0.0.1:7890
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;nb&#34;&gt;export&lt;/span&gt; &lt;span class=&#34;nv&#34;&gt;https_proxy&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;http://127.0.0.1:7890
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h2 id=&#34;anaconda3-安装和配置&#34;&gt;Anaconda3 安装和配置&lt;/h2&gt;
+&lt;h3 id=&#34;安装anaconda3&#34;&gt;安装Anaconda3&lt;/h3&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;wget --user-agent&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;&lt;span class=&#34;s2&#34;&gt;&amp;#34;Mozilla&amp;#34;&lt;/span&gt; https://mirrors.tuna.tsinghua.edu.cn/anaconda/archive/Anaconda3-2023.07-1-Linux-x86_64.sh
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;bash Anaconda3-2023.07-1-Linux-x86_64.sh
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;c1&#34;&gt;# https://mirrors.tuna.tsinghua.edu.cn/anaconda/archive 清华源&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h3 id=&#34;配置之前的envs&#34;&gt;配置之前的envs&lt;/h3&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;cp -r old_envs_path anaconda/envs/		&lt;span class=&#34;c1&#34;&gt;#迁移之前的envs环境&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h2 id=&#34;完结撒花&#34;&gt;完结撒花❀❀❀&lt;/h2&gt;</description>
+    </item>
+    <item>
+      <title>MovieKGQA: 基于知识图谱和neo4j图数据库的电影知识问答系统</title>
+      <link>https://swimmingliu.cn/posts/diary/2023-moviekgqa/</link>
+      <pubDate>Tue, 12 Dec 2023 12:18:57 +0800</pubDate>
+      <guid>https://swimmingliu.cn/posts/diary/2023-moviekgqa/</guid>
+      <description>&lt;h2 id=&#34;introduction&#34;&gt;Introduction&lt;/h2&gt;
+&lt;p&gt;基于知识图谱和neo4j图数据库的电影知识问答系统&lt;/p&gt;
+&lt;div style=&#34;display:flex; justify-content: space-around; &#34;&gt;
+&lt;img src=&#34;https://i.imgs.ovh/2023/12/12/mM4uR.png&#34; alt=&#34;image-20231212102658908&#34; style=&#34;box-shadow: 0 0 10px rgba(200, 200, 200);&#34; width=30% height:300px/&gt;
+&lt;img src=&#34;https://i.imgs.ovh/2023/12/12/mM58p.png&#34; alt=&#34;image-20231212102738360&#34; style=&#34;box-shadow: 0 0 10px rgba(200, 200, 200);&#34; width=30% height:300px/&gt;
+&lt;img src=&#34;https://i.imgs.ovh/2023/12/12/mMdFT.png&#34; alt=&#34;image-20231212103113278&#34; style=&#34;&#34; width=30% height:300px/&gt;
+&lt;/div&gt;
+&lt;h2 id=&#34;workflow&#34;&gt;Workflow&lt;/h2&gt;
+&lt;h3 id=&#34;database&#34;&gt;DataBase&lt;/h3&gt;
+&lt;p&gt;爬取豆瓣TOP1000电影信息数据&lt;/p&gt;
+&lt;h3 id=&#34;frontend&#34;&gt;Frontend&lt;/h3&gt;
+&lt;ol&gt;
+&lt;li&gt;获取用户输入的信息 （语音输入 / 文本输入）&lt;/li&gt;
+&lt;li&gt;向电影知识问答后端服务器发送请求&lt;/li&gt;
+&lt;li&gt;获取返回结果  (成功 -&amp;gt; 4 / 失败 -&amp;gt; 5)&lt;/li&gt;
+&lt;li&gt;如果返回结果包含image信息，则显示图片和文字，否则只显示文字&lt;/li&gt;
+&lt;li&gt;请求基于gpt的AI模型服务器，并显示返回结果&lt;/li&gt;
+&lt;/ol&gt;
+&lt;h3 id=&#34;backend&#34;&gt;Backend&lt;/h3&gt;
+&lt;p&gt;​	[准备工作]  训练 TF-IDF 向量算法和朴素贝叶斯分类器，用于预测用户文本所属的问题类别&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;接受前端请求，获取用户输入信息&lt;/li&gt;
+&lt;li&gt;使用分词库解析用户输入的文本词性，提取关键词&lt;/li&gt;
+&lt;li&gt;根据贝叶斯分类器，分类出用户文本的问题类型&lt;/li&gt;
+&lt;li&gt;结合关键词与问题类别，在 Neo4j 中查询问题的答案&lt;/li&gt;
+&lt;li&gt;返回查询结果 （若问题类型为 演员信息 / 电影介绍，则附加图片url）&lt;/li&gt;
+&lt;/ol&gt;
+&lt;h3 id=&#34;workflow-graph&#34;&gt;WorkFlow Graph&lt;/h3&gt;
+&lt;p&gt;&lt;img loading=&#34;lazy&#34; src=&#34;https://oss.swimmingliu.cn/0IEuW.png&#34; alt=&#34;workflow graph&#34;  /&gt;
+&lt;/p&gt;
+&lt;h2 id=&#34;frame&#34;&gt;Frame&lt;/h2&gt;
+&lt;h3 id=&#34;database-1&#34;&gt;DataBase&lt;/h3&gt;
+&lt;p&gt;&lt;a href=&#34;https://neo4j.com/&#34;&gt;&lt;img loading=&#34;lazy&#34; src=&#34;https://img.shields.io/badge/neo4j-test?style=for-the-badge&amp;amp;logo=neo4j&amp;amp;logoColor=white&amp;amp;color=blue&#34; alt=&#34;Neo4j&#34;  /&gt;
+&lt;/a&gt;&lt;/p&gt;
+&lt;h3 id=&#34;frontend-1&#34;&gt;Frontend&lt;/h3&gt;
+&lt;p&gt;&lt;a href=&#34;https://developers.weixin.qq.com/&#34;&gt;&lt;img loading=&#34;lazy&#34; src=&#34;https://img.shields.io/badge/wechat%20mini%20programs-test?style=for-the-badge&amp;amp;logo=wechat&amp;amp;logoColor=white&amp;amp;color=%2320B2AA&#34; alt=&#34;wechat mini programs&#34;  /&gt;
+&lt;/a&gt;&lt;/p&gt;</description>
+    </item>
+    <item>
+      <title>程序设计作业接口文档</title>
+      <link>https://swimmingliu.cn/posts/diary/2023-%E7%A8%8B%E5%BA%8F%E8%AE%BE%E8%AE%A1%E4%BD%9C%E4%B8%9A%E6%8E%A5%E5%8F%A3%E6%96%87%E6%A1%A3/</link>
+      <pubDate>Sat, 02 Dec 2023 21:40:07 +0800</pubDate>
+      <guid>https://swimmingliu.cn/posts/diary/2023-%E7%A8%8B%E5%BA%8F%E8%AE%BE%E8%AE%A1%E4%BD%9C%E4%B8%9A%E6%8E%A5%E5%8F%A3%E6%96%87%E6%A1%A3/</guid>
+      <description>&lt;h1 id=&#34;程序设计作业接口文档&#34;&gt;程序设计作业接口文档&lt;/h1&gt;
+&lt;p&gt;统一返回格式&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-json&#34; data-lang=&#34;json&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;p&#34;&gt;{&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    &lt;span class=&#34;err&#34;&gt;code:&lt;/span&gt; &lt;span class=&#34;err&#34;&gt;...,&lt;/span&gt;	&lt;span class=&#34;err&#34;&gt;#&lt;/span&gt; &lt;span class=&#34;err&#34;&gt;状态码&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    &lt;span class=&#34;err&#34;&gt;msg:&lt;/span&gt; &lt;span class=&#34;err&#34;&gt;...,&lt;/span&gt;	&lt;span class=&#34;err&#34;&gt;#&lt;/span&gt; &lt;span class=&#34;err&#34;&gt;描述信息&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    &lt;span class=&#34;err&#34;&gt;data:&lt;/span&gt; &lt;span class=&#34;err&#34;&gt;{&lt;/span&gt;     &lt;span class=&#34;err&#34;&gt;#&lt;/span&gt; &lt;span class=&#34;err&#34;&gt;数据&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    	&lt;span class=&#34;err&#34;&gt;...&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    &lt;span class=&#34;p&#34;&gt;}&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;err&#34;&gt;}&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;err&#34;&gt;code&lt;/span&gt; &lt;span class=&#34;err&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;{&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    &lt;span class=&#34;err&#34;&gt;200&lt;/span&gt; &lt;span class=&#34;err&#34;&gt;==&lt;/span&gt; &lt;span class=&#34;err&#34;&gt;成功,&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    &lt;span class=&#34;err&#34;&gt;500&lt;/span&gt; &lt;span class=&#34;err&#34;&gt;==&lt;/span&gt; &lt;span class=&#34;err&#34;&gt;失败,&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;p&#34;&gt;}&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;err&#34;&gt;msg&lt;/span&gt; &lt;span class=&#34;err&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;{&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    &lt;span class=&#34;err&#34;&gt;success&lt;/span&gt; &lt;span class=&#34;err&#34;&gt;==&lt;/span&gt; &lt;span class=&#34;err&#34;&gt;成功&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    &lt;span class=&#34;err&#34;&gt;fail&lt;/span&gt;    &lt;span class=&#34;err&#34;&gt;==&lt;/span&gt; &lt;span class=&#34;err&#34;&gt;失败&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    &lt;span class=&#34;err&#34;&gt;...&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;p&#34;&gt;}&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;err&#34;&gt;data&lt;/span&gt; &lt;span class=&#34;err&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;{&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    &lt;span class=&#34;err&#34;&gt;key&lt;/span&gt; &lt;span class=&#34;err&#34;&gt;:&lt;/span&gt; &lt;span class=&#34;err&#34;&gt;value&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;p&#34;&gt;}&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h2 id=&#34;前端&#34;&gt;前端&lt;/h2&gt;
+&lt;h3 id=&#34;虚拟换衣功能&#34;&gt;虚拟换衣功能&lt;/h3&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-json&#34; data-lang=&#34;json&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;err&#34;&gt;@请求格式&lt;/span&gt;  &lt;span class=&#34;err&#34;&gt;（请求后端）&lt;/span&gt;  	 &lt;span class=&#34;err&#34;&gt;#&lt;/span&gt; &lt;span class=&#34;err&#34;&gt;前后端需统一样例图片id&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;p&#34;&gt;{&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    &lt;span class=&#34;err&#34;&gt;userId:&lt;/span&gt; &lt;span class=&#34;err&#34;&gt;...&amp;lt;int&amp;gt;,&lt;/span&gt;			&lt;span class=&#34;err&#34;&gt;#&lt;/span&gt; &lt;span class=&#34;err&#34;&gt;标识哪个用户的请求&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    &lt;span class=&#34;err&#34;&gt;isUploadCloth:&lt;/span&gt; &lt;span class=&#34;err&#34;&gt;...&amp;lt;bool&amp;gt;,&lt;/span&gt;           &lt;span class=&#34;err&#34;&gt;#&lt;/span&gt; &lt;span class=&#34;err&#34;&gt;若上传衣服图片使用base64，否则用id&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    &lt;span class=&#34;err&#34;&gt;isUploadPerson:&lt;/span&gt; &lt;span class=&#34;err&#34;&gt;...&amp;lt;bool&amp;gt;,&lt;/span&gt;          &lt;span class=&#34;err&#34;&gt;#&lt;/span&gt; &lt;span class=&#34;err&#34;&gt;若上传人物图片使用base64，否则用id&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    &lt;span class=&#34;err&#34;&gt;clothData:&lt;/span&gt; &lt;span class=&#34;err&#34;&gt;...&amp;lt;base64||null&amp;gt;,&lt;/span&gt; 	&lt;span class=&#34;err&#34;&gt;#&lt;/span&gt; &lt;span class=&#34;err&#34;&gt;衣服图片base64编码&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    &lt;span class=&#34;err&#34;&gt;personData:&lt;/span&gt; &lt;span class=&#34;err&#34;&gt;...&amp;lt;base64||null&amp;gt;,&lt;/span&gt;	&lt;span class=&#34;err&#34;&gt;#&lt;/span&gt; &lt;span class=&#34;err&#34;&gt;人物图片base64编码&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    &lt;span class=&#34;err&#34;&gt;exampleClothId:&lt;/span&gt; &lt;span class=&#34;err&#34;&gt;...&amp;lt;int&amp;gt;,&lt;/span&gt;		&lt;span class=&#34;err&#34;&gt;#&lt;/span&gt; &lt;span class=&#34;err&#34;&gt;衣服样例图片id&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    &lt;span class=&#34;err&#34;&gt;examplePersonId:&lt;/span&gt; &lt;span class=&#34;err&#34;&gt;...&amp;lt;int&amp;gt;&lt;/span&gt;		&lt;span class=&#34;err&#34;&gt;#&lt;/span&gt; &lt;span class=&#34;err&#34;&gt;任务样例图片id&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;p&#34;&gt;}&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h3 id=&#34;动漫头像功能&#34;&gt;动漫头像功能&lt;/h3&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-json&#34; data-lang=&#34;json&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;err&#34;&gt;@请求格式&lt;/span&gt; &lt;span class=&#34;err&#34;&gt;（请求后端）&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;p&#34;&gt;{&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    &lt;span class=&#34;err&#34;&gt;userId:&lt;/span&gt; &lt;span class=&#34;err&#34;&gt;...&amp;lt;int&amp;gt;,&lt;/span&gt;    	        &lt;span class=&#34;err&#34;&gt;#&lt;/span&gt; &lt;span class=&#34;err&#34;&gt;标识哪个用户的请求&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    &lt;span class=&#34;err&#34;&gt;imgData:&lt;/span&gt;  &lt;span class=&#34;err&#34;&gt;...&amp;lt;base64&amp;gt;&lt;/span&gt; 	        &lt;span class=&#34;err&#34;&gt;#&lt;/span&gt; &lt;span class=&#34;err&#34;&gt;需要动漫化的图片&lt;/span&gt; 
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;p&#34;&gt;}&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h2 id=&#34;后端&#34;&gt;后端&lt;/h2&gt;
+&lt;h3 id=&#34;虚拟换衣功能-1&#34;&gt;虚拟换衣功能&lt;/h3&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-json&#34; data-lang=&#34;json&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;err&#34;&gt;前端请求API:&lt;/span&gt; &lt;span class=&#34;err&#34;&gt;https:&lt;/span&gt;&lt;span class=&#34;c1&#34;&gt;//talented-civet-separately.ngrok-free.app/tryon/
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;c1&#34;&gt;&lt;/span&gt;&lt;span class=&#34;err&#34;&gt;@返回格式&lt;/span&gt; &lt;span class=&#34;err&#34;&gt;(返回前端)&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;p&#34;&gt;{&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    &lt;span class=&#34;err&#34;&gt;code:&lt;/span&gt; &lt;span class=&#34;err&#34;&gt;...&amp;lt;int&amp;gt;,&lt;/span&gt; 	                &lt;span class=&#34;err&#34;&gt;#&lt;/span&gt; &lt;span class=&#34;err&#34;&gt;状态码&lt;/span&gt; &lt;span class=&#34;err&#34;&gt;(200表示成功,&lt;/span&gt; &lt;span class=&#34;err&#34;&gt;500表示失败)&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    &lt;span class=&#34;err&#34;&gt;msg:&lt;/span&gt; &lt;span class=&#34;err&#34;&gt;...&amp;lt;string&amp;gt;,&lt;/span&gt;	                &lt;span class=&#34;err&#34;&gt;#&lt;/span&gt; &lt;span class=&#34;err&#34;&gt;消息&lt;/span&gt; &lt;span class=&#34;err&#34;&gt;(success&lt;/span&gt; &lt;span class=&#34;err&#34;&gt;/&lt;/span&gt; &lt;span class=&#34;err&#34;&gt;fail)&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    &lt;span class=&#34;err&#34;&gt;data:&lt;/span&gt; &lt;span class=&#34;err&#34;&gt;{&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;        &lt;span class=&#34;err&#34;&gt;tryon_result&lt;/span&gt; &lt;span class=&#34;err&#34;&gt;:&lt;/span&gt; &lt;span class=&#34;err&#34;&gt;...&amp;lt;url&amp;gt;,&lt;/span&gt;  	&lt;span class=&#34;err&#34;&gt;#&lt;/span&gt; &lt;span class=&#34;err&#34;&gt;处理后的图片url&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    &lt;span class=&#34;p&#34;&gt;}&lt;/span&gt; 
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;err&#34;&gt;}&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h3 id=&#34;动漫头像功能-1&#34;&gt;动漫头像功能&lt;/h3&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-json&#34; data-lang=&#34;json&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;err&#34;&gt;前端请求API:&lt;/span&gt; &lt;span class=&#34;err&#34;&gt;https:&lt;/span&gt;&lt;span class=&#34;c1&#34;&gt;//talented-civet-separately.ngrok-free.app/anime/
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;c1&#34;&gt;&lt;/span&gt;&lt;span class=&#34;err&#34;&gt;@返回格式&lt;/span&gt; &lt;span class=&#34;err&#34;&gt;(返回前端)&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;p&#34;&gt;{&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    &lt;span class=&#34;err&#34;&gt;code:&lt;/span&gt; &lt;span class=&#34;err&#34;&gt;...&amp;lt;int&amp;gt;,&lt;/span&gt;  	                &lt;span class=&#34;err&#34;&gt;#&lt;/span&gt; &lt;span class=&#34;err&#34;&gt;状态码&lt;/span&gt; &lt;span class=&#34;err&#34;&gt;(200表示成功,&lt;/span&gt; &lt;span class=&#34;err&#34;&gt;500表示失败)&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    &lt;span class=&#34;err&#34;&gt;msg&lt;/span&gt; &lt;span class=&#34;err&#34;&gt;:&lt;/span&gt; &lt;span class=&#34;err&#34;&gt;...&amp;lt;string&amp;gt;,&lt;/span&gt; 	                &lt;span class=&#34;err&#34;&gt;#&lt;/span&gt; &lt;span class=&#34;err&#34;&gt;消息&lt;/span&gt; &lt;span class=&#34;err&#34;&gt;(success&lt;/span&gt; &lt;span class=&#34;err&#34;&gt;/&lt;/span&gt; &lt;span class=&#34;err&#34;&gt;fail)&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    &lt;span class=&#34;err&#34;&gt;data:&lt;/span&gt; &lt;span class=&#34;err&#34;&gt;{&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    	&lt;span class=&#34;err&#34;&gt;anime_result&lt;/span&gt; &lt;span class=&#34;err&#34;&gt;:&lt;/span&gt;  &lt;span class=&#34;err&#34;&gt;...&amp;lt;url&amp;gt;,&lt;/span&gt; 	&lt;span class=&#34;err&#34;&gt;#&lt;/span&gt; &lt;span class=&#34;err&#34;&gt;处理后的图片url&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    &lt;span class=&#34;p&#34;&gt;}&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;err&#34;&gt;}&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h2 id=&#34;模型端&#34;&gt;模型端&lt;/h2&gt;
+&lt;h3 id=&#34;虚拟换衣功能-2&#34;&gt;虚拟换衣功能&lt;/h3&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-json&#34; data-lang=&#34;json&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;err&#34;&gt;后端请求API:&lt;/span&gt; &lt;span class=&#34;err&#34;&gt;https:&lt;/span&gt;&lt;span class=&#34;c1&#34;&gt;//certain-ideally-foal.ngrok-free.app/tryon/predict/
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;c1&#34;&gt;&lt;/span&gt;&lt;span class=&#34;err&#34;&gt;@请求格式&lt;/span&gt;	&lt;span class=&#34;err&#34;&gt;(后端发出请求)&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;p&#34;&gt;{&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    &lt;span class=&#34;err&#34;&gt;userid&lt;/span&gt; &lt;span class=&#34;err&#34;&gt;:&lt;/span&gt; &lt;span class=&#34;err&#34;&gt;...&amp;lt;int&amp;gt;,&lt;/span&gt;              &lt;span class=&#34;err&#34;&gt;#&lt;/span&gt; &lt;span class=&#34;err&#34;&gt;用户id&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    &lt;span class=&#34;err&#34;&gt;cloth&lt;/span&gt;  &lt;span class=&#34;err&#34;&gt;:&lt;/span&gt; &lt;span class=&#34;err&#34;&gt;...&amp;lt;url&amp;gt;,&lt;/span&gt; 	            &lt;span class=&#34;err&#34;&gt;#&lt;/span&gt; &lt;span class=&#34;err&#34;&gt;衣服图片url链接&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    &lt;span class=&#34;err&#34;&gt;person&lt;/span&gt; &lt;span class=&#34;err&#34;&gt;:&lt;/span&gt; &lt;span class=&#34;err&#34;&gt;...&amp;lt;url&amp;gt;&lt;/span&gt;	            &lt;span class=&#34;err&#34;&gt;#&lt;/span&gt; &lt;span class=&#34;err&#34;&gt;人物图片url链接&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;p&#34;&gt;}&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;err&#34;&gt;@返回格式&lt;/span&gt;	&lt;span class=&#34;err&#34;&gt;（返回后端）&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;p&#34;&gt;{&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    &lt;span class=&#34;err&#34;&gt;code:&lt;/span&gt; &lt;span class=&#34;err&#34;&gt;...&amp;lt;int&amp;gt;,&lt;/span&gt; 	            &lt;span class=&#34;err&#34;&gt;#&lt;/span&gt; &lt;span class=&#34;err&#34;&gt;状态码&lt;/span&gt; &lt;span class=&#34;err&#34;&gt;(200表示成功,&lt;/span&gt; &lt;span class=&#34;err&#34;&gt;500表示失败)&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    &lt;span class=&#34;err&#34;&gt;msg:&lt;/span&gt; &lt;span class=&#34;err&#34;&gt;...&amp;lt;string&amp;gt;,&lt;/span&gt;	            &lt;span class=&#34;err&#34;&gt;#&lt;/span&gt; &lt;span class=&#34;err&#34;&gt;消息&lt;/span&gt; &lt;span class=&#34;err&#34;&gt;(success&lt;/span&gt; &lt;span class=&#34;err&#34;&gt;/&lt;/span&gt; &lt;span class=&#34;err&#34;&gt;fail)&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    &lt;span class=&#34;err&#34;&gt;data:&lt;/span&gt; &lt;span class=&#34;err&#34;&gt;{&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;        &lt;span class=&#34;err&#34;&gt;image_value&lt;/span&gt; &lt;span class=&#34;err&#34;&gt;:&lt;/span&gt; &lt;span class=&#34;err&#34;&gt;...&amp;lt;base64&amp;gt;,&lt;/span&gt;  &lt;span class=&#34;err&#34;&gt;#&lt;/span&gt; &lt;span class=&#34;err&#34;&gt;处理后的图片base64编码&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    &lt;span class=&#34;p&#34;&gt;}&lt;/span&gt; 
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;err&#34;&gt;}&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h3 id=&#34;动漫头像功能-2&#34;&gt;动漫头像功能&lt;/h3&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-json&#34; data-lang=&#34;json&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;err&#34;&gt;后端请求API:&lt;/span&gt; &lt;span class=&#34;err&#34;&gt;https:&lt;/span&gt;&lt;span class=&#34;c1&#34;&gt;//certain-ideally-foal.ngrok-free.app/anime/predict/
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;c1&#34;&gt;&lt;/span&gt;&lt;span class=&#34;err&#34;&gt;@请求格式&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;p&#34;&gt;{&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    &lt;span class=&#34;err&#34;&gt;userid&lt;/span&gt; &lt;span class=&#34;err&#34;&gt;:&lt;/span&gt; &lt;span class=&#34;err&#34;&gt;...&amp;lt;int&amp;gt;,&lt;/span&gt;  	   &lt;span class=&#34;err&#34;&gt;#&lt;/span&gt; &lt;span class=&#34;err&#34;&gt;用户id&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    &lt;span class=&#34;err&#34;&gt;origin_image&lt;/span&gt;  &lt;span class=&#34;err&#34;&gt;:&lt;/span&gt; &lt;span class=&#34;err&#34;&gt;...&amp;lt;url&amp;gt;,&lt;/span&gt; 	   &lt;span class=&#34;err&#34;&gt;#&lt;/span&gt; &lt;span class=&#34;err&#34;&gt;原图片url链接&lt;/span&gt; 
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;p&#34;&gt;}&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;err&#34;&gt;@返回格式&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;p&#34;&gt;{&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    &lt;span class=&#34;err&#34;&gt;code:&lt;/span&gt; &lt;span class=&#34;err&#34;&gt;...&amp;lt;int&amp;gt;,&lt;/span&gt; 	            &lt;span class=&#34;err&#34;&gt;#&lt;/span&gt; &lt;span class=&#34;err&#34;&gt;状态码&lt;/span&gt; &lt;span class=&#34;err&#34;&gt;(200表示成功,&lt;/span&gt; &lt;span class=&#34;err&#34;&gt;500表示失败)&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    &lt;span class=&#34;err&#34;&gt;msg:&lt;/span&gt; &lt;span class=&#34;err&#34;&gt;...&amp;lt;string&amp;gt;,&lt;/span&gt;	            &lt;span class=&#34;err&#34;&gt;#&lt;/span&gt; &lt;span class=&#34;err&#34;&gt;消息&lt;/span&gt; &lt;span class=&#34;err&#34;&gt;(success&lt;/span&gt; &lt;span class=&#34;err&#34;&gt;/&lt;/span&gt; &lt;span class=&#34;err&#34;&gt;fail)&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    &lt;span class=&#34;err&#34;&gt;data:&lt;/span&gt; &lt;span class=&#34;err&#34;&gt;{&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;        &lt;span class=&#34;err&#34;&gt;image_value&lt;/span&gt; &lt;span class=&#34;err&#34;&gt;:&lt;/span&gt; &lt;span class=&#34;err&#34;&gt;...&amp;lt;base64&amp;gt;,&lt;/span&gt;  &lt;span class=&#34;err&#34;&gt;#&lt;/span&gt; &lt;span class=&#34;err&#34;&gt;处理后的图片base64编码&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    &lt;span class=&#34;p&#34;&gt;}&lt;/span&gt; 
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;err&#34;&gt;}&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;</description>
+    </item>
+    <item>
+      <title>地大服务器使用教程</title>
+      <link>https://swimmingliu.cn/posts/diary/2023-%E5%9C%B0%E5%A4%A7%E6%9C%8D%E5%8A%A1%E5%99%A8/</link>
+      <pubDate>Mon, 20 Nov 2023 12:25:57 +0800</pubDate>
+      <guid>https://swimmingliu.cn/posts/diary/2023-%E5%9C%B0%E5%A4%A7%E6%9C%8D%E5%8A%A1%E5%99%A8/</guid>
+      <description>&lt;h1 id=&#34;地大服务器使用教程&#34;&gt;地大服务器使用教程&lt;/h1&gt;
+&lt;h2 id=&#34;1-服务器环境介绍&#34;&gt;1. 服务器环境介绍&lt;/h2&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-shell&#34; data-lang=&#34;shell&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;NVIDIA RTX &lt;span class=&#34;m&#34;&gt;3090&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;(&lt;/span&gt;24GB&lt;span class=&#34;o&#34;&gt;)&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;NVIDIA RTX &lt;span class=&#34;m&#34;&gt;2080&lt;/span&gt; Ti &lt;span class=&#34;o&#34;&gt;(&lt;/span&gt;11GB&lt;span class=&#34;o&#34;&gt;)&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;&lt;img loading=&#34;lazy&#34; src=&#34;https://oss.swimmingliu.cn/HoBnO.png&#34; alt=&#34;image-20231120113601423&#34;  /&gt;
+&lt;/p&gt;
+&lt;h2 id=&#34;2-配置实验环境&#34;&gt;2. 配置实验环境&lt;/h2&gt;
+&lt;h3 id=&#34;21-conda环境安装&#34;&gt;2.1 Conda环境安装&lt;/h3&gt;
+&lt;p&gt;每位同学都会分配个人用户，大家在自己的用户上使用Conda进行环境配置。&lt;/p&gt;
+&lt;p&gt;Conda安装教程：https://blog.csdn.net/JineD/article/details/129507719&lt;/p&gt;
+&lt;p&gt;大家按照教程步骤安装即可, 由于安装时间较长, 视频中暂不进行演示。&lt;/p&gt;
+&lt;h3 id=&#34;22-conda环境配置-以yolov8为例&#34;&gt;2.2 Conda环境配置 （以YOLOv8为例）&lt;/h3&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-shell&#34; data-lang=&#34;shell&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;c1&#34;&gt;# 创建conda环境 名为yolov8_lyj python版本为3.9&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;conda create -n yolov8_lyj &lt;span class=&#34;nv&#34;&gt;python&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;3.9
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;c1&#34;&gt;# 激活环境&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;conda activate yolov8_lyj
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;c1&#34;&gt;# 选择合适的路径，克隆github项目代码&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;git clone https://github.com/ultralytics/ultralytics
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;c1&#34;&gt;# 进入到项目路径下&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;nb&#34;&gt;cd&lt;/span&gt; ultralytics/
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;c1&#34;&gt;# 安装相关依赖包&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;pip install -r requirements.txt -i https://pypi.tuna.tsinghua.edu.cn/simple
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h3 id=&#34;23-准备数据集&#34;&gt;2.3 准备数据集&lt;/h3&gt;
+&lt;ol&gt;
+&lt;li&gt;
+&lt;p&gt;下载需要训练的数据集 （最好找顶刊/顶会论文中的公开数据集）&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;按照算法指定的数据集格式，对数据集格式进行调整。&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;​		目标检测中数据集格式之间的相互转换：（VOC、COCO、YOLO格式）&lt;/p&gt;
+&lt;p&gt;​		https://zhuanlan.zhihu.com/p/461488682&lt;/p&gt;
+&lt;h3 id=&#34;24-开始实验&#34;&gt;2.4 开始实验&lt;/h3&gt;
+&lt;ol&gt;
+&lt;li&gt;
+&lt;p&gt;在算法中指定数据集的存放路径 （相对/绝对路径均可）&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;初始化算法的参数&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ol&gt;
+&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;batch-size  批处理大小：每一次处理图片的个数，根据显卡内存进行调整
+epochs	   迭代次数：算法总共需要训练的轮次
+workers     载入数据进程数：每一次调用多少个进程来载入数据
+device      选择显卡设备： &amp;#39;0&amp;#39;使用3090，&amp;#39;1&amp;#39;使用2080ti，&amp;#39;0,1&amp;#39;使用两张卡
+&lt;/code&gt;&lt;/pre&gt;&lt;ol start=&#34;3&#34;&gt;
+&lt;li&gt;开始训练&lt;/li&gt;
+&lt;/ol&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-shell&#34; data-lang=&#34;shell&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;c1&#34;&gt;# 运行训练代码&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;python mian.py
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;(注：使用向日葵的同学，可以直接在Pycharm当中运行)&lt;/p&gt;</description>
+    </item>
+  </channel>
+</rss>

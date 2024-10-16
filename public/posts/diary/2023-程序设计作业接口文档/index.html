@@ -7,11 +7,102 @@
 <meta name="robots" content="index, follow">
 <title>程序设计作业接口文档 | SwimmingLiu&#39;s Blog</title>
 <meta name="keywords" content="程序设计">
-<meta name="description" content="程序设计作业接口文档 统一返回格式
-{ code: ...,	# 状态码 msg: ...,	# 描述信息 data: { # 数据 ... } } code = { 200 == 成功, 500 == 失败, } msg = { success == 成功 fail == 失败 ... } data = { key : value } 前端 虚拟换衣功能 @请求格式 （请求后端） # 前后端需统一样例图片id { userId: ...&lt;int&gt;,	# 标识哪个用户的请求 isUploadCloth: ...&lt;bool&gt;, # 若上传衣服图片使用base64，否则用id isUploadPerson: ...&lt;bool&gt;, # 若上传人物图片使用base64，否则用id clothData: ...&lt;base64||null&gt;, # 衣服图片base64编码 personData: .">
+<meta name="description" content="程序设计作业接口文档
+统一返回格式
+{
+    code: ...,	# 状态码
+    msg: ...,	# 描述信息
+    data: {     # 数据
+    	...
+    }
+}
+code = {
+    200 == 成功,
+    500 == 失败,
+}
+msg = {
+    success == 成功
+    fail    == 失败
+    ...
+}
+data = {
+    key : value
+}
+前端
+虚拟换衣功能
+@请求格式  （请求后端）  	 # 前后端需统一样例图片id
+{
+    userId: ...&lt;int&gt;,			# 标识哪个用户的请求
+    isUploadCloth: ...&lt;bool&gt;,           # 若上传衣服图片使用base64，否则用id
+    isUploadPerson: ...&lt;bool&gt;,          # 若上传人物图片使用base64，否则用id
+    clothData: ...&lt;base64||null&gt;, 	# 衣服图片base64编码
+    personData: ...&lt;base64||null&gt;,	# 人物图片base64编码
+    exampleClothId: ...&lt;int&gt;,		# 衣服样例图片id
+    examplePersonId: ...&lt;int&gt;		# 任务样例图片id
+}
+动漫头像功能
+@请求格式 （请求后端）
+{
+    userId: ...&lt;int&gt;,    	        # 标识哪个用户的请求
+    imgData:  ...&lt;base64&gt; 	        # 需要动漫化的图片 
+}
+后端
+虚拟换衣功能
+前端请求API: https://talented-civet-separately.ngrok-free.app/tryon/
+@返回格式 (返回前端)
+{
+    code: ...&lt;int&gt;, 	                # 状态码 (200表示成功, 500表示失败)
+    msg: ...&lt;string&gt;,	                # 消息 (success / fail)
+    data: {
+        tryon_result : ...&lt;url&gt;,  	# 处理后的图片url
+    } 
+}
+动漫头像功能
+前端请求API: https://talented-civet-separately.ngrok-free.app/anime/
+@返回格式 (返回前端)
+{
+    code: ...&lt;int&gt;,  	                # 状态码 (200表示成功, 500表示失败)
+    msg : ...&lt;string&gt;, 	                # 消息 (success / fail)
+    data: {
+    	anime_result :  ...&lt;url&gt;, 	# 处理后的图片url
+    }
+}
+模型端
+虚拟换衣功能
+后端请求API: https://certain-ideally-foal.ngrok-free.app/tryon/predict/
+@请求格式	(后端发出请求)
+{
+    userid : ...&lt;int&gt;,              # 用户id
+    cloth  : ...&lt;url&gt;, 	            # 衣服图片url链接
+    person : ...&lt;url&gt;	            # 人物图片url链接
+}
+@返回格式	（返回后端）
+{
+    code: ...&lt;int&gt;, 	            # 状态码 (200表示成功, 500表示失败)
+    msg: ...&lt;string&gt;,	            # 消息 (success / fail)
+    data: {
+        image_value : ...&lt;base64&gt;,  # 处理后的图片base64编码
+    } 
+}
+动漫头像功能
+后端请求API: https://certain-ideally-foal.ngrok-free.app/anime/predict/
+@请求格式
+{
+    userid : ...&lt;int&gt;,  	   # 用户id
+    origin_image  : ...&lt;url&gt;, 	   # 原图片url链接 
+}
+@返回格式
+{
+    code: ...&lt;int&gt;, 	            # 状态码 (200表示成功, 500表示失败)
+    msg: ...&lt;string&gt;,	            # 消息 (success / fail)
+    data: {
+        image_value : ...&lt;base64&gt;,  # 处理后的图片base64编码
+    } 
+}
+">
 <meta name="author" content="SwimmingLiu">
 <link rel="canonical" href="https://swimmingliu.cn/posts/diary/2023-%E7%A8%8B%E5%BA%8F%E8%AE%BE%E8%AE%A1%E4%BD%9C%E4%B8%9A%E6%8E%A5%E5%8F%A3%E6%96%87%E6%A1%A3/">
-<link crossorigin="anonymous" href="/assets/css/stylesheet.56574d0b8d57cdd0d704dd823c3ab0e600bd78cf5a999377277390417d6b2f3e.css" integrity="sha256-VldNC41XzdDXBN2CPDqw5gC9eM9amZN3J3OQQX1rLz4=" rel="preload stylesheet" as="style">
+<link crossorigin="anonymous" href="/assets/css/stylesheet.d0ba3726344b58c49d5f0d05195743e4438cff79cf2048e07443b1ea4d4fdbf5.css" integrity="sha256-0Lo3JjRLWMSdXw0FGVdD5EOM/3nPIEjgdEOx6k1P2/U=" rel="preload stylesheet" as="style">
 <link rel="icon" href="https://swimmingliu.cn/images/swimmingliu_icon.png">
 <link rel="icon" type="image/png" sizes="16x16" href="https://swimmingliu.cn/images/swimmingliu_icon.png">
 <link rel="icon" type="image/png" sizes="32x32" href="https://swimmingliu.cn/images/swimmingliu_icon.png">
@@ -19,6 +110,7 @@
 <link rel="mask-icon" href="https://swimmingliu.cn/images/swimmingliu_icon.png">
 <meta name="theme-color" content="#2e2e33">
 <meta name="msapplication-TileColor" content="#2e2e33">
+<link rel="alternate" hreflang="en" href="https://swimmingliu.cn/posts/diary/2023-%E7%A8%8B%E5%BA%8F%E8%AE%BE%E8%AE%A1%E4%BD%9C%E4%B8%9A%E6%8E%A5%E5%8F%A3%E6%96%87%E6%A1%A3/">
 <noscript>
     <style>
         #theme-toggle,
@@ -36,7 +128,7 @@
                 --secondary: rgb(155, 156, 157);
                 --tertiary: rgb(65, 66, 68);
                 --content: rgb(196, 196, 197);
-                --hljs-bg: rgb(46, 46, 51);
+                --code-block-bg: rgb(46, 46, 51);
                 --code-bg: rgb(55, 56, 62);
                 --border: rgb(51, 51, 51);
             }
@@ -57,19 +149,202 @@
     </style>
 </noscript>
 <meta property="og:title" content="程序设计作业接口文档" />
-<meta property="og:description" content="程序设计作业接口文档 统一返回格式
-{ code: ...,	# 状态码 msg: ...,	# 描述信息 data: { # 数据 ... } } code = { 200 == 成功, 500 == 失败, } msg = { success == 成功 fail == 失败 ... } data = { key : value } 前端 虚拟换衣功能 @请求格式 （请求后端） # 前后端需统一样例图片id { userId: ...&lt;int&gt;,	# 标识哪个用户的请求 isUploadCloth: ...&lt;bool&gt;, # 若上传衣服图片使用base64，否则用id isUploadPerson: ...&lt;bool&gt;, # 若上传人物图片使用base64，否则用id clothData: ...&lt;base64||null&gt;, # 衣服图片base64编码 personData: ." />
+<meta property="og:description" content="程序设计作业接口文档
+统一返回格式
+{
+    code: ...,	# 状态码
+    msg: ...,	# 描述信息
+    data: {     # 数据
+    	...
+    }
+}
+code = {
+    200 == 成功,
+    500 == 失败,
+}
+msg = {
+    success == 成功
+    fail    == 失败
+    ...
+}
+data = {
+    key : value
+}
+前端
+虚拟换衣功能
+@请求格式  （请求后端）  	 # 前后端需统一样例图片id
+{
+    userId: ...&lt;int&gt;,			# 标识哪个用户的请求
+    isUploadCloth: ...&lt;bool&gt;,           # 若上传衣服图片使用base64，否则用id
+    isUploadPerson: ...&lt;bool&gt;,          # 若上传人物图片使用base64，否则用id
+    clothData: ...&lt;base64||null&gt;, 	# 衣服图片base64编码
+    personData: ...&lt;base64||null&gt;,	# 人物图片base64编码
+    exampleClothId: ...&lt;int&gt;,		# 衣服样例图片id
+    examplePersonId: ...&lt;int&gt;		# 任务样例图片id
+}
+动漫头像功能
+@请求格式 （请求后端）
+{
+    userId: ...&lt;int&gt;,    	        # 标识哪个用户的请求
+    imgData:  ...&lt;base64&gt; 	        # 需要动漫化的图片 
+}
+后端
+虚拟换衣功能
+前端请求API: https://talented-civet-separately.ngrok-free.app/tryon/
+@返回格式 (返回前端)
+{
+    code: ...&lt;int&gt;, 	                # 状态码 (200表示成功, 500表示失败)
+    msg: ...&lt;string&gt;,	                # 消息 (success / fail)
+    data: {
+        tryon_result : ...&lt;url&gt;,  	# 处理后的图片url
+    } 
+}
+动漫头像功能
+前端请求API: https://talented-civet-separately.ngrok-free.app/anime/
+@返回格式 (返回前端)
+{
+    code: ...&lt;int&gt;,  	                # 状态码 (200表示成功, 500表示失败)
+    msg : ...&lt;string&gt;, 	                # 消息 (success / fail)
+    data: {
+    	anime_result :  ...&lt;url&gt;, 	# 处理后的图片url
+    }
+}
+模型端
+虚拟换衣功能
+后端请求API: https://certain-ideally-foal.ngrok-free.app/tryon/predict/
+@请求格式	(后端发出请求)
+{
+    userid : ...&lt;int&gt;,              # 用户id
+    cloth  : ...&lt;url&gt;, 	            # 衣服图片url链接
+    person : ...&lt;url&gt;	            # 人物图片url链接
+}
+@返回格式	（返回后端）
+{
+    code: ...&lt;int&gt;, 	            # 状态码 (200表示成功, 500表示失败)
+    msg: ...&lt;string&gt;,	            # 消息 (success / fail)
+    data: {
+        image_value : ...&lt;base64&gt;,  # 处理后的图片base64编码
+    } 
+}
+动漫头像功能
+后端请求API: https://certain-ideally-foal.ngrok-free.app/anime/predict/
+@请求格式
+{
+    userid : ...&lt;int&gt;,  	   # 用户id
+    origin_image  : ...&lt;url&gt;, 	   # 原图片url链接 
+}
+@返回格式
+{
+    code: ...&lt;int&gt;, 	            # 状态码 (200表示成功, 500表示失败)
+    msg: ...&lt;string&gt;,	            # 消息 (success / fail)
+    data: {
+        image_value : ...&lt;base64&gt;,  # 处理后的图片base64编码
+    } 
+}
+" />
 <meta property="og:type" content="article" />
-<meta property="og:url" content="https://swimmingliu.cn/posts/diary/2023-%E7%A8%8B%E5%BA%8F%E8%AE%BE%E8%AE%A1%E4%BD%9C%E4%B8%9A%E6%8E%A5%E5%8F%A3%E6%96%87%E6%A1%A3/" /><meta property="og:image" content="https://swimmingliu.cn/papermod-cover.png"/><meta property="article:section" content="posts" />
+<meta property="og:url" content="https://swimmingliu.cn/posts/diary/2023-%E7%A8%8B%E5%BA%8F%E8%AE%BE%E8%AE%A1%E4%BD%9C%E4%B8%9A%E6%8E%A5%E5%8F%A3%E6%96%87%E6%A1%A3/" />
+<meta property="og:image" content="https://swimmingliu.cn/papermod-cover.png" />
+<meta property="article:section" content="posts" />
 <meta property="article:published_time" content="2023-12-02T21:40:07+08:00" />
 <meta property="article:modified_time" content="2023-12-02T21:40:07+08:00" />
 
-<meta name="twitter:card" content="summary_large_image"/>
-<meta name="twitter:image" content="https://swimmingliu.cn/papermod-cover.png"/>
-
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:image" content="https://swimmingliu.cn/papermod-cover.png" />
 <meta name="twitter:title" content="程序设计作业接口文档"/>
-<meta name="twitter:description" content="程序设计作业接口文档 统一返回格式
-{ code: ...,	# 状态码 msg: ...,	# 描述信息 data: { # 数据 ... } } code = { 200 == 成功, 500 == 失败, } msg = { success == 成功 fail == 失败 ... } data = { key : value } 前端 虚拟换衣功能 @请求格式 （请求后端） # 前后端需统一样例图片id { userId: ...&lt;int&gt;,	# 标识哪个用户的请求 isUploadCloth: ...&lt;bool&gt;, # 若上传衣服图片使用base64，否则用id isUploadPerson: ...&lt;bool&gt;, # 若上传人物图片使用base64，否则用id clothData: ...&lt;base64||null&gt;, # 衣服图片base64编码 personData: ."/>
+<meta name="twitter:description" content="程序设计作业接口文档
+统一返回格式
+{
+    code: ...,	# 状态码
+    msg: ...,	# 描述信息
+    data: {     # 数据
+    	...
+    }
+}
+code = {
+    200 == 成功,
+    500 == 失败,
+}
+msg = {
+    success == 成功
+    fail    == 失败
+    ...
+}
+data = {
+    key : value
+}
+前端
+虚拟换衣功能
+@请求格式  （请求后端）  	 # 前后端需统一样例图片id
+{
+    userId: ...&lt;int&gt;,			# 标识哪个用户的请求
+    isUploadCloth: ...&lt;bool&gt;,           # 若上传衣服图片使用base64，否则用id
+    isUploadPerson: ...&lt;bool&gt;,          # 若上传人物图片使用base64，否则用id
+    clothData: ...&lt;base64||null&gt;, 	# 衣服图片base64编码
+    personData: ...&lt;base64||null&gt;,	# 人物图片base64编码
+    exampleClothId: ...&lt;int&gt;,		# 衣服样例图片id
+    examplePersonId: ...&lt;int&gt;		# 任务样例图片id
+}
+动漫头像功能
+@请求格式 （请求后端）
+{
+    userId: ...&lt;int&gt;,    	        # 标识哪个用户的请求
+    imgData:  ...&lt;base64&gt; 	        # 需要动漫化的图片 
+}
+后端
+虚拟换衣功能
+前端请求API: https://talented-civet-separately.ngrok-free.app/tryon/
+@返回格式 (返回前端)
+{
+    code: ...&lt;int&gt;, 	                # 状态码 (200表示成功, 500表示失败)
+    msg: ...&lt;string&gt;,	                # 消息 (success / fail)
+    data: {
+        tryon_result : ...&lt;url&gt;,  	# 处理后的图片url
+    } 
+}
+动漫头像功能
+前端请求API: https://talented-civet-separately.ngrok-free.app/anime/
+@返回格式 (返回前端)
+{
+    code: ...&lt;int&gt;,  	                # 状态码 (200表示成功, 500表示失败)
+    msg : ...&lt;string&gt;, 	                # 消息 (success / fail)
+    data: {
+    	anime_result :  ...&lt;url&gt;, 	# 处理后的图片url
+    }
+}
+模型端
+虚拟换衣功能
+后端请求API: https://certain-ideally-foal.ngrok-free.app/tryon/predict/
+@请求格式	(后端发出请求)
+{
+    userid : ...&lt;int&gt;,              # 用户id
+    cloth  : ...&lt;url&gt;, 	            # 衣服图片url链接
+    person : ...&lt;url&gt;	            # 人物图片url链接
+}
+@返回格式	（返回后端）
+{
+    code: ...&lt;int&gt;, 	            # 状态码 (200表示成功, 500表示失败)
+    msg: ...&lt;string&gt;,	            # 消息 (success / fail)
+    data: {
+        image_value : ...&lt;base64&gt;,  # 处理后的图片base64编码
+    } 
+}
+动漫头像功能
+后端请求API: https://certain-ideally-foal.ngrok-free.app/anime/predict/
+@请求格式
+{
+    userid : ...&lt;int&gt;,  	   # 用户id
+    origin_image  : ...&lt;url&gt;, 	   # 原图片url链接 
+}
+@返回格式
+{
+    code: ...&lt;int&gt;, 	            # 状态码 (200表示成功, 500表示失败)
+    msg: ...&lt;string&gt;,	            # 消息 (success / fail)
+    data: {
+        image_value : ...&lt;base64&gt;,  # 处理后的图片base64编码
+    } 
+}
+"/>
 
 
 <script type="application/ld+json">
@@ -104,14 +379,14 @@
   "@type": "BlogPosting",
   "headline": "程序设计作业接口文档",
   "name": "程序设计作业接口文档",
-  "description": "程序设计作业接口文档 统一返回格式\n{ code: ...,\t# 状态码 msg: ...,\t# 描述信息 data: { # 数据 ... } } code = { 200 == 成功, 500 == 失败, } msg = { success == 成功 fail == 失败 ... } data = { key : value } 前端 虚拟换衣功能 @请求格式 （请求后端） # 前后端需统一样例图片id { userId: ...\u0026lt;int\u0026gt;,\t# 标识哪个用户的请求 isUploadCloth: ...\u0026lt;bool\u0026gt;, # 若上传衣服图片使用base64，否则用id isUploadPerson: ...\u0026lt;bool\u0026gt;, # 若上传人物图片使用base64，否则用id clothData: ...\u0026lt;base64||null\u0026gt;, # 衣服图片base64编码 personData: .",
+  "description": "程序设计作业接口文档 统一返回格式\n{ code: ...,\t# 状态码 msg: ...,\t# 描述信息 data: { # 数据 ... } } code = { 200 == 成功, 500 == 失败, } msg = { success == 成功 fail == 失败 ... } data = { key : value } 前端 虚拟换衣功能 @请求格式 （请求后端） # 前后端需统一样例图片id { userId: ...\u0026lt;int\u0026gt;,\t# 标识哪个用户的请求 isUploadCloth: ...\u0026lt;bool\u0026gt;, # 若上传衣服图片使用base64，否则用id isUploadPerson: ...\u0026lt;bool\u0026gt;, # 若上传人物图片使用base64，否则用id clothData: ...\u0026lt;base64||null\u0026gt;, # 衣服图片base64编码 personData: ...\u0026lt;base64||null\u0026gt;,\t# 人物图片base64编码 exampleClothId: ...\u0026lt;int\u0026gt;,\t# 衣服样例图片id examplePersonId: ...\u0026lt;int\u0026gt;\t# 任务样例图片id } 动漫头像功能 @请求格式 （请求后端） { userId: ...\u0026lt;int\u0026gt;, # 标识哪个用户的请求 imgData: ...\u0026lt;base64\u0026gt; # 需要动漫化的图片 } 后端 虚拟换衣功能 前端请求API: https://talented-civet-separately.ngrok-free.app/tryon/ @返回格式 (返回前端) { code: ...\u0026lt;int\u0026gt;, # 状态码 (200表示成功, 500表示失败) msg: ...\u0026lt;string\u0026gt;,\t# 消息 (success / fail) data: { tryon_result : ...\u0026lt;url\u0026gt;, # 处理后的图片url } } 动漫头像功能 前端请求API: https://talented-civet-separately.ngrok-free.app/anime/ @返回格式 (返回前端) { code: ...\u0026lt;int\u0026gt;, # 状态码 (200表示成功, 500表示失败) msg : ...\u0026lt;string\u0026gt;, # 消息 (success / fail) data: { anime_result : ...\u0026lt;url\u0026gt;, # 处理后的图片url } } 模型端 虚拟换衣功能 后端请求API: https://certain-ideally-foal.ngrok-free.app/tryon/predict/ @请求格式\t(后端发出请求) { userid : ...\u0026lt;int\u0026gt;, # 用户id cloth : ...\u0026lt;url\u0026gt;, # 衣服图片url链接 person : ...\u0026lt;url\u0026gt;\t# 人物图片url链接 } @返回格式\t（返回后端） { code: ...\u0026lt;int\u0026gt;, # 状态码 (200表示成功, 500表示失败) msg: ...\u0026lt;string\u0026gt;,\t# 消息 (success / fail) data: { image_value : ...\u0026lt;base64\u0026gt;, # 处理后的图片base64编码 } } 动漫头像功能 后端请求API: https://certain-ideally-foal.ngrok-free.app/anime/predict/ @请求格式 { userid : ...\u0026lt;int\u0026gt;, # 用户id origin_image : ...\u0026lt;url\u0026gt;, # 原图片url链接 } @返回格式 { code: ...\u0026lt;int\u0026gt;, # 状态码 (200表示成功, 500表示失败) msg: ...\u0026lt;string\u0026gt;,\t# 消息 (success / fail) data: { image_value : ...\u0026lt;base64\u0026gt;, # 处理后的图片base64编码 } } ",
   "keywords": [
     "程序设计"
   ],
   "articleBody": "程序设计作业接口文档 统一返回格式\n{ code: ...,\t# 状态码 msg: ...,\t# 描述信息 data: { # 数据 ... } } code = { 200 == 成功, 500 == 失败, } msg = { success == 成功 fail == 失败 ... } data = { key : value } 前端 虚拟换衣功能 @请求格式 （请求后端） # 前后端需统一样例图片id { userId: ...,\t# 标识哪个用户的请求 isUploadCloth: ..., # 若上传衣服图片使用base64，否则用id isUploadPerson: ..., # 若上传人物图片使用base64，否则用id clothData: ..., # 衣服图片base64编码 personData: ...,\t# 人物图片base64编码 exampleClothId: ...,\t# 衣服样例图片id examplePersonId: ...\t# 任务样例图片id } 动漫头像功能 @请求格式 （请求后端） { userId: ..., # 标识哪个用户的请求 imgData: ... # 需要动漫化的图片 } 后端 虚拟换衣功能 前端请求API: https://talented-civet-separately.ngrok-free.app/tryon/ @返回格式 (返回前端) { code: ..., # 状态码 (200表示成功, 500表示失败) msg: ...,\t# 消息 (success / fail) data: { tryon_result : ..., # 处理后的图片url } } 动漫头像功能 前端请求API: https://talented-civet-separately.ngrok-free.app/anime/ @返回格式 (返回前端) { code: ..., # 状态码 (200表示成功, 500表示失败) msg : ..., # 消息 (success / fail) data: { anime_result : ..., # 处理后的图片url } } 模型端 虚拟换衣功能 后端请求API: https://certain-ideally-foal.ngrok-free.app/tryon/predict/ @请求格式\t(后端发出请求) { userid : ..., # 用户id cloth : ..., # 衣服图片url链接 person : ...\t# 人物图片url链接 } @返回格式\t（返回后端） { code: ..., # 状态码 (200表示成功, 500表示失败) msg: ...,\t# 消息 (success / fail) data: { image_value : ..., # 处理后的图片base64编码 } } 动漫头像功能 后端请求API: https://certain-ideally-foal.ngrok-free.app/anime/predict/ @请求格式 { userid : ..., # 用户id origin_image : ..., # 原图片url链接 } @返回格式 { code: ..., # 状态码 (200表示成功, 500表示失败) msg: ...,\t# 消息 (success / fail) data: { image_value : ..., # 处理后的图片base64编码 } } ",
   "wordCount" : "241",
   "inLanguage": "en",
-  "datePublished": "2023-12-02T21:40:07+08:00",
+  "image": "https://swimmingliu.cn/papermod-cover.png","datePublished": "2023-12-02T21:40:07+08:00",
   "dateModified": "2023-12-02T21:40:07+08:00",
   "author":[{
     "@type": "Person",
@@ -230,116 +505,54 @@
 <article class="post-single">
   <header class="post-header">
     <div class="breadcrumbs"><a href="https://swimmingliu.cn/">Home</a>&nbsp;»&nbsp;<a href="https://swimmingliu.cn/posts/">📚 Posts</a>&nbsp;»&nbsp;<a href="https://swimmingliu.cn/posts/diary/">📓 Diary</a></div>
-    <h1 class="post-title">
+    <h1 class="post-title entry-hint-parent">
       程序设计作业接口文档
     </h1>
     <div class="post-meta"><span title='2023-12-02 21:40:07 +0800 CST'>December 2, 2023</span>&nbsp;·&nbsp;2 min&nbsp;·&nbsp;SwimmingLiu
 
 </div>
-  </header> <aside id="toc-container" class="toc-container wide">
-    <div class="toc">
-        <details >
-            <summary accesskey="c" title="(Alt + C)">
-                <span class="details">Table of Contents</span>
-            </summary>
+  </header> <div class="toc">
+    <details >
+        <summary accesskey="c" title="(Alt + C)">
+            <span class="details">Table of Contents</span>
+        </summary>
 
-            <div class="inner"><ul>
-                    <li>
-                        <a href="#%e7%a8%8b%e5%ba%8f%e8%ae%be%e8%ae%a1%e4%bd%9c%e4%b8%9a%e6%8e%a5%e5%8f%a3%e6%96%87%e6%a1%a3" aria-label="程序设计作业接口文档">程序设计作业接口文档</a><ul>
-                            
-                    <li>
-                        <a href="#%e5%89%8d%e7%ab%af" aria-label="前端">前端</a><ul>
-                            
-                    <li>
-                        <a href="#%e8%99%9a%e6%8b%9f%e6%8d%a2%e8%a1%a3%e5%8a%9f%e8%83%bd" aria-label="虚拟换衣功能">虚拟换衣功能</a></li>
-                    <li>
-                        <a href="#%e5%8a%a8%e6%bc%ab%e5%a4%b4%e5%83%8f%e5%8a%9f%e8%83%bd" aria-label="动漫头像功能">动漫头像功能</a></li></ul>
-                    </li>
-                    <li>
-                        <a href="#%e5%90%8e%e7%ab%af" aria-label="后端">后端</a><ul>
-                            
-                    <li>
-                        <a href="#%e8%99%9a%e6%8b%9f%e6%8d%a2%e8%a1%a3%e5%8a%9f%e8%83%bd-1" aria-label="虚拟换衣功能">虚拟换衣功能</a></li>
-                    <li>
-                        <a href="#%e5%8a%a8%e6%bc%ab%e5%a4%b4%e5%83%8f%e5%8a%9f%e8%83%bd-1" aria-label="动漫头像功能">动漫头像功能</a></li></ul>
-                    </li>
-                    <li>
-                        <a href="#%e6%a8%a1%e5%9e%8b%e7%ab%af" aria-label="模型端">模型端</a><ul>
-                            
-                    <li>
-                        <a href="#%e8%99%9a%e6%8b%9f%e6%8d%a2%e8%a1%a3%e5%8a%9f%e8%83%bd-2" aria-label="虚拟换衣功能">虚拟换衣功能</a></li>
-                    <li>
-                        <a href="#%e5%8a%a8%e6%bc%ab%e5%a4%b4%e5%83%8f%e5%8a%9f%e8%83%bd-2" aria-label="动漫头像功能">动漫头像功能</a>
-                    </li>
-                </ul>
+        <div class="inner"><ul>
+                <li>
+                    <a href="#%e7%a8%8b%e5%ba%8f%e8%ae%be%e8%ae%a1%e4%bd%9c%e4%b8%9a%e6%8e%a5%e5%8f%a3%e6%96%87%e6%a1%a3" aria-label="程序设计作业接口文档">程序设计作业接口文档</a><ul>
+                        
+                <li>
+                    <a href="#%e5%89%8d%e7%ab%af" aria-label="前端">前端</a><ul>
+                        
+                <li>
+                    <a href="#%e8%99%9a%e6%8b%9f%e6%8d%a2%e8%a1%a3%e5%8a%9f%e8%83%bd" aria-label="虚拟换衣功能">虚拟换衣功能</a></li>
+                <li>
+                    <a href="#%e5%8a%a8%e6%bc%ab%e5%a4%b4%e5%83%8f%e5%8a%9f%e8%83%bd" aria-label="动漫头像功能">动漫头像功能</a></li></ul>
                 </li>
-                </ul>
+                <li>
+                    <a href="#%e5%90%8e%e7%ab%af" aria-label="后端">后端</a><ul>
+                        
+                <li>
+                    <a href="#%e8%99%9a%e6%8b%9f%e6%8d%a2%e8%a1%a3%e5%8a%9f%e8%83%bd-1" aria-label="虚拟换衣功能">虚拟换衣功能</a></li>
+                <li>
+                    <a href="#%e5%8a%a8%e6%bc%ab%e5%a4%b4%e5%83%8f%e5%8a%9f%e8%83%bd-1" aria-label="动漫头像功能">动漫头像功能</a></li></ul>
                 </li>
-                </ul>
-            </div>
-        </details>
-    </div>
-</aside>
-<script>
-    let activeElement;
-    let elements;
-    window.addEventListener('DOMContentLoaded', function (event) {
-        checkTocPosition();
-
-        elements = document.querySelectorAll('h1[id],h2[id],h3[id],h4[id],h5[id],h6[id]');
-         
-         activeElement = elements[0];
-         const id = encodeURI(activeElement.getAttribute('id')).toLowerCase();
-         document.querySelector(`.inner ul li a[href="#${id}"]`).classList.add('active');
-     }, false);
-
-    window.addEventListener('resize', function(event) {
-        checkTocPosition();
-    }, false);
-
-    window.addEventListener('scroll', () => {
-        
-        activeElement = Array.from(elements).find((element) => {
-            if ((getOffsetTop(element) - window.pageYOffset) > 0 && 
-                (getOffsetTop(element) - window.pageYOffset) < window.innerHeight/2) {
-                return element;
-            }
-        }) || activeElement
-
-        elements.forEach(element => {
-             const id = encodeURI(element.getAttribute('id')).toLowerCase();
-             if (element === activeElement){
-                 document.querySelector(`.inner ul li a[href="#${id}"]`).classList.add('active');
-             } else {
-                 document.querySelector(`.inner ul li a[href="#${id}"]`).classList.remove('active');
-             }
-         })
-     }, false);
-
-    const main = parseInt(getComputedStyle(document.body).getPropertyValue('--article-width'), 10);
-    const toc = parseInt(getComputedStyle(document.body).getPropertyValue('--toc-width'), 10);
-    const gap = parseInt(getComputedStyle(document.body).getPropertyValue('--gap'), 10);
-
-    function checkTocPosition() {
-        const width = document.body.scrollWidth;
-
-        if (width - main - (toc * 2) - (gap * 4) > 0) {
-            document.getElementById("toc-container").classList.add("wide");
-        } else {
-            document.getElementById("toc-container").classList.remove("wide");
-        }
-    }
-
-    function getOffsetTop(element) {
-        if (!element.getClientRects().length) {
-            return 0;
-        }
-        let rect = element.getBoundingClientRect();
-        let win = element.ownerDocument.defaultView;
-        return rect.top + win.pageYOffset;   
-    }
-</script>
-
+                <li>
+                    <a href="#%e6%a8%a1%e5%9e%8b%e7%ab%af" aria-label="模型端">模型端</a><ul>
+                        
+                <li>
+                    <a href="#%e8%99%9a%e6%8b%9f%e6%8d%a2%e8%a1%a3%e5%8a%9f%e8%83%bd-2" aria-label="虚拟换衣功能">虚拟换衣功能</a></li>
+                <li>
+                    <a href="#%e5%8a%a8%e6%bc%ab%e5%a4%b4%e5%83%8f%e5%8a%9f%e8%83%bd-2" aria-label="动漫头像功能">动漫头像功能</a>
+                </li>
+            </ul>
+            </li>
+            </ul>
+            </li>
+            </ul>
+        </div>
+    </details>
+</div>
   <div class="post-content"><h1 id="程序设计作业接口文档">程序设计作业接口文档<a hidden class="anchor" aria-hidden="true" href="#程序设计作业接口文档">#</a></h1>
 <p>统一返回格式</p>
 <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-json" data-lang="json"><span class="line"><span class="cl"><span class="p">{</span>
@@ -460,7 +673,8 @@
     </main>
     
 <footer class="footer">
-    <span>&copy; 2023-2024 <a href="https://swimmingliu.cn/">SwimmingLiu&#39;s Blog</a></span>
+        <span>&copy; 2023-2024 <a href="https://swimmingliu.cn/">SwimmingLiu&#39;s Blog</a></span> · 
+
     <span>
         Powered by
         <a href="https://gohugo.io/" rel="noopener noreferrer" target="_blank">Hugo</a> &

@@ -9,22 +9,52 @@
       <url>https://swimmingliu.cn/papermod-cover.png</url>
       <link>https://swimmingliu.cn/papermod-cover.png</link>
     </image>
-    <generator>Hugo -- gohugo.io</generator>
+    <generator>Hugo -- 0.136.0</generator>
     <language>en</language>
-    <lastBuildDate>Tue, 12 Dec 2023 12:18:57 +0800</lastBuildDate><atom:link href="https://swimmingliu.cn/tags/kgqa/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Tue, 12 Dec 2023 12:18:57 +0800</lastBuildDate>
+    <atom:link href="https://swimmingliu.cn/tags/kgqa/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>MovieKGQA: 基于知识图谱和neo4j图数据库的电影知识问答系统</title>
       <link>https://swimmingliu.cn/posts/diary/2023-moviekgqa/</link>
       <pubDate>Tue, 12 Dec 2023 12:18:57 +0800</pubDate>
-      
       <guid>https://swimmingliu.cn/posts/diary/2023-moviekgqa/</guid>
-      <description>Introduction 基于知识图谱和neo4j图数据库的电影知识问答系统
-Workflow DataBase 爬取豆瓣TOP1000电影信息数据
-Frontend 获取用户输入的信息 （语音输入 / 文本输入） 向电影知识问答后端服务器发送请求 获取返回结果 (成功 -&amp;gt; 4 / 失败 -&amp;gt; 5) 如果返回结果包含image信息，则显示图片和文字，否则只显示文字 请求基于gpt的AI模型服务器，并显示返回结果 Backend ​	[准备工作] 训练 TF-IDF 向量算法和朴素贝叶斯分类器，用于预测用户文本所属的问题类别
-接受前端请求，获取用户输入信息 使用分词库解析用户输入的文本词性，提取关键词 根据贝叶斯分类器，分类出用户文本的问题类型 结合关键词与问题类别，在 Neo4j 中查询问题的答案 返回查询结果 （若问题类型为 演员信息 / 电影介绍，则附加图片url） WorkFlow Graph Frame DataBase Frontend Backend Reference Frontend 微信小程序：微信聊天机器人
-BackEnd 基于知识图谱的电影知识问答系统
-电影知识库问答机器人</description>
+      <description>&lt;h2 id=&#34;introduction&#34;&gt;Introduction&lt;/h2&gt;
+&lt;p&gt;基于知识图谱和neo4j图数据库的电影知识问答系统&lt;/p&gt;
+&lt;div style=&#34;display:flex; justify-content: space-around; &#34;&gt;
+&lt;img src=&#34;https://i.imgs.ovh/2023/12/12/mM4uR.png&#34; alt=&#34;image-20231212102658908&#34; style=&#34;box-shadow: 0 0 10px rgba(200, 200, 200);&#34; width=30% height:300px/&gt;
+&lt;img src=&#34;https://i.imgs.ovh/2023/12/12/mM58p.png&#34; alt=&#34;image-20231212102738360&#34; style=&#34;box-shadow: 0 0 10px rgba(200, 200, 200);&#34; width=30% height:300px/&gt;
+&lt;img src=&#34;https://i.imgs.ovh/2023/12/12/mMdFT.png&#34; alt=&#34;image-20231212103113278&#34; style=&#34;&#34; width=30% height:300px/&gt;
+&lt;/div&gt;
+&lt;h2 id=&#34;workflow&#34;&gt;Workflow&lt;/h2&gt;
+&lt;h3 id=&#34;database&#34;&gt;DataBase&lt;/h3&gt;
+&lt;p&gt;爬取豆瓣TOP1000电影信息数据&lt;/p&gt;
+&lt;h3 id=&#34;frontend&#34;&gt;Frontend&lt;/h3&gt;
+&lt;ol&gt;
+&lt;li&gt;获取用户输入的信息 （语音输入 / 文本输入）&lt;/li&gt;
+&lt;li&gt;向电影知识问答后端服务器发送请求&lt;/li&gt;
+&lt;li&gt;获取返回结果  (成功 -&amp;gt; 4 / 失败 -&amp;gt; 5)&lt;/li&gt;
+&lt;li&gt;如果返回结果包含image信息，则显示图片和文字，否则只显示文字&lt;/li&gt;
+&lt;li&gt;请求基于gpt的AI模型服务器，并显示返回结果&lt;/li&gt;
+&lt;/ol&gt;
+&lt;h3 id=&#34;backend&#34;&gt;Backend&lt;/h3&gt;
+&lt;p&gt;​	[准备工作]  训练 TF-IDF 向量算法和朴素贝叶斯分类器，用于预测用户文本所属的问题类别&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;接受前端请求，获取用户输入信息&lt;/li&gt;
+&lt;li&gt;使用分词库解析用户输入的文本词性，提取关键词&lt;/li&gt;
+&lt;li&gt;根据贝叶斯分类器，分类出用户文本的问题类型&lt;/li&gt;
+&lt;li&gt;结合关键词与问题类别，在 Neo4j 中查询问题的答案&lt;/li&gt;
+&lt;li&gt;返回查询结果 （若问题类型为 演员信息 / 电影介绍，则附加图片url）&lt;/li&gt;
+&lt;/ol&gt;
+&lt;h3 id=&#34;workflow-graph&#34;&gt;WorkFlow Graph&lt;/h3&gt;
+&lt;p&gt;&lt;img loading=&#34;lazy&#34; src=&#34;https://oss.swimmingliu.cn/0IEuW.png&#34; alt=&#34;workflow graph&#34;  /&gt;
+&lt;/p&gt;
+&lt;h2 id=&#34;frame&#34;&gt;Frame&lt;/h2&gt;
+&lt;h3 id=&#34;database-1&#34;&gt;DataBase&lt;/h3&gt;
+&lt;p&gt;&lt;a href=&#34;https://neo4j.com/&#34;&gt;&lt;img loading=&#34;lazy&#34; src=&#34;https://img.shields.io/badge/neo4j-test?style=for-the-badge&amp;amp;logo=neo4j&amp;amp;logoColor=white&amp;amp;color=blue&#34; alt=&#34;Neo4j&#34;  /&gt;
+&lt;/a&gt;&lt;/p&gt;
+&lt;h3 id=&#34;frontend-1&#34;&gt;Frontend&lt;/h3&gt;
+&lt;p&gt;&lt;a href=&#34;https://developers.weixin.qq.com/&#34;&gt;&lt;img loading=&#34;lazy&#34; src=&#34;https://img.shields.io/badge/wechat%20mini%20programs-test?style=for-the-badge&amp;amp;logo=wechat&amp;amp;logoColor=white&amp;amp;color=%2320B2AA&#34; alt=&#34;wechat mini programs&#34;  /&gt;
+&lt;/a&gt;&lt;/p&gt;</description>
     </item>
-    
   </channel>
 </rss>

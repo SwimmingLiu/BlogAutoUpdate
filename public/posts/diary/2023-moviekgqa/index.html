@@ -7,15 +7,46 @@
 <meta name="robots" content="index, follow">
 <title>MovieKGQA: 基于知识图谱和neo4j图数据库的电影知识问答系统 | SwimmingLiu&#39;s Blog</title>
 <meta name="keywords" content="Mini Programs, Movie KGQA">
-<meta name="description" content="Introduction 基于知识图谱和neo4j图数据库的电影知识问答系统
-Workflow DataBase 爬取豆瓣TOP1000电影信息数据
-Frontend 获取用户输入的信息 （语音输入 / 文本输入） 向电影知识问答后端服务器发送请求 获取返回结果 (成功 -&gt; 4 / 失败 -&gt; 5) 如果返回结果包含image信息，则显示图片和文字，否则只显示文字 请求基于gpt的AI模型服务器，并显示返回结果 Backend ​	[准备工作] 训练 TF-IDF 向量算法和朴素贝叶斯分类器，用于预测用户文本所属的问题类别
-接受前端请求，获取用户输入信息 使用分词库解析用户输入的文本词性，提取关键词 根据贝叶斯分类器，分类出用户文本的问题类型 结合关键词与问题类别，在 Neo4j 中查询问题的答案 返回查询结果 （若问题类型为 演员信息 / 电影介绍，则附加图片url） WorkFlow Graph Frame DataBase Frontend Backend Reference Frontend 微信小程序：微信聊天机器人
-BackEnd 基于知识图谱的电影知识问答系统
-电影知识库问答机器人">
+<meta name="description" content="Introduction
+基于知识图谱和neo4j图数据库的电影知识问答系统
+
+
+
+
+
+Workflow
+DataBase
+爬取豆瓣TOP1000电影信息数据
+Frontend
+
+获取用户输入的信息 （语音输入 / 文本输入）
+向电影知识问答后端服务器发送请求
+获取返回结果  (成功 -&gt; 4 / 失败 -&gt; 5)
+如果返回结果包含image信息，则显示图片和文字，否则只显示文字
+请求基于gpt的AI模型服务器，并显示返回结果
+
+Backend
+​	[准备工作]  训练 TF-IDF 向量算法和朴素贝叶斯分类器，用于预测用户文本所属的问题类别
+
+接受前端请求，获取用户输入信息
+使用分词库解析用户输入的文本词性，提取关键词
+根据贝叶斯分类器，分类出用户文本的问题类型
+结合关键词与问题类别，在 Neo4j 中查询问题的答案
+返回查询结果 （若问题类型为 演员信息 / 电影介绍，则附加图片url）
+
+WorkFlow Graph
+
+
+Frame
+DataBase
+
+
+Frontend
+
+">
 <meta name="author" content="SwimmingLiu">
 <link rel="canonical" href="https://swimmingliu.cn/posts/diary/2023-moviekgqa/">
-<link crossorigin="anonymous" href="/assets/css/stylesheet.56574d0b8d57cdd0d704dd823c3ab0e600bd78cf5a999377277390417d6b2f3e.css" integrity="sha256-VldNC41XzdDXBN2CPDqw5gC9eM9amZN3J3OQQX1rLz4=" rel="preload stylesheet" as="style">
+<link crossorigin="anonymous" href="/assets/css/stylesheet.d0ba3726344b58c49d5f0d05195743e4438cff79cf2048e07443b1ea4d4fdbf5.css" integrity="sha256-0Lo3JjRLWMSdXw0FGVdD5EOM/3nPIEjgdEOx6k1P2/U=" rel="preload stylesheet" as="style">
 <link rel="icon" href="https://swimmingliu.cn/images/swimmingliu_icon.png">
 <link rel="icon" type="image/png" sizes="16x16" href="https://swimmingliu.cn/images/swimmingliu_icon.png">
 <link rel="icon" type="image/png" sizes="32x32" href="https://swimmingliu.cn/images/swimmingliu_icon.png">
@@ -23,6 +54,7 @@ BackEnd 基于知识图谱的电影知识问答系统
 <link rel="mask-icon" href="https://swimmingliu.cn/images/swimmingliu_icon.png">
 <meta name="theme-color" content="#2e2e33">
 <meta name="msapplication-TileColor" content="#2e2e33">
+<link rel="alternate" hreflang="en" href="https://swimmingliu.cn/posts/diary/2023-moviekgqa/">
 <noscript>
     <style>
         #theme-toggle,
@@ -40,7 +72,7 @@ BackEnd 基于知识图谱的电影知识问答系统
                 --secondary: rgb(155, 156, 157);
                 --tertiary: rgb(65, 66, 68);
                 --content: rgb(196, 196, 197);
-                --hljs-bg: rgb(46, 46, 51);
+                --code-block-bg: rgb(46, 46, 51);
                 --code-bg: rgb(55, 56, 62);
                 --border: rgb(51, 51, 51);
             }
@@ -86,27 +118,90 @@ BackEnd 基于知识图谱的电影知识问答系统
 </script>
 
 <meta property="og:title" content="MovieKGQA: 基于知识图谱和neo4j图数据库的电影知识问答系统" />
-<meta property="og:description" content="Introduction 基于知识图谱和neo4j图数据库的电影知识问答系统
-Workflow DataBase 爬取豆瓣TOP1000电影信息数据
-Frontend 获取用户输入的信息 （语音输入 / 文本输入） 向电影知识问答后端服务器发送请求 获取返回结果 (成功 -&gt; 4 / 失败 -&gt; 5) 如果返回结果包含image信息，则显示图片和文字，否则只显示文字 请求基于gpt的AI模型服务器，并显示返回结果 Backend ​	[准备工作] 训练 TF-IDF 向量算法和朴素贝叶斯分类器，用于预测用户文本所属的问题类别
-接受前端请求，获取用户输入信息 使用分词库解析用户输入的文本词性，提取关键词 根据贝叶斯分类器，分类出用户文本的问题类型 结合关键词与问题类别，在 Neo4j 中查询问题的答案 返回查询结果 （若问题类型为 演员信息 / 电影介绍，则附加图片url） WorkFlow Graph Frame DataBase Frontend Backend Reference Frontend 微信小程序：微信聊天机器人
-BackEnd 基于知识图谱的电影知识问答系统
-电影知识库问答机器人" />
+<meta property="og:description" content="Introduction
+基于知识图谱和neo4j图数据库的电影知识问答系统
+
+
+
+
+
+Workflow
+DataBase
+爬取豆瓣TOP1000电影信息数据
+Frontend
+
+获取用户输入的信息 （语音输入 / 文本输入）
+向电影知识问答后端服务器发送请求
+获取返回结果  (成功 -&gt; 4 / 失败 -&gt; 5)
+如果返回结果包含image信息，则显示图片和文字，否则只显示文字
+请求基于gpt的AI模型服务器，并显示返回结果
+
+Backend
+​	[准备工作]  训练 TF-IDF 向量算法和朴素贝叶斯分类器，用于预测用户文本所属的问题类别
+
+接受前端请求，获取用户输入信息
+使用分词库解析用户输入的文本词性，提取关键词
+根据贝叶斯分类器，分类出用户文本的问题类型
+结合关键词与问题类别，在 Neo4j 中查询问题的答案
+返回查询结果 （若问题类型为 演员信息 / 电影介绍，则附加图片url）
+
+WorkFlow Graph
+
+
+Frame
+DataBase
+
+
+Frontend
+
+" />
 <meta property="og:type" content="article" />
-<meta property="og:url" content="https://swimmingliu.cn/posts/diary/2023-moviekgqa/" /><meta property="og:image" content="https://swimmingliu.cn/papermod-cover.png"/><meta property="article:section" content="posts" />
+<meta property="og:url" content="https://swimmingliu.cn/posts/diary/2023-moviekgqa/" />
+<meta property="og:image" content="https://swimmingliu.cn/papermod-cover.png" />
+<meta property="article:section" content="posts" />
 <meta property="article:published_time" content="2023-12-12T12:18:57+08:00" />
 <meta property="article:modified_time" content="2023-12-12T12:18:57+08:00" />
 
-<meta name="twitter:card" content="summary_large_image"/>
-<meta name="twitter:image" content="https://swimmingliu.cn/papermod-cover.png"/>
-
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:image" content="https://swimmingliu.cn/papermod-cover.png" />
 <meta name="twitter:title" content="MovieKGQA: 基于知识图谱和neo4j图数据库的电影知识问答系统"/>
-<meta name="twitter:description" content="Introduction 基于知识图谱和neo4j图数据库的电影知识问答系统
-Workflow DataBase 爬取豆瓣TOP1000电影信息数据
-Frontend 获取用户输入的信息 （语音输入 / 文本输入） 向电影知识问答后端服务器发送请求 获取返回结果 (成功 -&gt; 4 / 失败 -&gt; 5) 如果返回结果包含image信息，则显示图片和文字，否则只显示文字 请求基于gpt的AI模型服务器，并显示返回结果 Backend ​	[准备工作] 训练 TF-IDF 向量算法和朴素贝叶斯分类器，用于预测用户文本所属的问题类别
-接受前端请求，获取用户输入信息 使用分词库解析用户输入的文本词性，提取关键词 根据贝叶斯分类器，分类出用户文本的问题类型 结合关键词与问题类别，在 Neo4j 中查询问题的答案 返回查询结果 （若问题类型为 演员信息 / 电影介绍，则附加图片url） WorkFlow Graph Frame DataBase Frontend Backend Reference Frontend 微信小程序：微信聊天机器人
-BackEnd 基于知识图谱的电影知识问答系统
-电影知识库问答机器人"/>
+<meta name="twitter:description" content="Introduction
+基于知识图谱和neo4j图数据库的电影知识问答系统
+
+
+
+
+
+Workflow
+DataBase
+爬取豆瓣TOP1000电影信息数据
+Frontend
+
+获取用户输入的信息 （语音输入 / 文本输入）
+向电影知识问答后端服务器发送请求
+获取返回结果  (成功 -&gt; 4 / 失败 -&gt; 5)
+如果返回结果包含image信息，则显示图片和文字，否则只显示文字
+请求基于gpt的AI模型服务器，并显示返回结果
+
+Backend
+​	[准备工作]  训练 TF-IDF 向量算法和朴素贝叶斯分类器，用于预测用户文本所属的问题类别
+
+接受前端请求，获取用户输入信息
+使用分词库解析用户输入的文本词性，提取关键词
+根据贝叶斯分类器，分类出用户文本的问题类型
+结合关键词与问题类别，在 Neo4j 中查询问题的答案
+返回查询结果 （若问题类型为 演员信息 / 电影介绍，则附加图片url）
+
+WorkFlow Graph
+
+
+Frame
+DataBase
+
+
+Frontend
+
+"/>
 
 
 <script type="application/ld+json">
@@ -141,14 +236,14 @@ BackEnd 基于知识图谱的电影知识问答系统
   "@type": "BlogPosting",
   "headline": "MovieKGQA: 基于知识图谱和neo4j图数据库的电影知识问答系统",
   "name": "MovieKGQA: 基于知识图谱和neo4j图数据库的电影知识问答系统",
-  "description": "Introduction 基于知识图谱和neo4j图数据库的电影知识问答系统\nWorkflow DataBase 爬取豆瓣TOP1000电影信息数据\nFrontend 获取用户输入的信息 （语音输入 / 文本输入） 向电影知识问答后端服务器发送请求 获取返回结果 (成功 -\u0026gt; 4 / 失败 -\u0026gt; 5) 如果返回结果包含image信息，则显示图片和文字，否则只显示文字 请求基于gpt的AI模型服务器，并显示返回结果 Backend ​\t[准备工作] 训练 TF-IDF 向量算法和朴素贝叶斯分类器，用于预测用户文本所属的问题类别\n接受前端请求，获取用户输入信息 使用分词库解析用户输入的文本词性，提取关键词 根据贝叶斯分类器，分类出用户文本的问题类型 结合关键词与问题类别，在 Neo4j 中查询问题的答案 返回查询结果 （若问题类型为 演员信息 / 电影介绍，则附加图片url） WorkFlow Graph Frame DataBase Frontend Backend Reference Frontend 微信小程序：微信聊天机器人\nBackEnd 基于知识图谱的电影知识问答系统\n电影知识库问答机器人",
+  "description": "Introduction 基于知识图谱和neo4j图数据库的电影知识问答系统\nWorkflow DataBase 爬取豆瓣TOP1000电影信息数据\nFrontend 获取用户输入的信息 （语音输入 / 文本输入） 向电影知识问答后端服务器发送请求 获取返回结果 (成功 -\u0026gt; 4 / 失败 -\u0026gt; 5) 如果返回结果包含image信息，则显示图片和文字，否则只显示文字 请求基于gpt的AI模型服务器，并显示返回结果 Backend ​\t[准备工作] 训练 TF-IDF 向量算法和朴素贝叶斯分类器，用于预测用户文本所属的问题类别\n接受前端请求，获取用户输入信息 使用分词库解析用户输入的文本词性，提取关键词 根据贝叶斯分类器，分类出用户文本的问题类型 结合关键词与问题类别，在 Neo4j 中查询问题的答案 返回查询结果 （若问题类型为 演员信息 / 电影介绍，则附加图片url） WorkFlow Graph Frame DataBase Frontend ",
   "keywords": [
     "Mini Programs", "Movie KGQA"
   ],
   "articleBody": "Introduction 基于知识图谱和neo4j图数据库的电影知识问答系统\nWorkflow DataBase 爬取豆瓣TOP1000电影信息数据\nFrontend 获取用户输入的信息 （语音输入 / 文本输入） 向电影知识问答后端服务器发送请求 获取返回结果 (成功 -\u003e 4 / 失败 -\u003e 5) 如果返回结果包含image信息，则显示图片和文字，否则只显示文字 请求基于gpt的AI模型服务器，并显示返回结果 Backend ​\t[准备工作] 训练 TF-IDF 向量算法和朴素贝叶斯分类器，用于预测用户文本所属的问题类别\n接受前端请求，获取用户输入信息 使用分词库解析用户输入的文本词性，提取关键词 根据贝叶斯分类器，分类出用户文本的问题类型 结合关键词与问题类别，在 Neo4j 中查询问题的答案 返回查询结果 （若问题类型为 演员信息 / 电影介绍，则附加图片url） WorkFlow Graph Frame DataBase Frontend Backend Reference Frontend 微信小程序：微信聊天机器人\nBackEnd 基于知识图谱的电影知识问答系统\n电影知识库问答机器人\n",
   "wordCount" : "50",
   "inLanguage": "en",
-  "datePublished": "2023-12-12T12:18:57+08:00",
+  "image": "https://swimmingliu.cn/papermod-cover.png","datePublished": "2023-12-12T12:18:57+08:00",
   "dateModified": "2023-12-12T12:18:57+08:00",
   "author":[{
     "@type": "Person",
@@ -267,119 +362,57 @@ BackEnd 基于知识图谱的电影知识问答系统
 <article class="post-single">
   <header class="post-header">
     <div class="breadcrumbs"><a href="https://swimmingliu.cn/">Home</a>&nbsp;»&nbsp;<a href="https://swimmingliu.cn/posts/">📚 Posts</a>&nbsp;»&nbsp;<a href="https://swimmingliu.cn/posts/diary/">📓 Diary</a></div>
-    <h1 class="post-title">
+    <h1 class="post-title entry-hint-parent">
       MovieKGQA: 基于知识图谱和neo4j图数据库的电影知识问答系统
     </h1>
     <div class="post-meta"><span title='2023-12-12 12:18:57 +0800 CST'>December 12, 2023</span>&nbsp;·&nbsp;1 min&nbsp;·&nbsp;SwimmingLiu
 
 </div>
-  </header> <aside id="toc-container" class="toc-container wide">
-    <div class="toc">
-        <details >
-            <summary accesskey="c" title="(Alt + C)">
-                <span class="details">Table of Contents</span>
-            </summary>
+  </header> <div class="toc">
+    <details >
+        <summary accesskey="c" title="(Alt + C)">
+            <span class="details">Table of Contents</span>
+        </summary>
 
-            <div class="inner"><ul>
-                    <li>
-                        <a href="#introduction" aria-label="Introduction">Introduction</a></li>
-                    <li>
-                        <a href="#workflow" aria-label="Workflow">Workflow</a><ul>
-                            
-                    <li>
-                        <a href="#database" aria-label="DataBase">DataBase</a></li>
-                    <li>
-                        <a href="#frontend" aria-label="Frontend">Frontend</a></li>
-                    <li>
-                        <a href="#backend" aria-label="Backend">Backend</a></li>
-                    <li>
-                        <a href="#workflow-graph" aria-label="WorkFlow Graph">WorkFlow Graph</a></li></ul>
-                    </li>
-                    <li>
-                        <a href="#frame" aria-label="Frame">Frame</a><ul>
-                            
-                    <li>
-                        <a href="#database-1" aria-label="DataBase">DataBase</a></li>
-                    <li>
-                        <a href="#frontend-1" aria-label="Frontend">Frontend</a></li>
-                    <li>
-                        <a href="#backend-1" aria-label="Backend">Backend</a></li></ul>
-                    </li>
-                    <li>
-                        <a href="#reference" aria-label="Reference">Reference</a><ul>
-                            
-                    <li>
-                        <a href="#frontend-2" aria-label="Frontend">Frontend</a></li>
-                    <li>
-                        <a href="#backend-2" aria-label="BackEnd">BackEnd</a>
-                    </li>
-                </ul>
+        <div class="inner"><ul>
+                <li>
+                    <a href="#introduction" aria-label="Introduction">Introduction</a></li>
+                <li>
+                    <a href="#workflow" aria-label="Workflow">Workflow</a><ul>
+                        
+                <li>
+                    <a href="#database" aria-label="DataBase">DataBase</a></li>
+                <li>
+                    <a href="#frontend" aria-label="Frontend">Frontend</a></li>
+                <li>
+                    <a href="#backend" aria-label="Backend">Backend</a></li>
+                <li>
+                    <a href="#workflow-graph" aria-label="WorkFlow Graph">WorkFlow Graph</a></li></ul>
                 </li>
-                </ul>
-            </div>
-        </details>
-    </div>
-</aside>
-<script>
-    let activeElement;
-    let elements;
-    window.addEventListener('DOMContentLoaded', function (event) {
-        checkTocPosition();
-
-        elements = document.querySelectorAll('h1[id],h2[id],h3[id],h4[id],h5[id],h6[id]');
-         
-         activeElement = elements[0];
-         const id = encodeURI(activeElement.getAttribute('id')).toLowerCase();
-         document.querySelector(`.inner ul li a[href="#${id}"]`).classList.add('active');
-     }, false);
-
-    window.addEventListener('resize', function(event) {
-        checkTocPosition();
-    }, false);
-
-    window.addEventListener('scroll', () => {
-        
-        activeElement = Array.from(elements).find((element) => {
-            if ((getOffsetTop(element) - window.pageYOffset) > 0 && 
-                (getOffsetTop(element) - window.pageYOffset) < window.innerHeight/2) {
-                return element;
-            }
-        }) || activeElement
-
-        elements.forEach(element => {
-             const id = encodeURI(element.getAttribute('id')).toLowerCase();
-             if (element === activeElement){
-                 document.querySelector(`.inner ul li a[href="#${id}"]`).classList.add('active');
-             } else {
-                 document.querySelector(`.inner ul li a[href="#${id}"]`).classList.remove('active');
-             }
-         })
-     }, false);
-
-    const main = parseInt(getComputedStyle(document.body).getPropertyValue('--article-width'), 10);
-    const toc = parseInt(getComputedStyle(document.body).getPropertyValue('--toc-width'), 10);
-    const gap = parseInt(getComputedStyle(document.body).getPropertyValue('--gap'), 10);
-
-    function checkTocPosition() {
-        const width = document.body.scrollWidth;
-
-        if (width - main - (toc * 2) - (gap * 4) > 0) {
-            document.getElementById("toc-container").classList.add("wide");
-        } else {
-            document.getElementById("toc-container").classList.remove("wide");
-        }
-    }
-
-    function getOffsetTop(element) {
-        if (!element.getClientRects().length) {
-            return 0;
-        }
-        let rect = element.getBoundingClientRect();
-        let win = element.ownerDocument.defaultView;
-        return rect.top + win.pageYOffset;   
-    }
-</script>
-
+                <li>
+                    <a href="#frame" aria-label="Frame">Frame</a><ul>
+                        
+                <li>
+                    <a href="#database-1" aria-label="DataBase">DataBase</a></li>
+                <li>
+                    <a href="#frontend-1" aria-label="Frontend">Frontend</a></li>
+                <li>
+                    <a href="#backend-1" aria-label="Backend">Backend</a></li></ul>
+                </li>
+                <li>
+                    <a href="#reference" aria-label="Reference">Reference</a><ul>
+                        
+                <li>
+                    <a href="#frontend-2" aria-label="Frontend">Frontend</a></li>
+                <li>
+                    <a href="#backend-2" aria-label="BackEnd">BackEnd</a>
+                </li>
+            </ul>
+            </li>
+            </ul>
+        </div>
+    </details>
+</div>
   <div class="post-content"><h2 id="introduction">Introduction<a hidden class="anchor" aria-hidden="true" href="#introduction">#</a></h2>
 <p>基于知识图谱和neo4j图数据库的电影知识问答系统</p>
 <div style="display:flex; justify-content: space-around; ">
@@ -458,7 +491,8 @@ BackEnd 基于知识图谱的电影知识问答系统
     </main>
     
 <footer class="footer">
-    <span>&copy; 2023-2024 <a href="https://swimmingliu.cn/">SwimmingLiu&#39;s Blog</a></span>
+        <span>&copy; 2023-2024 <a href="https://swimmingliu.cn/">SwimmingLiu&#39;s Blog</a></span> · 
+
     <span>
         Powered by
         <a href="https://gohugo.io/" rel="noopener noreferrer" target="_blank">Hugo</a> &

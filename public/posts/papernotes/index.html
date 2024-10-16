@@ -10,7 +10,7 @@
 <meta name="description" content="📝 Paper Notes - SwimmingLiu&#39;s Blog">
 <meta name="author" content="👨🏻‍🎓 SwimmingLiu">
 <link rel="canonical" href="https://swimmingliu.cn/posts/papernotes/">
-<link crossorigin="anonymous" href="/assets/css/stylesheet.56574d0b8d57cdd0d704dd823c3ab0e600bd78cf5a999377277390417d6b2f3e.css" integrity="sha256-VldNC41XzdDXBN2CPDqw5gC9eM9amZN3J3OQQX1rLz4=" rel="preload stylesheet" as="style">
+<link crossorigin="anonymous" href="/assets/css/stylesheet.d0ba3726344b58c49d5f0d05195743e4438cff79cf2048e07443b1ea4d4fdbf5.css" integrity="sha256-0Lo3JjRLWMSdXw0FGVdD5EOM/3nPIEjgdEOx6k1P2/U=" rel="preload stylesheet" as="style">
 <link rel="icon" href="https://swimmingliu.cn/images/swimmingliu_icon.png">
 <link rel="icon" type="image/png" sizes="16x16" href="https://swimmingliu.cn/images/swimmingliu_icon.png">
 <link rel="icon" type="image/png" sizes="32x32" href="https://swimmingliu.cn/images/swimmingliu_icon.png">
@@ -19,6 +19,7 @@
 <meta name="theme-color" content="#2e2e33">
 <meta name="msapplication-TileColor" content="#2e2e33">
 <link rel="alternate" type="application/rss+xml" href="https://swimmingliu.cn/posts/papernotes/index.xml">
+<link rel="alternate" hreflang="en" href="https://swimmingliu.cn/posts/papernotes/">
 <noscript>
     <style>
         #theme-toggle,
@@ -36,7 +37,7 @@
                 --secondary: rgb(155, 156, 157);
                 --tertiary: rgb(65, 66, 68);
                 --content: rgb(196, 196, 197);
-                --hljs-bg: rgb(46, 46, 51);
+                --code-block-bg: rgb(46, 46, 51);
                 --code-bg: rgb(55, 56, 62);
                 --border: rgb(51, 51, 51);
             }
@@ -59,11 +60,12 @@
 <meta property="og:title" content="📝 Paper Notes" />
 <meta property="og:description" content="" />
 <meta property="og:type" content="website" />
-<meta property="og:url" content="https://swimmingliu.cn/posts/papernotes/" /><meta property="og:image" content="https://swimmingliu.cn/papermod-cover.png"/>
+<meta property="og:url" content="https://swimmingliu.cn/posts/papernotes/" />
+<meta property="og:image" content="https://swimmingliu.cn/papermod-cover.png" />
 
-<meta name="twitter:card" content="summary_large_image"/>
-<meta name="twitter:image" content="https://swimmingliu.cn/papermod-cover.png"/>
 
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:image" content="https://swimmingliu.cn/papermod-cover.png" />
 <meta name="twitter:title" content="📝 Paper Notes"/>
 <meta name="twitter:description" content=""/>
 
@@ -199,7 +201,7 @@
 
 <article class="post-entry"> 
   <header class="entry-header">
-    <h2>A Dual-Branch Framework with Prior Knowledge for Precise Segmentation of Lung Nodules in Challenging CT Scans
+    <h2 class="entry-hint-parent">A Dual-Branch Framework with Prior Knowledge for Precise Segmentation of Lung Nodules in Challenging CT Scans
     </h2>
   </header>
   <div class="entry-content">
@@ -214,7 +216,8 @@ Introduction 肺癌是全球癌症相关死亡的主要原因[1]。仅在美国�
 由于周围多余的组织结构，血管旁或胸膜旁（c、d、f）可能会导致网络分类错误[13]。此外，部分实性结节（h）比纯GGO更致密，产生更复杂的异质纹理，更容易发展成恶性结节[14]。
 其次，肺结节内部因素造成的分割困难在于医生注释、层厚、数据来源和数据质量。数据质量差或不同医生的经验可能会导致不同的注释和注释者数量。由多名医生注释的病变区域通常更可靠，减少了潜在的临床风险。在资源有限的地区，由于 CT 扫描仪短缺和成像设备陈旧，CT 扫描质量差的情况很常见。较厚的切片更有可能产生“体积平均效应”和伪影，使医生难以达成一致的诊断。即使使用移动 CT 扫描仪也可能无法提供完整的诊断详细信息。最后，目前大多数肺结节分割方法都是基于2D图像，但这些方法忽略了空间关系，因此提出一种有效的3D肺结节分割模型来捕获肺结节的空间位置、纹理和其他详细信息变得越来越重要以避免误诊和漏诊。
 Challenge:
-异质性: 肺结节的形状多异 （实心结节、磨玻璃结节 (GGO) 、空洞结节、血管和胸膜旁边的结节）...</p>
+异质性: 肺结节的形状多异 （实心结节、磨玻璃结节 (GGO) 、空洞结节、血管和胸膜旁边的结节）
+...</p>
   </div>
   <footer class="entry-footer"><span title='2024-03-03 15:37:07 +0800 CST'>March 3, 2024</span>&nbsp;·&nbsp;4 min&nbsp;·&nbsp;SwimmingLiu</footer>
   <a class="entry-link" aria-label="post link to A Dual-Branch Framework with Prior Knowledge for Precise Segmentation of Lung Nodules in Challenging CT Scans" href="https://swimmingliu.cn/posts/papernotes/2023-dbnet/"></a>
@@ -222,7 +225,7 @@ Challenge:
 
 <article class="post-entry"> 
   <header class="entry-header">
-    <h2>YOLOv9: Learning What You Want to Learn Using Programmable Gradient Information
+    <h2 class="entry-hint-parent">YOLOv9: Learning What You Want to Learn Using Programmable Gradient Information
     </h2>
   </header>
   <div class="entry-content">
@@ -243,7 +246,8 @@ Programmable Gradient Information (PGI)：
 可逆结构建立辅助分支，不增加推理成本
 适用于各种规模的深度神经网络
 GELAN：
-轻、快速、准确 采用常规卷积吊打其他新颖卷积 Related work 2.1 Real-time Object Detectors 目前主流的实时目标检测器是YOLO系列[2,7,13–15,25,30,31,47–49,61–63,74,75]，这些模型大多数使用CSPNet[64]或 ELAN [65] 及其变体作为主要计算单元。在特征集成方面，通常使用改进的PAN[37]或FPN[35]作为工具，然后使用改进的YOLOv3头[49]或FCOS头[57, 58]作为预测头。最近也提出了一些实时目标检测器，例如 RT DETR [43]，其基础是 DETR [4]。然而，由于DETR系列目标检测器在没有相应领域预训练模型的情况下很难应用于新领域，因此目前应用最广泛的实时目标检测器仍然是YOLO系列。本文选择 YOLOv7 [63] 作为开发该方法的基础，该方法已在各种计算机视觉任务和各种场景中被证明有效。...</p>
+轻、快速、准确 采用常规卷积吊打其他新颖卷积 Related work 2.1 Real-time Object Detectors 目前主流的实时目标检测器是YOLO系列[2,7,13–15,25,30,31,47–49,61–63,74,75]，这些模型大多数使用CSPNet[64]或 ELAN [65] 及其变体作为主要计算单元。在特征集成方面，通常使用改进的PAN[37]或FPN[35]作为工具，然后使用改进的YOLOv3头[49]或FCOS头[57, 58]作为预测头。最近也提出了一些实时目标检测器，例如 RT DETR [43]，其基础是 DETR [4]。然而，由于DETR系列目标检测器在没有相应领域预训练模型的情况下很难应用于新领域，因此目前应用最广泛的实时目标检测器仍然是YOLO系列。本文选择 YOLOv7 [63] 作为开发该方法的基础，该方法已在各种计算机视觉任务和各种场景中被证明有效。
+...</p>
   </div>
   <footer class="entry-footer"><span title='2024-03-01 15:26:23 +0800 CST'>March 1, 2024</span>&nbsp;·&nbsp;2 min&nbsp;·&nbsp;SwimmingLiu</footer>
   <a class="entry-link" aria-label="post link to YOLOv9: Learning What You Want to Learn Using Programmable Gradient Information" href="https://swimmingliu.cn/posts/papernotes/2024-yolov9/"></a>
@@ -251,7 +255,7 @@ GELAN：
 
 <article class="post-entry"> 
   <header class="entry-header">
-    <h2>U-NET V2: RETHINKING THE SKIP CONNECTIONS OF U-NET FOR MEDICAL IMAGE SEGMENTATION
+    <h2 class="entry-hint-parent">U-NET V2: RETHINKING THE SKIP CONNECTIONS OF U-NET FOR MEDICAL IMAGE SEGMENTATION
     </h2>
   </header>
   <div class="entry-content">
@@ -262,7 +266,8 @@ Introduction 随着现代深度神经网络的进步，语义图像分割取得�
 (a) U-Net v2 模型的整体架构，由编码器、SDI（语义和细节注入）模块和解码器组成。 (b) SDI模块的架构。为简单起见，我们仅显示第三级特征的细化（l = 3）。 SmoothConv 表示用于特征平滑的 3 × 3 卷积。$\bigotimes$ 表示哈达玛积。
 在[8]中，利用反向注意力来明确地建立多尺度特征之间的联系。在[9]中，ReLU激活应用于较高级别的特征，并将激活的特征与较低级别的特征相乘。此外，在[10]中，作者提出分别从 CNN 和 Transformer 模型中提取特征，在多个级别上组合来自 CNN 和 Transformer 分支的特征来增强特征图。然而，这些方法都很复杂，而且它们的性能仍然不是很令人满意，因此需要进一步改进。
 在本文中，我们提出了 U-Net v2，这是一种基于 U-Net 的新分割框架，具有简单且高效的跳跃连接。我们的模型首先使用 CNN 或 Transformer 编码器提取多级特征图。接下来，对于第 i 层的特征图，我们通过简单的哈达玛乘积操作显式地注入高层特征（包含更多语义信息）和低层特征（捕获更精细的细节），从而增强语义和细节第 i 级特征。随后，细化的特征被传输到解码器进行分辨率重建和分割。我们的方法可以无缝集成到任何编码器-解码器网络中。
-我们使用公开的数据集在两个医学图像分割任务（皮肤病变分割和息肉分割）上评估我们的新方法。实验结果表明，我们的 U-Net v2 在这些分割任务中始终优于最先进的方法，同时保持 FLOP 和 GPU 内存效率。...</p>
+我们使用公开的数据集在两个医学图像分割任务（皮肤病变分割和息肉分割）上评估我们的新方法。实验结果表明，我们的 U-Net v2 在这些分割任务中始终优于最先进的方法，同时保持 FLOP 和 GPU 内存效率。
+...</p>
   </div>
   <footer class="entry-footer"><span title='2023-12-11 20:49:32 +0800 CST'>December 11, 2023</span>&nbsp;·&nbsp;3 min&nbsp;·&nbsp;SwimmingLiu</footer>
   <a class="entry-link" aria-label="post link to U-NET V2: RETHINKING THE SKIP CONNECTIONS OF U-NET FOR MEDICAL IMAGE SEGMENTATION" href="https://swimmingliu.cn/posts/papernotes/2023-unet_v2/"></a>
@@ -270,7 +275,7 @@ Introduction 随着现代深度神经网络的进步，语义图像分割取得�
 
 <article class="post-entry"> 
   <header class="entry-header">
-    <h2>Uncertainty-Aware Attention Mechanism:利用不确定性感知注意机制进行肺结节分割和不确定区域预测
+    <h2 class="entry-hint-parent">Uncertainty-Aware Attention Mechanism:利用不确定性感知注意机制进行肺结节分割和不确定区域预测
     </h2>
   </header>
   <div class="entry-content">
@@ -284,7 +289,7 @@ INTRODUCTION 肺结节分割在肺癌计算机辅助诊断 (CAD) 系统中至关
 为了演示这种现象，我们引入了多重置信掩码 (MCM)，它结合了高置信度 (HC) 掩码和低置信度 (LC) 掩码，如图 1 所示。 A. 交叉掩码等于 HC mask，代表所有注释的交集。
 联合掩码是所有注释的联合。 LC掩模是交集掩模和并集掩模之间的差异。当在 LIDC-IDRI 数据集 [11] 上计算 HC 和 LC 的 Hounsfield 单位 (HU) 核估计时，如图 1.B 所示，我们可以观察到 LC 和 HC 掩模之间的 HU 分布存在明显区别。具体地，LC区域具有比HC区域更低的HU值。从像素分布来看，HU值越低，对应区域的密度越低。就CT图像特征而言，LC区域主要由结节边缘、毛刺和磨玻璃特征等边界相关特征组成，而HC区域主要分布在结节核心内。因此，我们提出了这样的假设：导致放射科医生之间差异的区域主要与低密度组织和边界相关特征有关。
 与其他方法不同，我们建议利用 MCM (多重置信掩码) ** 和注释集作为具有不同分割确定性的特征的学习指导**，有助于更好的分割性能。我们将这种训练称为UncertaintyAware Attention Mechanism，如图2所示。按照这种机制，我们进一步设计了用于肺结节分割的Uncertainty-Guide Multi-Confidence Segmentation Network（UGMCS-Net）。
-UGMCS-Net 包含三个模块：基于 U-Net 的特征提取模块、不确定性感知模块和交集并集约束模块。...</p>
+...</p>
   </div>
   <footer class="entry-footer"><span title='2023-12-04 16:28:11 +0800 CST'>December 4, 2023</span>&nbsp;·&nbsp;5 min&nbsp;·&nbsp;SwimmingLiu</footer>
   <a class="entry-link" aria-label="post link to Uncertainty-Aware Attention Mechanism:利用不确定性感知注意机制进行肺结节分割和不确定区域预测" href="https://swimmingliu.cn/posts/papernotes/2023-uncertainty-aware-attentionmechanism/"></a>
@@ -292,7 +297,7 @@ UGMCS-Net 包含三个模块：基于 U-Net 的特征提取模块、不确定性
 
 <article class="post-entry"> 
   <header class="entry-header">
-    <h2>Prior Attention Network: 用于医学图像中多病灶分割的预先注意网络
+    <h2 class="entry-hint-parent">Prior Attention Network: 用于医学图像中多病灶分割的预先注意网络
     </h2>
   </header>
   <div class="entry-content">
@@ -312,7 +317,8 @@ Introduction 医学图像分割对于疾病的准确筛查和患者的预后具�
 中间监督、深度监督 （不错不错， 好多一区和顶会的文章都用深度监督）
 这项工作的贡献体现在三个方面。首先，我们提出了一种新颖的网络架构，通过将传统级联网络中的两个分割步骤结合在单个网络中，遵循 2D 和 3D 医学图像中多病灶分割的从粗到细的策略。与级联网络相比，所提出的架构以更少的额外计算成本实现了有竞争力的分割性能，更容易训练和部署到生产环境。其次，我们提出了一种监督空间注意力机制，将病变区域的注意力与网络提取的特征相结合，将多病变分割分解为两个更容易的阶段，并且与当前基于注意力的方法相比具有更好的可解释性。第三，所提出的网络已在两个实际应用中得到验证，包括肺部 CT 切片中的 COVID-19 病变的 2D 分割和多模态 MRI 中的脑肿瘤的 3D 分割。所提出的网络在 2D 和 3D 任务中都优于前沿方法，并且在参数和计算成本方面比当前网络更高效。
 一个网络、监督空间注意力机制、参数和计算成本方面比当前网络更高效。
-Related Work 1）图像分割的网络结构：用于图像分割的典型卷积神经网络通常由一个卷积特征提取器组成，其拓扑类似于常见的分类网络，自动从输入图像中提取特征，并进行基于卷积的操作以生成最终的密集预测。在自然图像分割领域，FCN [2]、DeepLab [8]、PSPNet [9] 和 SegNet [10] 因其性能和效率而颇受欢迎。对于医学分割，U-Net [3] 在许多任务中相当流行，并且已被修改为许多改进版本，例如 Attention U-Net [11]、U-Net&#43;&#43; [12]、V-Net [13] 和H-DenseUNet [14]在某些领域获得更好的性能。...</p>
+Related Work 1）图像分割的网络结构：用于图像分割的典型卷积神经网络通常由一个卷积特征提取器组成，其拓扑类似于常见的分类网络，自动从输入图像中提取特征，并进行基于卷积的操作以生成最终的密集预测。在自然图像分割领域，FCN [2]、DeepLab [8]、PSPNet [9] 和 SegNet [10] 因其性能和效率而颇受欢迎。对于医学分割，U-Net [3] 在许多任务中相当流行，并且已被修改为许多改进版本，例如 Attention U-Net [11]、U-Net&#43;&#43; [12]、V-Net [13] 和H-DenseUNet [14]在某些领域获得更好的性能。
+...</p>
   </div>
   <footer class="entry-footer"><span title='2023-11-28 14:55:47 +0800 CST'>November 28, 2023</span>&nbsp;·&nbsp;4 min&nbsp;·&nbsp;SwimmingLiu</footer>
   <a class="entry-link" aria-label="post link to Prior Attention Network: 用于医学图像中多病灶分割的预先注意网络" href="https://swimmingliu.cn/posts/papernotes/2022-priorattentionnetwork/"></a>
@@ -326,7 +332,8 @@ Related Work 1）图像分割的网络结构：用于图像分割的典型卷积
     </main>
     
 <footer class="footer">
-    <span>&copy; 2023-2024 <a href="https://swimmingliu.cn/">SwimmingLiu&#39;s Blog</a></span>
+        <span>&copy; 2023-2024 <a href="https://swimmingliu.cn/">SwimmingLiu&#39;s Blog</a></span> · 
+
     <span>
         Powered by
         <a href="https://gohugo.io/" rel="noopener noreferrer" target="_blank">Hugo</a> &

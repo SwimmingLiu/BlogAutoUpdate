@@ -9,26 +9,23 @@
       <url>https://swimmingliu.cn/papermod-cover.png</url>
       <link>https://swimmingliu.cn/papermod-cover.png</link>
     </image>
-    <generator>Hugo -- gohugo.io</generator>
+    <generator>Hugo -- 0.136.0</generator>
     <language>en</language>
-    <lastBuildDate>Sun, 03 Mar 2024 15:37:07 +0800</lastBuildDate><atom:link href="https://swimmingliu.cn/categories/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Tue, 20 Aug 2024 10:35:06 +0800</lastBuildDate>
+    <atom:link href="https://swimmingliu.cn/categories/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>📝 Paper Notes</title>
-      <link>https://swimmingliu.cn/categories/paper-notes/</link>
+      <link>https://swimmingliu.cn/categories/-paper-notes/</link>
       <pubDate>Sun, 03 Mar 2024 15:37:07 +0800</pubDate>
-      
-      <guid>https://swimmingliu.cn/categories/paper-notes/</guid>
+      <guid>https://swimmingliu.cn/categories/-paper-notes/</guid>
       <description></description>
     </item>
-    
     <item>
       <title>📓 Diary</title>
-      <link>https://swimmingliu.cn/categories/diary/</link>
+      <link>https://swimmingliu.cn/categories/-diary/</link>
       <pubDate>Sun, 18 Feb 2024 19:30:06 +0800</pubDate>
-      
-      <guid>https://swimmingliu.cn/categories/diary/</guid>
+      <guid>https://swimmingliu.cn/categories/-diary/</guid>
       <description></description>
     </item>
-    
   </channel>
 </rss>

@@ -7,10 +7,47 @@
 <meta name="robots" content="index, follow">
 <title>ZSTU Server Management | SwimmingLiu&#39;s Blog</title>
 <meta name="keywords" content="Server Management, FRP">
-<meta name="description" content="FRP配置 跳板机 # frps.ini 配置 [common] bind_port = 7000 #frps服务监听的端口 token = 123 # 链接口令 ./frps -c frps.ini # 启动frps 服务器 # frpc.ini [common] server_addr = x.x.x.x # 此处为 跳板机 的公网ip server_port = 7000 # 跳板机上frps服务监听的端口 token = 123 # 链接口令 [ssh] type = tcp local_ip = 127.0.0.1 local_port = 22 # 需要暴露的内网机器的端口 remote_port = 6000 # 暴露的内网机器的端口在vps上的端口 SSH连接 ssh -p 6000 swimmingliu@server.ip # 普通ssh 连接 ssh swimmingliu@server.ip 6000	# xshell ssh连接 用户管理 添加用户 sudo adduser xxx 删除用户 sudo deluser xxx Magic Network export http_proxy=http://127.">
+<meta name="description" content="FRP配置
+跳板机
+# frps.ini 配置
+[common]
+bind_port = 7000 #frps服务监听的端口
+token = 123 # 链接口令
+./frps -c frps.ini # 启动frps
+服务器
+# frpc.ini
+[common]
+server_addr = x.x.x.x # 此处为 跳板机 的公网ip
+server_port = 7000 # 跳板机上frps服务监听的端口
+token = 123 # 链接口令
+
+[ssh]
+type = tcp
+local_ip = 127.0.0.1 
+local_port = 22 # 需要暴露的内网机器的端口
+remote_port = 6000 # 暴露的内网机器的端口在vps上的端口
+SSH连接
+ssh -p 6000 swimmingliu@server.ip # 普通ssh 连接
+ssh swimmingliu@server.ip 6000	  # xshell ssh连接
+用户管理
+添加用户
+sudo adduser xxx
+删除用户
+sudo deluser xxx
+Magic Network
+export http_proxy=http://127.0.0.1:7890
+export https_proxy=http://127.0.0.1:7890
+Anaconda3 安装和配置
+安装Anaconda3
+wget --user-agent=&#34;Mozilla&#34; https://mirrors.tuna.tsinghua.edu.cn/anaconda/archive/Anaconda3-2023.07-1-Linux-x86_64.sh
+bash Anaconda3-2023.07-1-Linux-x86_64.sh
+# https://mirrors.tuna.tsinghua.edu.cn/anaconda/archive 清华源
+配置之前的envs
+cp -r old_envs_path anaconda/envs/		#迁移之前的envs环境
+完结撒花❀❀❀">
 <meta name="author" content="SwimmingLiu">
 <link rel="canonical" href="https://swimmingliu.cn/posts/diary/zstu_server_management/">
-<link crossorigin="anonymous" href="/assets/css/stylesheet.56574d0b8d57cdd0d704dd823c3ab0e600bd78cf5a999377277390417d6b2f3e.css" integrity="sha256-VldNC41XzdDXBN2CPDqw5gC9eM9amZN3J3OQQX1rLz4=" rel="preload stylesheet" as="style">
+<link crossorigin="anonymous" href="/assets/css/stylesheet.d0ba3726344b58c49d5f0d05195743e4438cff79cf2048e07443b1ea4d4fdbf5.css" integrity="sha256-0Lo3JjRLWMSdXw0FGVdD5EOM/3nPIEjgdEOx6k1P2/U=" rel="preload stylesheet" as="style">
 <link rel="icon" href="https://swimmingliu.cn/images/swimmingliu_icon.png">
 <link rel="icon" type="image/png" sizes="16x16" href="https://swimmingliu.cn/images/swimmingliu_icon.png">
 <link rel="icon" type="image/png" sizes="32x32" href="https://swimmingliu.cn/images/swimmingliu_icon.png">
@@ -18,6 +55,7 @@
 <link rel="mask-icon" href="https://swimmingliu.cn/images/swimmingliu_icon.png">
 <meta name="theme-color" content="#2e2e33">
 <meta name="msapplication-TileColor" content="#2e2e33">
+<link rel="alternate" hreflang="en" href="https://swimmingliu.cn/posts/diary/zstu_server_management/">
 <noscript>
     <style>
         #theme-toggle,
@@ -35,7 +73,7 @@
                 --secondary: rgb(155, 156, 157);
                 --tertiary: rgb(65, 66, 68);
                 --content: rgb(196, 196, 197);
-                --hljs-bg: rgb(46, 46, 51);
+                --code-block-bg: rgb(46, 46, 51);
                 --code-bg: rgb(55, 56, 62);
                 --border: rgb(51, 51, 51);
             }
@@ -81,17 +119,92 @@
 </script>
 
 <meta property="og:title" content="ZSTU Server Management" />
-<meta property="og:description" content="FRP配置 跳板机 # frps.ini 配置 [common] bind_port = 7000 #frps服务监听的端口 token = 123 # 链接口令 ./frps -c frps.ini # 启动frps 服务器 # frpc.ini [common] server_addr = x.x.x.x # 此处为 跳板机 的公网ip server_port = 7000 # 跳板机上frps服务监听的端口 token = 123 # 链接口令 [ssh] type = tcp local_ip = 127.0.0.1 local_port = 22 # 需要暴露的内网机器的端口 remote_port = 6000 # 暴露的内网机器的端口在vps上的端口 SSH连接 ssh -p 6000 swimmingliu@server.ip # 普通ssh 连接 ssh swimmingliu@server.ip 6000	# xshell ssh连接 用户管理 添加用户 sudo adduser xxx 删除用户 sudo deluser xxx Magic Network export http_proxy=http://127." />
+<meta property="og:description" content="FRP配置
+跳板机
+# frps.ini 配置
+[common]
+bind_port = 7000 #frps服务监听的端口
+token = 123 # 链接口令
+./frps -c frps.ini # 启动frps
+服务器
+# frpc.ini
+[common]
+server_addr = x.x.x.x # 此处为 跳板机 的公网ip
+server_port = 7000 # 跳板机上frps服务监听的端口
+token = 123 # 链接口令
+
+[ssh]
+type = tcp
+local_ip = 127.0.0.1 
+local_port = 22 # 需要暴露的内网机器的端口
+remote_port = 6000 # 暴露的内网机器的端口在vps上的端口
+SSH连接
+ssh -p 6000 swimmingliu@server.ip # 普通ssh 连接
+ssh swimmingliu@server.ip 6000	  # xshell ssh连接
+用户管理
+添加用户
+sudo adduser xxx
+删除用户
+sudo deluser xxx
+Magic Network
+export http_proxy=http://127.0.0.1:7890
+export https_proxy=http://127.0.0.1:7890
+Anaconda3 安装和配置
+安装Anaconda3
+wget --user-agent=&#34;Mozilla&#34; https://mirrors.tuna.tsinghua.edu.cn/anaconda/archive/Anaconda3-2023.07-1-Linux-x86_64.sh
+bash Anaconda3-2023.07-1-Linux-x86_64.sh
+# https://mirrors.tuna.tsinghua.edu.cn/anaconda/archive 清华源
+配置之前的envs
+cp -r old_envs_path anaconda/envs/		#迁移之前的envs环境
+完结撒花❀❀❀" />
 <meta property="og:type" content="article" />
-<meta property="og:url" content="https://swimmingliu.cn/posts/diary/zstu_server_management/" /><meta property="og:image" content="https://swimmingliu.cn/papermod-cover.png"/><meta property="article:section" content="posts" />
+<meta property="og:url" content="https://swimmingliu.cn/posts/diary/zstu_server_management/" />
+<meta property="og:image" content="https://swimmingliu.cn/papermod-cover.png" />
+<meta property="article:section" content="posts" />
 <meta property="article:published_time" content="2024-01-04T21:36:25+08:00" />
 <meta property="article:modified_time" content="2024-01-04T21:36:25+08:00" />
 
-<meta name="twitter:card" content="summary_large_image"/>
-<meta name="twitter:image" content="https://swimmingliu.cn/papermod-cover.png"/>
-
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:image" content="https://swimmingliu.cn/papermod-cover.png" />
 <meta name="twitter:title" content="ZSTU Server Management"/>
-<meta name="twitter:description" content="FRP配置 跳板机 # frps.ini 配置 [common] bind_port = 7000 #frps服务监听的端口 token = 123 # 链接口令 ./frps -c frps.ini # 启动frps 服务器 # frpc.ini [common] server_addr = x.x.x.x # 此处为 跳板机 的公网ip server_port = 7000 # 跳板机上frps服务监听的端口 token = 123 # 链接口令 [ssh] type = tcp local_ip = 127.0.0.1 local_port = 22 # 需要暴露的内网机器的端口 remote_port = 6000 # 暴露的内网机器的端口在vps上的端口 SSH连接 ssh -p 6000 swimmingliu@server.ip # 普通ssh 连接 ssh swimmingliu@server.ip 6000	# xshell ssh连接 用户管理 添加用户 sudo adduser xxx 删除用户 sudo deluser xxx Magic Network export http_proxy=http://127."/>
+<meta name="twitter:description" content="FRP配置
+跳板机
+# frps.ini 配置
+[common]
+bind_port = 7000 #frps服务监听的端口
+token = 123 # 链接口令
+./frps -c frps.ini # 启动frps
+服务器
+# frpc.ini
+[common]
+server_addr = x.x.x.x # 此处为 跳板机 的公网ip
+server_port = 7000 # 跳板机上frps服务监听的端口
+token = 123 # 链接口令
+
+[ssh]
+type = tcp
+local_ip = 127.0.0.1 
+local_port = 22 # 需要暴露的内网机器的端口
+remote_port = 6000 # 暴露的内网机器的端口在vps上的端口
+SSH连接
+ssh -p 6000 swimmingliu@server.ip # 普通ssh 连接
+ssh swimmingliu@server.ip 6000	  # xshell ssh连接
+用户管理
+添加用户
+sudo adduser xxx
+删除用户
+sudo deluser xxx
+Magic Network
+export http_proxy=http://127.0.0.1:7890
+export https_proxy=http://127.0.0.1:7890
+Anaconda3 安装和配置
+安装Anaconda3
+wget --user-agent=&#34;Mozilla&#34; https://mirrors.tuna.tsinghua.edu.cn/anaconda/archive/Anaconda3-2023.07-1-Linux-x86_64.sh
+bash Anaconda3-2023.07-1-Linux-x86_64.sh
+# https://mirrors.tuna.tsinghua.edu.cn/anaconda/archive 清华源
+配置之前的envs
+cp -r old_envs_path anaconda/envs/		#迁移之前的envs环境
+完结撒花❀❀❀"/>
 
 
 <script type="application/ld+json">
@@ -126,14 +239,14 @@
   "@type": "BlogPosting",
   "headline": "ZSTU Server Management",
   "name": "ZSTU Server Management",
-  "description": "FRP配置 跳板机 # frps.ini 配置 [common] bind_port = 7000 #frps服务监听的端口 token = 123 # 链接口令 ./frps -c frps.ini # 启动frps 服务器 # frpc.ini [common] server_addr = x.x.x.x # 此处为 跳板机 的公网ip server_port = 7000 # 跳板机上frps服务监听的端口 token = 123 # 链接口令 [ssh] type = tcp local_ip = 127.0.0.1 local_port = 22 # 需要暴露的内网机器的端口 remote_port = 6000 # 暴露的内网机器的端口在vps上的端口 SSH连接 ssh -p 6000 swimmingliu@server.ip # 普通ssh 连接 ssh swimmingliu@server.ip 6000\t# xshell ssh连接 用户管理 添加用户 sudo adduser xxx 删除用户 sudo deluser xxx Magic Network export http_proxy=http://127.",
+  "description": "FRP配置 跳板机 # frps.ini 配置 [common] bind_port = 7000 #frps服务监听的端口 token = 123 # 链接口令 ./frps -c frps.ini # 启动frps 服务器 # frpc.ini [common] server_addr = x.x.x.x # 此处为 跳板机 的公网ip server_port = 7000 # 跳板机上frps服务监听的端口 token = 123 # 链接口令 [ssh] type = tcp local_ip = 127.0.0.1 local_port = 22 # 需要暴露的内网机器的端口 remote_port = 6000 # 暴露的内网机器的端口在vps上的端口 SSH连接 ssh -p 6000 swimmingliu@server.ip # 普通ssh 连接 ssh swimmingliu@server.ip 6000\t# xshell ssh连接 用户管理 添加用户 sudo adduser xxx 删除用户 sudo deluser xxx Magic Network export http_proxy=http://127.0.0.1:7890 export https_proxy=http://127.0.0.1:7890 Anaconda3 安装和配置 安装Anaconda3 wget --user-agent=\u0026#34;Mozilla\u0026#34; https://mirrors.tuna.tsinghua.edu.cn/anaconda/archive/Anaconda3-2023.07-1-Linux-x86_64.sh bash Anaconda3-2023.07-1-Linux-x86_64.sh # https://mirrors.tuna.tsinghua.edu.cn/anaconda/archive 清华源 配置之前的envs cp -r old_envs_path anaconda/envs/\t#迁移之前的envs环境 完结撒花❀❀❀",
   "keywords": [
     "Server Management", "FRP"
   ],
   "articleBody": "FRP配置 跳板机 # frps.ini 配置 [common] bind_port = 7000 #frps服务监听的端口 token = 123 # 链接口令 ./frps -c frps.ini # 启动frps 服务器 # frpc.ini [common] server_addr = x.x.x.x # 此处为 跳板机 的公网ip server_port = 7000 # 跳板机上frps服务监听的端口 token = 123 # 链接口令 [ssh] type = tcp local_ip = 127.0.0.1 local_port = 22 # 需要暴露的内网机器的端口 remote_port = 6000 # 暴露的内网机器的端口在vps上的端口 SSH连接 ssh -p 6000 swimmingliu@server.ip # 普通ssh 连接 ssh swimmingliu@server.ip 6000\t# xshell ssh连接 用户管理 添加用户 sudo adduser xxx 删除用户 sudo deluser xxx Magic Network export http_proxy=http://127.0.0.1:7890 export https_proxy=http://127.0.0.1:7890 Anaconda3 安装和配置 安装Anaconda3 wget --user-agent=\"Mozilla\" https://mirrors.tuna.tsinghua.edu.cn/anaconda/archive/Anaconda3-2023.07-1-Linux-x86_64.sh bash Anaconda3-2023.07-1-Linux-x86_64.sh # https://mirrors.tuna.tsinghua.edu.cn/anaconda/archive 清华源 配置之前的envs cp -r old_envs_path anaconda/envs/\t#迁移之前的envs环境 完结撒花❀❀❀ ",
   "wordCount" : "105",
   "inLanguage": "en",
-  "datePublished": "2024-01-04T21:36:25+08:00",
+  "image": "https://swimmingliu.cn/papermod-cover.png","datePublished": "2024-01-04T21:36:25+08:00",
   "dateModified": "2024-01-04T21:36:25+08:00",
   "author":[{
     "@type": "Person",
@@ -252,116 +365,54 @@
 <article class="post-single">
   <header class="post-header">
     <div class="breadcrumbs"><a href="https://swimmingliu.cn/">Home</a>&nbsp;»&nbsp;<a href="https://swimmingliu.cn/posts/">📚 Posts</a>&nbsp;»&nbsp;<a href="https://swimmingliu.cn/posts/diary/">📓 Diary</a></div>
-    <h1 class="post-title">
+    <h1 class="post-title entry-hint-parent">
       ZSTU Server Management
     </h1>
     <div class="post-meta"><span title='2024-01-04 21:36:25 +0800 CST'>January 4, 2024</span>&nbsp;·&nbsp;1 min&nbsp;·&nbsp;SwimmingLiu
 
 </div>
-  </header> <aside id="toc-container" class="toc-container wide">
-    <div class="toc">
-        <details >
-            <summary accesskey="c" title="(Alt + C)">
-                <span class="details">Table of Contents</span>
-            </summary>
+  </header> <div class="toc">
+    <details >
+        <summary accesskey="c" title="(Alt + C)">
+            <span class="details">Table of Contents</span>
+        </summary>
 
-            <div class="inner"><ul>
-                    <li>
-                        <a href="#frp%e9%85%8d%e7%bd%ae" aria-label="FRP配置">FRP配置</a><ul>
-                            
-                    <li>
-                        <a href="#%e8%b7%b3%e6%9d%bf%e6%9c%ba" aria-label="跳板机">跳板机</a></li>
-                    <li>
-                        <a href="#%e6%9c%8d%e5%8a%a1%e5%99%a8" aria-label="服务器">服务器</a></li></ul>
-                    </li>
-                    <li>
-                        <a href="#ssh%e8%bf%9e%e6%8e%a5" aria-label="SSH连接">SSH连接</a></li>
-                    <li>
-                        <a href="#%e7%94%a8%e6%88%b7%e7%ae%a1%e7%90%86" aria-label="用户管理">用户管理</a><ul>
-                            
-                    <li>
-                        <a href="#%e6%b7%bb%e5%8a%a0%e7%94%a8%e6%88%b7" aria-label="添加用户">添加用户</a></li>
-                    <li>
-                        <a href="#%e5%88%a0%e9%99%a4%e7%94%a8%e6%88%b7" aria-label="删除用户">删除用户</a></li></ul>
-                    </li>
-                    <li>
-                        <a href="#magic-network" aria-label="Magic Network">Magic Network</a></li>
-                    <li>
-                        <a href="#anaconda3-%e5%ae%89%e8%a3%85%e5%92%8c%e9%85%8d%e7%bd%ae" aria-label="Anaconda3 安装和配置">Anaconda3 安装和配置</a><ul>
-                            
-                    <li>
-                        <a href="#%e5%ae%89%e8%a3%85anaconda3" aria-label="安装Anaconda3">安装Anaconda3</a></li>
-                    <li>
-                        <a href="#%e9%85%8d%e7%bd%ae%e4%b9%8b%e5%89%8d%e7%9a%84envs" aria-label="配置之前的envs">配置之前的envs</a></li></ul>
-                    </li>
-                    <li>
-                        <a href="#%e5%ae%8c%e7%bb%93%e6%92%92%e8%8a%b1" aria-label="完结撒花❀❀❀">完结撒花❀❀❀</a>
-                    </li>
-                </ul>
-            </div>
-        </details>
-    </div>
-</aside>
-<script>
-    let activeElement;
-    let elements;
-    window.addEventListener('DOMContentLoaded', function (event) {
-        checkTocPosition();
-
-        elements = document.querySelectorAll('h1[id],h2[id],h3[id],h4[id],h5[id],h6[id]');
-         
-         activeElement = elements[0];
-         const id = encodeURI(activeElement.getAttribute('id')).toLowerCase();
-         document.querySelector(`.inner ul li a[href="#${id}"]`).classList.add('active');
-     }, false);
-
-    window.addEventListener('resize', function(event) {
-        checkTocPosition();
-    }, false);
-
-    window.addEventListener('scroll', () => {
-        
-        activeElement = Array.from(elements).find((element) => {
-            if ((getOffsetTop(element) - window.pageYOffset) > 0 && 
-                (getOffsetTop(element) - window.pageYOffset) < window.innerHeight/2) {
-                return element;
-            }
-        }) || activeElement
-
-        elements.forEach(element => {
-             const id = encodeURI(element.getAttribute('id')).toLowerCase();
-             if (element === activeElement){
-                 document.querySelector(`.inner ul li a[href="#${id}"]`).classList.add('active');
-             } else {
-                 document.querySelector(`.inner ul li a[href="#${id}"]`).classList.remove('active');
-             }
-         })
-     }, false);
-
-    const main = parseInt(getComputedStyle(document.body).getPropertyValue('--article-width'), 10);
-    const toc = parseInt(getComputedStyle(document.body).getPropertyValue('--toc-width'), 10);
-    const gap = parseInt(getComputedStyle(document.body).getPropertyValue('--gap'), 10);
-
-    function checkTocPosition() {
-        const width = document.body.scrollWidth;
-
-        if (width - main - (toc * 2) - (gap * 4) > 0) {
-            document.getElementById("toc-container").classList.add("wide");
-        } else {
-            document.getElementById("toc-container").classList.remove("wide");
-        }
-    }
-
-    function getOffsetTop(element) {
-        if (!element.getClientRects().length) {
-            return 0;
-        }
-        let rect = element.getBoundingClientRect();
-        let win = element.ownerDocument.defaultView;
-        return rect.top + win.pageYOffset;   
-    }
-</script>
-
+        <div class="inner"><ul>
+                <li>
+                    <a href="#frp%e9%85%8d%e7%bd%ae" aria-label="FRP配置">FRP配置</a><ul>
+                        
+                <li>
+                    <a href="#%e8%b7%b3%e6%9d%bf%e6%9c%ba" aria-label="跳板机">跳板机</a></li>
+                <li>
+                    <a href="#%e6%9c%8d%e5%8a%a1%e5%99%a8" aria-label="服务器">服务器</a></li></ul>
+                </li>
+                <li>
+                    <a href="#ssh%e8%bf%9e%e6%8e%a5" aria-label="SSH连接">SSH连接</a></li>
+                <li>
+                    <a href="#%e7%94%a8%e6%88%b7%e7%ae%a1%e7%90%86" aria-label="用户管理">用户管理</a><ul>
+                        
+                <li>
+                    <a href="#%e6%b7%bb%e5%8a%a0%e7%94%a8%e6%88%b7" aria-label="添加用户">添加用户</a></li>
+                <li>
+                    <a href="#%e5%88%a0%e9%99%a4%e7%94%a8%e6%88%b7" aria-label="删除用户">删除用户</a></li></ul>
+                </li>
+                <li>
+                    <a href="#magic-network" aria-label="Magic Network">Magic Network</a></li>
+                <li>
+                    <a href="#anaconda3-%e5%ae%89%e8%a3%85%e5%92%8c%e9%85%8d%e7%bd%ae" aria-label="Anaconda3 安装和配置">Anaconda3 安装和配置</a><ul>
+                        
+                <li>
+                    <a href="#%e5%ae%89%e8%a3%85anaconda3" aria-label="安装Anaconda3">安装Anaconda3</a></li>
+                <li>
+                    <a href="#%e9%85%8d%e7%bd%ae%e4%b9%8b%e5%89%8d%e7%9a%84envs" aria-label="配置之前的envs">配置之前的envs</a></li></ul>
+                </li>
+                <li>
+                    <a href="#%e5%ae%8c%e7%bb%93%e6%92%92%e8%8a%b1" aria-label="完结撒花❀❀❀">完结撒花❀❀❀</a>
+                </li>
+            </ul>
+        </div>
+    </details>
+</div>
   <div class="post-content"><h2 id="frp配置">FRP配置<a hidden class="anchor" aria-hidden="true" href="#frp配置">#</a></h2>
 <h3 id="跳板机">跳板机<a hidden class="anchor" aria-hidden="true" href="#跳板机">#</a></h3>
 <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="c1"># frps.ini 配置</span>
@@ -429,7 +480,8 @@
     </main>
     
 <footer class="footer">
-    <span>&copy; 2023-2024 <a href="https://swimmingliu.cn/">SwimmingLiu&#39;s Blog</a></span>
+        <span>&copy; 2023-2024 <a href="https://swimmingliu.cn/">SwimmingLiu&#39;s Blog</a></span> · 
+
     <span>
         Powered by
         <a href="https://gohugo.io/" rel="noopener noreferrer" target="_blank">Hugo</a> &

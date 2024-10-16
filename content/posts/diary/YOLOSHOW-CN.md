@@ -1,7 +1,7 @@
 ---
 title: "YOLOSHOW 中文版 - YOLOv5/YOLOv7/YOLOv8/YOLOv9/RTDETR GUI based on Pyside6"
 date: 2024-02-18T19:30:06+08:00
-lastmod: 2024-02-18T19:30:06+08:00
+lastmod: 2024-08-20T10:35:06+08:00
 author: ["SwimmingLiu"]
 
 categories:

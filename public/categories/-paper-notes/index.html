@@ -1,0 +1,387 @@
+<!DOCTYPE html>
+<html lang="en" dir="auto">
+
+<head><meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta name="robots" content="index, follow">
+<title>📝 Paper Notes | SwimmingLiu&#39;s Blog</title>
+<meta name="keywords" content="">
+<meta name="description" content="">
+<meta name="author" content="👨🏻‍🎓 SwimmingLiu">
+<link rel="canonical" href="https://swimmingliu.cn/categories/-paper-notes/">
+<link crossorigin="anonymous" href="/assets/css/stylesheet.d0ba3726344b58c49d5f0d05195743e4438cff79cf2048e07443b1ea4d4fdbf5.css" integrity="sha256-0Lo3JjRLWMSdXw0FGVdD5EOM/3nPIEjgdEOx6k1P2/U=" rel="preload stylesheet" as="style">
+<link rel="icon" href="https://swimmingliu.cn/images/swimmingliu_icon.png">
+<link rel="icon" type="image/png" sizes="16x16" href="https://swimmingliu.cn/images/swimmingliu_icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="https://swimmingliu.cn/images/swimmingliu_icon.png">
+<link rel="apple-touch-icon" href="https://swimmingliu.cn/images/swimmingliu_icon.png">
+<link rel="mask-icon" href="https://swimmingliu.cn/images/swimmingliu_icon.png">
+<meta name="theme-color" content="#2e2e33">
+<meta name="msapplication-TileColor" content="#2e2e33">
+<link rel="alternate" type="application/rss+xml" href="https://swimmingliu.cn/categories/-paper-notes/index.xml">
+<link rel="alternate" hreflang="en" href="https://swimmingliu.cn/categories/-paper-notes/">
+<noscript>
+    <style>
+        #theme-toggle,
+        .top-link {
+            display: none;
+        }
+
+    </style>
+    <style>
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --theme: rgb(29, 30, 32);
+                --entry: rgb(46, 46, 51);
+                --primary: rgb(218, 218, 219);
+                --secondary: rgb(155, 156, 157);
+                --tertiary: rgb(65, 66, 68);
+                --content: rgb(196, 196, 197);
+                --code-block-bg: rgb(46, 46, 51);
+                --code-bg: rgb(55, 56, 62);
+                --border: rgb(51, 51, 51);
+            }
+
+            .list {
+                background: var(--theme);
+            }
+
+            .list:not(.dark)::-webkit-scrollbar-track {
+                background: 0 0;
+            }
+
+            .list:not(.dark)::-webkit-scrollbar-thumb {
+                border-color: var(--theme);
+            }
+        }
+
+    </style>
+</noscript>
+<meta property="og:title" content="📝 Paper Notes" />
+<meta property="og:description" content="" />
+<meta property="og:type" content="website" />
+<meta property="og:url" content="https://swimmingliu.cn/categories/-paper-notes/" />
+<meta property="og:image" content="https://swimmingliu.cn/papermod-cover.png" />
+
+
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:image" content="https://swimmingliu.cn/papermod-cover.png" />
+<meta name="twitter:title" content="📝 Paper Notes"/>
+<meta name="twitter:description" content=""/>
+
+</head>
+
+<body class="list" id="top">
+<script>
+    if (localStorage.getItem("pref-theme") === "dark") {
+        document.body.classList.add('dark');
+    } else if (localStorage.getItem("pref-theme") === "light") {
+        document.body.classList.remove('dark')
+    } else if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+        document.body.classList.add('dark');
+    }
+
+</script>
+
+<header class="header">
+    <nav class="nav">
+        <div class="logo">
+            <a href="https://swimmingliu.cn/" accesskey="h" title="𝓢𝔀𝓲𝓶𝓶𝓲𝓷𝓰𝓛𝓲𝓾&#39;𝓼 𝓑𝓵𝓸𝓰 (Alt + H)">
+                <img src="https://swimmingliu.cn/images/swimmingliu_icon.png" alt="" aria-label="logo"
+                    height="30">𝓢𝔀𝓲𝓶𝓶𝓲𝓷𝓰𝓛𝓲𝓾&#39;𝓼 𝓑𝓵𝓸𝓰</a>
+            <div class="logo-switches">
+                <button id="theme-toggle" accesskey="t" title="(Alt + T)">
+                    <svg id="moon" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                    </svg>
+                    <svg id="sun" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="5"></circle>
+                        <line x1="12" y1="1" x2="12" y2="3"></line>
+                        <line x1="12" y1="21" x2="12" y2="23"></line>
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                        <line x1="1" y1="12" x2="3" y2="12"></line>
+                        <line x1="21" y1="12" x2="23" y2="12"></line>
+                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                    </svg>
+                </button>
+            </div>
+        </div>
+        <ul id="menu">
+            <li>
+                <a href="https://swimmingliu.cn/index.html" title="🏡 Home">
+                    <span>🏡 Home</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://swimmingliu.cn/search/" title="🔍 Search">
+                    <span>🔍 Search</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://swimmingliu.cn/posts/" title="🗒️ Posts">
+                    <span>🗒️ Posts</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://swimmingliu.cn/archives/" title="📃 Archive">
+                    <span>📃 Archive</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://swimmingliu.cn/tags/" title="📑 Tags">
+                    <span>📑 Tags</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://bento.me/swimmingliu" title="👨🏻‍🎓 About Me">
+                    <span>👨🏻‍🎓 About Me</span>&nbsp;
+                    <svg fill="none" shape-rendering="geometricPrecision" stroke="currentColor" stroke-linecap="round"
+                        stroke-linejoin="round" stroke-width="2.5" viewBox="0 0 24 24" height="12" width="12">
+                        <path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"></path>
+                        <path d="M15 3h6v6"></path>
+                        <path d="M10 14L21 3"></path>
+                    </svg>
+                </a>
+            </li>
+            <li>
+                <a href="https://www.emojisearch.app/" title="Emoji">
+                    <span>Emoji</span>&nbsp;
+                    <svg fill="none" shape-rendering="geometricPrecision" stroke="currentColor" stroke-linecap="round"
+                        stroke-linejoin="round" stroke-width="2.5" viewBox="0 0 24 24" height="12" width="12">
+                        <path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"></path>
+                        <path d="M15 3h6v6"></path>
+                        <path d="M10 14L21 3"></path>
+                    </svg>
+                </a>
+            </li>
+        </ul>
+    </nav>
+</header>
+<main class="main"> 
+<header class="page-header"><div class="breadcrumbs"><a href="https://swimmingliu.cn/">Home</a>&nbsp;»&nbsp;<a href="https://swimmingliu.cn/categories/">Categories</a></div>
+  <h1>
+    📝 Paper Notes
+    <a href="/categories/-paper-notes/index.xml" title="RSS" aria-label="RSS">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+        stroke-linecap="round" stroke-linejoin="round" height="23">
+        <path d="M4 11a9 9 0 0 1 9 9" />
+        <path d="M4 4a16 16 0 0 1 16 16" />
+        <circle cx="5" cy="19" r="1" />
+      </svg>
+    </a>
+  </h1>
+</header>
+
+<article class="post-entry tag-entry"> 
+  <header class="entry-header">
+    <h2 class="entry-hint-parent">A Dual-Branch Framework with Prior Knowledge for Precise Segmentation of Lung Nodules in Challenging CT Scans
+    </h2>
+  </header>
+  <div class="entry-content">
+    <p>Abstract 肺癌是全球最致命的癌症之一，早期诊断对于患者的生存至关重要。肺结节是早期肺癌的主要表现，通常通过 CT 扫描进行评估。如今，计算机辅助诊断系统被广泛用于辅助医生进行疾病诊断。肺结节的准确分割受到内部异质性和外部数据因素的影响。为了克服结节的细微、混合、粘附型、良性和不确定类别的分割挑战，提出了一种新的混合手动特征网络，可增强灵敏度和准确性。该方法通过双分支网络框架和多维融合模块集成特征信息。通过使用多个数据源和不同数据质量进行训练和验证，我们的方法在 LUNA16、多厚度切片图像数据集 (Multi-thickness Slice Image dataset)、LIDC 和 UniToChest 上表现出领先的性能，Dice 相似系数达到 86.89%、75.72%、84.12% 和 80.74分别超过了当前大多数肺结节分割方法。我们的方法进一步提高了肺结节分割任务的准确性、可靠性和稳定性，即使是在具有挑战性的 CT 扫描中也是如此。本研究中使用的代码发布在 GitHub 上，可通过以下 URL (https://github.com/BITEWKRER/DBNet) 获取。
+Introduction 肺癌是全球癌症相关死亡的主要原因[1]。仅在美国，预计 2023 年将有 127,070 人死于肺癌，占所有癌症死亡的 21% [2]。不幸的是，超过 50% 的肺癌病例发生在发展中国家或不发达国家，与发达国家相比，这些国家的医疗资源有限[3]。
+为了增加生存机会，早期诊断和治疗肺癌仍然至关重要。在中国，研究表明，小于1厘米的I期肺癌的5年生存率为92%。然而，晚期肺癌的5年生存率低得多，仅为7.0%[4]。利用计算机断层扫描 (CT) 进行肺癌筛查已显示出可大幅降低死亡率的潜力 [5]、[6]。低剂量CT是目前肺癌筛查最常用的方法。此外，移动CT的引入有助于解决欠发达国家和偏远地区缺乏CT扫描仪的问题[6]。由于可能没有明显的症状，检测早期肺癌的存在可能会带来重大挑战。
+这种医学背景数据可以直接借鉴，Chatgpt润色改写就完事儿
+在 CT 图像上识别肺结节提供了疾病的关键指标 [1], [3]。这些结节代表圆形异常，其大小各异，直径范围为 3 至 30 毫米 [7]。为了进一步研究肺结节，美国国家癌症研究所组装了“肺部图像数据库联盟和图像数据库资源计划（LIDC）”数据集[8]。
+欠发达地区设备不足、人员不足，导致医生的诊断和治疗时间有限[9]。在这种情况下，医生的工作量很大、重复且耗时[10]、[5]。此外，由于与CT切片相比，肺部结节性病变占据相对较小的面积，长时间和密集的CT筛查可能会导致漏检小的、细微的或 GGO (肺磨玻璃结节) [3]，[6]。为了解决这些问题，计算机辅助诊断系统（CAD）出现并得到了快速发展，特别是随着基于深度学习技术的诊断方法的进步。 CAD系统大大减轻了医生的工作量，最大限度地降低了未发现结节的风险，并提高了肺结节诊断的效率和可靠性。然而，当前用于肺结节分割的 CAD 系统仍然面临一些挑战。
+下面详细阐述了肺结节分割的几个现有挑战，可以从这些挑战入手
+首先，放射科医生标记的肺结节包含九个诊断特征[11]，异质性表型阻碍了肺结节分割的发展。如图1所示，实心结节（a，b）具有清晰的形状和边界，而微妙的GGO结节（e）具有低对比度和模糊的边界[4]，使得网络很容易将它们分类为背景区域。空洞（g）结节降低了网络分割的敏感性，并且由于背景和分割目标之间的极度不平衡，小结节很容易被遗漏[12]。
+由于周围多余的组织结构，血管旁或胸膜旁（c、d、f）可能会导致网络分类错误[13]。此外，部分实性结节（h）比纯GGO更致密，产生更复杂的异质纹理，更容易发展成恶性结节[14]。
+其次，肺结节内部因素造成的分割困难在于医生注释、层厚、数据来源和数据质量。数据质量差或不同医生的经验可能会导致不同的注释和注释者数量。由多名医生注释的病变区域通常更可靠，减少了潜在的临床风险。在资源有限的地区，由于 CT 扫描仪短缺和成像设备陈旧，CT 扫描质量差的情况很常见。较厚的切片更有可能产生“体积平均效应”和伪影，使医生难以达成一致的诊断。即使使用移动 CT 扫描仪也可能无法提供完整的诊断详细信息。最后，目前大多数肺结节分割方法都是基于2D图像，但这些方法忽略了空间关系，因此提出一种有效的3D肺结节分割模型来捕获肺结节的空间位置、纹理和其他详细信息变得越来越重要以避免误诊和漏诊。
+Challenge:
+异质性: 肺结节的形状多异 （实心结节、磨玻璃结节 (GGO) 、空洞结节、血管和胸膜旁边的结节）
+...</p>
+  </div>
+  <footer class="entry-footer"><span title='2024-03-03 15:37:07 +0800 CST'>March 3, 2024</span>&nbsp;·&nbsp;4 min&nbsp;·&nbsp;SwimmingLiu</footer>
+  <a class="entry-link" aria-label="post link to A Dual-Branch Framework with Prior Knowledge for Precise Segmentation of Lung Nodules in Challenging CT Scans" href="https://swimmingliu.cn/posts/papernotes/2023-dbnet/"></a>
+</article>
+
+<article class="post-entry tag-entry"> 
+  <header class="entry-header">
+    <h2 class="entry-hint-parent">YOLOv9: Learning What You Want to Learn Using Programmable Gradient Information
+    </h2>
+  </header>
+  <div class="entry-content">
+    <p>Abstract 如今的深度学习方法主要关注如何设计最合适的目标函数，使模型的预测结果能够最接近真实情况。同时，必须设计一个适当的架构，可以帮助获取足够的信息进行预测。现有方法忽略了一个事实，即当输入数据经过逐层特征提取和空间变换时，大量信息将会丢失。本文将深入研究数据通过深度网络传输时数据丢失的重要问题，即信息瓶颈和可逆函数。我们提出了可编程梯度信息（PGI）的概念来应对深度网络实现多个目标所需的各种变化。 PGI可以为目标任务计算目标函数提供完整的输入信息，从而获得可靠的梯度信息来更新网络权值。此外，还设计了一种基于梯度路径规划的新型轻量级网络架构——通用高效层聚合网络（GELAN）。GELAN的架构证实了PGI在轻量级模型上取得了优异的结果。我们在基于 MS COCO 数据集的目标检测上验证了所提出的 GELAN 和 PGI。结果表明，与基于深度卷积开发的最先进方法相比，GELAN 仅使用传统的卷积算子即可实现更好的参数利用率。 PGI 可用于从轻型到大型的各种模型。它可以用来获取完整的信息，使得train-from-scratch (从零开始训练) 模型能够比使用大数据集预训练的state-of-theart模型获得更好的结果，对比结果如图1所示。源代码位于：https： //github.com/WongKinYiu/yolov9。
+核心创新点: 依然是网络结构的创新
+Programmable Gradient Information (PGI) Generalized Efficient Layer Aggregation Network（GELAN） Introduction 基于深度学习的模型在计算机视觉、语言处理和语音识别等各个领域都表现出了比过去的人工智能系统更好的性能。近年来，深度学习领域的研究人员主要关注如何开发更强大的系统架构和学习方法，例如CNN，Transformers[8,9,40] 、41、60、69、70]，Perceivers[26、26、32、52、56、81、81]和Mambas[17、38、80]。此外，一些研究人员尝试开发更通用的目标函数，例如损失函数[5,45,46,50,77,78]，标签分配[10,12,33,67,79]和辅助监督[18] 、20、24、28、29、51、54、68、76]。上述研究都试图精确地找到输入和目标任务之间的映射。然而，大多数过去的方法都忽略了输入数据在前馈过程中可能会产生不可忽略的信息丢失量。这种信息丢失可能会导致有偏差的梯度流，随后用于更新模型。上述问题可能导致深度网络在目标和输入之间建立不正确的关联，导致训练后的模型产生不正确的预测。
+在深度网络中，输入数据在前馈过程中丢失信息的现象俗称信息瓶颈[59]，其示意图如图2所示。目前可以缓解这种现象的主要方法有：（1）可逆架构的使用[3,16,19]：该方法主要使用重复的输入数据，并以显式的方式维护输入数据的信息； （2）使用Masked建模[1,6,9,27,71,73]：主要利用重构损失，采用隐式方式最大化提取特征并保留输入信息； （3）引入深度监督概念[28,51,54,68]：它利用没有丢失太多重要信息的浅层特征来预先建立从特征到目标的映射，以确保重要信息能够被传递到更深的层次。然而，上述方法在训练过程和推理过程中都存在不同的缺点。例如，可逆架构需要额外的层来组合重复馈送的输入数据，这将显着增加推理成本。另外，由于输入数据层到输出层不能有太深的路径，这种限制将导致在训练过程中难以对高阶语义信息进行建模。对于 Masked 建模，其重建损失有时与目标损失相冲突。此外，大多数掩码机制还会产生与数据的不正确关联。 对于深层监督机制来说，会产生误差累积，如果浅层监督在训练过程中丢失信息，后续层将无法检索到所需信息。上述现象在困难任务和小模型上会更加显着。
+针对上述问题，我们提出了一个新的概念，即可编程梯度信息（PGI）。其概念是通过辅助可逆分支生成可靠的梯度，使得深层特征仍然能够保持执行目标任务的关键特征。
+辅助可逆分支的设计可以避免传统的融合多路径特征的深度监督过程可能造成的语义损失。换句话说，我们在不同语义层面上编程梯度信息传播，从而达到最佳的训练结果。 PGI的可逆架构建立在辅助分支上，因此没有额外的成本。由于PGI可以自由选择适合目标任务的损失函数，因此也克服了Masked建模遇到的问题。所提出的PGI机制可以应用于各种规模的深度神经网络，并且比仅适用于非常深的神经网络的深度监督机制更通用。
+在本文中，我们还基于ELAN[65]设计了广义ELAN（GELAN），GELAN的设计同时考虑了参数量、计算复杂度、准确性和推理速度。这种设计允许用户针对不同的推理设备任意选择合适的计算块。我们将提出的PGI和GELAN结合起来，然后设计了新一代YOLO系列物体检测系统，我们称之为YOLOv9。我们使用MS COCO数据集进行实验，实验结果验证了我们提出的YOLOv9在所有比较中都取得了顶尖的性能。
+我们总结本文的贡献如下：
+我们从可逆函数的角度对现有的深度神经网络架构进行了理论分析，通过这个过程我们成功地解释了许多过去难以解释的现象。我们还基于此分析设计了PGI和辅助可逆分支，并取得了优异的结果。
+我们设计的PGI解决了深度监督只能用于极深的神经网络架构的问题，从而让新的轻量级架构真正应用于日常生活中。
+我们设计的GELAN仅使用常规卷积来实现比基于最先进技术的深度卷积设计更高的参数利用率，同时表现出轻、快速、准确的巨大优势。
+结合所提出的PGI和GELAN，YOLOv9在MS COCO数据集上的目标检测性能在各个方面都大大超过了现有的实时目标检测器。
+Programmable Gradient Information (PGI)：
+自由选择适合目标任务的损失函数
+可逆结构建立辅助分支，不增加推理成本
+适用于各种规模的深度神经网络
+GELAN：
+轻、快速、准确 采用常规卷积吊打其他新颖卷积 Related work 2.1 Real-time Object Detectors 目前主流的实时目标检测器是YOLO系列[2,7,13–15,25,30,31,47–49,61–63,74,75]，这些模型大多数使用CSPNet[64]或 ELAN [65] 及其变体作为主要计算单元。在特征集成方面，通常使用改进的PAN[37]或FPN[35]作为工具，然后使用改进的YOLOv3头[49]或FCOS头[57, 58]作为预测头。最近也提出了一些实时目标检测器，例如 RT DETR [43]，其基础是 DETR [4]。然而，由于DETR系列目标检测器在没有相应领域预训练模型的情况下很难应用于新领域，因此目前应用最广泛的实时目标检测器仍然是YOLO系列。本文选择 YOLOv7 [63] 作为开发该方法的基础，该方法已在各种计算机视觉任务和各种场景中被证明有效。
+...</p>
+  </div>
+  <footer class="entry-footer"><span title='2024-03-01 15:26:23 +0800 CST'>March 1, 2024</span>&nbsp;·&nbsp;2 min&nbsp;·&nbsp;SwimmingLiu</footer>
+  <a class="entry-link" aria-label="post link to YOLOv9: Learning What You Want to Learn Using Programmable Gradient Information" href="https://swimmingliu.cn/posts/papernotes/2024-yolov9/"></a>
+</article>
+
+<article class="post-entry tag-entry"> 
+  <header class="entry-header">
+    <h2 class="entry-hint-parent">U-NET V2: RETHINKING THE SKIP CONNECTIONS OF U-NET FOR MEDICAL IMAGE SEGMENTATION
+    </h2>
+  </header>
+  <div class="entry-content">
+    <p>Abstract 在本文中，我们介绍了 U-Net v2，这是一种用于医学图像分割的新的稳健且高效的 U-Net 变体。它的目的是增强语义信息在低级特征中的注入，同时用更精细的细节来细化高级特征。对于输入图像，我们首先使用深度神经网络编码器提取多级特征。接下来，我们通过注入来自更高级别特征的语义信息并通过 Hadamard 乘积集成来自较低级别特征的更精细的细节来增强每个级别的特征图。我们新颖的跳跃连接赋予所有级别的功能以丰富的语义特征和复杂的细节。改进后的特征随后被传输到解码器以进行进一步处理和分割。我们的方法可以无缝集成到任何编码器-解码器网络中。我们在几个公共医学图像分割数据集上评估了我们的方法，用于皮肤病变分割和息肉分割，实验结果证明了我们的新方法相对于最先进的方法的分割准确性，同时保留了内存和计算效率。代码位于：https://github.com/yaoppeng/U-Net_v2。
+主要工作就在于中间的skip-connection
+Introduction 随着现代深度神经网络的进步，语义图像分割取得了重大进展。语义图像分割的典型范例涉及具有跳跃连接的编码器-解码器网络[1]。在此框架中，编码器从输入图像中提取层次和抽象特征，而解码器获取编码器生成的特征图并重建像素级分割掩模或图，为输入图像中的每个像素分配类标签。人们进行了一系列研究[2, 3]，将全局信息纳入特征图中并增强多尺度特征，从而大大提高了分割性能。 在医学图像分析领域，精确的图像分割在计算机辅助诊断和分析中起着至关重要的作用。 U-Net [4] 最初是为了医学图像分割而引入的，利用跳跃连接来连接每个级别的编码器和解码器阶段。跳跃连接使解码器能够访问早期编码器阶段的特征，从而保留高级语义信息和细粒度空间细节。这种方法有助于精确描绘对象边界并提取医学图像中的小结构。此外，还应用了密集连接机制，通过连接所有级别和所有阶段的特征来减少编码器和解码器中特征之间的差异[5]。设计了一种机制来通过连接较高和较低级别的不同尺度的特征来增强特征[6]。 然而，基于 U-Net 的模型中的这些连接在集成低级和高级特征方面可能不够有效。例如，在 ResNet [7] 中，深度神经网络是作为多个浅层网络的集合而形成的，并且显式添加的残差连接表明，即使在百万规模的训练中，网络也很难学习恒等映射函数图像数据集。
+对于编码器提取的特征，低级特征通常保留更多细节，但缺乏足够的语义信息，并且可能包含不需要的噪声。相反，高级特征包含更多语义信息，但由于分辨率显着降低而缺乏精确的细节（例如对象边界）。通过串联简单地融合特征将在很大程度上依赖于网络的学习能力，这通常与训练数据集的大小成正比。这是一个具有挑战性的问题，特别是在医学成像领域，通常受到有限数据的限制。这种信息融合是通过密集连接跨多个级别连接低级和高级特征来实现的，可能会限制来自不同级别的信息的贡献并可能引入噪声。另一方面，尽管引入的额外卷积并没有显着增加参数数量，但 GPU 内存消耗将会增加，因为必须存储所有中间特征图和相应的梯度以进行前向传递和后向梯度计算。这会导致 GPU 内存使用量和浮点运算 (FLOP) 增加。
+(a) U-Net v2 模型的整体架构，由编码器、SDI（语义和细节注入）模块和解码器组成。 (b) SDI模块的架构。为简单起见，我们仅显示第三级特征的细化（l = 3）。 SmoothConv 表示用于特征平滑的 3 × 3 卷积。$\bigotimes$ 表示哈达玛积。
+在[8]中，利用反向注意力来明确地建立多尺度特征之间的联系。在[9]中，ReLU激活应用于较高级别的特征，并将激活的特征与较低级别的特征相乘。此外，在[10]中，作者提出分别从 CNN 和 Transformer 模型中提取特征，在多个级别上组合来自 CNN 和 Transformer 分支的特征来增强特征图。然而，这些方法都很复杂，而且它们的性能仍然不是很令人满意，因此需要进一步改进。
+在本文中，我们提出了 U-Net v2，这是一种基于 U-Net 的新分割框架，具有简单且高效的跳跃连接。我们的模型首先使用 CNN 或 Transformer 编码器提取多级特征图。接下来，对于第 i 层的特征图，我们通过简单的哈达玛乘积操作显式地注入高层特征（包含更多语义信息）和低层特征（捕获更精细的细节），从而增强语义和细节第 i 级特征。随后，细化的特征被传输到解码器进行分辨率重建和分割。我们的方法可以无缝集成到任何编码器-解码器网络中。
+我们使用公开的数据集在两个医学图像分割任务（皮肤病变分割和息肉分割）上评估我们的新方法。实验结果表明，我们的 U-Net v2 在这些分割任务中始终优于最先进的方法，同时保持 FLOP 和 GPU 内存效率。
+...</p>
+  </div>
+  <footer class="entry-footer"><span title='2023-12-11 20:49:32 +0800 CST'>December 11, 2023</span>&nbsp;·&nbsp;3 min&nbsp;·&nbsp;SwimmingLiu</footer>
+  <a class="entry-link" aria-label="post link to U-NET V2: RETHINKING THE SKIP CONNECTIONS OF U-NET FOR MEDICAL IMAGE SEGMENTATION" href="https://swimmingliu.cn/posts/papernotes/2023-unet_v2/"></a>
+</article>
+
+<article class="post-entry tag-entry"> 
+  <header class="entry-header">
+    <h2 class="entry-hint-parent">Uncertainty-Aware Attention Mechanism:利用不确定性感知注意机制进行肺结节分割和不确定区域预测
+    </h2>
+  </header>
+  <div class="entry-content">
+    <p>Abstract 放射科医生拥有不同的培训和临床经验，导致肺结节的分割注释存在差异，从而导致分割的不确定性。传统方法通常选择单个注释作为学习目标或尝试学习包含多个注释的潜在空间。
+然而，这些方法无法利用多个注释之间的共识和分歧所固有的有价值的信息。在本文中，我们提出了一种不确定性感知注意机制（UAAM），它利用多个注释之间的共识和分歧来促进更好的分割。为此，我们引入了多置信度掩模（MCM），它结合了低置信度（LC）掩模和高置信度（HC）掩模。 LC 掩模表示分割置信度较低的区域，放射科医生可能有不同的分割选择。继UAAM之后，我们进一步设计了一个不确定性引导多置信分割网络（UGMCS-Net），它包含三个模块：一个捕获肺结节一般特征的特征提取模块，一个为肺结节产生三个特征的不确定性感知模块。注释的并集、交集和注释集，以及一个交集并集约束模块，该模块使用三个特征之间的距离来平衡最终分割和 MCM 的预测。为了全面展示我们方法的性能，我们提出了 LIDC-IDRI 上的复杂结节验证，它测试了 UGMCS-Net 对使用常规方法难以分割的肺结节的分割性能。实验结果表明，我们的方法可以显着提高传统方法难以分割的结节的分割性能。
+INTRODUCTION 肺结节分割在肺癌计算机辅助诊断 (CAD) 系统中至关重要 [1]，可提供结节大小、形状和其他重要医学特征等关键信息。然而，对于深度学习方法的一般训练和测试范例，每个结节图像数据只有一个由一名放射科医生描绘的注释掩模[2]-[6]。因此，网络每次只能提供结节区域的单个预测。
+然而，在临床实践中，不同的放射科医生由于其不同的培训和临床经验可能会为肺结节提供不同的分割注释[7]-[9]。
+因此，基于单一注释的传统方法无法反映临床经验的多样性，限制了深度学习方法的应用。
+解决放射科医生之间注释不同问题的一个直接解决方案是为每个肺结节图像合并多个注释。这导致了另一个问题：多个注释不可避免地会带来不确定性和冲突，因为放射科医生可能会对同一区域进行不同的注释。为了克服这个问题，Kohl 等人在 2018 年提出了一种概率 U-Net，它利用条件变分自动编码器将多个分割变体编码到低维潜在空间中 [8]、[10]。通过从该空间采样，网络可以影响相应的分割图。基于这项研究，Hu等人提出将真实不确定性与概率UNet相结合，这可以提高预测不确定性估计、样本准确性和样本多样性[7]。这些方法依赖于潜在空间和该空间中的随机样本。因此，这些方法只能通过多次预测来提供不确定区域。
+在本文中，我们提出了一个论点，即多个注释之间的不确定性遵循特定的模式。
+为了演示这种现象，我们引入了多重置信掩码 (MCM)，它结合了高置信度 (HC) 掩码和低置信度 (LC) 掩码，如图 1 所示。 A. 交叉掩码等于 HC mask，代表所有注释的交集。
+联合掩码是所有注释的联合。 LC掩模是交集掩模和并集掩模之间的差异。当在 LIDC-IDRI 数据集 [11] 上计算 HC 和 LC 的 Hounsfield 单位 (HU) 核估计时，如图 1.B 所示，我们可以观察到 LC 和 HC 掩模之间的 HU 分布存在明显区别。具体地，LC区域具有比HC区域更低的HU值。从像素分布来看，HU值越低，对应区域的密度越低。就CT图像特征而言，LC区域主要由结节边缘、毛刺和磨玻璃特征等边界相关特征组成，而HC区域主要分布在结节核心内。因此，我们提出了这样的假设：导致放射科医生之间差异的区域主要与低密度组织和边界相关特征有关。
+与其他方法不同，我们建议利用 MCM (多重置信掩码) ** 和注释集作为具有不同分割确定性的特征的学习指导**，有助于更好的分割性能。我们将这种训练称为UncertaintyAware Attention Mechanism，如图2所示。按照这种机制，我们进一步设计了用于肺结节分割的Uncertainty-Guide Multi-Confidence Segmentation Network（UGMCS-Net）。
+...</p>
+  </div>
+  <footer class="entry-footer"><span title='2023-12-04 16:28:11 +0800 CST'>December 4, 2023</span>&nbsp;·&nbsp;5 min&nbsp;·&nbsp;SwimmingLiu</footer>
+  <a class="entry-link" aria-label="post link to Uncertainty-Aware Attention Mechanism:利用不确定性感知注意机制进行肺结节分割和不确定区域预测" href="https://swimmingliu.cn/posts/papernotes/2023-uncertainty-aware-attentionmechanism/"></a>
+</article>
+
+<article class="post-entry tag-entry"> 
+  <header class="entry-header">
+    <h2 class="entry-hint-parent">Prior Attention Network: 用于医学图像中多病灶分割的预先注意网络
+    </h2>
+  </header>
+  <div class="entry-content">
+    <p>Prior Attention Network: 用于医学图像中多病灶分割的预先注意网络 Abstract 医学图像中邻近组织的多种类型病变的准确分割在临床实践中具有重要意义。基于从粗到精策略的卷积神经网络（CNN）已广泛应用于该领域。然而，由于组织的大小、对比度和高类间相似性的不确定性，多病灶分割仍然具有挑战性。此外，普遍采用的级联策略对硬件要求较高，限制了临床部署的潜力。为了解决上述问题，我们提出了一种新颖的先验注意网络（PANet），它遵循从粗到细的策略来在医学图像中执行多病灶分割。所提出的网络通过在网络中插入与病变相关的空间注意机制，在单个网络中实现了两个步骤的分割。此外，我们还提出了中间监督策略，用于生成与病变相关的注意力来获取感兴趣区域（ROI），这加速了收敛并明显提高了分割性能。我们在两个应用中研究了所提出的分割框架：肺部 CT 切片中多发性肺部感染的 2D 分割和脑 MRI 中多发性病变的 3D 分割。实验结果表明，与级联网络相比，在 2D 和 3D 分割任务中，我们提出的网络以更少的计算成本实现了更好的性能。所提出的网络可以被视为 2D 和 3D 任务中多病灶分割的通用解决方案。源代码可在 https://github.com/hsiangyuzhao/PANet 获取
+问题导向：
+①组织的大小、对比度和高类间相似性的不确定性
+②多类别病灶分割
+③普遍采用的级联策略对硬件要求较高
+Introduction 医学图像分割对于疾病的准确筛查和患者的预后具有重要意义。基于病灶分割的病灶评估提供了疾病进展的信息，帮助医生提高临床诊断和治疗的质量。然而，手动病变分割相当主观且费力，这限制了其潜在的临床应用。近年来，随着人工智能的快速发展，基于深度学习的算法得到了广泛的应用，并在医学图像分割方面取得了最先进的性能[1]。卷积神经网络（CNN）由于其高分割质量而在医学图像中的病变分割中很受欢迎。此类算法通常具有深度编码器，可从输入图像中自动提取特征，并通过以下操作生成密集预测。例如，Long等人[2]提出了一种用于图像语义分割的全卷积网络，该网络颇具影响力，并启发了后来的医学分割中的端到端框架。 Ronneberger等人[3]提出了一种用于医学图像分割的U形网络（U-Net），该网络在医学分割的许多领域都显示出了可喜的结果，并已成为许多医学分割任务的虚拟基准。
+这一段都可以当成经典医学图像分割的背景引入
+然而，尽管医学分割取得了这些突破，但目前的医学分割方法主要集中在病灶的二元分割上，即区分病灶（前景）和其他一切（背景）。尽管二元分割确实有助于隔离某些感兴趣区域并允许对医学图像进行精确分析，但在某些需要对病变进行多类分割的场景中，二元分割还不够。与二元分割相比，由于组织的类间相似性，这种情况要困难得多，因为不同类型的病变在纹理、大小和形状上可能相似。具有从粗到细策略的级联网络已广泛应用于此类场景，例如肝脏和病变的分割、脑肿瘤分割[4]、[5][6]、[7]。
+此类网络通常由两个独立的网络组成，其中第一个网络执行粗分割，第二个网络基于从第一个网络分割的 ROI 细化分割。然而，尽管级联网络已广泛应用于医学图像的多病灶分割，但级联策略也有其缺点。由于级联网络由两个独立的网络组成，参数量和显存占用通常是单个网络的两倍，这对硬件要求较高，限制了其在临床使用的潜力。更重要的是，由于级联网络中的两个网络通常是独立的，因此级联网络的训练过程有时比单个网络更困难，这可能导致欠拟合。
+级联网络：参数量大、容易欠拟合。
+在本文中，我们提出了一种名为先验注意网络（PANet）的新型网络结构，用于在医学图像中执行多病灶分割。所提出的网络由一个用于特征提取的编码器和两个分别生成病变区域注意力和最终预测的解码器组成。该网络与注意力机制结合在一起。为了减少参数大小和硬件占用，我们使用网络编码器的深层、语义丰富的特征来生成病变区域的空间注意力。
+然后，编码器生成的特征表示通过空间注意力进行细化，并将其发送到解码器以进行最终的多类预测。为了提高分割性能并加速收敛，我们还在网络结构中引入了中间监督和深度监督。通过这些改进，与传统的级联网络相比，所提出的网络以显着降低的参数大小和计算成本实现了有竞争力的结果。
+利用网络编码器的深层、特征信息来生成空间注意力（WTF ???）
+中间监督、深度监督 （不错不错， 好多一区和顶会的文章都用深度监督）
+这项工作的贡献体现在三个方面。首先，我们提出了一种新颖的网络架构，通过将传统级联网络中的两个分割步骤结合在单个网络中，遵循 2D 和 3D 医学图像中多病灶分割的从粗到细的策略。与级联网络相比，所提出的架构以更少的额外计算成本实现了有竞争力的分割性能，更容易训练和部署到生产环境。其次，我们提出了一种监督空间注意力机制，将病变区域的注意力与网络提取的特征相结合，将多病变分割分解为两个更容易的阶段，并且与当前基于注意力的方法相比具有更好的可解释性。第三，所提出的网络已在两个实际应用中得到验证，包括肺部 CT 切片中的 COVID-19 病变的 2D 分割和多模态 MRI 中的脑肿瘤的 3D 分割。所提出的网络在 2D 和 3D 任务中都优于前沿方法，并且在参数和计算成本方面比当前网络更高效。
+一个网络、监督空间注意力机制、参数和计算成本方面比当前网络更高效。
+Related Work 1）图像分割的网络结构：用于图像分割的典型卷积神经网络通常由一个卷积特征提取器组成，其拓扑类似于常见的分类网络，自动从输入图像中提取特征，并进行基于卷积的操作以生成最终的密集预测。在自然图像分割领域，FCN [2]、DeepLab [8]、PSPNet [9] 和 SegNet [10] 因其性能和效率而颇受欢迎。对于医学分割，U-Net [3] 在许多任务中相当流行，并且已被修改为许多改进版本，例如 Attention U-Net [11]、U-Net&#43;&#43; [12]、V-Net [13] 和H-DenseUNet [14]在某些领域获得更好的性能。
+...</p>
+  </div>
+  <footer class="entry-footer"><span title='2023-11-28 14:55:47 +0800 CST'>November 28, 2023</span>&nbsp;·&nbsp;4 min&nbsp;·&nbsp;SwimmingLiu</footer>
+  <a class="entry-link" aria-label="post link to Prior Attention Network: 用于医学图像中多病灶分割的预先注意网络" href="https://swimmingliu.cn/posts/papernotes/2022-priorattentionnetwork/"></a>
+</article>
+<footer class="page-footer">
+  <nav class="pagination">
+    <a class="next" href="https://swimmingliu.cn/categories/-paper-notes/page/2/">Next&nbsp;&nbsp;»
+    </a>
+  </nav>
+</footer>
+    </main>
+    
+<footer class="footer">
+        <span>&copy; 2023-2024 <a href="https://swimmingliu.cn/">SwimmingLiu&#39;s Blog</a></span> · 
+
+    <span>
+        Powered by
+        <a href="https://gohugo.io/" rel="noopener noreferrer" target="_blank">Hugo</a> &
+        <a href="https://github.com/adityatelange/hugo-PaperMod/" rel="noopener" target="_blank">PaperMod</a>
+    </span>
+    <span>
+        <a href="https://beian.miit.gov.cn/">浙ICP备2024056260号</a>
+    </span>
+</footer>
+<a href="#top" aria-label="go to top" title="Go to Top (Alt + G)" class="top-link" id="top-link" accesskey="g">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 6" fill="currentColor">
+        <path d="M12 6H0l6-6z" />
+    </svg>
+</a>
+
+<script>
+    let menu = document.getElementById('menu')
+    if (menu) {
+        menu.scrollLeft = localStorage.getItem("menu-scroll-position");
+        menu.onscroll = function () {
+            localStorage.setItem("menu-scroll-position", menu.scrollLeft);
+        }
+    }
+
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener("click", function (e) {
+            e.preventDefault();
+            var id = this.getAttribute("href").substr(1);
+            if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView({
+                    behavior: "smooth"
+                });
+            } else {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView();
+            }
+            if (id === "top") {
+                history.replaceState(null, null, " ");
+            } else {
+                history.pushState(null, null, `#${id}`);
+            }
+        });
+    });
+
+</script>
+<script>
+    var mybutton = document.getElementById("top-link");
+    window.onscroll = function () {
+        if (document.body.scrollTop > 800 || document.documentElement.scrollTop > 800) {
+            mybutton.style.visibility = "visible";
+            mybutton.style.opacity = "1";
+        } else {
+            mybutton.style.visibility = "hidden";
+            mybutton.style.opacity = "0";
+        }
+    };
+
+</script>
+<script>
+    document.getElementById("theme-toggle").addEventListener("click", () => {
+        if (document.body.className.includes("dark")) {
+            document.body.classList.remove('dark');
+            localStorage.setItem("pref-theme", 'light');
+        } else {
+            document.body.classList.add('dark');
+            localStorage.setItem("pref-theme", 'dark');
+        }
+    })
+
+</script>
+</body>
+
+</html>

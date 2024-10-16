@@ -10,7 +10,7 @@
 <meta name="description" content="">
 <meta name="author" content="👨🏻‍🎓 SwimmingLiu">
 <link rel="canonical" href="https://swimmingliu.cn/tags/intermediatesupervision/">
-<link crossorigin="anonymous" href="/assets/css/stylesheet.56574d0b8d57cdd0d704dd823c3ab0e600bd78cf5a999377277390417d6b2f3e.css" integrity="sha256-VldNC41XzdDXBN2CPDqw5gC9eM9amZN3J3OQQX1rLz4=" rel="preload stylesheet" as="style">
+<link crossorigin="anonymous" href="/assets/css/stylesheet.d0ba3726344b58c49d5f0d05195743e4438cff79cf2048e07443b1ea4d4fdbf5.css" integrity="sha256-0Lo3JjRLWMSdXw0FGVdD5EOM/3nPIEjgdEOx6k1P2/U=" rel="preload stylesheet" as="style">
 <link rel="icon" href="https://swimmingliu.cn/images/swimmingliu_icon.png">
 <link rel="icon" type="image/png" sizes="16x16" href="https://swimmingliu.cn/images/swimmingliu_icon.png">
 <link rel="icon" type="image/png" sizes="32x32" href="https://swimmingliu.cn/images/swimmingliu_icon.png">
@@ -19,6 +19,7 @@
 <meta name="theme-color" content="#2e2e33">
 <meta name="msapplication-TileColor" content="#2e2e33">
 <link rel="alternate" type="application/rss+xml" href="https://swimmingliu.cn/tags/intermediatesupervision/index.xml">
+<link rel="alternate" hreflang="en" href="https://swimmingliu.cn/tags/intermediatesupervision/">
 <noscript>
     <style>
         #theme-toggle,
@@ -36,7 +37,7 @@
                 --secondary: rgb(155, 156, 157);
                 --tertiary: rgb(65, 66, 68);
                 --content: rgb(196, 196, 197);
-                --hljs-bg: rgb(46, 46, 51);
+                --code-block-bg: rgb(46, 46, 51);
                 --code-bg: rgb(55, 56, 62);
                 --border: rgb(51, 51, 51);
             }
@@ -59,11 +60,12 @@
 <meta property="og:title" content="IntermediateSupervision" />
 <meta property="og:description" content="" />
 <meta property="og:type" content="website" />
-<meta property="og:url" content="https://swimmingliu.cn/tags/intermediatesupervision/" /><meta property="og:image" content="https://swimmingliu.cn/papermod-cover.png"/>
+<meta property="og:url" content="https://swimmingliu.cn/tags/intermediatesupervision/" />
+<meta property="og:image" content="https://swimmingliu.cn/papermod-cover.png" />
 
-<meta name="twitter:card" content="summary_large_image"/>
-<meta name="twitter:image" content="https://swimmingliu.cn/papermod-cover.png"/>
 
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:image" content="https://swimmingliu.cn/papermod-cover.png" />
 <meta name="twitter:title" content="IntermediateSupervision"/>
 <meta name="twitter:description" content=""/>
 
@@ -178,7 +180,7 @@
 
 <article class="post-entry tag-entry"> 
   <header class="entry-header">
-    <h2>Prior Attention Network: 用于医学图像中多病灶分割的预先注意网络
+    <h2 class="entry-hint-parent">Prior Attention Network: 用于医学图像中多病灶分割的预先注意网络
     </h2>
   </header>
   <div class="entry-content">
@@ -198,7 +200,8 @@ Introduction 医学图像分割对于疾病的准确筛查和患者的预后具�
 中间监督、深度监督 （不错不错， 好多一区和顶会的文章都用深度监督）
 这项工作的贡献体现在三个方面。首先，我们提出了一种新颖的网络架构，通过将传统级联网络中的两个分割步骤结合在单个网络中，遵循 2D 和 3D 医学图像中多病灶分割的从粗到细的策略。与级联网络相比，所提出的架构以更少的额外计算成本实现了有竞争力的分割性能，更容易训练和部署到生产环境。其次，我们提出了一种监督空间注意力机制，将病变区域的注意力与网络提取的特征相结合，将多病变分割分解为两个更容易的阶段，并且与当前基于注意力的方法相比具有更好的可解释性。第三，所提出的网络已在两个实际应用中得到验证，包括肺部 CT 切片中的 COVID-19 病变的 2D 分割和多模态 MRI 中的脑肿瘤的 3D 分割。所提出的网络在 2D 和 3D 任务中都优于前沿方法，并且在参数和计算成本方面比当前网络更高效。
 一个网络、监督空间注意力机制、参数和计算成本方面比当前网络更高效。
-Related Work 1）图像分割的网络结构：用于图像分割的典型卷积神经网络通常由一个卷积特征提取器组成，其拓扑类似于常见的分类网络，自动从输入图像中提取特征，并进行基于卷积的操作以生成最终的密集预测。在自然图像分割领域，FCN [2]、DeepLab [8]、PSPNet [9] 和 SegNet [10] 因其性能和效率而颇受欢迎。对于医学分割，U-Net [3] 在许多任务中相当流行，并且已被修改为许多改进版本，例如 Attention U-Net [11]、U-Net&#43;&#43; [12]、V-Net [13] 和H-DenseUNet [14]在某些领域获得更好的性能。...</p>
+Related Work 1）图像分割的网络结构：用于图像分割的典型卷积神经网络通常由一个卷积特征提取器组成，其拓扑类似于常见的分类网络，自动从输入图像中提取特征，并进行基于卷积的操作以生成最终的密集预测。在自然图像分割领域，FCN [2]、DeepLab [8]、PSPNet [9] 和 SegNet [10] 因其性能和效率而颇受欢迎。对于医学分割，U-Net [3] 在许多任务中相当流行，并且已被修改为许多改进版本，例如 Attention U-Net [11]、U-Net&#43;&#43; [12]、V-Net [13] 和H-DenseUNet [14]在某些领域获得更好的性能。
+...</p>
   </div>
   <footer class="entry-footer"><span title='2023-11-28 14:55:47 +0800 CST'>November 28, 2023</span>&nbsp;·&nbsp;4 min&nbsp;·&nbsp;SwimmingLiu</footer>
   <a class="entry-link" aria-label="post link to Prior Attention Network: 用于医学图像中多病灶分割的预先注意网络" href="https://swimmingliu.cn/posts/papernotes/2022-priorattentionnetwork/"></a>
@@ -206,7 +209,8 @@ Related Work 1）图像分割的网络结构：用于图像分割的典型卷积
     </main>
     
 <footer class="footer">
-    <span>&copy; 2023-2024 <a href="https://swimmingliu.cn/">SwimmingLiu&#39;s Blog</a></span>
+        <span>&copy; 2023-2024 <a href="https://swimmingliu.cn/">SwimmingLiu&#39;s Blog</a></span> · 
+
     <span>
         Powered by
         <a href="https://gohugo.io/" rel="noopener noreferrer" target="_blank">Hugo</a> &

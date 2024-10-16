@@ -9,34 +9,92 @@
       <url>https://swimmingliu.cn/papermod-cover.png</url>
       <link>https://swimmingliu.cn/papermod-cover.png</link>
     </image>
-    <generator>Hugo -- gohugo.io</generator>
+    <generator>Hugo -- 0.136.0</generator>
     <language>en</language>
-    <lastBuildDate>Fri, 05 Jan 2024 13:47:03 +0800</lastBuildDate><atom:link href="https://swimmingliu.cn/tags/zstu/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Fri, 05 Jan 2024 13:47:03 +0800</lastBuildDate>
+    <atom:link href="https://swimmingliu.cn/tags/zstu/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>ZSTU服务器使用教程 (Yang Li Lab)</title>
       <link>https://swimmingliu.cn/posts/diary/zstu_server_manuscript/</link>
       <pubDate>Fri, 05 Jan 2024 13:47:03 +0800</pubDate>
-      
       <guid>https://swimmingliu.cn/posts/diary/zstu_server_manuscript/</guid>
-      <description>安装 Xshell 和 Xftp https://www.netsarang.com/en/xshell-download/ # Xshell下载连接 https://blog.csdn.net/m0_67400972/article/details/125346023 # 安装教程 添加Xshell连接 其中 server.ip 为服务器公网ip地址，端口为 6969
-安装Anaconda3 每个用户均被分配 AnacondaAnaconda3-2023.07-1-Linux-x86_64.sh 于主目录
-bash AnacondaAnaconda3-2023.07-1-Linux-x86_64.sh # 安装anaconda3 输入 yes 后， 再按回车键 即可
-初始化Anaconda3 conda init bash	# 初始化conda 然后重新使用Xshell 连接即可
-Magic Network 下载外网文件、克隆Github项目等操作，必须使用Magic Network
-export http_proxy=http://127.0.0.1:7890 export https_proxy=http://127.0.0.1:7890 取消Magic Network
-unset http_proxy unset https_proxy 如果使用上面的命令，不能连接Google. 需要远程桌面连接，打开CFW (默认是打开的)
-nohup bash /home/dell/LYJ/Clash/cfw &amp;gt; cfw.out 国内镜像下载 pip 清华源下载
-pip install -i https://pypi.tuna.tsinghua.edu.cn/simple packge # packge为包名 conda 配置镜像</description>
+      <description>&lt;h2 id=&#34;安装-xshell-和-xftp&#34;&gt;安装 Xshell 和 Xftp&lt;/h2&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;https://www.netsarang.com/en/xshell-download/ &lt;span class=&#34;c1&#34;&gt;# Xshell下载连接&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;https://blog.csdn.net/m0_67400972/article/details/125346023 &lt;span class=&#34;c1&#34;&gt;# 安装教程&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h2 id=&#34;添加xshell连接&#34;&gt;添加Xshell连接&lt;/h2&gt;
+&lt;p&gt;&lt;img loading=&#34;lazy&#34; src=&#34;https://oss.swimmingliu.cn/B6xRW.png&#34; alt=&#34;image-20240105113129928&#34;  /&gt;
+&lt;/p&gt;
+&lt;p&gt;其中 &lt;code&gt;server.ip&lt;/code&gt; 为服务器公网ip地址，端口为 &lt;code&gt;6969&lt;/code&gt;&lt;/p&gt;
+&lt;h2 id=&#34;安装anaconda3&#34;&gt;安装Anaconda3&lt;/h2&gt;
+&lt;p&gt;每个用户均被分配 &lt;code&gt;AnacondaAnaconda3-2023.07-1-Linux-x86_64.sh &lt;/code&gt; 于主目录&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;bash AnacondaAnaconda3-2023.07-1-Linux-x86_64.sh &lt;span class=&#34;c1&#34;&gt;# 安装anaconda3&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;&lt;img loading=&#34;lazy&#34; src=&#34;https://oss.swimmingliu.cn/B6KTv.png&#34; alt=&#34;image-20240105113942737&#34;  /&gt;
+&lt;/p&gt;
+&lt;p&gt;输入 &lt;code&gt;yes&lt;/code&gt; 后， 再按回车键 即可&lt;/p&gt;
+&lt;p&gt;&lt;img loading=&#34;lazy&#34; src=&#34;https://oss.swimmingliu.cn/B6one.png&#34; alt=&#34;image-20240105114146047&#34;  /&gt;
+&lt;/p&gt;
+&lt;h2 id=&#34;初始化anaconda3&#34;&gt;初始化Anaconda3&lt;/h2&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;conda init bash	&lt;span class=&#34;c1&#34;&gt;# 初始化conda&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;然后重新使用Xshell 连接即可&lt;/p&gt;
+&lt;h2 id=&#34;magic-network&#34;&gt;Magic Network&lt;/h2&gt;
+&lt;p&gt;下载外网文件、克隆Github项目等操作，必须使用Magic Network&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;nb&#34;&gt;export&lt;/span&gt; &lt;span class=&#34;nv&#34;&gt;http_proxy&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;http://127.0.0.1:7890
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;nb&#34;&gt;export&lt;/span&gt; &lt;span class=&#34;nv&#34;&gt;https_proxy&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;http://127.0.0.1:7890
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;取消Magic Network&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;nb&#34;&gt;unset&lt;/span&gt; http_proxy
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;nb&#34;&gt;unset&lt;/span&gt; https_proxy
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;如果使用上面的命令，不能连接Google. 需要远程桌面连接，打开CFW (默认是打开的)&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;nohup bash /home/dell/LYJ/Clash/cfw &amp;gt; cfw.out
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;&lt;img loading=&#34;lazy&#34; src=&#34;https://oss.swimmingliu.cn/B6So3.png&#34; alt=&#34;image-20240105115600487&#34;  /&gt;
+&lt;/p&gt;
+&lt;h2 id=&#34;国内镜像下载&#34;&gt;国内镜像下载&lt;/h2&gt;
+&lt;p&gt;pip 清华源下载&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;pip install -i https://pypi.tuna.tsinghua.edu.cn/simple packge      &lt;span class=&#34;c1&#34;&gt;# packge为包名&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;conda 配置镜像&lt;/p&gt;</description>
     </item>
-    
     <item>
       <title>ZSTU Server Management</title>
       <link>https://swimmingliu.cn/posts/diary/zstu_server_management/</link>
       <pubDate>Thu, 04 Jan 2024 21:36:25 +0800</pubDate>
-      
       <guid>https://swimmingliu.cn/posts/diary/zstu_server_management/</guid>
-      <description>FRP配置 跳板机 # frps.ini 配置 [common] bind_port = 7000 #frps服务监听的端口 token = 123 # 链接口令 ./frps -c frps.ini # 启动frps 服务器 # frpc.ini [common] server_addr = x.x.x.x # 此处为 跳板机 的公网ip server_port = 7000 # 跳板机上frps服务监听的端口 token = 123 # 链接口令 [ssh] type = tcp local_ip = 127.0.0.1 local_port = 22 # 需要暴露的内网机器的端口 remote_port = 6000 # 暴露的内网机器的端口在vps上的端口 SSH连接 ssh -p 6000 swimmingliu@server.ip # 普通ssh 连接 ssh swimmingliu@server.ip 6000	# xshell ssh连接 用户管理 添加用户 sudo adduser xxx 删除用户 sudo deluser xxx Magic Network export http_proxy=http://127.</description>
+      <description>&lt;h2 id=&#34;frp配置&#34;&gt;FRP配置&lt;/h2&gt;
+&lt;h3 id=&#34;跳板机&#34;&gt;跳板机&lt;/h3&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;c1&#34;&gt;# frps.ini 配置&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;o&#34;&gt;[&lt;/span&gt;common&lt;span class=&#34;o&#34;&gt;]&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;nv&#34;&gt;bind_port&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;m&#34;&gt;7000&lt;/span&gt; &lt;span class=&#34;c1&#34;&gt;#frps服务监听的端口&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;nv&#34;&gt;token&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;m&#34;&gt;123&lt;/span&gt; &lt;span class=&#34;c1&#34;&gt;# 链接口令&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;./frps -c frps.ini &lt;span class=&#34;c1&#34;&gt;# 启动frps&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h3 id=&#34;服务器&#34;&gt;服务器&lt;/h3&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;c1&#34;&gt;# frpc.ini&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;o&#34;&gt;[&lt;/span&gt;common&lt;span class=&#34;o&#34;&gt;]&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;nv&#34;&gt;server_addr&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; x.x.x.x &lt;span class=&#34;c1&#34;&gt;# 此处为 跳板机 的公网ip&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;nv&#34;&gt;server_port&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;m&#34;&gt;7000&lt;/span&gt; &lt;span class=&#34;c1&#34;&gt;# 跳板机上frps服务监听的端口&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;nv&#34;&gt;token&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;m&#34;&gt;123&lt;/span&gt; &lt;span class=&#34;c1&#34;&gt;# 链接口令&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;o&#34;&gt;[&lt;/span&gt;ssh&lt;span class=&#34;o&#34;&gt;]&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;nb&#34;&gt;type&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; tcp
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;nv&#34;&gt;local_ip&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; 127.0.0.1 
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;nv&#34;&gt;local_port&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;m&#34;&gt;22&lt;/span&gt; &lt;span class=&#34;c1&#34;&gt;# 需要暴露的内网机器的端口&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;nv&#34;&gt;remote_port&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;m&#34;&gt;6000&lt;/span&gt; &lt;span class=&#34;c1&#34;&gt;# 暴露的内网机器的端口在vps上的端口&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h2 id=&#34;ssh连接&#34;&gt;SSH连接&lt;/h2&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;ssh -p &lt;span class=&#34;m&#34;&gt;6000&lt;/span&gt; swimmingliu@server.ip &lt;span class=&#34;c1&#34;&gt;# 普通ssh 连接&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;ssh swimmingliu@server.ip 6000	  &lt;span class=&#34;c1&#34;&gt;# xshell ssh连接&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h2 id=&#34;用户管理&#34;&gt;用户管理&lt;/h2&gt;
+&lt;h3 id=&#34;添加用户&#34;&gt;添加用户&lt;/h3&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;sudo adduser xxx
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h3 id=&#34;删除用户&#34;&gt;删除用户&lt;/h3&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;sudo deluser xxx
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h2 id=&#34;magic-network&#34;&gt;Magic Network&lt;/h2&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;nb&#34;&gt;export&lt;/span&gt; &lt;span class=&#34;nv&#34;&gt;http_proxy&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;http://127.0.0.1:7890
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;nb&#34;&gt;export&lt;/span&gt; &lt;span class=&#34;nv&#34;&gt;https_proxy&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;http://127.0.0.1:7890
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h2 id=&#34;anaconda3-安装和配置&#34;&gt;Anaconda3 安装和配置&lt;/h2&gt;
+&lt;h3 id=&#34;安装anaconda3&#34;&gt;安装Anaconda3&lt;/h3&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;wget --user-agent&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;&lt;span class=&#34;s2&#34;&gt;&amp;#34;Mozilla&amp;#34;&lt;/span&gt; https://mirrors.tuna.tsinghua.edu.cn/anaconda/archive/Anaconda3-2023.07-1-Linux-x86_64.sh
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;bash Anaconda3-2023.07-1-Linux-x86_64.sh
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;c1&#34;&gt;# https://mirrors.tuna.tsinghua.edu.cn/anaconda/archive 清华源&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h3 id=&#34;配置之前的envs&#34;&gt;配置之前的envs&lt;/h3&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;cp -r old_envs_path anaconda/envs/		&lt;span class=&#34;c1&#34;&gt;#迁移之前的envs环境&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h2 id=&#34;完结撒花&#34;&gt;完结撒花❀❀❀&lt;/h2&gt;</description>
     </item>
-    
   </channel>
 </rss>

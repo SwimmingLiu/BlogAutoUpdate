@@ -7,20 +7,28 @@
 <meta name="robots" content="index, follow">
 <title>Uncertainty-Aware Attention Mechanism:利用不确定性感知注意机制进行肺结节分割和不确定区域预测 | SwimmingLiu&#39;s Blog</title>
 <meta name="keywords" content="UGMCS-Net">
-<meta name="description" content="Abstract 放射科医生拥有不同的培训和临床经验，导致肺结节的分割注释存在差异，从而导致分割的不确定性。传统方法通常选择单个注释作为学习目标或尝试学习包含多个注释的潜在空间。
+<meta name="description" content="Abstract
+
+放射科医生拥有不同的培训和临床经验，导致肺结节的分割注释存在差异，从而导致分割的不确定性。传统方法通常选择单个注释作为学习目标或尝试学习包含多个注释的潜在空间。
 然而，这些方法无法利用多个注释之间的共识和分歧所固有的有价值的信息。在本文中，我们提出了一种不确定性感知注意机制（UAAM），它利用多个注释之间的共识和分歧来促进更好的分割。为此，我们引入了多置信度掩模（MCM），它结合了低置信度（LC）掩模和高置信度（HC）掩模。 LC 掩模表示分割置信度较低的区域，放射科医生可能有不同的分割选择。继UAAM之后，我们进一步设计了一个不确定性引导多置信分割网络（UGMCS-Net），它包含三个模块：一个捕获肺结节一般特征的特征提取模块，一个为肺结节产生三个特征的不确定性感知模块。注释的并集、交集和注释集，以及一个交集并集约束模块，该模块使用三个特征之间的距离来平衡最终分割和 MCM 的预测。为了全面展示我们方法的性能，我们提出了 LIDC-IDRI 上的复杂结节验证，它测试了 UGMCS-Net 对使用常规方法难以分割的肺结节的分割性能。实验结果表明，我们的方法可以显着提高传统方法难以分割的结节的分割性能。
-INTRODUCTION 肺结节分割在肺癌计算机辅助诊断 (CAD) 系统中至关重要 [1]，可提供结节大小、形状和其他重要医学特征等关键信息。然而，对于深度学习方法的一般训练和测试范例，每个结节图像数据只有一个由一名放射科医生描绘的注释掩模[2]-[6]。因此，网络每次只能提供结节区域的单个预测。
+
+INTRODUCTION
+
+肺结节分割在肺癌计算机辅助诊断 (CAD) 系统中至关重要 [1]，可提供结节大小、形状和其他重要医学特征等关键信息。然而，对于深度学习方法的一般训练和测试范例，每个结节图像数据只有一个由一名放射科医生描绘的注释掩模[2]-[6]。因此，网络每次只能提供结节区域的单个预测。
 然而，在临床实践中，不同的放射科医生由于其不同的培训和临床经验可能会为肺结节提供不同的分割注释[7]-[9]。
 因此，基于单一注释的传统方法无法反映临床经验的多样性，限制了深度学习方法的应用。
 解决放射科医生之间注释不同问题的一个直接解决方案是为每个肺结节图像合并多个注释。这导致了另一个问题：多个注释不可避免地会带来不确定性和冲突，因为放射科医生可能会对同一区域进行不同的注释。为了克服这个问题，Kohl 等人在 2018 年提出了一种概率 U-Net，它利用条件变分自动编码器将多个分割变体编码到低维潜在空间中 [8]、[10]。通过从该空间采样，网络可以影响相应的分割图。基于这项研究，Hu等人提出将真实不确定性与概率UNet相结合，这可以提高预测不确定性估计、样本准确性和样本多样性[7]。这些方法依赖于潜在空间和该空间中的随机样本。因此，这些方法只能通过多次预测来提供不确定区域。
 在本文中，我们提出了一个论点，即多个注释之间的不确定性遵循特定的模式。
 为了演示这种现象，我们引入了多重置信掩码 (MCM)，它结合了高置信度 (HC) 掩码和低置信度 (LC) 掩码，如图 1 所示。 A. 交叉掩码等于 HC mask，代表所有注释的交集。
 联合掩码是所有注释的联合。 LC掩模是交集掩模和并集掩模之间的差异。当在 LIDC-IDRI 数据集 [11] 上计算 HC 和 LC 的 Hounsfield 单位 (HU) 核估计时，如图 1.B 所示，我们可以观察到 LC 和 HC 掩模之间的 HU 分布存在明显区别。具体地，LC区域具有比HC区域更低的HU值。从像素分布来看，HU值越低，对应区域的密度越低。就CT图像特征而言，LC区域主要由结节边缘、毛刺和磨玻璃特征等边界相关特征组成，而HC区域主要分布在结节核心内。因此，我们提出了这样的假设：导致放射科医生之间差异的区域主要与低密度组织和边界相关特征有关。
-与其他方法不同，我们建议利用 MCM (多重置信掩码) ** 和注释集作为具有不同分割确定性的特征的学习指导**，有助于更好的分割性能。我们将这种训练称为UncertaintyAware Attention Mechanism，如图2所示。按照这种机制，我们进一步设计了用于肺结节分割的Uncertainty-Guide Multi-Confidence Segmentation Network（UGMCS-Net）。
-UGMCS-Net 包含三个模块：基于 U-Net 的特征提取模块、不确定性感知模块和交集并集约束模块。">
+
+
+
+
+与其他方法不同，我们建议利用 MCM (多重置信掩码) ** 和注释集作为具有不同分割确定性的特征的学习指导**，有助于更好的分割性能。我们将这种训练称为UncertaintyAware Attention Mechanism，如图2所示。按照这种机制，我们进一步设计了用于肺结节分割的Uncertainty-Guide Multi-Confidence Segmentation Network（UGMCS-Net）。">
 <meta name="author" content="SwimmingLiu">
 <link rel="canonical" href="https://swimmingliu.cn/posts/papernotes/2023-uncertainty-aware-attentionmechanism/">
-<link crossorigin="anonymous" href="/assets/css/stylesheet.56574d0b8d57cdd0d704dd823c3ab0e600bd78cf5a999377277390417d6b2f3e.css" integrity="sha256-VldNC41XzdDXBN2CPDqw5gC9eM9amZN3J3OQQX1rLz4=" rel="preload stylesheet" as="style">
+<link crossorigin="anonymous" href="/assets/css/stylesheet.d0ba3726344b58c49d5f0d05195743e4438cff79cf2048e07443b1ea4d4fdbf5.css" integrity="sha256-0Lo3JjRLWMSdXw0FGVdD5EOM/3nPIEjgdEOx6k1P2/U=" rel="preload stylesheet" as="style">
 <link rel="icon" href="https://swimmingliu.cn/images/swimmingliu_icon.png">
 <link rel="icon" type="image/png" sizes="16x16" href="https://swimmingliu.cn/images/swimmingliu_icon.png">
 <link rel="icon" type="image/png" sizes="32x32" href="https://swimmingliu.cn/images/swimmingliu_icon.png">
@@ -28,6 +36,7 @@ UGMCS-Net 包含三个模块：基于 U-Net 的特征提取模块、不确定性
 <link rel="mask-icon" href="https://swimmingliu.cn/images/swimmingliu_icon.png">
 <meta name="theme-color" content="#2e2e33">
 <meta name="msapplication-TileColor" content="#2e2e33">
+<link rel="alternate" hreflang="en" href="https://swimmingliu.cn/posts/papernotes/2023-uncertainty-aware-attentionmechanism/">
 <noscript>
     <style>
         #theme-toggle,
@@ -45,7 +54,7 @@ UGMCS-Net 包含三个模块：基于 U-Net 的特征提取模块、不确定性
                 --secondary: rgb(155, 156, 157);
                 --tertiary: rgb(65, 66, 68);
                 --content: rgb(196, 196, 197);
-                --hljs-bg: rgb(46, 46, 51);
+                --code-block-bg: rgb(46, 46, 51);
                 --code-bg: rgb(55, 56, 62);
                 --border: rgb(51, 51, 51);
             }
@@ -91,37 +100,54 @@ UGMCS-Net 包含三个模块：基于 U-Net 的特征提取模块、不确定性
 </script>
 
 <meta property="og:title" content="Uncertainty-Aware Attention Mechanism:利用不确定性感知注意机制进行肺结节分割和不确定区域预测" />
-<meta property="og:description" content="Abstract 放射科医生拥有不同的培训和临床经验，导致肺结节的分割注释存在差异，从而导致分割的不确定性。传统方法通常选择单个注释作为学习目标或尝试学习包含多个注释的潜在空间。
+<meta property="og:description" content="Abstract
+
+放射科医生拥有不同的培训和临床经验，导致肺结节的分割注释存在差异，从而导致分割的不确定性。传统方法通常选择单个注释作为学习目标或尝试学习包含多个注释的潜在空间。
 然而，这些方法无法利用多个注释之间的共识和分歧所固有的有价值的信息。在本文中，我们提出了一种不确定性感知注意机制（UAAM），它利用多个注释之间的共识和分歧来促进更好的分割。为此，我们引入了多置信度掩模（MCM），它结合了低置信度（LC）掩模和高置信度（HC）掩模。 LC 掩模表示分割置信度较低的区域，放射科医生可能有不同的分割选择。继UAAM之后，我们进一步设计了一个不确定性引导多置信分割网络（UGMCS-Net），它包含三个模块：一个捕获肺结节一般特征的特征提取模块，一个为肺结节产生三个特征的不确定性感知模块。注释的并集、交集和注释集，以及一个交集并集约束模块，该模块使用三个特征之间的距离来平衡最终分割和 MCM 的预测。为了全面展示我们方法的性能，我们提出了 LIDC-IDRI 上的复杂结节验证，它测试了 UGMCS-Net 对使用常规方法难以分割的肺结节的分割性能。实验结果表明，我们的方法可以显着提高传统方法难以分割的结节的分割性能。
-INTRODUCTION 肺结节分割在肺癌计算机辅助诊断 (CAD) 系统中至关重要 [1]，可提供结节大小、形状和其他重要医学特征等关键信息。然而，对于深度学习方法的一般训练和测试范例，每个结节图像数据只有一个由一名放射科医生描绘的注释掩模[2]-[6]。因此，网络每次只能提供结节区域的单个预测。
+
+INTRODUCTION
+
+肺结节分割在肺癌计算机辅助诊断 (CAD) 系统中至关重要 [1]，可提供结节大小、形状和其他重要医学特征等关键信息。然而，对于深度学习方法的一般训练和测试范例，每个结节图像数据只有一个由一名放射科医生描绘的注释掩模[2]-[6]。因此，网络每次只能提供结节区域的单个预测。
 然而，在临床实践中，不同的放射科医生由于其不同的培训和临床经验可能会为肺结节提供不同的分割注释[7]-[9]。
 因此，基于单一注释的传统方法无法反映临床经验的多样性，限制了深度学习方法的应用。
 解决放射科医生之间注释不同问题的一个直接解决方案是为每个肺结节图像合并多个注释。这导致了另一个问题：多个注释不可避免地会带来不确定性和冲突，因为放射科医生可能会对同一区域进行不同的注释。为了克服这个问题，Kohl 等人在 2018 年提出了一种概率 U-Net，它利用条件变分自动编码器将多个分割变体编码到低维潜在空间中 [8]、[10]。通过从该空间采样，网络可以影响相应的分割图。基于这项研究，Hu等人提出将真实不确定性与概率UNet相结合，这可以提高预测不确定性估计、样本准确性和样本多样性[7]。这些方法依赖于潜在空间和该空间中的随机样本。因此，这些方法只能通过多次预测来提供不确定区域。
 在本文中，我们提出了一个论点，即多个注释之间的不确定性遵循特定的模式。
 为了演示这种现象，我们引入了多重置信掩码 (MCM)，它结合了高置信度 (HC) 掩码和低置信度 (LC) 掩码，如图 1 所示。 A. 交叉掩码等于 HC mask，代表所有注释的交集。
 联合掩码是所有注释的联合。 LC掩模是交集掩模和并集掩模之间的差异。当在 LIDC-IDRI 数据集 [11] 上计算 HC 和 LC 的 Hounsfield 单位 (HU) 核估计时，如图 1.B 所示，我们可以观察到 LC 和 HC 掩模之间的 HU 分布存在明显区别。具体地，LC区域具有比HC区域更低的HU值。从像素分布来看，HU值越低，对应区域的密度越低。就CT图像特征而言，LC区域主要由结节边缘、毛刺和磨玻璃特征等边界相关特征组成，而HC区域主要分布在结节核心内。因此，我们提出了这样的假设：导致放射科医生之间差异的区域主要与低密度组织和边界相关特征有关。
-与其他方法不同，我们建议利用 MCM (多重置信掩码) ** 和注释集作为具有不同分割确定性的特征的学习指导**，有助于更好的分割性能。我们将这种训练称为UncertaintyAware Attention Mechanism，如图2所示。按照这种机制，我们进一步设计了用于肺结节分割的Uncertainty-Guide Multi-Confidence Segmentation Network（UGMCS-Net）。
-UGMCS-Net 包含三个模块：基于 U-Net 的特征提取模块、不确定性感知模块和交集并集约束模块。" />
+
+
+
+
+与其他方法不同，我们建议利用 MCM (多重置信掩码) ** 和注释集作为具有不同分割确定性的特征的学习指导**，有助于更好的分割性能。我们将这种训练称为UncertaintyAware Attention Mechanism，如图2所示。按照这种机制，我们进一步设计了用于肺结节分割的Uncertainty-Guide Multi-Confidence Segmentation Network（UGMCS-Net）。" />
 <meta property="og:type" content="article" />
-<meta property="og:url" content="https://swimmingliu.cn/posts/papernotes/2023-uncertainty-aware-attentionmechanism/" /><meta property="og:image" content="https://swimmingliu.cn/papermod-cover.png"/><meta property="article:section" content="posts" />
+<meta property="og:url" content="https://swimmingliu.cn/posts/papernotes/2023-uncertainty-aware-attentionmechanism/" />
+<meta property="og:image" content="https://swimmingliu.cn/papermod-cover.png" />
+<meta property="article:section" content="posts" />
 <meta property="article:published_time" content="2023-12-04T16:28:11+08:00" />
 <meta property="article:modified_time" content="2023-12-04T16:28:11+08:00" />
 
-<meta name="twitter:card" content="summary_large_image"/>
-<meta name="twitter:image" content="https://swimmingliu.cn/papermod-cover.png"/>
-
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:image" content="https://swimmingliu.cn/papermod-cover.png" />
 <meta name="twitter:title" content="Uncertainty-Aware Attention Mechanism:利用不确定性感知注意机制进行肺结节分割和不确定区域预测"/>
-<meta name="twitter:description" content="Abstract 放射科医生拥有不同的培训和临床经验，导致肺结节的分割注释存在差异，从而导致分割的不确定性。传统方法通常选择单个注释作为学习目标或尝试学习包含多个注释的潜在空间。
+<meta name="twitter:description" content="Abstract
+
+放射科医生拥有不同的培训和临床经验，导致肺结节的分割注释存在差异，从而导致分割的不确定性。传统方法通常选择单个注释作为学习目标或尝试学习包含多个注释的潜在空间。
 然而，这些方法无法利用多个注释之间的共识和分歧所固有的有价值的信息。在本文中，我们提出了一种不确定性感知注意机制（UAAM），它利用多个注释之间的共识和分歧来促进更好的分割。为此，我们引入了多置信度掩模（MCM），它结合了低置信度（LC）掩模和高置信度（HC）掩模。 LC 掩模表示分割置信度较低的区域，放射科医生可能有不同的分割选择。继UAAM之后，我们进一步设计了一个不确定性引导多置信分割网络（UGMCS-Net），它包含三个模块：一个捕获肺结节一般特征的特征提取模块，一个为肺结节产生三个特征的不确定性感知模块。注释的并集、交集和注释集，以及一个交集并集约束模块，该模块使用三个特征之间的距离来平衡最终分割和 MCM 的预测。为了全面展示我们方法的性能，我们提出了 LIDC-IDRI 上的复杂结节验证，它测试了 UGMCS-Net 对使用常规方法难以分割的肺结节的分割性能。实验结果表明，我们的方法可以显着提高传统方法难以分割的结节的分割性能。
-INTRODUCTION 肺结节分割在肺癌计算机辅助诊断 (CAD) 系统中至关重要 [1]，可提供结节大小、形状和其他重要医学特征等关键信息。然而，对于深度学习方法的一般训练和测试范例，每个结节图像数据只有一个由一名放射科医生描绘的注释掩模[2]-[6]。因此，网络每次只能提供结节区域的单个预测。
+
+INTRODUCTION
+
+肺结节分割在肺癌计算机辅助诊断 (CAD) 系统中至关重要 [1]，可提供结节大小、形状和其他重要医学特征等关键信息。然而，对于深度学习方法的一般训练和测试范例，每个结节图像数据只有一个由一名放射科医生描绘的注释掩模[2]-[6]。因此，网络每次只能提供结节区域的单个预测。
 然而，在临床实践中，不同的放射科医生由于其不同的培训和临床经验可能会为肺结节提供不同的分割注释[7]-[9]。
 因此，基于单一注释的传统方法无法反映临床经验的多样性，限制了深度学习方法的应用。
 解决放射科医生之间注释不同问题的一个直接解决方案是为每个肺结节图像合并多个注释。这导致了另一个问题：多个注释不可避免地会带来不确定性和冲突，因为放射科医生可能会对同一区域进行不同的注释。为了克服这个问题，Kohl 等人在 2018 年提出了一种概率 U-Net，它利用条件变分自动编码器将多个分割变体编码到低维潜在空间中 [8]、[10]。通过从该空间采样，网络可以影响相应的分割图。基于这项研究，Hu等人提出将真实不确定性与概率UNet相结合，这可以提高预测不确定性估计、样本准确性和样本多样性[7]。这些方法依赖于潜在空间和该空间中的随机样本。因此，这些方法只能通过多次预测来提供不确定区域。
 在本文中，我们提出了一个论点，即多个注释之间的不确定性遵循特定的模式。
 为了演示这种现象，我们引入了多重置信掩码 (MCM)，它结合了高置信度 (HC) 掩码和低置信度 (LC) 掩码，如图 1 所示。 A. 交叉掩码等于 HC mask，代表所有注释的交集。
 联合掩码是所有注释的联合。 LC掩模是交集掩模和并集掩模之间的差异。当在 LIDC-IDRI 数据集 [11] 上计算 HC 和 LC 的 Hounsfield 单位 (HU) 核估计时，如图 1.B 所示，我们可以观察到 LC 和 HC 掩模之间的 HU 分布存在明显区别。具体地，LC区域具有比HC区域更低的HU值。从像素分布来看，HU值越低，对应区域的密度越低。就CT图像特征而言，LC区域主要由结节边缘、毛刺和磨玻璃特征等边界相关特征组成，而HC区域主要分布在结节核心内。因此，我们提出了这样的假设：导致放射科医生之间差异的区域主要与低密度组织和边界相关特征有关。
-与其他方法不同，我们建议利用 MCM (多重置信掩码) ** 和注释集作为具有不同分割确定性的特征的学习指导**，有助于更好的分割性能。我们将这种训练称为UncertaintyAware Attention Mechanism，如图2所示。按照这种机制，我们进一步设计了用于肺结节分割的Uncertainty-Guide Multi-Confidence Segmentation Network（UGMCS-Net）。
-UGMCS-Net 包含三个模块：基于 U-Net 的特征提取模块、不确定性感知模块和交集并集约束模块。"/>
+
+
+
+
+与其他方法不同，我们建议利用 MCM (多重置信掩码) ** 和注释集作为具有不同分割确定性的特征的学习指导**，有助于更好的分割性能。我们将这种训练称为UncertaintyAware Attention Mechanism，如图2所示。按照这种机制，我们进一步设计了用于肺结节分割的Uncertainty-Guide Multi-Confidence Segmentation Network（UGMCS-Net）。"/>
 
 
 <script type="application/ld+json">
@@ -156,14 +182,14 @@ UGMCS-Net 包含三个模块：基于 U-Net 的特征提取模块、不确定性
   "@type": "BlogPosting",
   "headline": "Uncertainty-Aware Attention Mechanism:利用不确定性感知注意机制进行肺结节分割和不确定区域预测",
   "name": "Uncertainty-Aware Attention Mechanism:利用不确定性感知注意机制进行肺结节分割和不确定区域预测",
-  "description": "Abstract 放射科医生拥有不同的培训和临床经验，导致肺结节的分割注释存在差异，从而导致分割的不确定性。传统方法通常选择单个注释作为学习目标或尝试学习包含多个注释的潜在空间。\n然而，这些方法无法利用多个注释之间的共识和分歧所固有的有价值的信息。在本文中，我们提出了一种不确定性感知注意机制（UAAM），它利用多个注释之间的共识和分歧来促进更好的分割。为此，我们引入了多置信度掩模（MCM），它结合了低置信度（LC）掩模和高置信度（HC）掩模。 LC 掩模表示分割置信度较低的区域，放射科医生可能有不同的分割选择。继UAAM之后，我们进一步设计了一个不确定性引导多置信分割网络（UGMCS-Net），它包含三个模块：一个捕获肺结节一般特征的特征提取模块，一个为肺结节产生三个特征的不确定性感知模块。注释的并集、交集和注释集，以及一个交集并集约束模块，该模块使用三个特征之间的距离来平衡最终分割和 MCM 的预测。为了全面展示我们方法的性能，我们提出了 LIDC-IDRI 上的复杂结节验证，它测试了 UGMCS-Net 对使用常规方法难以分割的肺结节的分割性能。实验结果表明，我们的方法可以显着提高传统方法难以分割的结节的分割性能。\nINTRODUCTION 肺结节分割在肺癌计算机辅助诊断 (CAD) 系统中至关重要 [1]，可提供结节大小、形状和其他重要医学特征等关键信息。然而，对于深度学习方法的一般训练和测试范例，每个结节图像数据只有一个由一名放射科医生描绘的注释掩模[2]-[6]。因此，网络每次只能提供结节区域的单个预测。\n然而，在临床实践中，不同的放射科医生由于其不同的培训和临床经验可能会为肺结节提供不同的分割注释[7]-[9]。\n因此，基于单一注释的传统方法无法反映临床经验的多样性，限制了深度学习方法的应用。\n解决放射科医生之间注释不同问题的一个直接解决方案是为每个肺结节图像合并多个注释。这导致了另一个问题：多个注释不可避免地会带来不确定性和冲突，因为放射科医生可能会对同一区域进行不同的注释。为了克服这个问题，Kohl 等人在 2018 年提出了一种概率 U-Net，它利用条件变分自动编码器将多个分割变体编码到低维潜在空间中 [8]、[10]。通过从该空间采样，网络可以影响相应的分割图。基于这项研究，Hu等人提出将真实不确定性与概率UNet相结合，这可以提高预测不确定性估计、样本准确性和样本多样性[7]。这些方法依赖于潜在空间和该空间中的随机样本。因此，这些方法只能通过多次预测来提供不确定区域。\n在本文中，我们提出了一个论点，即多个注释之间的不确定性遵循特定的模式。\n为了演示这种现象，我们引入了多重置信掩码 (MCM)，它结合了高置信度 (HC) 掩码和低置信度 (LC) 掩码，如图 1 所示。 A. 交叉掩码等于 HC mask，代表所有注释的交集。\n联合掩码是所有注释的联合。 LC掩模是交集掩模和并集掩模之间的差异。当在 LIDC-IDRI 数据集 [11] 上计算 HC 和 LC 的 Hounsfield 单位 (HU) 核估计时，如图 1.B 所示，我们可以观察到 LC 和 HC 掩模之间的 HU 分布存在明显区别。具体地，LC区域具有比HC区域更低的HU值。从像素分布来看，HU值越低，对应区域的密度越低。就CT图像特征而言，LC区域主要由结节边缘、毛刺和磨玻璃特征等边界相关特征组成，而HC区域主要分布在结节核心内。因此，我们提出了这样的假设：导致放射科医生之间差异的区域主要与低密度组织和边界相关特征有关。\n与其他方法不同，我们建议利用 MCM (多重置信掩码) ** 和注释集作为具有不同分割确定性的特征的学习指导**，有助于更好的分割性能。我们将这种训练称为UncertaintyAware Attention Mechanism，如图2所示。按照这种机制，我们进一步设计了用于肺结节分割的Uncertainty-Guide Multi-Confidence Segmentation Network（UGMCS-Net）。\nUGMCS-Net 包含三个模块：基于 U-Net 的特征提取模块、不确定性感知模块和交集并集约束模块。",
+  "description": "Abstract 放射科医生拥有不同的培训和临床经验，导致肺结节的分割注释存在差异，从而导致分割的不确定性。传统方法通常选择单个注释作为学习目标或尝试学习包含多个注释的潜在空间。\n然而，这些方法无法利用多个注释之间的共识和分歧所固有的有价值的信息。在本文中，我们提出了一种不确定性感知注意机制（UAAM），它利用多个注释之间的共识和分歧来促进更好的分割。为此，我们引入了多置信度掩模（MCM），它结合了低置信度（LC）掩模和高置信度（HC）掩模。 LC 掩模表示分割置信度较低的区域，放射科医生可能有不同的分割选择。继UAAM之后，我们进一步设计了一个不确定性引导多置信分割网络（UGMCS-Net），它包含三个模块：一个捕获肺结节一般特征的特征提取模块，一个为肺结节产生三个特征的不确定性感知模块。注释的并集、交集和注释集，以及一个交集并集约束模块，该模块使用三个特征之间的距离来平衡最终分割和 MCM 的预测。为了全面展示我们方法的性能，我们提出了 LIDC-IDRI 上的复杂结节验证，它测试了 UGMCS-Net 对使用常规方法难以分割的肺结节的分割性能。实验结果表明，我们的方法可以显着提高传统方法难以分割的结节的分割性能。\nINTRODUCTION 肺结节分割在肺癌计算机辅助诊断 (CAD) 系统中至关重要 [1]，可提供结节大小、形状和其他重要医学特征等关键信息。然而，对于深度学习方法的一般训练和测试范例，每个结节图像数据只有一个由一名放射科医生描绘的注释掩模[2]-[6]。因此，网络每次只能提供结节区域的单个预测。\n然而，在临床实践中，不同的放射科医生由于其不同的培训和临床经验可能会为肺结节提供不同的分割注释[7]-[9]。\n因此，基于单一注释的传统方法无法反映临床经验的多样性，限制了深度学习方法的应用。\n解决放射科医生之间注释不同问题的一个直接解决方案是为每个肺结节图像合并多个注释。这导致了另一个问题：多个注释不可避免地会带来不确定性和冲突，因为放射科医生可能会对同一区域进行不同的注释。为了克服这个问题，Kohl 等人在 2018 年提出了一种概率 U-Net，它利用条件变分自动编码器将多个分割变体编码到低维潜在空间中 [8]、[10]。通过从该空间采样，网络可以影响相应的分割图。基于这项研究，Hu等人提出将真实不确定性与概率UNet相结合，这可以提高预测不确定性估计、样本准确性和样本多样性[7]。这些方法依赖于潜在空间和该空间中的随机样本。因此，这些方法只能通过多次预测来提供不确定区域。\n在本文中，我们提出了一个论点，即多个注释之间的不确定性遵循特定的模式。\n为了演示这种现象，我们引入了多重置信掩码 (MCM)，它结合了高置信度 (HC) 掩码和低置信度 (LC) 掩码，如图 1 所示。 A. 交叉掩码等于 HC mask，代表所有注释的交集。\n联合掩码是所有注释的联合。 LC掩模是交集掩模和并集掩模之间的差异。当在 LIDC-IDRI 数据集 [11] 上计算 HC 和 LC 的 Hounsfield 单位 (HU) 核估计时，如图 1.B 所示，我们可以观察到 LC 和 HC 掩模之间的 HU 分布存在明显区别。具体地，LC区域具有比HC区域更低的HU值。从像素分布来看，HU值越低，对应区域的密度越低。就CT图像特征而言，LC区域主要由结节边缘、毛刺和磨玻璃特征等边界相关特征组成，而HC区域主要分布在结节核心内。因此，我们提出了这样的假设：导致放射科医生之间差异的区域主要与低密度组织和边界相关特征有关。\n与其他方法不同，我们建议利用 MCM (多重置信掩码) ** 和注释集作为具有不同分割确定性的特征的学习指导**，有助于更好的分割性能。我们将这种训练称为UncertaintyAware Attention Mechanism，如图2所示。按照这种机制，我们进一步设计了用于肺结节分割的Uncertainty-Guide Multi-Confidence Segmentation Network（UGMCS-Net）。\n",
   "keywords": [
     "UGMCS-Net"
   ],
   "articleBody": "Abstract 放射科医生拥有不同的培训和临床经验，导致肺结节的分割注释存在差异，从而导致分割的不确定性。传统方法通常选择单个注释作为学习目标或尝试学习包含多个注释的潜在空间。\n然而，这些方法无法利用多个注释之间的共识和分歧所固有的有价值的信息。在本文中，我们提出了一种不确定性感知注意机制（UAAM），它利用多个注释之间的共识和分歧来促进更好的分割。为此，我们引入了多置信度掩模（MCM），它结合了低置信度（LC）掩模和高置信度（HC）掩模。 LC 掩模表示分割置信度较低的区域，放射科医生可能有不同的分割选择。继UAAM之后，我们进一步设计了一个不确定性引导多置信分割网络（UGMCS-Net），它包含三个模块：一个捕获肺结节一般特征的特征提取模块，一个为肺结节产生三个特征的不确定性感知模块。注释的并集、交集和注释集，以及一个交集并集约束模块，该模块使用三个特征之间的距离来平衡最终分割和 MCM 的预测。为了全面展示我们方法的性能，我们提出了 LIDC-IDRI 上的复杂结节验证，它测试了 UGMCS-Net 对使用常规方法难以分割的肺结节的分割性能。实验结果表明，我们的方法可以显着提高传统方法难以分割的结节的分割性能。\nINTRODUCTION 肺结节分割在肺癌计算机辅助诊断 (CAD) 系统中至关重要 [1]，可提供结节大小、形状和其他重要医学特征等关键信息。然而，对于深度学习方法的一般训练和测试范例，每个结节图像数据只有一个由一名放射科医生描绘的注释掩模[2]-[6]。因此，网络每次只能提供结节区域的单个预测。\n然而，在临床实践中，不同的放射科医生由于其不同的培训和临床经验可能会为肺结节提供不同的分割注释[7]-[9]。\n因此，基于单一注释的传统方法无法反映临床经验的多样性，限制了深度学习方法的应用。\n解决放射科医生之间注释不同问题的一个直接解决方案是为每个肺结节图像合并多个注释。这导致了另一个问题：多个注释不可避免地会带来不确定性和冲突，因为放射科医生可能会对同一区域进行不同的注释。为了克服这个问题，Kohl 等人在 2018 年提出了一种概率 U-Net，它利用条件变分自动编码器将多个分割变体编码到低维潜在空间中 [8]、[10]。通过从该空间采样，网络可以影响相应的分割图。基于这项研究，Hu等人提出将真实不确定性与概率UNet相结合，这可以提高预测不确定性估计、样本准确性和样本多样性[7]。这些方法依赖于潜在空间和该空间中的随机样本。因此，这些方法只能通过多次预测来提供不确定区域。\n在本文中，我们提出了一个论点，即多个注释之间的不确定性遵循特定的模式。\n为了演示这种现象，我们引入了多重置信掩码 (MCM)，它结合了高置信度 (HC) 掩码和低置信度 (LC) 掩码，如图 1 所示。 A. 交叉掩码等于 HC mask，代表所有注释的交集。\n联合掩码是所有注释的联合。 LC掩模是交集掩模和并集掩模之间的差异。当在 LIDC-IDRI 数据集 [11] 上计算 HC 和 LC 的 Hounsfield 单位 (HU) 核估计时，如图 1.B 所示，我们可以观察到 LC 和 HC 掩模之间的 HU 分布存在明显区别。具体地，LC区域具有比HC区域更低的HU值。从像素分布来看，HU值越低，对应区域的密度越低。就CT图像特征而言，LC区域主要由结节边缘、毛刺和磨玻璃特征等边界相关特征组成，而HC区域主要分布在结节核心内。因此，我们提出了这样的假设：导致放射科医生之间差异的区域主要与低密度组织和边界相关特征有关。\n与其他方法不同，我们建议利用 MCM (多重置信掩码) ** 和注释集作为具有不同分割确定性的特征的学习指导**，有助于更好的分割性能。我们将这种训练称为UncertaintyAware Attention Mechanism，如图2所示。按照这种机制，我们进一步设计了用于肺结节分割的Uncertainty-Guide Multi-Confidence Segmentation Network（UGMCS-Net）。\nUGMCS-Net 包含三个模块：基于 U-Net 的特征提取模块、不确定性感知模块和交集并集约束模块。\n首先，标签分为交集标签( $L_\\cap$ )、并集标签 ( $L_\\cup$ )、原始标签 (L)。\n其次，HC (consensus) 表示 $L_\\cap$ 、 LC（disagreement）表示 $L_\\cup$ - $L_\\cap$。\nMCM (Multi Confidence Mask) 表示 HC 和 LC的统称\n首先，特征提取模块从输入的CT图像中提取通用特征图R。其次，不确定性感知模块在标签的交集、并集、和原标签的指导下，将通用特征图R转换为三个独立的特征图$R_{LC}$、$R_{HC}$和$R_{Uni}$。 $R_{LC}$、$R_{HC}$用于预测并集掩码和交集掩码，并将结果组合为MCM。$R_{Uni}$用于预测初步分割结果。我们稍后使用 $\\cup(X)$, $\\cap(X)$, $X_{Uni}$ 来表示预测的并集掩码、交集掩码和初步分割结果。第三，约束模块使用来自$R_{LC}$、$R_{HC}$ 和 $R_{Uni}$的特征感知注意块捕获首选特征，然后用特征距离约束最终预测$X_S$，确保分割结果以合理的方式受到约束。为了更好地利用多个注释，我们还引入了多注释融合损失来优化 $X_{Uni}$和 $X_S$，它计算预测和所有注释之间的平均 BCE 损失。\n该方法具有两个明显的优点： （1）与学习潜在空间的传统基于 VAE 的方法相比，该方法具有特定的学习目标，使其能够提供不确定结节区域的稳定预测。 （2）该方法利用所有注释来优化预测，以确保最终预测平衡不同条件，充分利用可用信息。\n我们在之前的出版物中报告了这项工作的初步版本[12]。本文的新贡献可概括如下: （1）一种称为不确定性感知注意机制（UAAM）的新颖机制：UAAM 最大限度地利用多个注释，并采用多重置信掩码（MCM）来指导低置信度和高置信度特征的学习。\n（2）升级后的Uncertainty-Guide Multi-Confidence Segmentation Network (UGMCS-Net)：基于该机制，我们将UGS-Net更新为UGMCSNet，其中包含特征提取模块、不确定性感知模块和新的交并集约束模块。为了充分利用多个注释，我们还引入了多注释融合损失。所提出的模块是即插即用的，可以应用于不同情况下的其他分割网络。\n（3）全面验证：我们提出了ComplexNodule Validation，测试UGMCS-Net对U-Net难以分割的肺结节的分割性能。实验表明，对于UNet上DSC分数低于60％的结节，我们网络的DSC分数可以提高11.03％，我们网络的IoU分数可以提高11.88％。我们还为不同的模块、主干和模型设置提供足够的消融研究。\nRelated Work 2.1 Lung Nodule Segmentation 肺结节分割对于肺结节计算机辅助检测 (CAD) 系统至关重要。其主要目标是准确地描绘目标结节的边界，以提供其直径、大小和语义特征等细节[13]-[16]。这项任务的主要挑战是肺结节具有各种形状、大小和微妙的特征。早年，研究人员提供了多种肺结节分割方法，例如基于形态学的方法和基于区域生长的方法[17]，[18]。近年来，深度学习已成为该领域最流行的方法。\n2017年，Wang等人提出了一种用于肺结节分割的多视图卷积网络。所提出的网络同时从 CT 图像的轴向、冠状和矢状视图中捕获了一组不同的结节敏感特征。使用多分支 CNN 网络对这些特征进行分析，平均 DSC 相似系数 (DSC) 为 77.67% [19]。此外，Wang 等人在 2017 年提出了一种具有中心池层的中心聚焦卷积神经网络，可以彻底分析 2D 和 3D 结节 [1]。 2020年，Cao等人设计了带有强度池层的双分支残差网络，增强了强度信息的学习，并将DSC提高到82.74％[20]。 2021年，Pezzano等人推出了一种CNN网络，可以通过生成两个代表CT中所有背景和次要重要元素的掩模来学习结节的背景，从而使网络可以更好地区分结节特征[15]。后来在2022年，Shariaty等人进一步提出了纹理特征提取和特征选择算法来改进分割，实现了84.75%的DSC[2]。\n根据上述研究的观察结果，显然现有方法主要优先考虑实现更精确的分割，而忽略了不同放射科医生对如何分割同一肺结节可能持有不同意见的事实。在这项研究中，我们认为注释之间的分歧也具有诊断价值。因此，我们的方法旨在生成一个分割，通过从注释集学习并识别具有不同分割确定性的区域来有效地平衡所有注释。\n2.2 Uncertainty in Lung Nodule Segmentation 许多医学图像视觉问题都存在模糊性。在临床情况下，仅通过 CT 扫描可能无法明确哪个特定区域是癌组织 [10]、[21]。因此，即使是经验丰富的医生和放射科医生也可能对相同的组织或肿瘤提供不同的分割。\n2018 年，Kohl 等人提出将此任务建模为学习肺结节多样化但合理的分割上的分布。基于 U-Net [5]，他们引入了概率 U-Net，它是 UNet 和条件 VAE 的组合，可以产生无限数量的合理分割。 2019年晚些时候，Kohl等人进一步提出了一种分层概率U-Net，它使用分层潜在空间分解来制定高保真度分割的采样和重建[8]。同样在 2019 年，Hu 等人分析了两种类型的不确定性：任意的和认知的 [7]。他们利用多个注释的可变性作为“ground truth”任意不确定性的来源，将这种不确定性与概率 UNet 结合起来，并尝试定量分析分割不确定性。 2021年，Long等人将[7]中的概念扩展到V-Net和3D肺结节CT图像。作为包含 1000 多个肺结节的多个注释的理想数据集，所有这些研究 [7]-[10] 都分析了 LIDC-IDRI。\n与基于VAE的网络不同，我们的工作更关注导致各种标注的原因，表现为分割分歧。我们引入了一种专门针对不确定性区域的替代方法，使我们能够对不确定的结节区域和整体肺结节分割做出稳定的预测。这种方法使我们能够深入了解分割差异的根本原因，并在不确定的肺结节区域中产生更可靠的结果。\n在医学图像处理中，“条件变分自编码器（Conditional Variational Autoencoder, CVAE）“是一种生成模型，它结合了变分自编码器（VAE）的特性和条件生成的能力。VAE是一种深度学习模型，能够学习输入数据的潜在表示，然后从这些表示中生成新的数据实例。CVAE在此基础上增加了条件变量，使得生成的过程可以依赖于某些条件或标签。\n对于医学图像，CVAE可以用于多种任务，如生成特定类型的医学图像（例如，根据特定疾病状态生成CT或MRI图像），数据增强（生成新的训练样本），以及特征提取和表示学习等。通过将条件信息（如疾病标签、图像类型或患者信息）融入到生成过程中，CVAE能够生成更符合特定条件的图像，从而在特定医学应用中发挥作用。\nMethod 3.1 Uncertainty-Guided Multi-Confidence Segmentation Network 在图 3 中，我们展示了 UncertaintyGuided Multi-Confidence Segmentation Network (UGMCSNet) 的架构。该网络以肺结节 CT 图像作为输入，并产生两个输出：预测的多置信度掩模（MCM）和最终的分割 $X_S$。 MCM 结合了预测的并集 $\\cup(X)$ 和交集 $\\cap(X)$。网络的学习目标是注释集 GT，以及它们的 Union Mask $\\cup(GT)$ 和 Intersection Mask $\\cap(GT)$。输入图像及其相应的掩模的尺寸为 50 × 50 像素，通过从带有官方注释的 LIDC-IDRI 数据集裁剪获得。在输入网络之前，输入图像和掩模的大小被调整为 3 × 64 × 64 像素的尺寸。\nUGMCS-Net 包含三个模块：(1) 特征提取模块，(2) 不确定性感知模块，(3) 交并并约束模块。特征提取模块可以使用任何基于UNet结构的分割网络，初步获得形状为32×64×64的特征图R。本文使用具有五个下采样和上采样层的Attention U-Net [4] 。每个上采样层由两个卷积层和一个注意力块组成。不确定性感知模块分析 R 并生成$R_{LC}$、$R_{HC}$和$R_{Uni}$。然后将这些特征图输入 MCM BCE Loss Block 和 Multiple Annotation Loss Block，生成初始的 $\\cup(X)$、$\\cap(X)$ 和合理的分割 $X_{Uni}$。计算并集以 $\\cup(X)$、$\\cap(X)$获得 MCM。 Intersection-Union Constraining Module 学习 $R_{LC}$、$R_{HC}$和$R_{Uni}$的不同特征，并将这三个特征融合到$R_{final}$ 中。然后该模块通过分析RF ianl提供更合理的最终分割$X_S$。\n3.2 Uncertainty-Aware Module 引入不确定性感知模块（UAM），通过学习$\\cup(GT)$、$\\cap(GT)$ 和 GT来充分合理地利用所有注释信息。该模块有两个任务：（1）从低置信度（LC）区域、高置信度（HC）区域和所有注释中捕获不同的特征； (2) 生成多重置信掩模 (MCM) 的初始预测和一般分割。\n如图3所示，UAM采用三分支CNN网络作为骨干。它以 R (32 × 64 × 64) 作为输入，并使用内核大小为 1×1 的三个不同卷积层提取 $R_{LC}$、$R_{HC}$和$R_{Uni}$。 $R_{LC}$、$R_{HC}$和$R_{Uni}$的大小相同，均为 32 × 64 × 64。 MCM BCE Loss Block 接收 $R_{LC}$、$R_{HC}$ ，用三个不同的卷积层生成 $\\cup(X)$ 和 $\\cap(X)$ ，内核大小为 3× 3. BCE损失计算$\\cup(X)$ 和 $\\cup(GT)$的损失以及$\\cap(X)$ 和 $\\cap(GT)$。 $\\cup(X)$和$\\cap(X)$通过归一化操作Normal($\\cup(X)$+$\\cap(X)$)组合为MCM’，反映了不同区域的不确定性程度。与我们之前的工作 [12] 不同，$R_{Uni}$ 的分支是通过多重注释损失块进行优化的，这将在稍后讨论。此外，具有相同形状的 1 × 64 × 64 的特征图 $R_{LC}$、$R_{HC}$和$R_{Uni}$ 将被输入到下一个模块中进行进一步分析。\n主要还是用来生成一个MCM\n3.3 Intersection-Union Constraining Module 如上所述，$\\cup(GT)$和$\\cap(GT)$ 是UAM的学习目标。具体地，$\\cup(GT)$表示所有可能是结节组织的区域，表示置$\\cap(GT)$信度最高的结节区域。为了在极端情况之间实现平衡，我们进一步开发了一个新模块，称为交集并集约束模块（IUCM）。\n该模块旨在捕获所有三个学习目标的特征，并产生更合理的分割预测，可以在极端情况之间取得平衡。\n如图 4 所示，IUCM 将 $R_{LC}$、$R_{HC}$和$R_{Uni}$作为输入，并将对应的 $R_{LC}^{\\prime}$、$R_{HC}^{\\prime}$和$R_{Uni}^{\\prime}$与特征感知注意块 (FAAB) 对应。 $R_{LC}^{\\prime}$、$R_{HC}^{\\prime}$和$R_{Uni}^{\\prime}$的尺寸相同，均为 32 × 32 × 32。FAAB 是基于自注意力块 [22] 和特征感知滤波器构建的。\n这些注意力块使用不同的特征感知滤波器处理$R_{LC}$、$R_{HC}$和$R_{Uni}$，使网络能够针对不同的学习目标制定不同的学习偏好，并获得更多有助于分割的图像特征[23]、[24]。更具体地说，假设输入$R_z$，FAAB的过程可以总结为：\n其中 z ∈ {Uni, LC, HC},A表示自注意力架构。 Г是一个特征感知滤波器，在本研究中，$R_{Uni}$和$R_{LC}$的Г是Gabor[25]，$R_{HC}$的Г是Otsu[26]。 Γ(A($R_z$)) 与$R_z$逐像素相加，以便网络可以从输入中保留更多信息。\n通过对数据集和Hounsfield Unit Kernel Estimations的观察，我们可以看到，$R_{HC}$主要是密度较高的实性结节，而$R_{LC}$则包括更多的低密度组织（如毛刺），主要分布在结节的边缘。 Otsu对密度特征敏感，可以帮助网络更准确地识别高密度组织。因此，我们应用 Otsu 从 $R_{HC}$ 中提取 $R_{HC}^{\\prime}$。同时，Gabor对图像边缘敏感，能够提供良好的方向选择和尺度选择特征，从而能够捕获图像局部区域多个方向的局部结构特征。因此，我们选择Gabor从$R_{LC}$和$R_{Uni}$中提取$R_{LC}^{\\prime}$和$R_{Uni}^{\\prime}$。关于过滤器选择的消融研究将在第四节中提供。\n得到 $R_{LC}^{\\prime}$、$R_{HC}^{\\prime}$和$R_{Uni}^{\\prime}$后，IUCM 得到 $S_z$ = d{$R_Z$,$R$},d是计算余弦相似度的运算。\nIUCM 的输出为 $R_{Aug}$ = Concat($S_{Uni}$× $R_{Uni}^{\\prime}$ ; $S_{LC}$× $R_{LC}^{\\prime}$; $S_{HC}$× $R_{HC}^{\\prime}$ )。$R_{Aug}$将与来自特征提取模块的 R 连接，输入到卷积层，并生成最终的分割预测 $X_S$。 R 和 $R_{Aug}$ 的串联保留了来自 CT 输入的更多信息。\n3.4 Loss Function 在图 3 中，UGMCS-Net 包含两个优化：MCM BCE 损失块和多注释损失块。\nMCM BCE Loss Block 计算$\\cup(X)$ 和 $\\cup(GT)$之间; $\\cap(X)$ 和$\\cap{(GT)}$之间的 BCE 损失可表示为：\n我们使用多注释融合损失来优化多注释损失块中的$X_{Uni}$和$X_S$，表示为Φ。在我们之前的工作中，只选择了一组注释来优化$X_{Uni}$和$X_S$，这导致其他注释中有价值的信息丢失。\n本研究引入了多重注释融合损失，它将预测与所有可能的注释进行比较。\n首先，$R_{Uni}$和$R_F$最终产生$X_{Uni}$和$X_S$。其次，如图 5 所示，多注释融合损失函数计算优化对象（$X_{Uni}$和$X_S$）与注释集之间的 BCE 损失，并合并这些损失的平均值。根据我们的设计，$X_{Uni}$应该倾向于整个注释集，XS应该从注释集中学习足够的信息并产生平衡所有注释的分割，因此我们选择使用多注释融合损失来优化$X_{Uni}$和$X_S$。我们有：\n网络的损失融合可以定义为：\n其中 α1、α2 和 α3 是预定义参数。根据经验，本文中α1设置为0.5，α2设置为0.5，α3设置为1。重量选择的消融研究将在第四节中显示。\nEXPERIMENT 4.1 Dataset and Experimental Settings 在本研究中，我们使用 LIDC-IDRI 数据集 [11] 评估所提出的网络，该数据集由 1018 个研究实例和超过 2600 个结节组成。在本研究中，我们选择了 1860 个直径为 3-30mm 且具有多个注释的肺结节。每个结节数据至少有两个注释，以便我们可以获得其CT图像、多个注释集GT、它们的并集$\\cup(GT)$和交集$\\cap(GT)$。输入图像及其掩模均为 50 × 50 像素，根据官方注释从 LIDC-IDRI 数据集中裁剪。每个像素反映 CT 图像的亨斯菲尔德单位。\n在训练之前，我们将 CT 图像的强度值裁剪到范围 [1000,1000] 并将所有强度值归一化到范围 [0, 1]。数据处理的代码在网站 https://github.com/qiuliwang/LIDCIDRI-Toolbox-python 上提供。\n我们在运行 Ubuntu 18.04、Tesla V100 GPU 的服务器上进行实验，使用 CUDA 11.2，GPU 内存约为 16G。该网络使用PyTorch-v1.0.1和Python3.7实现。我们使用五重验证来评估网络的有效性，确保数据分割的稳健性。我们使用热重启随机梯度下降（SGDR）作为优化器，初始学习率（LR）为0.00001，批量大小为32，动量为0.9，权重衰减率为0.0001。每个网络都训练 200 个 epoch，学习率每 50 个 epoch 更新一次。 UGMCS-Net的源代码、原始USGNet以及所有实验设置将上传到https://github.com/yanghan-yh/UGS-Net。\n4.2 Performance of Lung Nodule Segmentation 每个结节的相关注释Label1，它是注释集中的第一个。 Probabilistic U-Net是一种基于VAE的模糊分割方法，因此我们取其四个样本的平均值作为最终的分割结果。本研究使用三个指标来评估网络对病变区域的预测能力：平均 Dice 相似系数（DSC）、交集交集（IoU）和归一化表面 Dice（NSD）[35]。在表 I 中，所有方法均使用 Label1 进行评估。\n这实验数据太丰富了把！！！\n表I显示UGMCS-Net在DSC、IoU和NSD方面取得了最高分数，分别为87.65%（±0.56%）、78.78%（±0.83%）和95.62%（±0.59%）。与 U-Net 相比，UGMCS-Net 在三个指标上分别提高了 1.39%、1.99% 和 1.16%。同样，与 Attention U-Net 相比，UGMCS-Net 在各个指标上实现了 0.98%、1.45% 和 0.68% 的增强。这些结果凸显了 UGMCS-Net 卓越的分割性能，特别是 NSD 分数的大幅提高，表明其强大的边界特征分割能力。此外，与 UGSNet 相比，UGMCS-Net 在所有指标上都表现出了相当大的进步，DSC 分数提高了 0.49%，IoU 分数提高了 0.74%，NSD 分数提高了 0.34%。此外，从 UGMCS-Net 的五重交叉验证中获得的三个指标的方差始终小于 UGS-Net 的方差，表明通过集成多重注释融合损失和约束操作增强了网络稳定性。 nnU-Net 是用于分割任务的流行网络。然而，它在 DSC 中仅达到 84.60%，在 IoU 中仅达到 74.45%。这是因为nnU-Net的训练需要很大的数据集。然而，我们在此任务中只有 1860 个结节图像。\n图6显示了上述方法的部分分割结果。输入列中的红色框表示感兴趣的区域或结节容易出错的分割位置。结节(a)-(c)包含许多低密度区域，结节(d)-(f)在其边界处具有不规则形状，例如毛刺迹象，并且结节(g)-(h)具有空腔。 UGMCS-Net 对这些区域的分割明显比其他方法更符合病灶的实际形状。\n对比实验结果的套话 （可以学习一下）\n（U-Net、Attention U-Net、R2U-Net、Channel U-Net、Nested U-Net、UGS-Net 和 UGMCS-Net 的分割结果。输入列对应的红色框表示分割时应注意的特征或结节容易出错的位置。 UGMCS-Net 列中的红色框表示 UGMCS-Net 在这些位置的分割细节。绿色框表示次优分割结果的不足之处。最后一栏是相应结节的直径，单位为毫米）\n这个定性结果的对比方法，值得学习。\n图 6 和表 I 表明：（1）从注释集及其并集和交集中学习，为分割任务提供了更丰富的视觉信息。\n(2)从LC区域学习提高了网络识别低密度区域的能力。\n值得注意的是，图6（g）-（h）中，标注中没有空洞，但UGMCS-Net得到的分割结果反映了空洞特征。我们选择保留这些特征有两个原因：（1）常见结节组织的密度高于肺实质。但肺结节内的空腔密度极低，甚至是空的。\n我们可以将它们视为结节的一部分，也可以不视为结节的一部分。 (2) 分割图应提供更多有关结节特征的信息。空腔是重要的特征，因此保留这些空腔是更好的选择。如果需要，可以使用 cv2.findContours 等方法轻松去除预测中的空洞。\n表II，UGMCS-Net对于U-Net、Attention UNet、UGS-Net在Dice和IoU分数中的p值远小于0.05，并且t值的绝对值较大，表明UGMCS-Net在性能上明显优于U-Net、Attention U-Net和UGS-Net。\nP值 (P-value)：在统计分析中，P值用于量化结果发生的概率，假设零假设（通常是无效假设，如两组之间无差异）为真。在医学图像分析的研究中，如果涉及到统计检验（例如，比较两种分割方法的性能），P值可以用来表示这种比较的显著性水平。 V值：这个术语在医学图像分析中不常见，可能指的是特定研究或技术中使用的一个特定参数或度量。例如，它可能代表体积（Volume）的度量，特别是在分析器官大小或肿瘤体积时。在不同的上下文中，它可能有不同的含义。 上面的实验是基于注释集中的第一个注释Label1 。为了消除掩码选择的影响，我们还提供了 U-Net、Attention U-Net、UGS-Net 和 UGMCS-Net 在标注集中的第二个标签 Label2 上的性能。表III中列出的实验结果表明UGMCS-Net在Label2上保持了其优越的性能。这意味着所提出的方法可以在不同的掩模选择上保持稳定的性能。在传统的训练方法中，每个结节都被分配一个单一的掩模，无法为具有复杂结构特征的结节提供足够的信息。\n在我们的网络中，每个结节与 2-4 个掩模相关联。通过整合多重注释融合损失，我们将更全面的信息注入到学习过程中。它对于分割具有复杂结构和低密度纹理的结节特别有益。因此，多重注释融合损失显着提高了性能，特别是对于具有复杂结构的结节。\n4.3 Uncertain Region Prediction 除了能够分割结节之外，UGMCS-Net 还可以预测更有可能是结节组织的区域和可能性较低的区域。图 7 说明了预测结果 $\\cup(X)$和$\\cap(X)$、最终分割结果 $X_S$ 以及生成的 MCM’。在MCM’和MCM+UGSNet中，红色表示高置信度区域，蓝色表示低置信度区域，绿色对应于最终分割$X_S$。在理想情况下，$X_S$应有效地在高置信度和低置信度区域之间取得平衡。\n（预测交集$\\cap(X)$、预测并集$\\cup(X)$、最终分割$X_S$ 和 MCM 由 UGMCS-Net 生成。 MCM 中的颜色用于更好的可视化，红色表示$\\cap(X)$，蓝色表示$\\cup(X)$。此外，最终的分割在 MCM 中表示并标记为绿色以方便比较。红色框表示不易区分的结节区域或特征。最后一栏是相应结节的直径（以毫米为单位）)\n根据图 7，我们的最终分割结果位于高置信度区域和低置信度区域这两种极端情况之间。这些中间结果表明（1）我们的预测认识到所有潜在的注释，并且（2）预测被限制在$\\cap(X)$和$\\cup(X)$之间。\n具体来说，在肺结节特征分割中使用MCM具有以下几个优点，可以更好地显示结节的语义特征：（1）MCM可以更好地突出结节的显着空腔特征（图7.（g）（h））。与其他方法相比，UGMCS-Net 的预测掩模上的结节腔特征更加明显。这是由于UGMCS-Net能够在交叉掩模$\\cap(GT)$和联合掩模$\\cup(GT)$的指导下捕获结节组织的密度差异，这有助于保留结节腔的更多特征。\n(2)MCM可以更好地分割毛刺征象，这是诊断良恶性肺结节的重要特征(图7.(a)-(f))。针状结构是由结节侵入周围组织引起的星状变形，通常是低密度的并分布在结节边缘周围。这一特征是传统深度学习方法难以分割的。 UGMCS-Net在union mask $\\cup(GT)$的指导下可以更加关注结节边界特征，从而对分布在结节边界的毛刺有更好的分割性能。\n（3）MCM可以更好地分割结节的低密度组织（图7.（i）-（l）），该区域常见于磨玻璃结节，是造成专家标记差异的主要区域。 UGMCSNet通过对注释集GT和union mask $\\cup(GT)$的研究，可以最大程度地识别低密度组织，这对于磨玻璃结节的诊断很有帮助。\n由于LC掩模尺寸较小，传统的定量评估指标如DSC和IoU不足以衡量MCM的预测质量。为了解决这个问题，我们将预测的 HC 和 LC 掩模的 HU 分布与实际的 HC 和 LC 掩模进行比较。我们假设UGMCS-Net能够合理地预测不同区域的不确定性程度。因此，预测的 HC 和 LC 掩模的 HU 值分布应与实际分布相似。图8显示预测曲线与实际曲线吻合较好，表明我们预测的区域不确定性水平在统计上是可靠的。\n4.4 Ablation Study 我真的要被这个工作量给吓鼠了，太能做实验了把\n模块的消融研究：如果不指出实用性，我们会在每个部分进行五倍验证。为了更好地利用多个注释的信息并增强 $R_{LC}$ 、 $R_{HC}$ 和 $R{final}$ 之间的关系，我们用多注释融合损失和交叉联合约束模块更新了 UGMCS-Net。为了进一步证明这两个模块的贡献，我们基于 UGMCS-Net 构建了 UGMCS-$Φ_a$、UGMCS-$Φ_b$、UGMCS-$Φ_a$+$Φ_b$ 和 UGMCS-IUCM 进行消融实验。在UGMCS-$Φ_a$中，多注释融合损失仅应用于$\\cup(X)$;在UGMCS-$Φ_b$中，Multiple Annotation Fusion Loss仅应用于网络XS的最终输出；在UGMCS-$Φ_a$+$Φ_b$ 中，多重注释融合损失应用于$\\cup(X)$和$X_S$；在UGMCS-IUCM中，我们使用USG-Net中的Intersection-Union约束模块，但没有多重注释融合损失。\n我们的 UGMCS-Net 及其四种变体的性能列于表 IV，“-”表示 Attention U-Net。 V1是指没有IUCM和多重注释融合损失的UGS-Net，它作为其他变体的基础网络。\n结果表明：（1）UGMCS-$Φ_a$、UGMCS-$Φ_b$网络相对于UGMCS-Net的性能改进表明，所有标注信息的融合可以使网络更准确地捕获结节区域并获得更好的分割性能。 (2) UGMCS-$Φ_a$+$Φ_b$ 网络的 DSC、IoU 和 NSD 高于 UGMCS-$Φ_a$、UGMCS-$Φ_b$网络，表明同时对 UAM 和最终输出使用多重注释融合损失优于单独使用其中之一。 (3) 我们的 UGMCS-Net 优于UGMCS-$Φ_a$+$Φ_b$和 UGMCS-IUCM，证明了交集并集约束模块的有效性。尽管仅添加交集-并集约束模块（UGMCS-IUCM）时网络的定量性能略有下降，但观察到了显着的定性改进，这将在后面讨论。此外，UGMCS-Net的优越性能表明，多重注释融合损失和交叉联合约束模块可以相互增强，约束不确定性并促进更好的分割性能。\n为了进一步验证多注释融合损失和交叉联合约束模块的有效性，我们在图 9 中使用 Grad-CAM [36]、[37] 演示了特征图可视化。每种情况下的结果代表了网络的最终预测。 M3、M2和M1分别表示不同网络配置下倒数第三个、第二个和第一个卷积层的视觉特征图。基于图9，我们观察到：（1）当将多重注释融合损失应用于$\\cup(X)$或$X_S$时，网络对低密度组织的识别能力显着提高（UGMCS-$Φ_a$和UGMCS-$Φ_b$，结节A-D)； （2）$\\cup(X)$或$X_S$中同时使用Multiple Annotation Fusion Loss，可以在提高对低密度组织的敏感性的基础上，使网络勾勒出结节边界更加清晰（UGMCS-$Φ_a$+$Φ_b$网络，结节A-D）。 (3) IntersectionUnion Constraining Module使网络能够学习更多的边界特征，例如spiculation（毛刺）（UGMCS-IUCM网络，Nodule A-C）。 （4）当同时使用Multiple Annotation Fusion Loss和Intersection-Union Constraining Module时，网络注意力转移到结节边界，勾画出更加合理完整的结节区域（UGMCS-Net，Nodule A-E）。\n如图9所示，在IUCM的帮助下，网络可以针对复杂结节获得更语义化、更合理的分割结果。然而，如表IV所示，与UGMCS-$Φ_a$+$Φ_b$相比，UGMCS-Net在DSC、IoU和NSD上的性能增益较弱。我们认为造成这种现象的原因有3个：（1）IUCM专注于提高复杂结节的分割性能，与测量上的改进相比，IUCM使得模型对分割结果的性能提升更加显着（进一步验证在第 IV-E 节）。\n（2）复杂结节仅占结节总数的一小部分，因此IUCM无法显着提高模型在各项指标上的得分。 (3)数据集中仍然存在一些失败案例。如图10所示，在这些情况下，UGMCS-IUCM和UGMCS-Net获得的分割掩模包含更多的结节组织并且是更准确的病变区域，但它们的DSC分数较低。\n由于不同医生领域的知识偏差会影响groundtruth，因此对于分割任务来说，获得更准确、更合理的分割掩模通常比更高的度量分数更有意义。\n表V显示了加入UAM和IUCM后模型复杂度的增加。显然，UAM 和 IUCM 可以使模型以很少的计算成本获得更好的性能。\nBackbone 的消融研究：我们测试 U-Net 和 R2U-Net 作为三个模块的骨干。如表六所示，以U-Net为骨干的模型在DSC、IoU和NSD上分别获得了87.04%、78.07%和94.50%的分数。\n以R2U-Net为骨干的模型在DSC、IoU和NSD上分别获得了86.20%、76.82%和93.75%的结果。实验结果表明，所提出的特征提取模块、不确定性感知模块和交集并集约束模块是即插即用的。\n我们之前的工作评估了 nnU-Net [22] 作为骨干网络。\n这个网络在这个任务中有两个缺点：（1）它占用了太多的计算资源，（2）我们只有 1860 个结节，这可能会导致过度拟合。为了平衡计算资源和性能增益，我们在本工作中选择 Attention U-Net。\n交叉点联合约束模块中滤波器的消融研究：在第 III-C 节中，我们讨论了 Otsu 对密度特征的敏感性，使模型能够准确识别高密度组织。因此，我们利用 Otsu 的方法来提取 $R_{HC}$ 的特征。相反，Gabor对图像边缘敏感并提供有效的方向和尺度选择特征，被选择用于 $R_{LC}$的特征提取。在这些部分中，我们进行了涉及 Fold1 上 IntersectionUnion 约束模块内的五个过滤器设置的实验。表 VII 概述了这些设置。如表 VII 所示，我们的最终配置产生了最高的 DSC 分数。\n我们在图 11 中提供了 $R_{LC}^{\\prime}$ 和 $R_{HC}^{\\prime}$ 的特征可视化。可以看出， $R_{LC}^{\\prime}$ 的可视化更多地集中在结节的边缘，其中包含更多的低置信度区域。相比之下， $R_{HC}^{\\prime}$ 的可视化更关注结节的核心，具有更高的分割置信度。这些可视化结果重新证明了我们过滤器设计的有效性。\n参数消融研究：在方程 4 中，存在三个手动设置的参数：α1 指定为 0.5，α2 指定为 0.5，α3 指定为 1。在本节中，我们进行五重验证并说明这些参数选择背后的基本原理。\n如表VIII所示，当α1设置为0.5，α2设置为0.5，α3设置为1时，所提出的方法达到其峰值性能。值得注意的是，α3代表最终分割的权重，这意味着XS在训练过程中发挥着重要作用。\n此外，我们对三个分支的概率图加权平均融合进行了实验，希望网络能够为IUCM中的每个分支选择合适的权重。然而，我们观察到与 $R_{Uni}$ 对应的分支可以为结节分割提供更通用的特征，并且比其他两个分支显得“更强”。因此，其他两个分支的权重往往会减少到 0。根据这些观察结果，我们选择直接融合概率图。\n4.5 Complex-Nodule Validation UGMCS-Net 从可能导致分割不确定性的区域学习特征。因此，它可以更好地分割具有大的低密度区域或复杂结构的结节。为了更好地证明其对 U-Net 难以分割的结节的改进，我们设计了一个 Complex Nodule Validation。基于五重验证U-Net，我们进一步选择了DSC分数低于60％、70％和80％的三组结节。然后使用相同的数据设置训练 Attention U-Net、UGMCS-$Φ_a$+$Φ_b$、UGMCS-IUCM 和 UGMCS-Net，以再次测试这些结节并比较 DSC 和 IoU 分数。\nUGMCS-Net 在复杂结节上的性能提升是显而易见的。与Attention U-Net相比，对于U-Net上DSC分数低于60%的结节，UGMCS-$Φ_a$+$Φ_b$导致平均DSC分数提高1.58%，UGMCS-IUCM使平均DSC分数提高5.12%，UGMCS-平均 DSC 得分净产量增加了 5.45%。对于 U-Net 上 DSC 得分在 60% 到 70% 之间的结节，UGMCS-$Φ_a$+$Φ_b$、UGMCS-IUCM 和 UGMCS-Net 的平均 DSC 得分分别提高了 0.69%、3.11% 和 5.07%。同样，对于 U-Net 上 DSC 分数在 70% 至 80% 之间的结节，UGMCS-$Φ_a$+$Φ_b$、UGMCS-IUCM 和 UGMCS-Net 的平均 DSC 分数相应提高了 0.14%、1.52% 和 1.64%。从上述差异可以看出，UGMCS-IUCM对于复杂结节有很大程度的性能提升。根据表一，我们的网络在整个数据集上仅将 DSC 提高了 0.89%，但相对于 U-Net 上 DSC 分数低于 60% 的结节而言，相对于 Attention U-Net 具有很大的性能提升。这是因为具有复杂结构的结节仅占所有数据的一小部分。\n图12显示了一些复杂结节的分割结果。红色下标是UGMCS-Net的分段DSC，黑色下标是UNet的DSC。可以看出，U-Net分割DSC得分低于60%的结节是一些低密度或毛玻璃组织。 UGMCS-Net在这些结节中的显着改进表明UGMCS-Net可以更好地学习结节低密度组织的特征并更准确地分割低密度结节病变区域。当U-Net分割DSC得分低于70%时，可以观察到除了一些低密度结节外，一些结节还存在不规则空洞、毛刺、组织内突然出现亮点或肺壁过亮。 UGMCS-Net在这些结节上令人信服的分割性能反映了UGMCS-Net对边界特征、密度差异的学习能力以及良好的抗噪声能力。当U-Net分割DSC得分低于80%时，我们观察到许多新结节具有更多的实体组织。在这种情况下，UGMCS-Net可以准确地确定结节区域。此外，对于大多数结节，UGMCS-Net的分割结果反映了更多的语义特征，具有更强的可解释性。\n复杂结节验证中的分割性能分析。 UGMCS-$Φ_a$+$Φ_b$、UGMCS-IUCM 和 UGMCS-Net 平均 DSC 和 IoU 后面是与 Attention U-Net 相应度量的差值（绿色数字）。所有指标均以百分比表示。\n（复杂结节验证：该验证测试了 UGMCS-Net 对 U-Net 难以分割的肺结节进行三个级别的分割性能。每张CT图像的最后两个掩模分别是UGMCS-Net和U-Net的分割结果。U-Net的分割结果以黑色显示，UGMCS-Net以红色显示。所有指标均以百分比表示。）\nDISCUSSIONS 长期以来，肺结节分割的任务一直致力于实现高精度，其中 DSC 或 IoU 是主要目标。然而，考虑到肺结节尺寸小且结构复杂，如果分割结果以不同置信度突出显示区域，可能对放射科医生更有帮助。高置信度区域提供了结节或肿瘤组织的主要部分，而低置信度区域则包含重要的低密度特征，例如毛玻璃状和毛刺征，放射科医生也应注意这些特征。\n所提出的方法旨在提供对临床诊断更有用的信息，而不是简单地改进 DSC。它并不寻求取代医生的临床作用，而是通过允许他们利用人工智能方法的优势来补充医生的临床作用。我们相信，这是将人工智能融入临床实践的更好方法。\n5.1 Data Requirement 我们的方法并不需要每个放射科医生都对所有结节进行注释。如 [11] 所示，项目期间共有 12 名放射科医生参与了所有五个站点的图像注释程序。鉴于大多数结节由 1-4 名放射科医生进行注释，可以想象结节可能由不同的放射科医生进行注释。\n尽管如此，不同放射科医生参与注释结节不会妨碍我们方法的适用性。尽管不同放射科医生之间的注释风格可能存在差异，但值得注意的是，训练有素的放射科医生遵循既定的结节注释标准，例如[38]。这些标准确保不同组的放射科医生提供多样化但基本一致的注释。\n5.2 Limitation 我们研究的一个局限性是我们仅在 LIDC-IDRI 数据集上测试我们提出的方法，该数据集是目前唯一公开可用的肺结节完整注释数据集。尽管已有十多年的历史，该数据集仍然提供了许多研究机会。然而，对多个注释的需求可能会限制我们的方法在现实临床环境中的实用性，其中获得多个注释可能并不总是可行。为了解决这个限制，我们计划探索能够基于单个注释自动识别高置信度和低置信度区域的技术，从而提高我们方法的可行性和适用性。\nCONCLUSIONS 多个注释之间的协议，以改进分割并识别分割置信度较低的区域。UAAM 从多置信度模板 (MCM) 中捕获特征，多置信度模板是低置信度 (LC) 模板和高置信度 (HC) 模板的组合。基于UAAM，我们进一步设计了不确定性引导分割网络（UGMCS-Net），其中包含特征提取模块、不确定性感知模块和交集并集约束模块。这些模块共同从多个注释之间的共识或分歧中学习有价值的信息，提供具有高和低分割置信度的区域，以及可以平衡所有可能性的分割结果。除了传统的验证方法之外，我们还提出了 LIDC-IDRI 上的复杂结节验证，测试 UGMCS-Net 对 U-Net 难以分割的肺结节的分割性能。\n实验结果表明，我们的方法可以显着提高 U-Net 分割效果不佳的结节的分割性能。\n总结：牛逼牛逼牛逼！！！ 确实牛逼！ 不愧是一区顶刊\n",
   "wordCount" : "914",
   "inLanguage": "en",
-  "datePublished": "2023-12-04T16:28:11+08:00",
+  "image": "https://swimmingliu.cn/papermod-cover.png","datePublished": "2023-12-04T16:28:11+08:00",
   "dateModified": "2023-12-04T16:28:11+08:00",
   "author":[{
     "@type": "Person",
@@ -282,134 +308,72 @@ UGMCS-Net 包含三个模块：基于 U-Net 的特征提取模块、不确定性
 <article class="post-single">
   <header class="post-header">
     <div class="breadcrumbs"><a href="https://swimmingliu.cn/">Home</a>&nbsp;»&nbsp;<a href="https://swimmingliu.cn/posts/">📚 Posts</a>&nbsp;»&nbsp;<a href="https://swimmingliu.cn/posts/papernotes/">📝 Paper Notes</a></div>
-    <h1 class="post-title">
+    <h1 class="post-title entry-hint-parent">
       Uncertainty-Aware Attention Mechanism:利用不确定性感知注意机制进行肺结节分割和不确定区域预测
     </h1>
     <div class="post-meta"><span title='2023-12-04 16:28:11 +0800 CST'>December 4, 2023</span>&nbsp;·&nbsp;5 min&nbsp;·&nbsp;SwimmingLiu
 
 </div>
-  </header> <aside id="toc-container" class="toc-container wide">
-    <div class="toc">
-        <details >
-            <summary accesskey="c" title="(Alt + C)">
-                <span class="details">Table of Contents</span>
-            </summary>
+  </header> <div class="toc">
+    <details >
+        <summary accesskey="c" title="(Alt + C)">
+            <span class="details">Table of Contents</span>
+        </summary>
 
-            <div class="inner"><ul>
-                    <li>
-                        <a href="#abstract" aria-label="Abstract">Abstract</a></li>
-                    <li>
-                        <a href="#introduction" aria-label="INTRODUCTION">INTRODUCTION</a></li>
-                    <li>
-                        <a href="#related-work" aria-label="Related Work">Related Work</a><ul>
-                            
-                    <li>
-                        <a href="#21-lung-nodule-segmentation" aria-label="2.1 Lung Nodule Segmentation">2.1 Lung Nodule Segmentation</a></li>
-                    <li>
-                        <a href="#22-uncertainty-in-lung-nodule-segmentation" aria-label="2.2 Uncertainty in Lung Nodule Segmentation">2.2 Uncertainty in Lung Nodule Segmentation</a></li></ul>
-                    </li>
-                    <li>
-                        <a href="#method" aria-label="Method">Method</a><ul>
-                            
-                    <li>
-                        <a href="#31-uncertainty-guided-multi-confidence-segmentation-network" aria-label="3.1 Uncertainty-Guided Multi-Confidence Segmentation Network">3.1 Uncertainty-Guided Multi-Confidence Segmentation Network</a></li>
-                    <li>
-                        <a href="#32-uncertainty-aware-module" aria-label="3.2 Uncertainty-Aware Module">3.2 Uncertainty-Aware Module</a></li>
-                    <li>
-                        <a href="#33-intersection-union-constraining-module" aria-label="3.3 Intersection-Union Constraining Module">3.3 Intersection-Union Constraining Module</a></li>
-                    <li>
-                        <a href="#34-loss-function" aria-label="3.4 Loss Function">3.4 Loss Function</a></li></ul>
-                    </li>
-                    <li>
-                        <a href="#experiment" aria-label="EXPERIMENT">EXPERIMENT</a><ul>
-                            
-                    <li>
-                        <a href="#41-dataset-and-experimental-settings" aria-label="4.1 Dataset and Experimental Settings">4.1 Dataset and Experimental Settings</a></li>
-                    <li>
-                        <a href="#42-performance-of-lung-nodule-segmentation" aria-label="4.2 Performance of Lung Nodule Segmentation">4.2 Performance of Lung Nodule Segmentation</a></li>
-                    <li>
-                        <a href="#43-uncertain-region-prediction" aria-label="4.3 Uncertain Region Prediction">4.3 Uncertain Region Prediction</a></li>
-                    <li>
-                        <a href="#44--ablation-study" aria-label="4.4  Ablation Study">4.4  Ablation Study</a></li>
-                    <li>
-                        <a href="#45-complex-nodule-validation" aria-label="4.5 Complex-Nodule Validation">4.5 Complex-Nodule Validation</a></li></ul>
-                    </li>
-                    <li>
-                        <a href="#discussions" aria-label="DISCUSSIONS">DISCUSSIONS</a><ul>
-                            
-                    <li>
-                        <a href="#51-data-requirement" aria-label="5.1 Data Requirement">5.1 Data Requirement</a></li>
-                    <li>
-                        <a href="#52-limitation" aria-label="5.2 Limitation">5.2 Limitation</a></li></ul>
-                    </li>
-                    <li>
-                        <a href="#conclusions" aria-label="CONCLUSIONS">CONCLUSIONS</a>
-                    </li>
-                </ul>
-            </div>
-        </details>
-    </div>
-</aside>
-<script>
-    let activeElement;
-    let elements;
-    window.addEventListener('DOMContentLoaded', function (event) {
-        checkTocPosition();
-
-        elements = document.querySelectorAll('h1[id],h2[id],h3[id],h4[id],h5[id],h6[id]');
-         
-         activeElement = elements[0];
-         const id = encodeURI(activeElement.getAttribute('id')).toLowerCase();
-         document.querySelector(`.inner ul li a[href="#${id}"]`).classList.add('active');
-     }, false);
-
-    window.addEventListener('resize', function(event) {
-        checkTocPosition();
-    }, false);
-
-    window.addEventListener('scroll', () => {
-        
-        activeElement = Array.from(elements).find((element) => {
-            if ((getOffsetTop(element) - window.pageYOffset) > 0 && 
-                (getOffsetTop(element) - window.pageYOffset) < window.innerHeight/2) {
-                return element;
-            }
-        }) || activeElement
-
-        elements.forEach(element => {
-             const id = encodeURI(element.getAttribute('id')).toLowerCase();
-             if (element === activeElement){
-                 document.querySelector(`.inner ul li a[href="#${id}"]`).classList.add('active');
-             } else {
-                 document.querySelector(`.inner ul li a[href="#${id}"]`).classList.remove('active');
-             }
-         })
-     }, false);
-
-    const main = parseInt(getComputedStyle(document.body).getPropertyValue('--article-width'), 10);
-    const toc = parseInt(getComputedStyle(document.body).getPropertyValue('--toc-width'), 10);
-    const gap = parseInt(getComputedStyle(document.body).getPropertyValue('--gap'), 10);
-
-    function checkTocPosition() {
-        const width = document.body.scrollWidth;
-
-        if (width - main - (toc * 2) - (gap * 4) > 0) {
-            document.getElementById("toc-container").classList.add("wide");
-        } else {
-            document.getElementById("toc-container").classList.remove("wide");
-        }
-    }
-
-    function getOffsetTop(element) {
-        if (!element.getClientRects().length) {
-            return 0;
-        }
-        let rect = element.getBoundingClientRect();
-        let win = element.ownerDocument.defaultView;
-        return rect.top + win.pageYOffset;   
-    }
-</script>
-
+        <div class="inner"><ul>
+                <li>
+                    <a href="#abstract" aria-label="Abstract">Abstract</a></li>
+                <li>
+                    <a href="#introduction" aria-label="INTRODUCTION">INTRODUCTION</a></li>
+                <li>
+                    <a href="#related-work" aria-label="Related Work">Related Work</a><ul>
+                        
+                <li>
+                    <a href="#21-lung-nodule-segmentation" aria-label="2.1 Lung Nodule Segmentation">2.1 Lung Nodule Segmentation</a></li>
+                <li>
+                    <a href="#22-uncertainty-in-lung-nodule-segmentation" aria-label="2.2 Uncertainty in Lung Nodule Segmentation">2.2 Uncertainty in Lung Nodule Segmentation</a></li></ul>
+                </li>
+                <li>
+                    <a href="#method" aria-label="Method">Method</a><ul>
+                        
+                <li>
+                    <a href="#31-uncertainty-guided-multi-confidence-segmentation-network" aria-label="3.1 Uncertainty-Guided Multi-Confidence Segmentation Network">3.1 Uncertainty-Guided Multi-Confidence Segmentation Network</a></li>
+                <li>
+                    <a href="#32-uncertainty-aware-module" aria-label="3.2 Uncertainty-Aware Module">3.2 Uncertainty-Aware Module</a></li>
+                <li>
+                    <a href="#33-intersection-union-constraining-module" aria-label="3.3 Intersection-Union Constraining Module">3.3 Intersection-Union Constraining Module</a></li>
+                <li>
+                    <a href="#34-loss-function" aria-label="3.4 Loss Function">3.4 Loss Function</a></li></ul>
+                </li>
+                <li>
+                    <a href="#experiment" aria-label="EXPERIMENT">EXPERIMENT</a><ul>
+                        
+                <li>
+                    <a href="#41-dataset-and-experimental-settings" aria-label="4.1 Dataset and Experimental Settings">4.1 Dataset and Experimental Settings</a></li>
+                <li>
+                    <a href="#42-performance-of-lung-nodule-segmentation" aria-label="4.2 Performance of Lung Nodule Segmentation">4.2 Performance of Lung Nodule Segmentation</a></li>
+                <li>
+                    <a href="#43-uncertain-region-prediction" aria-label="4.3 Uncertain Region Prediction">4.3 Uncertain Region Prediction</a></li>
+                <li>
+                    <a href="#44--ablation-study" aria-label="4.4  Ablation Study">4.4  Ablation Study</a></li>
+                <li>
+                    <a href="#45-complex-nodule-validation" aria-label="4.5 Complex-Nodule Validation">4.5 Complex-Nodule Validation</a></li></ul>
+                </li>
+                <li>
+                    <a href="#discussions" aria-label="DISCUSSIONS">DISCUSSIONS</a><ul>
+                        
+                <li>
+                    <a href="#51-data-requirement" aria-label="5.1 Data Requirement">5.1 Data Requirement</a></li>
+                <li>
+                    <a href="#52-limitation" aria-label="5.2 Limitation">5.2 Limitation</a></li></ul>
+                </li>
+                <li>
+                    <a href="#conclusions" aria-label="CONCLUSIONS">CONCLUSIONS</a>
+                </li>
+            </ul>
+        </div>
+    </details>
+</div>
   <div class="post-content"><h2 id="abstract">Abstract<a hidden class="anchor" aria-hidden="true" href="#abstract">#</a></h2>
 <blockquote>
 <p>放射科医生拥有不同的培训和临床经验，导致<strong>肺结节的分割注释</strong>存在<strong>差异</strong>，从而导<strong>致分割的不确定性</strong>。传统方法通常选择<strong>单个注释</strong>作为学习目标或尝试学习包含<strong>多个注释</strong>的<strong>潜在空间</strong>。</p>
@@ -678,7 +642,8 @@ UGMCS-Net 包含三个模块：基于 U-Net 的特征提取模块、不确定性
     </main>
     
 <footer class="footer">
-    <span>&copy; 2023-2024 <a href="https://swimmingliu.cn/">SwimmingLiu&#39;s Blog</a></span>
+        <span>&copy; 2023-2024 <a href="https://swimmingliu.cn/">SwimmingLiu&#39;s Blog</a></span> · 
+
     <span>
         Powered by
         <a href="https://gohugo.io/" rel="noopener noreferrer" target="_blank">Hugo</a> &

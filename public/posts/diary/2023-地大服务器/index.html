@@ -7,19 +7,61 @@
 <meta name="robots" content="index, follow">
 <title>地大服务器使用教程 | SwimmingLiu&#39;s Blog</title>
 <meta name="keywords" content="CUG">
-<meta name="description" content="地大服务器使用教程 1. 服务器环境介绍 NVIDIA RTX 3090 (24GB) NVIDIA RTX 2080 Ti (11GB) 2. 配置实验环境 2.1 Conda环境安装 每位同学都会分配个人用户，大家在自己的用户上使用Conda进行环境配置。
+<meta name="description" content="地大服务器使用教程
+1. 服务器环境介绍
+NVIDIA RTX 3090 (24GB)
+NVIDIA RTX 2080 Ti (11GB)
+
+
+2. 配置实验环境
+2.1 Conda环境安装
+每位同学都会分配个人用户，大家在自己的用户上使用Conda进行环境配置。
 Conda安装教程：https://blog.csdn.net/JineD/article/details/129507719
 大家按照教程步骤安装即可, 由于安装时间较长, 视频中暂不进行演示。
-2.2 Conda环境配置 （以YOLOv8为例） # 创建conda环境 名为yolov8_lyj python版本为3.9 conda create -n yolov8_lyj python=3.9 # 激活环境 conda activate yolov8_lyj # 选择合适的路径，克隆github项目代码 git clone https://github.com/ultralytics/ultralytics # 进入到项目路径下 cd ultralytics/ # 安装相关依赖包 pip install -r requirements.txt -i https://pypi.tuna.tsinghua.edu.cn/simple 2.3 准备数据集 下载需要训练的数据集 （最好找顶刊/顶会论文中的公开数据集）
+2.2 Conda环境配置 （以YOLOv8为例）
+# 创建conda环境 名为yolov8_lyj python版本为3.9
+conda create -n yolov8_lyj python=3.9
+# 激活环境
+conda activate yolov8_lyj
+# 选择合适的路径，克隆github项目代码
+git clone https://github.com/ultralytics/ultralytics
+# 进入到项目路径下
+cd ultralytics/
+# 安装相关依赖包
+pip install -r requirements.txt -i https://pypi.tuna.tsinghua.edu.cn/simple
+2.3 准备数据集
+
+
+下载需要训练的数据集 （最好找顶刊/顶会论文中的公开数据集）
+
+
 按照算法指定的数据集格式，对数据集格式进行调整。
-​	目标检测中数据集格式之间的相互转换：（VOC、COCO、YOLO格式）
-​	https://zhuanlan.zhihu.com/p/461488682
-2.4 开始实验 在算法中指定数据集的存放路径 （相对/绝对路径均可）
+
+
+​		目标检测中数据集格式之间的相互转换：（VOC、COCO、YOLO格式）
+​		https://zhuanlan.zhihu.com/p/461488682
+2.4 开始实验
+
+
+在算法中指定数据集的存放路径 （相对/绝对路径均可）
+
+
 初始化算法的参数
-batch-size 批处理大小：每一次处理图片的个数，根据显卡内存进行调整epochs	迭代次数：算法总共需要训练的轮次workers 载入数据进程数：每一次调用多少个进程来载入数据device 选择显卡设备： &#39;0&#39;使用3090，&#39;1&#39;使用2080ti，&#39;0,1&#39;使用两张卡 开始训练 # 运行训练代码 python mian.">
+
+
+batch-size  批处理大小：每一次处理图片的个数，根据显卡内存进行调整
+epochs	   迭代次数：算法总共需要训练的轮次
+workers     载入数据进程数：每一次调用多少个进程来载入数据
+device      选择显卡设备： &#39;0&#39;使用3090，&#39;1&#39;使用2080ti，&#39;0,1&#39;使用两张卡
+
+开始训练
+
+# 运行训练代码
+python mian.py
+(注：使用向日葵的同学，可以直接在Pycharm当中运行)">
 <meta name="author" content="SwimmingLiu">
 <link rel="canonical" href="https://swimmingliu.cn/posts/diary/2023-%E5%9C%B0%E5%A4%A7%E6%9C%8D%E5%8A%A1%E5%99%A8/">
-<link crossorigin="anonymous" href="/assets/css/stylesheet.56574d0b8d57cdd0d704dd823c3ab0e600bd78cf5a999377277390417d6b2f3e.css" integrity="sha256-VldNC41XzdDXBN2CPDqw5gC9eM9amZN3J3OQQX1rLz4=" rel="preload stylesheet" as="style">
+<link crossorigin="anonymous" href="/assets/css/stylesheet.d0ba3726344b58c49d5f0d05195743e4438cff79cf2048e07443b1ea4d4fdbf5.css" integrity="sha256-0Lo3JjRLWMSdXw0FGVdD5EOM/3nPIEjgdEOx6k1P2/U=" rel="preload stylesheet" as="style">
 <link rel="icon" href="https://swimmingliu.cn/images/swimmingliu_icon.png">
 <link rel="icon" type="image/png" sizes="16x16" href="https://swimmingliu.cn/images/swimmingliu_icon.png">
 <link rel="icon" type="image/png" sizes="32x32" href="https://swimmingliu.cn/images/swimmingliu_icon.png">
@@ -27,6 +69,7 @@ batch-size 批处理大小：每一次处理图片的个数，根据显卡内存
 <link rel="mask-icon" href="https://swimmingliu.cn/images/swimmingliu_icon.png">
 <meta name="theme-color" content="#2e2e33">
 <meta name="msapplication-TileColor" content="#2e2e33">
+<link rel="alternate" hreflang="en" href="https://swimmingliu.cn/posts/diary/2023-%E5%9C%B0%E5%A4%A7%E6%9C%8D%E5%8A%A1%E5%99%A8/">
 <noscript>
     <style>
         #theme-toggle,
@@ -44,7 +87,7 @@ batch-size 批处理大小：每一次处理图片的个数，根据显卡内存
                 --secondary: rgb(155, 156, 157);
                 --tertiary: rgb(65, 66, 68);
                 --content: rgb(196, 196, 197);
-                --hljs-bg: rgb(46, 46, 51);
+                --code-block-bg: rgb(46, 46, 51);
                 --code-bg: rgb(55, 56, 62);
                 --border: rgb(51, 51, 51);
             }
@@ -65,35 +108,120 @@ batch-size 批处理大小：每一次处理图片的个数，根据显卡内存
     </style>
 </noscript>
 <meta property="og:title" content="地大服务器使用教程" />
-<meta property="og:description" content="地大服务器使用教程 1. 服务器环境介绍 NVIDIA RTX 3090 (24GB) NVIDIA RTX 2080 Ti (11GB) 2. 配置实验环境 2.1 Conda环境安装 每位同学都会分配个人用户，大家在自己的用户上使用Conda进行环境配置。
+<meta property="og:description" content="地大服务器使用教程
+1. 服务器环境介绍
+NVIDIA RTX 3090 (24GB)
+NVIDIA RTX 2080 Ti (11GB)
+
+
+2. 配置实验环境
+2.1 Conda环境安装
+每位同学都会分配个人用户，大家在自己的用户上使用Conda进行环境配置。
 Conda安装教程：https://blog.csdn.net/JineD/article/details/129507719
 大家按照教程步骤安装即可, 由于安装时间较长, 视频中暂不进行演示。
-2.2 Conda环境配置 （以YOLOv8为例） # 创建conda环境 名为yolov8_lyj python版本为3.9 conda create -n yolov8_lyj python=3.9 # 激活环境 conda activate yolov8_lyj # 选择合适的路径，克隆github项目代码 git clone https://github.com/ultralytics/ultralytics # 进入到项目路径下 cd ultralytics/ # 安装相关依赖包 pip install -r requirements.txt -i https://pypi.tuna.tsinghua.edu.cn/simple 2.3 准备数据集 下载需要训练的数据集 （最好找顶刊/顶会论文中的公开数据集）
+2.2 Conda环境配置 （以YOLOv8为例）
+# 创建conda环境 名为yolov8_lyj python版本为3.9
+conda create -n yolov8_lyj python=3.9
+# 激活环境
+conda activate yolov8_lyj
+# 选择合适的路径，克隆github项目代码
+git clone https://github.com/ultralytics/ultralytics
+# 进入到项目路径下
+cd ultralytics/
+# 安装相关依赖包
+pip install -r requirements.txt -i https://pypi.tuna.tsinghua.edu.cn/simple
+2.3 准备数据集
+
+
+下载需要训练的数据集 （最好找顶刊/顶会论文中的公开数据集）
+
+
 按照算法指定的数据集格式，对数据集格式进行调整。
-​	目标检测中数据集格式之间的相互转换：（VOC、COCO、YOLO格式）
-​	https://zhuanlan.zhihu.com/p/461488682
-2.4 开始实验 在算法中指定数据集的存放路径 （相对/绝对路径均可）
+
+
+​		目标检测中数据集格式之间的相互转换：（VOC、COCO、YOLO格式）
+​		https://zhuanlan.zhihu.com/p/461488682
+2.4 开始实验
+
+
+在算法中指定数据集的存放路径 （相对/绝对路径均可）
+
+
 初始化算法的参数
-batch-size 批处理大小：每一次处理图片的个数，根据显卡内存进行调整epochs	迭代次数：算法总共需要训练的轮次workers 载入数据进程数：每一次调用多少个进程来载入数据device 选择显卡设备： &#39;0&#39;使用3090，&#39;1&#39;使用2080ti，&#39;0,1&#39;使用两张卡 开始训练 # 运行训练代码 python mian." />
+
+
+batch-size  批处理大小：每一次处理图片的个数，根据显卡内存进行调整
+epochs	   迭代次数：算法总共需要训练的轮次
+workers     载入数据进程数：每一次调用多少个进程来载入数据
+device      选择显卡设备： &#39;0&#39;使用3090，&#39;1&#39;使用2080ti，&#39;0,1&#39;使用两张卡
+
+开始训练
+
+# 运行训练代码
+python mian.py
+(注：使用向日葵的同学，可以直接在Pycharm当中运行)" />
 <meta property="og:type" content="article" />
-<meta property="og:url" content="https://swimmingliu.cn/posts/diary/2023-%E5%9C%B0%E5%A4%A7%E6%9C%8D%E5%8A%A1%E5%99%A8/" /><meta property="og:image" content="https://swimmingliu.cn/papermod-cover.png"/><meta property="article:section" content="posts" />
+<meta property="og:url" content="https://swimmingliu.cn/posts/diary/2023-%E5%9C%B0%E5%A4%A7%E6%9C%8D%E5%8A%A1%E5%99%A8/" />
+<meta property="og:image" content="https://swimmingliu.cn/papermod-cover.png" />
+<meta property="article:section" content="posts" />
 <meta property="article:published_time" content="2023-11-20T12:25:57+08:00" />
 <meta property="article:modified_time" content="2023-11-20T12:25:57+08:00" />
 
-<meta name="twitter:card" content="summary_large_image"/>
-<meta name="twitter:image" content="https://swimmingliu.cn/papermod-cover.png"/>
-
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:image" content="https://swimmingliu.cn/papermod-cover.png" />
 <meta name="twitter:title" content="地大服务器使用教程"/>
-<meta name="twitter:description" content="地大服务器使用教程 1. 服务器环境介绍 NVIDIA RTX 3090 (24GB) NVIDIA RTX 2080 Ti (11GB) 2. 配置实验环境 2.1 Conda环境安装 每位同学都会分配个人用户，大家在自己的用户上使用Conda进行环境配置。
+<meta name="twitter:description" content="地大服务器使用教程
+1. 服务器环境介绍
+NVIDIA RTX 3090 (24GB)
+NVIDIA RTX 2080 Ti (11GB)
+
+
+2. 配置实验环境
+2.1 Conda环境安装
+每位同学都会分配个人用户，大家在自己的用户上使用Conda进行环境配置。
 Conda安装教程：https://blog.csdn.net/JineD/article/details/129507719
 大家按照教程步骤安装即可, 由于安装时间较长, 视频中暂不进行演示。
-2.2 Conda环境配置 （以YOLOv8为例） # 创建conda环境 名为yolov8_lyj python版本为3.9 conda create -n yolov8_lyj python=3.9 # 激活环境 conda activate yolov8_lyj # 选择合适的路径，克隆github项目代码 git clone https://github.com/ultralytics/ultralytics # 进入到项目路径下 cd ultralytics/ # 安装相关依赖包 pip install -r requirements.txt -i https://pypi.tuna.tsinghua.edu.cn/simple 2.3 准备数据集 下载需要训练的数据集 （最好找顶刊/顶会论文中的公开数据集）
+2.2 Conda环境配置 （以YOLOv8为例）
+# 创建conda环境 名为yolov8_lyj python版本为3.9
+conda create -n yolov8_lyj python=3.9
+# 激活环境
+conda activate yolov8_lyj
+# 选择合适的路径，克隆github项目代码
+git clone https://github.com/ultralytics/ultralytics
+# 进入到项目路径下
+cd ultralytics/
+# 安装相关依赖包
+pip install -r requirements.txt -i https://pypi.tuna.tsinghua.edu.cn/simple
+2.3 准备数据集
+
+
+下载需要训练的数据集 （最好找顶刊/顶会论文中的公开数据集）
+
+
 按照算法指定的数据集格式，对数据集格式进行调整。
-​	目标检测中数据集格式之间的相互转换：（VOC、COCO、YOLO格式）
-​	https://zhuanlan.zhihu.com/p/461488682
-2.4 开始实验 在算法中指定数据集的存放路径 （相对/绝对路径均可）
+
+
+​		目标检测中数据集格式之间的相互转换：（VOC、COCO、YOLO格式）
+​		https://zhuanlan.zhihu.com/p/461488682
+2.4 开始实验
+
+
+在算法中指定数据集的存放路径 （相对/绝对路径均可）
+
+
 初始化算法的参数
-batch-size 批处理大小：每一次处理图片的个数，根据显卡内存进行调整epochs	迭代次数：算法总共需要训练的轮次workers 载入数据进程数：每一次调用多少个进程来载入数据device 选择显卡设备： &#39;0&#39;使用3090，&#39;1&#39;使用2080ti，&#39;0,1&#39;使用两张卡 开始训练 # 运行训练代码 python mian."/>
+
+
+batch-size  批处理大小：每一次处理图片的个数，根据显卡内存进行调整
+epochs	   迭代次数：算法总共需要训练的轮次
+workers     载入数据进程数：每一次调用多少个进程来载入数据
+device      选择显卡设备： &#39;0&#39;使用3090，&#39;1&#39;使用2080ti，&#39;0,1&#39;使用两张卡
+
+开始训练
+
+# 运行训练代码
+python mian.py
+(注：使用向日葵的同学，可以直接在Pycharm当中运行)"/>
 
 
 <script type="application/ld+json">
@@ -128,14 +256,14 @@ batch-size 批处理大小：每一次处理图片的个数，根据显卡内存
   "@type": "BlogPosting",
   "headline": "地大服务器使用教程",
   "name": "地大服务器使用教程",
-  "description": "地大服务器使用教程 1. 服务器环境介绍 NVIDIA RTX 3090 (24GB) NVIDIA RTX 2080 Ti (11GB) 2. 配置实验环境 2.1 Conda环境安装 每位同学都会分配个人用户，大家在自己的用户上使用Conda进行环境配置。\nConda安装教程：https://blog.csdn.net/JineD/article/details/129507719\n大家按照教程步骤安装即可, 由于安装时间较长, 视频中暂不进行演示。\n2.2 Conda环境配置 （以YOLOv8为例） # 创建conda环境 名为yolov8_lyj python版本为3.9 conda create -n yolov8_lyj python=3.9 # 激活环境 conda activate yolov8_lyj # 选择合适的路径，克隆github项目代码 git clone https://github.com/ultralytics/ultralytics # 进入到项目路径下 cd ultralytics/ # 安装相关依赖包 pip install -r requirements.txt -i https://pypi.tuna.tsinghua.edu.cn/simple 2.3 准备数据集 下载需要训练的数据集 （最好找顶刊/顶会论文中的公开数据集）\n按照算法指定的数据集格式，对数据集格式进行调整。\n​\t目标检测中数据集格式之间的相互转换：（VOC、COCO、YOLO格式）\n​\thttps://zhuanlan.zhihu.com/p/461488682\n2.4 开始实验 在算法中指定数据集的存放路径 （相对/绝对路径均可）\n初始化算法的参数\nbatch-size 批处理大小：每一次处理图片的个数，根据显卡内存进行调整\repochs\t迭代次数：算法总共需要训练的轮次\rworkers 载入数据进程数：每一次调用多少个进程来载入数据\rdevice 选择显卡设备： \u0026#39;0\u0026#39;使用3090，\u0026#39;1\u0026#39;使用2080ti，\u0026#39;0,1\u0026#39;使用两张卡 开始训练 # 运行训练代码 python mian.",
+  "description": "地大服务器使用教程 1. 服务器环境介绍 NVIDIA RTX 3090 (24GB) NVIDIA RTX 2080 Ti (11GB) 2. 配置实验环境 2.1 Conda环境安装 每位同学都会分配个人用户，大家在自己的用户上使用Conda进行环境配置。\nConda安装教程：https://blog.csdn.net/JineD/article/details/129507719\n大家按照教程步骤安装即可, 由于安装时间较长, 视频中暂不进行演示。\n2.2 Conda环境配置 （以YOLOv8为例） # 创建conda环境 名为yolov8_lyj python版本为3.9 conda create -n yolov8_lyj python=3.9 # 激活环境 conda activate yolov8_lyj # 选择合适的路径，克隆github项目代码 git clone https://github.com/ultralytics/ultralytics # 进入到项目路径下 cd ultralytics/ # 安装相关依赖包 pip install -r requirements.txt -i https://pypi.tuna.tsinghua.edu.cn/simple 2.3 准备数据集 下载需要训练的数据集 （最好找顶刊/顶会论文中的公开数据集）\n按照算法指定的数据集格式，对数据集格式进行调整。\n​\t目标检测中数据集格式之间的相互转换：（VOC、COCO、YOLO格式）\n​\thttps://zhuanlan.zhihu.com/p/461488682\n2.4 开始实验 在算法中指定数据集的存放路径 （相对/绝对路径均可）\n初始化算法的参数\nbatch-size 批处理大小：每一次处理图片的个数，根据显卡内存进行调整\repochs\t迭代次数：算法总共需要训练的轮次\rworkers 载入数据进程数：每一次调用多少个进程来载入数据\rdevice 选择显卡设备： \u0026#39;0\u0026#39;使用3090，\u0026#39;1\u0026#39;使用2080ti，\u0026#39;0,1\u0026#39;使用两张卡 开始训练 # 运行训练代码 python mian.py (注：使用向日葵的同学，可以直接在Pycharm当中运行)\n",
   "keywords": [
     "CUG"
   ],
   "articleBody": "地大服务器使用教程 1. 服务器环境介绍 NVIDIA RTX 3090 (24GB) NVIDIA RTX 2080 Ti (11GB) 2. 配置实验环境 2.1 Conda环境安装 每位同学都会分配个人用户，大家在自己的用户上使用Conda进行环境配置。\nConda安装教程：https://blog.csdn.net/JineD/article/details/129507719\n大家按照教程步骤安装即可, 由于安装时间较长, 视频中暂不进行演示。\n2.2 Conda环境配置 （以YOLOv8为例） # 创建conda环境 名为yolov8_lyj python版本为3.9 conda create -n yolov8_lyj python=3.9 # 激活环境 conda activate yolov8_lyj # 选择合适的路径，克隆github项目代码 git clone https://github.com/ultralytics/ultralytics # 进入到项目路径下 cd ultralytics/ # 安装相关依赖包 pip install -r requirements.txt -i https://pypi.tuna.tsinghua.edu.cn/simple 2.3 准备数据集 下载需要训练的数据集 （最好找顶刊/顶会论文中的公开数据集）\n按照算法指定的数据集格式，对数据集格式进行调整。\n​\t目标检测中数据集格式之间的相互转换：（VOC、COCO、YOLO格式）\n​\thttps://zhuanlan.zhihu.com/p/461488682\n2.4 开始实验 在算法中指定数据集的存放路径 （相对/绝对路径均可）\n初始化算法的参数\nbatch-size 批处理大小：每一次处理图片的个数，根据显卡内存进行调整\repochs\t迭代次数：算法总共需要训练的轮次\rworkers 载入数据进程数：每一次调用多少个进程来载入数据\rdevice 选择显卡设备： '0'使用3090，'1'使用2080ti，'0,1'使用两张卡 开始训练 # 运行训练代码 python mian.py (注：使用向日葵的同学，可以直接在Pycharm当中运行)\n3. 注意事项 1. 查看显卡使用情况 两种办法：\n# 第一种 使用nivida驱动直接查看\rnvidia-smi\r# 第二种 使用第三方库 gpustat动态查看\r# 先安装第三方库\rpip install gpustat -i https://pypi.tuna.tsinghua.edu.cn/simple\r# 每两秒刷新一次 动态查看显存使用情况\rwatch -n2 gpustat 2. Magic Network 使用向日葵的同学，可以使用Magic Network进行github仓库克隆、google网盘数据集下载等\n使用方法：\nexport http_proxy=http://127.0.0.1:7890\rexport https_proxy=http://127.0.0.1:7890 预祝大家科研顺利，硕果累累，offer拿到手软！！！\n博客地址： SwimmingLiu.cn\n",
   "wordCount" : "123",
   "inLanguage": "en",
-  "datePublished": "2023-11-20T12:25:57+08:00",
+  "image": "https://swimmingliu.cn/papermod-cover.png","datePublished": "2023-11-20T12:25:57+08:00",
   "dateModified": "2023-11-20T12:25:57+08:00",
   "author":[{
     "@type": "Person",
@@ -254,114 +382,52 @@ batch-size 批处理大小：每一次处理图片的个数，根据显卡内存
 <article class="post-single">
   <header class="post-header">
     <div class="breadcrumbs"><a href="https://swimmingliu.cn/">Home</a>&nbsp;»&nbsp;<a href="https://swimmingliu.cn/posts/">📚 Posts</a>&nbsp;»&nbsp;<a href="https://swimmingliu.cn/posts/diary/">📓 Diary</a></div>
-    <h1 class="post-title">
+    <h1 class="post-title entry-hint-parent">
       地大服务器使用教程
     </h1>
     <div class="post-meta"><span title='2023-11-20 12:25:57 +0800 CST'>November 20, 2023</span>&nbsp;·&nbsp;1 min&nbsp;·&nbsp;SwimmingLiu
 
 </div>
-  </header> <aside id="toc-container" class="toc-container wide">
-    <div class="toc">
-        <details >
-            <summary accesskey="c" title="(Alt + C)">
-                <span class="details">Table of Contents</span>
-            </summary>
+  </header> <div class="toc">
+    <details >
+        <summary accesskey="c" title="(Alt + C)">
+            <span class="details">Table of Contents</span>
+        </summary>
 
-            <div class="inner"><ul>
-                    <li>
-                        <a href="#%e5%9c%b0%e5%a4%a7%e6%9c%8d%e5%8a%a1%e5%99%a8%e4%bd%bf%e7%94%a8%e6%95%99%e7%a8%8b" aria-label="地大服务器使用教程">地大服务器使用教程</a><ul>
-                            
-                    <li>
-                        <a href="#1-%e6%9c%8d%e5%8a%a1%e5%99%a8%e7%8e%af%e5%a2%83%e4%bb%8b%e7%bb%8d" aria-label="1. 服务器环境介绍">1. 服务器环境介绍</a></li>
-                    <li>
-                        <a href="#2-%e9%85%8d%e7%bd%ae%e5%ae%9e%e9%aa%8c%e7%8e%af%e5%a2%83" aria-label="2. 配置实验环境">2. 配置实验环境</a><ul>
-                            
-                    <li>
-                        <a href="#21-conda%e7%8e%af%e5%a2%83%e5%ae%89%e8%a3%85" aria-label="2.1 Conda环境安装">2.1 Conda环境安装</a></li>
-                    <li>
-                        <a href="#22-conda%e7%8e%af%e5%a2%83%e9%85%8d%e7%bd%ae-%e4%bb%a5yolov8%e4%b8%ba%e4%be%8b" aria-label="2.2 Conda环境配置 （以YOLOv8为例）">2.2 Conda环境配置 （以YOLOv8为例）</a></li>
-                    <li>
-                        <a href="#23-%e5%87%86%e5%a4%87%e6%95%b0%e6%8d%ae%e9%9b%86" aria-label="2.3 准备数据集">2.3 准备数据集</a></li>
-                    <li>
-                        <a href="#24-%e5%bc%80%e5%a7%8b%e5%ae%9e%e9%aa%8c" aria-label="2.4 开始实验">2.4 开始实验</a></li></ul>
-                    </li>
-                    <li>
-                        <a href="#3-%e6%b3%a8%e6%84%8f%e4%ba%8b%e9%a1%b9" aria-label="3. 注意事项">3. 注意事项</a><ul>
-                            
-                    <li>
-                        <a href="#1-%e6%9f%a5%e7%9c%8b%e6%98%be%e5%8d%a1%e4%bd%bf%e7%94%a8%e6%83%85%e5%86%b5" aria-label="1. 查看显卡使用情况">1. 查看显卡使用情况</a></li>
-                    <li>
-                        <a href="#2-magic-network" aria-label="2. Magic Network">2. Magic Network</a>
-                    </li>
-                </ul>
+        <div class="inner"><ul>
+                <li>
+                    <a href="#%e5%9c%b0%e5%a4%a7%e6%9c%8d%e5%8a%a1%e5%99%a8%e4%bd%bf%e7%94%a8%e6%95%99%e7%a8%8b" aria-label="地大服务器使用教程">地大服务器使用教程</a><ul>
+                        
+                <li>
+                    <a href="#1-%e6%9c%8d%e5%8a%a1%e5%99%a8%e7%8e%af%e5%a2%83%e4%bb%8b%e7%bb%8d" aria-label="1. 服务器环境介绍">1. 服务器环境介绍</a></li>
+                <li>
+                    <a href="#2-%e9%85%8d%e7%bd%ae%e5%ae%9e%e9%aa%8c%e7%8e%af%e5%a2%83" aria-label="2. 配置实验环境">2. 配置实验环境</a><ul>
+                        
+                <li>
+                    <a href="#21-conda%e7%8e%af%e5%a2%83%e5%ae%89%e8%a3%85" aria-label="2.1 Conda环境安装">2.1 Conda环境安装</a></li>
+                <li>
+                    <a href="#22-conda%e7%8e%af%e5%a2%83%e9%85%8d%e7%bd%ae-%e4%bb%a5yolov8%e4%b8%ba%e4%be%8b" aria-label="2.2 Conda环境配置 （以YOLOv8为例）">2.2 Conda环境配置 （以YOLOv8为例）</a></li>
+                <li>
+                    <a href="#23-%e5%87%86%e5%a4%87%e6%95%b0%e6%8d%ae%e9%9b%86" aria-label="2.3 准备数据集">2.3 准备数据集</a></li>
+                <li>
+                    <a href="#24-%e5%bc%80%e5%a7%8b%e5%ae%9e%e9%aa%8c" aria-label="2.4 开始实验">2.4 开始实验</a></li></ul>
                 </li>
-                </ul>
+                <li>
+                    <a href="#3-%e6%b3%a8%e6%84%8f%e4%ba%8b%e9%a1%b9" aria-label="3. 注意事项">3. 注意事项</a><ul>
+                        
+                <li>
+                    <a href="#1-%e6%9f%a5%e7%9c%8b%e6%98%be%e5%8d%a1%e4%bd%bf%e7%94%a8%e6%83%85%e5%86%b5" aria-label="1. 查看显卡使用情况">1. 查看显卡使用情况</a></li>
+                <li>
+                    <a href="#2-magic-network" aria-label="2. Magic Network">2. Magic Network</a>
                 </li>
-                </ul>
-            </div>
-        </details>
-    </div>
-</aside>
-<script>
-    let activeElement;
-    let elements;
-    window.addEventListener('DOMContentLoaded', function (event) {
-        checkTocPosition();
-
-        elements = document.querySelectorAll('h1[id],h2[id],h3[id],h4[id],h5[id],h6[id]');
-         
-         activeElement = elements[0];
-         const id = encodeURI(activeElement.getAttribute('id')).toLowerCase();
-         document.querySelector(`.inner ul li a[href="#${id}"]`).classList.add('active');
-     }, false);
-
-    window.addEventListener('resize', function(event) {
-        checkTocPosition();
-    }, false);
-
-    window.addEventListener('scroll', () => {
-        
-        activeElement = Array.from(elements).find((element) => {
-            if ((getOffsetTop(element) - window.pageYOffset) > 0 && 
-                (getOffsetTop(element) - window.pageYOffset) < window.innerHeight/2) {
-                return element;
-            }
-        }) || activeElement
-
-        elements.forEach(element => {
-             const id = encodeURI(element.getAttribute('id')).toLowerCase();
-             if (element === activeElement){
-                 document.querySelector(`.inner ul li a[href="#${id}"]`).classList.add('active');
-             } else {
-                 document.querySelector(`.inner ul li a[href="#${id}"]`).classList.remove('active');
-             }
-         })
-     }, false);
-
-    const main = parseInt(getComputedStyle(document.body).getPropertyValue('--article-width'), 10);
-    const toc = parseInt(getComputedStyle(document.body).getPropertyValue('--toc-width'), 10);
-    const gap = parseInt(getComputedStyle(document.body).getPropertyValue('--gap'), 10);
-
-    function checkTocPosition() {
-        const width = document.body.scrollWidth;
-
-        if (width - main - (toc * 2) - (gap * 4) > 0) {
-            document.getElementById("toc-container").classList.add("wide");
-        } else {
-            document.getElementById("toc-container").classList.remove("wide");
-        }
-    }
-
-    function getOffsetTop(element) {
-        if (!element.getClientRects().length) {
-            return 0;
-        }
-        let rect = element.getBoundingClientRect();
-        let win = element.ownerDocument.defaultView;
-        return rect.top + win.pageYOffset;   
-    }
-</script>
-
+            </ul>
+            </li>
+            </ul>
+            </li>
+            </ul>
+        </div>
+    </details>
+</div>
   <div class="post-content"><h1 id="地大服务器使用教程">地大服务器使用教程<a hidden class="anchor" aria-hidden="true" href="#地大服务器使用教程">#</a></h1>
 <h2 id="1-服务器环境介绍">1. 服务器环境介绍<a hidden class="anchor" aria-hidden="true" href="#1-服务器环境介绍">#</a></h2>
 <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-shell" data-lang="shell"><span class="line"><span class="cl">NVIDIA RTX <span class="m">3090</span> <span class="o">(</span>24GB<span class="o">)</span>
@@ -461,7 +527,8 @@ export https_proxy=http://127.0.0.1:7890
     </main>
     
 <footer class="footer">
-    <span>&copy; 2023-2024 <a href="https://swimmingliu.cn/">SwimmingLiu&#39;s Blog</a></span>
+        <span>&copy; 2023-2024 <a href="https://swimmingliu.cn/">SwimmingLiu&#39;s Blog</a></span> · 
+
     <span>
         Powered by
         <a href="https://gohugo.io/" rel="noopener noreferrer" target="_blank">Hugo</a> &

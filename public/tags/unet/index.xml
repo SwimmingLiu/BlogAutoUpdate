@@ -37,8 +37,7 @@
 &lt;p&gt;首先，&lt;strong&gt;放射科医生标记的肺结节&lt;/strong&gt;包含&lt;strong&gt;九个诊断特征&lt;/strong&gt;[11]，&lt;strong&gt;异质性表型&lt;/strong&gt;阻碍了&lt;strong&gt;肺结节分割的发展&lt;/strong&gt;。如图1所示，&lt;strong&gt;实心结节（a，b）具有清晰的形状和边界&lt;/strong&gt;，而&lt;strong&gt;微妙的GGO结节（e）具有低对比度和模糊的边界&lt;/strong&gt;[4]，使得网络很容易将&lt;strong&gt;它们分类为背景区域&lt;/strong&gt;。&lt;strong&gt;空洞（g）结节降低了网络分割的敏感性&lt;/strong&gt;，并且由于&lt;strong&gt;背景和分割目标之间的极度不平衡，小结节很容易被遗漏&lt;/strong&gt;[12]。&lt;/p&gt;
 &lt;p&gt;由于周围多余的组织结构，&lt;strong&gt;血管旁或胸膜旁（c、d、f）可能会导致网络分类错误&lt;/strong&gt;[13]。此外，&lt;strong&gt;部分实性结节（h）比纯GGO更致密&lt;/strong&gt;，产生更&lt;strong&gt;复杂的异质纹理，更容易发展成恶性结节&lt;/strong&gt;[14]。&lt;/p&gt;
 &lt;/blockquote&gt;
-&lt;p&gt;&lt;img loading=&#34;lazy&#34; src=&#34;https://oss.swimmingliu.cn/262f8e71-d931-11ee-b68c-c858c0c1debd&#34; alt=&#34;image-20240303102609243&#34;  /&gt;
-&lt;/p&gt;
+&lt;p&gt;&lt;img alt=&#34;image-20240303102609243&#34; loading=&#34;lazy&#34; src=&#34;https://oss.swimmingliu.cn/262f8e71-d931-11ee-b68c-c858c0c1debd&#34;&gt;&lt;/p&gt;
 &lt;blockquote&gt;
 &lt;p&gt;其次，肺结节内部因素造成的分割困难在于&lt;strong&gt;医生注释、层厚、数据来源和数据质量&lt;/strong&gt;。&lt;strong&gt;数据质量差&lt;/strong&gt;或&lt;strong&gt;不同医生的经验&lt;/strong&gt;可能会导致&lt;strong&gt;不同的注释和注释者数量&lt;/strong&gt;。由&lt;strong&gt;多名医生注释的病变区域&lt;/strong&gt;通常更&lt;strong&gt;可靠&lt;/strong&gt;，减少了潜在的临床风险。&lt;strong&gt;在资源有限的地区&lt;/strong&gt;，由于 &lt;strong&gt;CT 扫描仪短缺和成像设备陈旧&lt;/strong&gt;，&lt;strong&gt;CT 扫描质量差的情况很常见&lt;/strong&gt;。&lt;strong&gt;较厚的切片&lt;/strong&gt;更有可能产生“&lt;strong&gt;体积平均效应”和伪影&lt;/strong&gt;，使医生&lt;strong&gt;难以达成一致的诊断&lt;/strong&gt;。即使使用&lt;strong&gt;移动 CT 扫描仪&lt;/strong&gt;也可能&lt;strong&gt;无法提供完整的诊断详细信息&lt;/strong&gt;。最后，目前&lt;strong&gt;大多数肺结节分割方法&lt;/strong&gt;都是基于&lt;strong&gt;2D图像&lt;/strong&gt;，但这些方法忽略了&lt;strong&gt;空间关系&lt;/strong&gt;，因此提出一种有效的&lt;strong&gt;3D肺结节分割模型&lt;/strong&gt;来&lt;strong&gt;捕获肺结节的空间位置&lt;/strong&gt;、&lt;strong&gt;纹理和其他详细信息变得越来越重要以避免误诊和漏诊&lt;/strong&gt;。&lt;/p&gt;
 &lt;/blockquote&gt;
@@ -64,8 +63,7 @@
 然而，基于 U-Net 的模型中的这些连接在&lt;strong&gt;集成低级和高级特征方面&lt;/strong&gt;可能&lt;strong&gt;不够有效&lt;/strong&gt;。例如，在 ResNet [7] 中，深度神经网络是作为&lt;strong&gt;多个浅层网络的集合&lt;/strong&gt;而形成的，并且&lt;strong&gt;显式添加的残差连接&lt;/strong&gt;表明，即使在百万规模的训练中，网络也很难学习&lt;strong&gt;恒等映射函数图像&lt;/strong&gt;数据集。&lt;/p&gt;
 &lt;p&gt;&lt;strong&gt;对于编码器提取的特征，低级特征通常保留更多细节，但缺乏足够的语义信息，并且可能包含不需要的噪声&lt;/strong&gt;。相反，&lt;strong&gt;高级特征包含更多语义信息，但由于分辨率显着降低而缺乏精确的细节（例如对象边界）&lt;/strong&gt;。通过&lt;strong&gt;串联简单地融合特征&lt;/strong&gt;将在&lt;strong&gt;很大程度上依赖于网络的学习能力&lt;/strong&gt;，这&lt;strong&gt;通常与训练数据集的大小成正比&lt;/strong&gt;。这是一个具有挑战性的问题，特别是在医学成像领域，&lt;strong&gt;通常受到有限数据的限制&lt;/strong&gt;。这种信息融合是&lt;strong&gt;通过密集连接跨多个级别连接低级和高级特征&lt;/strong&gt;来实现的，可能会限制来自&lt;strong&gt;不同级别的信息的贡献&lt;/strong&gt;并可能引入噪声。另一方面，尽管&lt;strong&gt;引入的额外卷积并没有显着增加参数数量&lt;/strong&gt;，但 &lt;strong&gt;GPU 内存消耗将会增加&lt;/strong&gt;，因为必须&lt;strong&gt;存储所有中间特征图和相应的梯度&lt;/strong&gt;以进行前向传递和后向梯度计算。这会导致 &lt;strong&gt;GPU 内存使用量&lt;/strong&gt;和&lt;strong&gt;浮点运算 (FLOP) 增加&lt;/strong&gt;。&lt;/p&gt;
 &lt;/blockquote&gt;
-&lt;p&gt;&lt;img loading=&#34;lazy&#34; src=&#34;https://oss.swimmingliu.cn/mCdvu.png&#34; alt=&#34;image-20231211193109745&#34;  /&gt;
-&lt;/p&gt;
+&lt;p&gt;&lt;img alt=&#34;image-20231211193109745&#34; loading=&#34;lazy&#34; src=&#34;https://oss.swimmingliu.cn/mCdvu.png&#34;&gt;&lt;/p&gt;
 &lt;p&gt;(a) U-Net v2 模型的整体架构，由&lt;strong&gt;编码器、SDI（语义和细节注入）模块和解码器&lt;/strong&gt;组成。 (b) SDI模块的架构。为简单起见，我们仅显示第三级特征的细化（l = 3）。 &lt;strong&gt;SmoothConv 表示用于特征平滑的 3 × 3 卷积&lt;/strong&gt;。$\bigotimes$ 表示哈达玛积。&lt;/p&gt;
 &lt;blockquote&gt;
 &lt;p&gt;在[8]中，利用&lt;strong&gt;反向注意力&lt;/strong&gt;来明确地建立&lt;strong&gt;多尺度特征之间&lt;/strong&gt;的联系。在[9]中，ReLU激活应用于&lt;strong&gt;较高级别&lt;/strong&gt;的特征，并&lt;strong&gt;将激活的特征与较低级别的特征相乘&lt;/strong&gt;。此外，在[10]中，作者提出分别从 &lt;strong&gt;CNN 和 Transformer 模型&lt;/strong&gt;中提取特征，在多个级别上组合&lt;strong&gt;来自 CNN 和 Transformer 分支&lt;/strong&gt;的特征来&lt;strong&gt;增强特征图&lt;/strong&gt;。然而，这些方法&lt;strong&gt;都很复杂&lt;/strong&gt;，而且它们的&lt;strong&gt;性能仍然不是很令人满意&lt;/strong&gt;，因此需要进一步改进。&lt;/p&gt;
@@ -92,8 +90,7 @@
 &lt;p&gt;为了演示这种现象，我们引入了&lt;strong&gt;多重置信掩码&lt;/strong&gt; (MCM)，它结合了&lt;strong&gt;高置信度 (HC) 掩码&lt;/strong&gt;和低置信度 (LC) 掩码，如图 1 所示。 A. 交叉掩码等于 &lt;strong&gt;HC mask&lt;/strong&gt;，代表&lt;strong&gt;所有注释的交集&lt;/strong&gt;。&lt;/p&gt;
 &lt;p&gt;&lt;strong&gt;联合掩码是所有注释的联合&lt;/strong&gt;。 &lt;strong&gt;LC掩模是交集掩模和并集掩模之间的差异&lt;/strong&gt;。当在 LIDC-IDRI 数据集 [11] 上计算 HC 和 LC 的 Hounsfield 单位 (HU) 核估计时，&lt;strong&gt;如图 1.B 所示，我们可以观察到 LC 和 HC 掩模之间的 HU 分布存在明显区别&lt;/strong&gt;。具体地，LC区域具有比HC区域更低的HU值。从像素分布来看，&lt;strong&gt;HU值越低，对应区域的密度越低&lt;/strong&gt;。就CT图像特征而言，LC区域&lt;strong&gt;主要由结节边缘、毛刺和磨玻璃特征等边界相关特征组成&lt;/strong&gt;，而&lt;strong&gt;HC区域主要分布在结节核心内&lt;/strong&gt;。因此，我们提出了这样的假设：导致放射科医生之间差异的区域主要与&lt;strong&gt;低密度组织和边界相关特征&lt;/strong&gt;有关。&lt;/p&gt;
 &lt;/blockquote&gt;
-&lt;p&gt;&lt;img loading=&#34;lazy&#34; src=&#34;https://oss.swimmingliu.cn/327b2.png&#34; alt=&#34;image-20231130203343980&#34;  /&gt;
-&lt;/p&gt;
+&lt;p&gt;&lt;img alt=&#34;image-20231130203343980&#34; loading=&#34;lazy&#34; src=&#34;https://oss.swimmingliu.cn/327b2.png&#34;&gt;&lt;/p&gt;
 &lt;blockquote&gt;
 &lt;p&gt;与其他方法不同，我们建议利用 &lt;strong&gt;MCM (多重置信掩码) ** 和注释集作为具有&lt;/strong&gt;不同分割确定性的特征的学习指导**，有助于更好的分割性能。我们将这种训练称为&lt;strong&gt;UncertaintyAware Attention Mechanism&lt;/strong&gt;，如图2所示。按照这种机制，我们进一步设计了用于肺结节分割的&lt;strong&gt;Uncertainty-Guide Multi-Confidence Segmentation Network&lt;/strong&gt;（UGMCS-Net）。&lt;/p&gt;</description>
     </item>

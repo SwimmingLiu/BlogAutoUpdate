@@ -8,27 +8,22 @@
 <title>YOLOSHOW 中文版 - YOLOv5/YOLOv7/YOLOv8/YOLOv9/RTDETR GUI based on Pyside6 | SwimmingLiu&#39;s Blog</title>
 <meta name="keywords" content="GUI, YOLOSHOW">
 <meta name="description" content="介绍
-YOLOSHOW 是一款集合了 YOLOv5 YOLOv7 YOLOv8 YOLOv9  YOLOv10 RT-DETR 的图形化界面程序
+YOLOSHOW 是一款集合了 YOLOv5 YOLOv7 YOLOv8 YOLOv9 YOLOv10 YOLOv11  RT-DETR SAM MobileSAM FastSAM 的图形化界面程序
  
    English &nbsp; | &nbsp; 简体中文
  
-
 
 演示视频
 YOLOSHOW v1.x : YOLOSHOW-YOLOv9/YOLOv8/YOLOv7/YOLOv5/RTDETR GUI
 YOLOSHOW v2.x : YOLOSHOWv2.0-YOLOv9/YOLOv8/YOLOv7/YOLOv5/RTDETR GUI
 待做清单
 
- 加入 YOLOv9 算法
- 调整UI (菜单栏)
- 完成Rtsp功能
- 支持实例分割 （ YOLOv5 &amp; YOLOv8 ）
- 加入 RT-DETR 算法 ( Ultralytics 仓库)
- 加入模型对比模式（VS Mode）
- 支持姿态估计 （ YOLOv8 ）
- 支持 Http 协议 ( Single Mode )
- 支持旋转框 ( YOLOv8 )
- 加入 YOLOv10 算法
+ 加入 YOLOv9 YOLOv10  RT-DETR  YOLOv11  SAM  MobileSAM  FastSAM算法
+ 支持实例分割 （ YOLOv5  YOLOv8  YOLOv11 SAM  MobileSAM  FastSAM）
+ 支持姿态估计 （YOLOv8 YOLOv11）
+ 支持旋转框 (YOLOv8 YOLOv11)
+ RTSP 功能 支持 Http 协议 ( Single Mode )
+ 支持模型对比模式（VS Mode）
  支持拖拽文件输入
  追踪和计数模型 ( 工业化 )
 
@@ -37,7 +32,7 @@ YOLOSHOW v2.x : YOLOSHOWv2.0-YOLOv9/YOLOv8/YOLOv7/YOLOv5/RTDETR GUI
 选择左侧菜单栏的图片 / 视频 / 摄像头 / 文件夹（批量）/ 网络摄像头 进行目标检测">
 <meta name="author" content="SwimmingLiu">
 <link rel="canonical" href="https://swimmingliu.cn/posts/diary/yoloshow-cn/">
-<link crossorigin="anonymous" href="/assets/css/stylesheet.d0ba3726344b58c49d5f0d05195743e4438cff79cf2048e07443b1ea4d4fdbf5.css" integrity="sha256-0Lo3JjRLWMSdXw0FGVdD5EOM/3nPIEjgdEOx6k1P2/U=" rel="preload stylesheet" as="style">
+<link crossorigin="anonymous" href="/assets/css/stylesheet.6ecbb0040febd20e47edd88a662c19f1ea945bf7427774b86594271d18f88faf.css" integrity="sha256-bsuwBA/r0g5H7diKZiwZ8eqUW/dCd3S4ZZQnHRj4j68=" rel="preload stylesheet" as="style">
 <link rel="icon" href="https://swimmingliu.cn/images/swimmingliu_icon.png">
 <link rel="icon" type="image/png" sizes="16x16" href="https://swimmingliu.cn/images/swimmingliu_icon.png">
 <link rel="icon" type="image/png" sizes="32x32" href="https://swimmingliu.cn/images/swimmingliu_icon.png">
@@ -108,73 +103,47 @@ YOLOSHOW v2.x : YOLOSHOWv2.0-YOLOv9/YOLOv8/YOLOv7/YOLOv5/RTDETR GUI
     });
 </script>
 
-<meta property="og:title" content="YOLOSHOW 中文版 - YOLOv5/YOLOv7/YOLOv8/YOLOv9/RTDETR GUI based on Pyside6" />
-<meta property="og:description" content="介绍
-YOLOSHOW 是一款集合了 YOLOv5 YOLOv7 YOLOv8 YOLOv9  YOLOv10 RT-DETR 的图形化界面程序
- 
-   English &nbsp; | &nbsp; 简体中文
- 
-
-
-演示视频
-YOLOSHOW v1.x : YOLOSHOW-YOLOv9/YOLOv8/YOLOv7/YOLOv5/RTDETR GUI
+<meta property="og:url" content="https://swimmingliu.cn/posts/diary/yoloshow-cn/">
+  <meta property="og:site_name" content="SwimmingLiu&#39;s Blog">
+  <meta property="og:title" content="YOLOSHOW 中文版 - YOLOv5/YOLOv7/YOLOv8/YOLOv9/RTDETR GUI based on Pyside6">
+  <meta property="og:description" content="介绍 YOLOSHOW 是一款集合了 YOLOv5 YOLOv7 YOLOv8 YOLOv9 YOLOv10 YOLOv11 RT-DETR SAM MobileSAM FastSAM 的图形化界面程序
+English   |   简体中文 演示视频 YOLOSHOW v1.x : YOLOSHOW-YOLOv9/YOLOv8/YOLOv7/YOLOv5/RTDETR GUI
 YOLOSHOW v2.x : YOLOSHOWv2.0-YOLOv9/YOLOv8/YOLOv7/YOLOv5/RTDETR GUI
-待做清单
-
- 加入 YOLOv9 算法
- 调整UI (菜单栏)
- 完成Rtsp功能
- 支持实例分割 （ YOLOv5 &amp; YOLOv8 ）
- 加入 RT-DETR 算法 ( Ultralytics 仓库)
- 加入模型对比模式（VS Mode）
- 支持姿态估计 （ YOLOv8 ）
- 支持 Http 协议 ( Single Mode )
- 支持旋转框 ( YOLOv8 )
- 加入 YOLOv10 算法
- 支持拖拽文件输入
- 追踪和计数模型 ( 工业化 )
-
-功能
-1. 支持 图片 / 视频 / 摄像头 / 文件夹（批量）/ 网络摄像头 目标检测
-选择左侧菜单栏的图片 / 视频 / 摄像头 / 文件夹（批量）/ 网络摄像头 进行目标检测" />
-<meta property="og:type" content="article" />
-<meta property="og:url" content="https://swimmingliu.cn/posts/diary/yoloshow-cn/" />
-<meta property="og:image" content="https://swimmingliu.cn/papermod-cover.png" />
-<meta property="article:section" content="posts" />
-<meta property="article:published_time" content="2024-02-18T19:30:06+08:00" />
-<meta property="article:modified_time" content="2024-08-20T10:35:06+08:00" />
-
-<meta name="twitter:card" content="summary_large_image" />
-<meta name="twitter:image" content="https://swimmingliu.cn/papermod-cover.png" />
-<meta name="twitter:title" content="YOLOSHOW 中文版 - YOLOv5/YOLOv7/YOLOv8/YOLOv9/RTDETR GUI based on Pyside6"/>
+待做清单 加入 YOLOv9 YOLOv10 RT-DETR YOLOv11 SAM MobileSAM FastSAM算法 支持实例分割 （ YOLOv5 YOLOv8 YOLOv11 SAM MobileSAM FastSAM） 支持姿态估计 （YOLOv8 YOLOv11） 支持旋转框 (YOLOv8 YOLOv11) RTSP 功能 支持 Http 协议 ( Single Mode ) 支持模型对比模式（VS Mode） 支持拖拽文件输入 追踪和计数模型 ( 工业化 ) 功能 1. 支持 图片 / 视频 / 摄像头 / 文件夹（批量）/ 网络摄像头 目标检测 选择左侧菜单栏的图片 / 视频 / 摄像头 / 文件夹（批量）/ 网络摄像头 进行目标检测">
+  <meta property="og:locale" content="en">
+  <meta property="og:type" content="article">
+    <meta property="article:section" content="posts">
+    <meta property="article:published_time" content="2024-02-18T19:30:06+08:00">
+    <meta property="article:modified_time" content="2024-08-20T10:35:06+08:00">
+    <meta property="article:tag" content="YOLO">
+    <meta property="article:tag" content="YOLOSHOW">
+      <meta property="og:image" content="https://swimmingliu.cn/papermod-cover.png">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://swimmingliu.cn/papermod-cover.png">
+<meta name="twitter:title" content="YOLOSHOW 中文版 - YOLOv5/YOLOv7/YOLOv8/YOLOv9/RTDETR GUI based on Pyside6">
 <meta name="twitter:description" content="介绍
-YOLOSHOW 是一款集合了 YOLOv5 YOLOv7 YOLOv8 YOLOv9  YOLOv10 RT-DETR 的图形化界面程序
+YOLOSHOW 是一款集合了 YOLOv5 YOLOv7 YOLOv8 YOLOv9 YOLOv10 YOLOv11  RT-DETR SAM MobileSAM FastSAM 的图形化界面程序
  
    English &nbsp; | &nbsp; 简体中文
  
-
 
 演示视频
 YOLOSHOW v1.x : YOLOSHOW-YOLOv9/YOLOv8/YOLOv7/YOLOv5/RTDETR GUI
 YOLOSHOW v2.x : YOLOSHOWv2.0-YOLOv9/YOLOv8/YOLOv7/YOLOv5/RTDETR GUI
 待做清单
 
- 加入 YOLOv9 算法
- 调整UI (菜单栏)
- 完成Rtsp功能
- 支持实例分割 （ YOLOv5 &amp; YOLOv8 ）
- 加入 RT-DETR 算法 ( Ultralytics 仓库)
- 加入模型对比模式（VS Mode）
- 支持姿态估计 （ YOLOv8 ）
- 支持 Http 协议 ( Single Mode )
- 支持旋转框 ( YOLOv8 )
- 加入 YOLOv10 算法
+ 加入 YOLOv9 YOLOv10  RT-DETR  YOLOv11  SAM  MobileSAM  FastSAM算法
+ 支持实例分割 （ YOLOv5  YOLOv8  YOLOv11 SAM  MobileSAM  FastSAM）
+ 支持姿态估计 （YOLOv8 YOLOv11）
+ 支持旋转框 (YOLOv8 YOLOv11)
+ RTSP 功能 支持 Http 协议 ( Single Mode )
+ 支持模型对比模式（VS Mode）
  支持拖拽文件输入
  追踪和计数模型 ( 工业化 )
 
 功能
 1. 支持 图片 / 视频 / 摄像头 / 文件夹（批量）/ 网络摄像头 目标检测
-选择左侧菜单栏的图片 / 视频 / 摄像头 / 文件夹（批量）/ 网络摄像头 进行目标检测"/>
+选择左侧菜单栏的图片 / 视频 / 摄像头 / 文件夹（批量）/ 网络摄像头 进行目标检测">
 
 
 <script type="application/ld+json">
@@ -209,12 +178,12 @@ YOLOSHOW v2.x : YOLOSHOWv2.0-YOLOv9/YOLOv8/YOLOv7/YOLOv5/RTDETR GUI
   "@type": "BlogPosting",
   "headline": "YOLOSHOW 中文版 - YOLOv5/YOLOv7/YOLOv8/YOLOv9/RTDETR GUI based on Pyside6",
   "name": "YOLOSHOW 中文版 - YOLOv5\/YOLOv7\/YOLOv8\/YOLOv9\/RTDETR GUI based on Pyside6",
-  "description": "介绍 YOLOSHOW 是一款集合了 YOLOv5 YOLOv7 YOLOv8 YOLOv9 YOLOv10 RT-DETR 的图形化界面程序\nEnglish \u0026nbsp; | \u0026nbsp; 简体中文 演示视频 YOLOSHOW v1.x : YOLOSHOW-YOLOv9/YOLOv8/YOLOv7/YOLOv5/RTDETR GUI\nYOLOSHOW v2.x : YOLOSHOWv2.0-YOLOv9/YOLOv8/YOLOv7/YOLOv5/RTDETR GUI\n待做清单 加入 YOLOv9 算法 调整UI (菜单栏) 完成Rtsp功能 支持实例分割 （ YOLOv5 \u0026amp; YOLOv8 ） 加入 RT-DETR 算法 ( Ultralytics 仓库) 加入模型对比模式（VS Mode） 支持姿态估计 （ YOLOv8 ） 支持 Http 协议 ( Single Mode ) 支持旋转框 ( YOLOv8 ) 加入 YOLOv10 算法 支持拖拽文件输入 追踪和计数模型 ( 工业化 ) 功能 1. 支持 图片 / 视频 / 摄像头 / 文件夹（批量）/ 网络摄像头 目标检测 选择左侧菜单栏的图片 / 视频 / 摄像头 / 文件夹（批量）/ 网络摄像头 进行目标检测\n",
+  "description": "介绍 YOLOSHOW 是一款集合了 YOLOv5 YOLOv7 YOLOv8 YOLOv9 YOLOv10 YOLOv11 RT-DETR SAM MobileSAM FastSAM 的图形化界面程序\nEnglish \u0026nbsp; | \u0026nbsp; 简体中文 演示视频 YOLOSHOW v1.x : YOLOSHOW-YOLOv9/YOLOv8/YOLOv7/YOLOv5/RTDETR GUI\nYOLOSHOW v2.x : YOLOSHOWv2.0-YOLOv9/YOLOv8/YOLOv7/YOLOv5/RTDETR GUI\n待做清单 加入 YOLOv9 YOLOv10 RT-DETR YOLOv11 SAM MobileSAM FastSAM算法 支持实例分割 （ YOLOv5 YOLOv8 YOLOv11 SAM MobileSAM FastSAM） 支持姿态估计 （YOLOv8 YOLOv11） 支持旋转框 (YOLOv8 YOLOv11) RTSP 功能 支持 Http 协议 ( Single Mode ) 支持模型对比模式（VS Mode） 支持拖拽文件输入 追踪和计数模型 ( 工业化 ) 功能 1. 支持 图片 / 视频 / 摄像头 / 文件夹（批量）/ 网络摄像头 目标检测 选择左侧菜单栏的图片 / 视频 / 摄像头 / 文件夹（批量）/ 网络摄像头 进行目标检测\n",
   "keywords": [
     "GUI", "YOLOSHOW"
   ],
-  "articleBody": "介绍 YOLOSHOW 是一款集合了 YOLOv5 YOLOv7 YOLOv8 YOLOv9 YOLOv10 RT-DETR 的图形化界面程序\nEnglish | 简体中文 演示视频 YOLOSHOW v1.x : YOLOSHOW-YOLOv9/YOLOv8/YOLOv7/YOLOv5/RTDETR GUI\nYOLOSHOW v2.x : YOLOSHOWv2.0-YOLOv9/YOLOv8/YOLOv7/YOLOv5/RTDETR GUI\n待做清单 加入 YOLOv9 算法 调整UI (菜单栏) 完成Rtsp功能 支持实例分割 （ YOLOv5 \u0026 YOLOv8 ） 加入 RT-DETR 算法 ( Ultralytics 仓库) 加入模型对比模式（VS Mode） 支持姿态估计 （ YOLOv8 ） 支持 Http 协议 ( Single Mode ) 支持旋转框 ( YOLOv8 ) 加入 YOLOv10 算法 支持拖拽文件输入 追踪和计数模型 ( 工业化 ) 功能 1. 支持 图片 / 视频 / 摄像头 / 文件夹（批量）/ 网络摄像头 目标检测 选择左侧菜单栏的图片 / 视频 / 摄像头 / 文件夹（批量）/ 网络摄像头 进行目标检测\n2. 动态切换模型 / 调整超参数 程序开始检测时，支持动态切换模型 / 调整超参数\n支持动态切换 YOLOv5 / YOLOv7 / YOLOv8 / YOLOv9 / RTDETR / YOLOv5-seg / YOLOv8-seg / YOLOv10 模型 支持动态修改 IOU / Confidence / Delay time / line thickness 超参数 3. 动态加载模型 程序可以自动检测ptfiles 文件夹中包含 YOLOv5 Models / YOLOv7 Models / YOLOv8 Models / YOLOv9 Models / YOLOv10 Models pt 模型.\n如果你需要导入新的 pt 文件, 请点击 Settings 框中的 Import Model 按钮 来选择需要导入的 pt 文件. 然后程序会把该文件复制到 ptfiles 文件夹下.\nNotice :\n所有的 pt 模型文件命名必须包含 yolov5 / yolov7 / yolov8 / yolov9 / yolov10 / rtdetr 中的任意一个版本. (如 yolov8-test.pt) 如果是分割类型的 pt 文件, 命名中应包含 yolov5n-seg / yolov8s-seg 中的任意一个版本. (如 yolov8n-seg-test.pt) 如果是姿态检测类型的 pt 文件, 命名中应包含yolov8n-pose 中的任意一个版本. (如 yolov8n-pose-test.pt) 如果是旋转框类型的 pt 文件, 命名中应包含yolov8n-obb 中的任意一个版本. (e.g. yolov8n-obb-test.pt) 4. 加载超参数配置 程序启动后, 自动加载最近保存的超参数配置. 程序关闭后, 自动保存最近修改的超参数配置. 5. 保存检测结果 如果需要保存检测结果，请在检测前点击 Save Mode . 然后等待检测完毕，选择需要保存的路径进行结果保存.\n6. 同时支持目标检测、实例分割和姿态估计 从 YOLOSHOW v3.0 起 ，支持目标检测、实例分割、姿态估计和旋转框多种任务。同时支持不同版本的任务切换，如从YOLOv5 目标检测任务 切换到 YOLOv8 实例分割任务。\n7. 支持目标检测、实例分割、姿态估计和旋转框模型对比模式 从 YOLOSHOW v3.0 起，支持目标检测、实例分割、姿态估计和旋转框模型对比模式。\n运行准备工作 实验环境 OS : Windows 11 CPU : Intel(R) Core(TM) i7-10750H CPU @2.60GHz 2.59 GHz GPU : NVIDIA GeForce GTX 1660Ti 6GB 1. 创建虚拟环境 创建内置Python 3.9的conda虚拟环境, 然后激活该环境.\nconda create -n yoloshow python=3.9 conda activate yoloshow 2. 安装Pytorch框架 Windows: pip3 install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu118 Linux: pip3 install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu118 安装其他版本的 Pytorch : 3. 安装依赖包 切换到YOLOSHOW程序所在的路径\ncd {YOLOSHOW程序所在的路径} 安装程序所需要的依赖包\npip install -r requirements.txt -i https://pypi.tuna.tsinghua.edu.cn/simple 4. 添加字体 Windows 用户 把所有的fonts 文件夹中的字体文件 *.ttf 复制到 C:\\Windows\\Fonts\nLinux 用户 mkdir -p ~/.local/share/fonts sudo cp fonts/Shojumaru-Regular.ttf ~/.local/share/fonts/ sudo fc-cache -fv MacOS 用户 MacBook实在太贵了，我买不起。你们自己想办法安装吧~😂\n5. 运行程序 python main.py 使用框架 参考文献 YOLO 算法 YOLOv5 YOLOv7 YOLOv8\tYOLOv9 YOLOv10\nYOLO 图形化界面 YOLOSIDE\tPyQt-Fluent-Widgets\n",
-  "wordCount" : "343",
+  "articleBody": "介绍 YOLOSHOW 是一款集合了 YOLOv5 YOLOv7 YOLOv8 YOLOv9 YOLOv10 YOLOv11 RT-DETR SAM MobileSAM FastSAM 的图形化界面程序\nEnglish | 简体中文 演示视频 YOLOSHOW v1.x : YOLOSHOW-YOLOv9/YOLOv8/YOLOv7/YOLOv5/RTDETR GUI\nYOLOSHOW v2.x : YOLOSHOWv2.0-YOLOv9/YOLOv8/YOLOv7/YOLOv5/RTDETR GUI\n待做清单 加入 YOLOv9 YOLOv10 RT-DETR YOLOv11 SAM MobileSAM FastSAM算法 支持实例分割 （ YOLOv5 YOLOv8 YOLOv11 SAM MobileSAM FastSAM） 支持姿态估计 （YOLOv8 YOLOv11） 支持旋转框 (YOLOv8 YOLOv11) RTSP 功能 支持 Http 协议 ( Single Mode ) 支持模型对比模式（VS Mode） 支持拖拽文件输入 追踪和计数模型 ( 工业化 ) 功能 1. 支持 图片 / 视频 / 摄像头 / 文件夹（批量）/ 网络摄像头 目标检测 选择左侧菜单栏的图片 / 视频 / 摄像头 / 文件夹（批量）/ 网络摄像头 进行目标检测\n2. 动态切换模型 / 调整超参数 程序开始检测时，支持动态切换模型 / 调整超参数\n支持动态切换 YOLOv5 / YOLOv7 / YOLOv8 / YOLOv9 / YOLOv10 / YOLOv11 / RTDETR / YOLOv5-seg / YOLOv8-seg YOLOv11-seg / YOLOv8-pose / YOLOv11-pose / YOLOv8-obb / YOLOv11-obb / SAM / MobileSAM / FastSAM 模型 支持动态修改 IOU / Confidence / Delay time / line thickness 超参数 3. 动态加载模型 程序可以自动检测ptfiles 文件夹中包含 YOLOv5 Models / YOLOv7 Models / YOLOv8 Models / YOLOv9 Models / YOLOv10 Models / YOLOv11 Models / RT-DETR Models / SAM Models / MobileSAM Models / FastSAM Models pt 模型.\n如果你需要导入新的 pt 文件, 请点击 Settings 框中的 Import Model 按钮 来选择需要导入的 pt 文件. 然后程序会把该文件复制到 ptfiles 文件夹下.\nNotice :\n所有的 pt 模型文件命名必须包含 yolov5 / yolov7 / yolov8 / yolov9 / yolov10 / yolo11 / rtdetr / sam / samv2 / mobilesam / fastsam 中的任意一个版本. (如 yolov8-test.pt) 如果是分割类型的 pt 文件, 命名中应包含 yolov5n-seg / yolov8s-seg / yolo11-seg 中的任意一个版本. (如 yolov8n-seg-test.pt) 如果是姿态检测类型的 pt 文件, 命名中应包含 yolov8n-pose / yolo11n-pose 中的任意一个版本. (如 yolov8n-pose-test.pt) 如果是旋转框类型的 pt 文件, 命名中应包含 yolov8n-obb / yolo11n-obb 中的任意一个版本. (e.g. yolov8n-obb-test.pt) 4. 加载超参数配置 程序启动后, 自动加载最近保存的超参数配置. 程序关闭后, 自动保存最近修改的超参数配置. 5. 保存检测结果 如果需要保存检测结果，请在检测前点击 Save Mode . 然后等待检测完毕，选择需要保存的路径进行结果保存.\n6. 同时支持目标检测、实例分割和姿态估计 从 YOLOSHOW v3.0 起 ，支持目标检测、实例分割、姿态估计和旋转框多种任务。同时支持不同版本的任务切换，如从YOLOv5 目标检测任务 切换到 YOLOv8 实例分割任务。\n7. 支持目标检测、实例分割、姿态估计和旋转框模型对比模式 从 YOLOSHOW v3.0 起，支持目标检测、实例分割、姿态估计和旋转框模型对比模式。\n运行准备工作 实验环境 OS : Windows 11 CPU : Intel(R) Core(TM) i7-10750H CPU @2.60GHz 2.59 GHz GPU : NVIDIA GeForce GTX 1660Ti 6GB 1. 创建虚拟环境 创建内置Python 3.9的conda虚拟环境, 然后激活该环境.\nconda create -n yoloshow python=3.9 conda activate yoloshow 2. 安装Pytorch框架 Windows: pip3 install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu118 Linux: pip3 install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu118 安装其他版本的 Pytorch : 3. 安装依赖包 切换到YOLOSHOW程序所在的路径\ncd {YOLOSHOW程序所在的路径} 安装程序所需要的依赖包\npip install -r requirements.txt -i https://pypi.tuna.tsinghua.edu.cn/simple 4. 添加字体 Windows 用户 把所有的fonts 文件夹中的字体文件 *.ttf 复制到 C:\\Windows\\Fonts\nLinux 用户 mkdir -p ~/.local/share/fonts sudo cp fonts/Shojumaru-Regular.ttf ~/.local/share/fonts/ sudo fc-cache -fv MacOS 用户 MacBook实在太贵了，我买不起。你们自己想办法安装吧~😂\n5. 运行程序 python main.py 使用框架 参考文献 YOLO 算法 YOLOv5 YOLOv7 YOLOv8 / YOLOv11 / RT-DETR / SAM / MobileSAM / FastSAM YOLOv9 YOLOv10\nYOLO 图形化界面 YOLOSIDE\tPyQt-Fluent-Widgets\n",
+  "wordCount" : "402",
   "inLanguage": "en",
   "image": "https://swimmingliu.cn/papermod-cover.png","datePublished": "2024-02-18T19:30:06+08:00",
   "dateModified": "2024-08-20T10:35:06+08:00",
@@ -413,27 +382,22 @@ YOLOSHOW v2.x : YOLOSHOWv2.0-YOLOv9/YOLOv8/YOLOv7/YOLOv5/RTDETR GUI
     </details>
 </div>
   <div class="post-content"><h2 id="介绍">介绍<a hidden class="anchor" aria-hidden="true" href="#介绍">#</a></h2>
-<p><em><strong>YOLOSHOW</strong></em> 是一款集合了 <code>YOLOv5</code> <code>YOLOv7</code> <code>YOLOv8</code> <code>YOLOv9</code>  <code>YOLOv10</code> <code>RT-DETR</code> 的图形化界面程序</p>
+<p><em><strong>YOLOSHOW</strong></em> 是一款集合了 <code>YOLOv5</code> <code>YOLOv7</code> <code>YOLOv8</code> <code>YOLOv9</code> <code>YOLOv10</code> <code>YOLOv11</code>  <code>RT-DETR</code> <code>SAM</code> <code>MobileSAM</code> <code>FastSAM</code> 的图形化界面程序</p>
 <p align="center"> 
   <a href="https://github.com/SwimmingLiu/YOLOSHOW/blob/master/README.md"> English</a> &nbsp; | &nbsp; 简体中文</a>
  </p>
-<p><img loading="lazy" src="https://oss.swimmingliu.cn/YOLOSHOW-SCREENSHOT.png" alt="YOLOSHOW-Screen"  />
-</p>
+<p><img alt="YOLOSHOW-Screen" loading="lazy" src="https://oss.swimmingliu.cn/YOLOSHOW-SNAPSHOT.png"></p>
 <h2 id="演示视频">演示视频<a hidden class="anchor" aria-hidden="true" href="#演示视频">#</a></h2>
 <p><code>YOLOSHOW v1.x</code> : <a href="https://www.bilibili.com/video/BV1BC411x7fW">YOLOSHOW-YOLOv9/YOLOv8/YOLOv7/YOLOv5/RTDETR GUI</a></p>
 <p><code>YOLOSHOW v2.x</code> : <a href="https://www.bilibili.com/video/BV1ZD421E7m3">YOLOSHOWv2.0-YOLOv9/YOLOv8/YOLOv7/YOLOv5/RTDETR GUI</a></p>
 <h2 id="待做清单">待做清单<a hidden class="anchor" aria-hidden="true" href="#待做清单">#</a></h2>
 <ul>
-<li><input checked="" disabled="" type="checkbox"> 加入 <code>YOLOv9</code> 算法</li>
-<li><input checked="" disabled="" type="checkbox"> 调整UI (菜单栏)</li>
-<li><input checked="" disabled="" type="checkbox"> 完成Rtsp功能</li>
-<li><input checked="" disabled="" type="checkbox"> 支持实例分割 （ <code>YOLOv5</code> &amp; <code>YOLOv8</code> ）</li>
-<li><input checked="" disabled="" type="checkbox"> 加入 <code>RT-DETR</code> 算法 ( <code>Ultralytics</code> 仓库)</li>
-<li><input checked="" disabled="" type="checkbox"> 加入模型对比模式（VS Mode）</li>
-<li><input checked="" disabled="" type="checkbox"> 支持姿态估计 （ <code>YOLOv8</code> ）</li>
-<li><input checked="" disabled="" type="checkbox"> 支持 Http 协议 ( Single Mode )</li>
-<li><input checked="" disabled="" type="checkbox"> 支持旋转框 ( <code>YOLOv8</code> )</li>
-<li><input checked="" disabled="" type="checkbox"> 加入 <code>YOLOv10</code> 算法</li>
+<li><input checked="" disabled="" type="checkbox"> 加入 <code>YOLOv9</code> <code>YOLOv10</code>  <code>RT-DETR</code>  <code>YOLOv11</code>  <code>SAM</code>  <code>MobileSAM</code>  <code>FastSAM</code>算法</li>
+<li><input checked="" disabled="" type="checkbox"> 支持实例分割 （ <code>YOLOv5</code>  <code>YOLOv8</code>  <code>YOLOv11</code> <code>SAM</code>  <code>MobileSAM</code>  <code>FastSAM</code>）</li>
+<li><input checked="" disabled="" type="checkbox"> 支持姿态估计 （<code>YOLOv8</code> <code>YOLOv11</code>）</li>
+<li><input checked="" disabled="" type="checkbox"> 支持旋转框 (<code>YOLOv8</code> <code>YOLOv11</code>)</li>
+<li><input checked="" disabled="" type="checkbox"> <code>RTSP</code> 功能 支持 Http 协议 ( Single Mode )</li>
+<li><input checked="" disabled="" type="checkbox"> 支持模型对比模式（VS Mode）</li>
 <li><input checked="" disabled="" type="checkbox"> 支持拖拽文件输入</li>
 <li><input disabled="" type="checkbox"> 追踪和计数模型 ( <code>工业化</code> )</li>
 </ul>
@@ -443,18 +407,18 @@ YOLOSHOW v2.x : YOLOSHOWv2.0-YOLOv9/YOLOv8/YOLOv7/YOLOv5/RTDETR GUI
 <h3 id="2-动态切换模型--调整超参数">2. 动态切换模型 / 调整超参数<a hidden class="anchor" aria-hidden="true" href="#2-动态切换模型--调整超参数">#</a></h3>
 <p>程序开始检测时，支持动态切换模型 / 调整超参数</p>
 <ol>
-<li>支持动态切换  <code>YOLOv5</code> / <code> YOLOv7</code> / <code>YOLOv8</code> / <code>YOLOv9</code> / <code>RTDETR</code> / <code>YOLOv5-seg</code> / <code>YOLOv8-seg</code>  / <code>YOLOv10</code> 模型</li>
+<li>支持动态切换 <code>YOLOv5</code> / <code> YOLOv7</code> / <code>YOLOv8</code> / <code>YOLOv9</code> / <code>YOLOv10</code> / <code>YOLOv11</code> / <code>RTDETR</code> / <code>YOLOv5-seg</code> / <code>YOLOv8-seg</code> <code>YOLOv11-seg</code> / <code>YOLOv8-pose</code> / <code>YOLOv11-pose</code> / <code>YOLOv8-obb</code> / <code>YOLOv11-obb</code> / <code>SAM</code> / <code>MobileSAM</code>  / <code>FastSAM</code> 模型</li>
 <li>支持动态修改 <code>IOU</code> / <code>Confidence</code> / <code>Delay time </code> / <code>line thickness</code> 超参数</li>
 </ol>
 <h3 id="3-动态加载模型">3. 动态加载模型<a hidden class="anchor" aria-hidden="true" href="#3-动态加载模型">#</a></h3>
-<p>程序可以自动检测<code>ptfiles</code> 文件夹中包含 <a href="https://github.com/ultralytics/yolov5/releases">YOLOv5 Models</a> /  <a href="https://github.com/WongKinYiu/yolov7/releases/">YOLOv7 Models</a>  /  <a href="https://github.com/ultralytics/assets/releases/">YOLOv8 Models</a>  / <a href="https://github.com/WongKinYiu/yolov9/releases/">YOLOv9 Models</a> / <a href="https://github.com/THU-MIG/yolov10/releases/">YOLOv10 Models</a>  <code>pt</code>  模型.</p>
+<p>程序可以自动检测<code>ptfiles</code> 文件夹中包含  <a href="https://github.com/ultralytics/yolov5/releases">YOLOv5 Models</a> /  <a href="https://github.com/WongKinYiu/yolov7/releases/">YOLOv7 Models</a>  /  <a href="https://github.com/ultralytics/assets/releases/">YOLOv8 Models</a>  / <a href="https://github.com/WongKinYiu/yolov9/releases/">YOLOv9 Models</a>  / <a href="https://github.com/THU-MIG/yolov10/releases/">YOLOv10 Models</a> / <a href="https://github.com/ultralytics/assets/releases/">YOLOv11 Models</a> / <a href="https://github.com/ultralytics/assets/releases/">RT-DETR Models</a>  / <a href="https://github.com/ultralytics/assets/releases/">SAM Models</a> / <a href="https://github.com/ultralytics/assets/releases/">MobileSAM Models</a> / <a href="https://github.com/ultralytics/assets/releases/">FastSAM Models</a>  <code>pt</code>  模型.</p>
 <p>如果你需要导入新的 <code>pt</code> 文件, 请点击 <code>Settings</code> 框中的 <code>Import Model</code> 按钮 来选择需要导入的 <code>pt</code> 文件. 然后程序会把该文件复制到  <code>ptfiles</code> 文件夹下.</p>
 <p><strong>Notice :</strong></p>
 <ol>
-<li>所有的 <code>pt</code> 模型文件命名必须包含 <code>yolov5</code> / <code>yolov7</code> / <code>yolov8</code> / <code>yolov9</code> / <code>yolov10 </code>/ <code>rtdetr</code> 中的任意一个版本.  (如 <code>yolov8-test.pt</code>)</li>
-<li>如果是分割类型的 <code>pt</code> 文件, 命名中应包含 <code>yolov5n-seg</code> / <code>yolov8s-seg</code> 中的任意一个版本.  (如 <code>yolov8n-seg-test.pt</code>)</li>
-<li>如果是姿态检测类型的 <code>pt</code> 文件, 命名中应包含<code>yolov8n-pose</code> 中的任意一个版本.  (如 <code>yolov8n-pose-test.pt</code>)</li>
-<li>如果是旋转框类型的 <code>pt</code> 文件, 命名中应包含<code>yolov8n-obb</code> 中的任意一个版本.    (e.g. <code>yolov8n-obb-test.pt</code>)</li>
+<li>所有的 <code>pt</code> 模型文件命名必须包含 <code>yolov5</code> / <code>yolov7</code> / <code>yolov8</code> / <code>yolov9</code> / <code>yolov10</code> / <code>yolo11</code> / <code>rtdetr</code> / <code>sam</code> / <code>samv2</code> / <code>mobilesam</code> / <code>fastsam</code> 中的任意一个版本.  (如 <code>yolov8-test.pt</code>)</li>
+<li>如果是分割类型的 <code>pt</code> 文件, 命名中应包含 <code>yolov5n-seg</code> / <code>yolov8s-seg</code> / <code>yolo11-seg</code> 中的任意一个版本.  (如 <code>yolov8n-seg-test.pt</code>)</li>
+<li>如果是姿态检测类型的 <code>pt</code> 文件, 命名中应包含 <code>yolov8n-pose</code> / <code>yolo11n-pose</code> 中的任意一个版本.  (如 <code>yolov8n-pose-test.pt</code>)</li>
+<li>如果是旋转框类型的 <code>pt</code> 文件, 命名中应包含 <code>yolov8n-obb</code> / <code>yolo11n-obb</code> 中的任意一个版本.    (e.g. <code>yolov8n-obb-test.pt</code>)</li>
 </ol>
 <h3 id="4-加载超参数配置">4. 加载超参数配置<a hidden class="anchor" aria-hidden="true" href="#4-加载超参数配置">#</a></h3>
 <ol>
@@ -479,8 +443,7 @@ YOLOSHOW v2.x : YOLOSHOWv2.0-YOLOv9/YOLOv8/YOLOv7/YOLOv5/RTDETR GUI
 </span></span></code></pre></div><h3 id="2-安装pytorch框架">2. 安装Pytorch框架<a hidden class="anchor" aria-hidden="true" href="#2-安装pytorch框架">#</a></h3>
 <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-shell" data-lang="shell"><span class="line"><span class="cl">Windows: pip3 install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu118
 </span></span><span class="line"><span class="cl">Linux: pip3 install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu118
-</span></span></code></pre></div><p>安装其他版本的 Pytorch :   <a href="https://pytorch.org/"><img loading="lazy" src="https://img.shields.io/badge/PYtorch-test?style=flat&amp;logo=pytorch&amp;logoColor=white&amp;color=orange" alt="Pytorch"  />
-</a></p>
+</span></span></code></pre></div><p>安装其他版本的 Pytorch :   <a href="https://pytorch.org/"><img alt="Pytorch" loading="lazy" src="https://img.shields.io/badge/PYtorch-test?style=flat&logo=pytorch&logoColor=white&color=orange"></a></p>
 <h3 id="3-安装依赖包">3. 安装依赖包<a hidden class="anchor" aria-hidden="true" href="#3-安装依赖包">#</a></h3>
 <p>切换到YOLOSHOW程序所在的路径</p>
 <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-shell" data-lang="shell"><span class="line"><span class="cl"><span class="nb">cd</span> <span class="o">{</span>YOLOSHOW程序所在的路径<span class="o">}</span>
@@ -498,13 +461,10 @@ YOLOSHOW v2.x : YOLOSHOWv2.0-YOLOv9/YOLOv8/YOLOv7/YOLOv5/RTDETR GUI
 <h3 id="5-运行程序">5. 运行程序<a hidden class="anchor" aria-hidden="true" href="#5-运行程序">#</a></h3>
 <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-shell" data-lang="shell"><span class="line"><span class="cl">python main.py
 </span></span></code></pre></div><h2 id="使用框架">使用框架<a hidden class="anchor" aria-hidden="true" href="#使用框架">#</a></h2>
-<p><a href="https://www.python.org/"><img loading="lazy" src="https://img.shields.io/badge/python-3776ab?style=for-the-badge&amp;logo=python&amp;logoColor=ffd343" alt="Python"  />
-</a><a href="https://pytorch.org/"><img loading="lazy" src="https://img.shields.io/badge/PYtorch-test?style=for-the-badge&amp;logo=pytorch&amp;logoColor=white&amp;color=orange" alt="Pytorch"  />
-</a><a href="https://doc.qt.io/qtforpython-6/PySide6/QtWidgets/index.html"><img loading="lazy" src="https://img.shields.io/badge/Pyside6-test?style=for-the-badge&amp;logo=qt&amp;logoColor=white" alt="Static Badge"  />
-</a></p>
+<p><a href="https://www.python.org/"><img alt="Python" loading="lazy" src="https://img.shields.io/badge/python-3776ab?style=for-the-badge&logo=python&logoColor=ffd343"></a><a href="https://pytorch.org/"><img alt="Pytorch" loading="lazy" src="https://img.shields.io/badge/PYtorch-test?style=for-the-badge&logo=pytorch&logoColor=white&color=orange"></a><a href="https://doc.qt.io/qtforpython-6/PySide6/QtWidgets/index.html"><img alt="Static Badge" loading="lazy" src="https://img.shields.io/badge/Pyside6-test?style=for-the-badge&logo=qt&logoColor=white"></a></p>
 <h2 id="参考文献">参考文献<a hidden class="anchor" aria-hidden="true" href="#参考文献">#</a></h2>
 <h3 id="yolo-算法">YOLO 算法<a hidden class="anchor" aria-hidden="true" href="#yolo-算法">#</a></h3>
-<p><a href="https://github.com/ultralytics/yolov5">YOLOv5</a>   <a href="https://github.com/WongKinYiu/yolov7">YOLOv7</a> 	<a href="https://github.com/ultralytics/ultralytics">YOLOv8</a>	<a href="https://github.com/WongKinYiu/yolov9">YOLOv9</a>   <a href="https://github.com/THU-MIG/yolov10">YOLOv10</a></p>
+<p><a href="https://github.com/ultralytics/yolov5">YOLOv5</a>   <a href="https://github.com/WongKinYiu/yolov7">YOLOv7</a>  <a href="https://github.com/ultralytics/ultralytics">YOLOv8 / YOLOv11 / RT-DETR / SAM / MobileSAM / FastSAM</a>  <a href="https://github.com/WongKinYiu/yolov9">YOLOv9</a>  <a href="https://github.com/THU-MIG/yolov10">YOLOv10</a></p>
 <h3 id="yolo-图形化界面">YOLO 图形化界面<a hidden class="anchor" aria-hidden="true" href="#yolo-图形化界面">#</a></h3>
 <p><a href="https://github.com/Jai-wei/YOLOv8-PySide6-GUI">YOLOSIDE</a>	<a href="https://github.com/zhiyiYo/PyQt-Fluent-Widgets">PyQt-Fluent-Widgets</a></p>
 

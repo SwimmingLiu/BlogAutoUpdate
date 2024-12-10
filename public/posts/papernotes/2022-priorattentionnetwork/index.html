@@ -41,7 +41,7 @@ Related Work
 1）图像分割的网络结构：用于图像分割的典型卷积神经网络通常由一个卷积特征提取器组成，其拓扑类似于常见的分类网络，自动从输入图像中提取特征，并进行基于卷积的操作以生成最终的密集预测。在自然图像分割领域，FCN [2]、DeepLab [8]、PSPNet [9] 和 SegNet [10] 因其性能和效率而颇受欢迎。对于医学分割，U-Net [3] 在许多任务中相当流行，并且已被修改为许多改进版本，例如 Attention U-Net [11]、U-Net&#43;&#43; [12]、V-Net [13] 和H-DenseUNet [14]在某些领域获得更好的性能。">
 <meta name="author" content="SwimmingLiu">
 <link rel="canonical" href="https://swimmingliu.cn/posts/papernotes/2022-priorattentionnetwork/">
-<link crossorigin="anonymous" href="/assets/css/stylesheet.d0ba3726344b58c49d5f0d05195743e4438cff79cf2048e07443b1ea4d4fdbf5.css" integrity="sha256-0Lo3JjRLWMSdXw0FGVdD5EOM/3nPIEjgdEOx6k1P2/U=" rel="preload stylesheet" as="style">
+<link crossorigin="anonymous" href="/assets/css/stylesheet.6ecbb0040febd20e47edd88a662c19f1ea945bf7427774b86594271d18f88faf.css" integrity="sha256-bsuwBA/r0g5H7diKZiwZ8eqUW/dCd3S4ZZQnHRj4j68=" rel="preload stylesheet" as="style">
 <link rel="icon" href="https://swimmingliu.cn/images/swimmingliu_icon.png">
 <link rel="icon" type="image/png" sizes="16x16" href="https://swimmingliu.cn/images/swimmingliu_icon.png">
 <link rel="icon" type="image/png" sizes="32x32" href="https://swimmingliu.cn/images/swimmingliu_icon.png">
@@ -87,49 +87,38 @@ Related Work
 
     </style>
 </noscript>
-<meta property="og:title" content="Prior Attention Network: 用于医学图像中多病灶分割的预先注意网络" />
-<meta property="og:description" content="Prior Attention Network: 用于医学图像中多病灶分割的预先注意网络
-Abstract
-
-医学图像中邻近组织的多种类型病变的准确分割在临床实践中具有重要意义。基于从粗到精策略的卷积神经网络（CNN）已广泛应用于该领域。然而，由于组织的大小、对比度和高类间相似性的不确定性，多病灶分割仍然具有挑战性。此外，普遍采用的级联策略对硬件要求较高，限制了临床部署的潜力。为了解决上述问题，我们提出了一种新颖的先验注意网络（PANet），它遵循从粗到细的策略来在医学图像中执行多病灶分割。所提出的网络通过在网络中插入与病变相关的空间注意机制，在单个网络中实现了两个步骤的分割。此外，我们还提出了中间监督策略，用于生成与病变相关的注意力来获取感兴趣区域（ROI），这加速了收敛并明显提高了分割性能。我们在两个应用中研究了所提出的分割框架：肺部 CT 切片中多发性肺部感染的 2D 分割和脑 MRI 中多发性病变的 3D 分割。实验结果表明，与级联网络相比，在 2D 和 3D 分割任务中，我们提出的网络以更少的计算成本实现了更好的性能。所提出的网络可以被视为 2D 和 3D 任务中多病灶分割的通用解决方案。源代码可在 https://github.com/hsiangyuzhao/PANet 获取
-
+<meta property="og:url" content="https://swimmingliu.cn/posts/papernotes/2022-priorattentionnetwork/">
+  <meta property="og:site_name" content="SwimmingLiu&#39;s Blog">
+  <meta property="og:title" content="Prior Attention Network: 用于医学图像中多病灶分割的预先注意网络">
+  <meta property="og:description" content="Prior Attention Network: 用于医学图像中多病灶分割的预先注意网络 Abstract 医学图像中邻近组织的多种类型病变的准确分割在临床实践中具有重要意义。基于从粗到精策略的卷积神经网络（CNN）已广泛应用于该领域。然而，由于组织的大小、对比度和高类间相似性的不确定性，多病灶分割仍然具有挑战性。此外，普遍采用的级联策略对硬件要求较高，限制了临床部署的潜力。为了解决上述问题，我们提出了一种新颖的先验注意网络（PANet），它遵循从粗到细的策略来在医学图像中执行多病灶分割。所提出的网络通过在网络中插入与病变相关的空间注意机制，在单个网络中实现了两个步骤的分割。此外，我们还提出了中间监督策略，用于生成与病变相关的注意力来获取感兴趣区域（ROI），这加速了收敛并明显提高了分割性能。我们在两个应用中研究了所提出的分割框架：肺部 CT 切片中多发性肺部感染的 2D 分割和脑 MRI 中多发性病变的 3D 分割。实验结果表明，与级联网络相比，在 2D 和 3D 分割任务中，我们提出的网络以更少的计算成本实现了更好的性能。所提出的网络可以被视为 2D 和 3D 任务中多病灶分割的通用解决方案。源代码可在 https://github.com/hsiangyuzhao/PANet 获取
 问题导向：
 ①组织的大小、对比度和高类间相似性的不确定性
 ②多类别病灶分割
 ③普遍采用的级联策略对硬件要求较高
-Introduction
-
-医学图像分割对于疾病的准确筛查和患者的预后具有重要意义。基于病灶分割的病灶评估提供了疾病进展的信息，帮助医生提高临床诊断和治疗的质量。然而，手动病变分割相当主观且费力，这限制了其潜在的临床应用。近年来，随着人工智能的快速发展，基于深度学习的算法得到了广泛的应用，并在医学图像分割方面取得了最先进的性能[1]。卷积神经网络（CNN）由于其高分割质量而在医学图像中的病变分割中很受欢迎。此类算法通常具有深度编码器，可从输入图像中自动提取特征，并通过以下操作生成密集预测。例如，Long等人[2]提出了一种用于图像语义分割的全卷积网络，该网络颇具影响力，并启发了后来的医学分割中的端到端框架。 Ronneberger等人[3]提出了一种用于医学图像分割的U形网络（U-Net），该网络在医学分割的许多领域都显示出了可喜的结果，并已成为许多医学分割任务的虚拟基准。
-
+Introduction 医学图像分割对于疾病的准确筛查和患者的预后具有重要意义。基于病灶分割的病灶评估提供了疾病进展的信息，帮助医生提高临床诊断和治疗的质量。然而，手动病变分割相当主观且费力，这限制了其潜在的临床应用。近年来，随着人工智能的快速发展，基于深度学习的算法得到了广泛的应用，并在医学图像分割方面取得了最先进的性能[1]。卷积神经网络（CNN）由于其高分割质量而在医学图像中的病变分割中很受欢迎。此类算法通常具有深度编码器，可从输入图像中自动提取特征，并通过以下操作生成密集预测。例如，Long等人[2]提出了一种用于图像语义分割的全卷积网络，该网络颇具影响力，并启发了后来的医学分割中的端到端框架。 Ronneberger等人[3]提出了一种用于医学图像分割的U形网络（U-Net），该网络在医学分割的许多领域都显示出了可喜的结果，并已成为许多医学分割任务的虚拟基准。
 这一段都可以当成经典医学图像分割的背景引入
-
 然而，尽管医学分割取得了这些突破，但目前的医学分割方法主要集中在病灶的二元分割上，即区分病灶（前景）和其他一切（背景）。尽管二元分割确实有助于隔离某些感兴趣区域并允许对医学图像进行精确分析，但在某些需要对病变进行多类分割的场景中，二元分割还不够。与二元分割相比，由于组织的类间相似性，这种情况要困难得多，因为不同类型的病变在纹理、大小和形状上可能相似。具有从粗到细策略的级联网络已广泛应用于此类场景，例如肝脏和病变的分割、脑肿瘤分割[4]、[5][6]、[7]。
 此类网络通常由两个独立的网络组成，其中第一个网络执行粗分割，第二个网络基于从第一个网络分割的 ROI 细化分割。然而，尽管级联网络已广泛应用于医学图像的多病灶分割，但级联策略也有其缺点。由于级联网络由两个独立的网络组成，参数量和显存占用通常是单个网络的两倍，这对硬件要求较高，限制了其在临床使用的潜力。更重要的是，由于级联网络中的两个网络通常是独立的，因此级联网络的训练过程有时比单个网络更困难，这可能导致欠拟合。
-
 级联网络：参数量大、容易欠拟合。
-
 在本文中，我们提出了一种名为先验注意网络（PANet）的新型网络结构，用于在医学图像中执行多病灶分割。所提出的网络由一个用于特征提取的编码器和两个分别生成病变区域注意力和最终预测的解码器组成。该网络与注意力机制结合在一起。为了减少参数大小和硬件占用，我们使用网络编码器的深层、语义丰富的特征来生成病变区域的空间注意力。
 然后，编码器生成的特征表示通过空间注意力进行细化，并将其发送到解码器以进行最终的多类预测。为了提高分割性能并加速收敛，我们还在网络结构中引入了中间监督和深度监督。通过这些改进，与传统的级联网络相比，所提出的网络以显着降低的参数大小和计算成本实现了有竞争力的结果。
-
 利用网络编码器的深层、特征信息来生成空间注意力（WTF ???）
 中间监督、深度监督 （不错不错， 好多一区和顶会的文章都用深度监督）
-
 这项工作的贡献体现在三个方面。首先，我们提出了一种新颖的网络架构，通过将传统级联网络中的两个分割步骤结合在单个网络中，遵循 2D 和 3D 医学图像中多病灶分割的从粗到细的策略。与级联网络相比，所提出的架构以更少的额外计算成本实现了有竞争力的分割性能，更容易训练和部署到生产环境。其次，我们提出了一种监督空间注意力机制，将病变区域的注意力与网络提取的特征相结合，将多病变分割分解为两个更容易的阶段，并且与当前基于注意力的方法相比具有更好的可解释性。第三，所提出的网络已在两个实际应用中得到验证，包括肺部 CT 切片中的 COVID-19 病变的 2D 分割和多模态 MRI 中的脑肿瘤的 3D 分割。所提出的网络在 2D 和 3D 任务中都优于前沿方法，并且在参数和计算成本方面比当前网络更高效。
-
 一个网络、监督空间注意力机制、参数和计算成本方面比当前网络更高效。
-Related Work
-
-1）图像分割的网络结构：用于图像分割的典型卷积神经网络通常由一个卷积特征提取器组成，其拓扑类似于常见的分类网络，自动从输入图像中提取特征，并进行基于卷积的操作以生成最终的密集预测。在自然图像分割领域，FCN [2]、DeepLab [8]、PSPNet [9] 和 SegNet [10] 因其性能和效率而颇受欢迎。对于医学分割，U-Net [3] 在许多任务中相当流行，并且已被修改为许多改进版本，例如 Attention U-Net [11]、U-Net&#43;&#43; [12]、V-Net [13] 和H-DenseUNet [14]在某些领域获得更好的性能。" />
-<meta property="og:type" content="article" />
-<meta property="og:url" content="https://swimmingliu.cn/posts/papernotes/2022-priorattentionnetwork/" />
-<meta property="og:image" content="https://swimmingliu.cn/papermod-cover.png" />
-<meta property="article:section" content="posts" />
-<meta property="article:published_time" content="2023-11-28T14:55:47+08:00" />
-<meta property="article:modified_time" content="2023-11-28T14:55:47+08:00" />
-
-<meta name="twitter:card" content="summary_large_image" />
-<meta name="twitter:image" content="https://swimmingliu.cn/papermod-cover.png" />
-<meta name="twitter:title" content="Prior Attention Network: 用于医学图像中多病灶分割的预先注意网络"/>
+Related Work 1）图像分割的网络结构：用于图像分割的典型卷积神经网络通常由一个卷积特征提取器组成，其拓扑类似于常见的分类网络，自动从输入图像中提取特征，并进行基于卷积的操作以生成最终的密集预测。在自然图像分割领域，FCN [2]、DeepLab [8]、PSPNet [9] 和 SegNet [10] 因其性能和效率而颇受欢迎。对于医学分割，U-Net [3] 在许多任务中相当流行，并且已被修改为许多改进版本，例如 Attention U-Net [11]、U-Net&#43;&#43; [12]、V-Net [13] 和H-DenseUNet [14]在某些领域获得更好的性能。">
+  <meta property="og:locale" content="en">
+  <meta property="og:type" content="article">
+    <meta property="article:section" content="posts">
+    <meta property="article:published_time" content="2023-11-28T14:55:47+08:00">
+    <meta property="article:modified_time" content="2023-11-28T14:55:47+08:00">
+    <meta property="article:tag" content="Unet">
+    <meta property="article:tag" content="DeepSupervision">
+    <meta property="article:tag" content="IntermediateSupervision">
+      <meta property="og:image" content="https://swimmingliu.cn/papermod-cover.png">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://swimmingliu.cn/papermod-cover.png">
+<meta name="twitter:title" content="Prior Attention Network: 用于医学图像中多病灶分割的预先注意网络">
 <meta name="twitter:description" content="Prior Attention Network: 用于医学图像中多病灶分割的预先注意网络
 Abstract
 
@@ -161,7 +150,7 @@ Introduction
 一个网络、监督空间注意力机制、参数和计算成本方面比当前网络更高效。
 Related Work
 
-1）图像分割的网络结构：用于图像分割的典型卷积神经网络通常由一个卷积特征提取器组成，其拓扑类似于常见的分类网络，自动从输入图像中提取特征，并进行基于卷积的操作以生成最终的密集预测。在自然图像分割领域，FCN [2]、DeepLab [8]、PSPNet [9] 和 SegNet [10] 因其性能和效率而颇受欢迎。对于医学分割，U-Net [3] 在许多任务中相当流行，并且已被修改为许多改进版本，例如 Attention U-Net [11]、U-Net&#43;&#43; [12]、V-Net [13] 和H-DenseUNet [14]在某些领域获得更好的性能。"/>
+1）图像分割的网络结构：用于图像分割的典型卷积神经网络通常由一个卷积特征提取器组成，其拓扑类似于常见的分类网络，自动从输入图像中提取特征，并进行基于卷积的操作以生成最终的密集预测。在自然图像分割领域，FCN [2]、DeepLab [8]、PSPNet [9] 和 SegNet [10] 因其性能和效率而颇受欢迎。对于医学分割，U-Net [3] 在许多任务中相当流行，并且已被修改为许多改进版本，例如 Attention U-Net [11]、U-Net&#43;&#43; [12]、V-Net [13] 和H-DenseUNet [14]在某些领域获得更好的性能。">
 
 
 <script type="application/ld+json">
@@ -411,8 +400,7 @@ Related Work
 <p>3）神经网络中的注意力：注意力机制受到人类感知和视觉认知的启发，并已普遍应用于计算机视觉任务中[19]，[20][11]，[21]。计算机视觉任务中的<strong>注意力机制</strong>是在<strong>神经网络提取的特征表示上生成空间或通道权重图</strong>。例如，Woo等人[20]开发了一个卷积块注意力模块（CBAM）来引入一种融合注意力机制，其中包括<strong>通道注意力和空间注意力</strong>。这种注意力模块可以插入到<strong>常用的分类或分割网络中</strong>。Oktay等人[11]在Attention U-Net中提出了一种新颖的注意力门，用于细化网络编码器提取的特征表示，<strong>以促进网络专注于ROI</strong>。最近，首先在自然语言处理任务中提出的变压器[22]已被引入到医学分割任务中。例如，Wang 等人 [23] 提出了一种 TransBTS，用于从多模态脑 MRI 中执行脑肿瘤分割。</p>
 <p>综上所述，注意力机制已被广泛用于突出ROI并抑制不相关信息，但目前基于注意力的方法的研究并没有对注意力如何产生以及网络为何关注某些区域提供清晰的解释，这使得限制了注意力机制的可解释性。</p>
 </blockquote>
-<p><img loading="lazy" src="https://oss.swimmingliu.cn/p3bh0.png" alt="image-20231127123123123"  />
-</p>
+<p><img alt="image-20231127123123123" loading="lazy" src="https://oss.swimmingliu.cn/p3bh0.png"></p>
 <h2 id="method">Method<a hidden class="anchor" aria-hidden="true" href="#method">#</a></h2>
 <p>在本节中，我们将详细介绍所提出的先验注意网络架构。在第一部分中，我们将概述所提议的网络。然后，我们相应地提供有关具有<strong>中间监督、参数化跳跃连接和具有深度监督的多类解码器</strong>的所提出的<strong>注意引导解码器的详细信息</strong>。</p>
 <h3 id="31--overview-of-network-architecture">3.1 . Overview of Network Architecture<a hidden class="anchor" aria-hidden="true" href="#31--overview-of-network-architecture">#</a></h3>
@@ -420,31 +408,25 @@ Related Work
 <p>基本上，我们提出的网络是基于 U-Net [3] 架构进行修改的，该架构具有 U 形拓扑以及编码器和解码器之间的跳跃连接。在提出的<strong>先验注意网络</strong>中，一种新颖的<strong>注意引导解码器模块</strong>被集成到网络的<strong>跳跃连接</strong>中，以通过<strong>空间注意来细化特征表示</strong>。网络中还引入了一种新颖的<strong>参数化跳跃连接</strong>，以指导网络学习<strong>普通特征图和精炼特征图之间</strong>的<strong>比率</strong>。注意力引导解码器从编码器获取丰富的语义特征并<strong>生成空间注意力图</strong>来指导接下来的<strong>多类分割</strong>。为了产生与投资回报率相关的注意力，框架中使用了<strong>中间监督策略</strong>。然后将<strong>细化的特征图发送到多类解码器</strong>以进行最终的密集预测。</p>
 <p>多类解码器采用<strong>深度监督策略</strong>以获得<strong>更好的收敛性并提高分割性能</strong>。这种网络拓扑<strong>通过注意力引导解码器生成的注意力图</strong>在单个网络中实现了<strong>传统级联网络</strong>的两个步骤。组网方案如图2所示。</p>
 </blockquote>
-<p><img loading="lazy" src="https://oss.swimmingliu.cn/p3oUC.png" alt="image-20231127114826756"  />
-</p>
+<p><img alt="image-20231127114826756" loading="lazy" src="https://oss.swimmingliu.cn/p3oUC.png"></p>
 <h3 id="32-attention-guiding-decoder">3.2 Attention Guiding Decoder<a hidden class="anchor" aria-hidden="true" href="#32-attention-guiding-decoder">#</a></h3>
 <blockquote>
 <p>在典型的级联网络中，分割的第一步是<strong>执行粗分割</strong>并找到输入图像中的 <strong>ROI</strong>。在提出的先验注意网络中，我们提出<strong>了一个注意引导解码器</strong>来执行该过程。所提出的<strong>注意力引导解码器</strong>被集成到网络中<strong>以生成与 ROI 相关的注意力图</strong>，然后利用<strong>这些图来细化特征</strong>表示并提高多类分割性能。</p>
 <p>1）模块拓扑：所提出的<strong>注意力引导解码器的基本拓扑</strong>基于FCN [2]中提出的特征融合。从<strong>网络解码器最深三层提取的特征表示</strong>被馈送到<strong>该模块</strong>。由于特征图的空间大小不同，因此<strong>首先执行线性插值以对特征图进行上采样</strong>。然后对<strong>特征进行压缩</strong>，<strong>抑制通道维度中的不相关信息</strong>，<strong>降低计算成本</strong>。然后将压缩后的特征分别在<strong>通道维度上连接起来以进行特征融合</strong>。(torch.cat) 最后，<strong>融合三个特征图以获得最终的预测</strong>。</p>
 <p>为了简单起见，我们使用 2D 分割来说明注意力图的计算。我们使用 Xi ∈ R Ci × Hi × Wi,i ∈ (3, 4, 5) 表示从网络编码器提取的特征图，其中 X5 表示最深的特征。特征压缩和融合计算如下：</p>
-<p><img loading="lazy" src="https://oss.swimmingliu.cn/p38uW.png" alt="image-20231127115911999"  />
-</p>
+<p><img alt="image-20231127115911999" loading="lazy" src="https://oss.swimmingliu.cn/p38uW.png"></p>
 <p>其中Z5 ∈ R C4 × H4 × W4表示X5和X4的融合特征，Z4 ∈ R C3 × H3 × W3表示X4和X3的融合特征，Wc5 ∈RC5×C4和Wc4 ∈RC4×C3表示相应的压缩卷积， W4 ∈ RC4×C4 表示融合 X5 和 X4 的融合卷积，⊕ 表示特征串联。</p>
 <p>注意力引导解码器的输出计算如下：</p>
-<p><img loading="lazy" src="https://oss.swimmingliu.cn/p3dMJ.png" alt="image-20231127120221195"  />
-</p>
+<p><img alt="image-20231127120221195" loading="lazy" src="https://oss.swimmingliu.cn/p3dMJ.png"></p>
 <p>其中 W3 ∈ R C3×C3 表示融合 X4 和 X3 的融合卷积，Wout ∈ R C3 × 1 表示输出卷积，σ 分别表示 Sigmoid 激活。</p>
 </blockquote>
-<p><img loading="lazy" src="https://oss.swimmingliu.cn/p3Ddv.png" alt="image-20231127120200365"  />
-</p>
+<p><img alt="image-20231127120200365" loading="lazy" src="https://oss.swimmingliu.cn/p3Ddv.png"></p>
 <blockquote>
 <p>2）中间监督：计算机视觉中的传统注意力机制自动生成注意力图，但<strong>注意力生成的过程通常是人类无法解释的</strong>，并且<strong>网络关注的区域可能与人类关注的区域不同</strong>。</p>
 <p><strong>这种差距会限制注意力机制的性能和可解释性，有时还会导致网络容量的恶化</strong>。为了解决这些问题，我们在网络中引入了<strong>中间监督策略</strong>。在遵循<strong>从粗到细的方式的多病灶分割任务</strong>中，我们首先生成一个二元Ground Truth，其中前景表示所有类型的病灶，背景表示其他一切。在具有 C 种病变的多病变分割任务中，我们使用 Gi,i ∈ (1,&hellip;,C) 表示第 i 类病变的二元基本事实，其中前景表示特定病变背景代表其他一切。二进制真实值 Gb 计算如下：</p>
-<p><img loading="lazy" src="https://oss.swimmingliu.cn/p35GV.png" alt="image-20231127120613763"  />
-</p>
+<p><img alt="image-20231127120613763" loading="lazy" src="https://oss.swimmingliu.cn/p35GV.png"></p>
 <p>然后利用二元损失函数来计算<strong>二元真实值</strong> yb 和<strong>注意力引导解码器生成的注意力图</strong> Y 之间的<strong>二元损失 l</strong>：</p>
-<p><img loading="lazy" src="https://oss.swimmingliu.cn/p34eI.png" alt="image-20231127120701851"  />
-</p>
+<p><img alt="image-20231127120701851" loading="lazy" src="https://oss.swimmingliu.cn/p34eI.png"></p>
 <p>其中 Lb 表示二元损失函数。然后利用计算出的损失 l 来监督注意力引导解码器的参数更新。</p>
 </blockquote>
 <p>这个地方的中间监督主要是 要让中间的注意力机制起作用，不能随便生成。</p>
@@ -455,15 +437,13 @@ Related Work
 <blockquote>
 <p>跳跃连接已广泛应用于流行的卷积网络中，包括U-Net [3]、ResNet [24]等。受[11]的启发，我们建议将<strong>注意力图</strong>集成到<strong>连接网络编码器和多网络</strong>的跳跃连接中，形成多级解码器。在跳跃连接中，我们还引入了额外的残差路径来<strong>恢复普通特征图</strong>并进一步<strong>提高分割性能</strong>。与传统的残差路径相比，<strong>残差路径的幅值因子</strong>αi,i ∈ (1, 2,…, 5)被设置为网络的可学习参数，并在反向传播过程中更新。我们相信这样的设置可以为网络增加额外的非线性能力并增强跳过连接的有效性。</p>
 <p>我们使用 Fi,i ∈ (1, 2,&hellip;, 5) 表示来自网络编码器的<strong>普通特征图</strong>，Y 表示<strong>注意力图</strong>，精炼后的特征图 Fri,i ∈ (1, 2,. .., 5) 多类解码器接收的信息计算如下：</p>
-<p><img loading="lazy" src="https://oss.swimmingliu.cn/p3j6j.png" alt="image-20231127121513541"  />
-</p>
+<p><img alt="image-20231127121513541" loading="lazy" src="https://oss.swimmingliu.cn/p3j6j.png"></p>
 <p>然后将<strong>细化的特征图</strong>发送到<strong>多类解码器</strong>以进行最终的多类预测。</p>
 </blockquote>
 <h3 id="34-multi-class-decoder-with-deep-supervision">3.4 Multi-Class Decoder With Deep Supervision<a hidden class="anchor" aria-hidden="true" href="#34-multi-class-decoder-with-deep-supervision">#</a></h3>
 <blockquote>
 <p>U形分割网络中的解码器用于接收编码器发送的特征图，随着解码器中的<strong>特征通道数量的减少</strong>和<strong>空间分辨率的增加</strong>，<strong>分割性能逐步细化</strong>。然而，随着网络变深，最深的解码器块变得难以训练，这可能会限制最终的分割性能。<strong>深度监督策略已经被提出来训练深度卷积网络</strong>[25]、[26]。在所提出的先验注意网络中，辅助预测是从不同级别的解码器块中提取的，并使用相同的基本事实进行监督。我们使用 Pi,i ∈ (1, 2, 3) 表示来自多类解码器的辅助预测，Pm 表示最终的多类预测，g 表示真实值，Lm 表示多类损失函数。最终的多类损失计算如下：</p>
-<p><img loading="lazy" src="https://oss.swimmingliu.cn/p3iP2.png" alt="image-20231127121708354"  />
-</p>
+<p><img alt="image-20231127121708354" loading="lazy" src="https://oss.swimmingliu.cn/p3iP2.png"></p>
 <p>所提出的多类解码器的解码器块也与当前网络设置具有共同的设置，即卷积层、归一化层和非线性激活单元的堆栈。</p>
 </blockquote>
 <p>总结一下：</p>
@@ -476,8 +456,7 @@ Related Work
 <p>为了研究网络架构的性能差异，我们将所提出的先验注意网络与医学分割中最流行的方法进行了比较，包括 U-Net [3]、Attention U-Net [11] 和级联 U-Net，在两个 2D 中和 3D 分割任务。值得注意的是，与<strong>他们论文中提出的原始版本相比</strong>，基<strong>线方法根据网络拓扑方面的某些任务进行了修改和优化</strong>，以获<strong>得性能提升</strong>。我们将残差连接[24]、批量归一化[30]和来自 ImageNet 的预训练编码器引入到 2D COVIDlesion 分割任务的基线方法中，并且我们还将残差连接、实例归一化和 PReLU 激活引入到 3D 脑肿瘤分割任务中。除了网络拓扑之外，基线方法与所提出的先验注意网络共享相同的数据增强和训练配置。</p>
 <p>对于 COVID-19 病变的 2D 分割，我们使用 Dice 指数、精度分数和召回分数来评估所提出的网络的性能。 Dice指数是一种用来衡量两个样本相似度的统计量，已广泛用于分割算法的评估。精确率衡量的是实际正确的阳性识别的比例，召回率衡量的是算法对阳性样本的敏感度。对于 BraTS 2020 挑战赛的 3D 分割，在在线门户上进行评估，并根据 Dice 指数和 95% Hausdorff 距离（HD）对算法进行排名。</p>
 <p>我们使用 G 表示ground truth，P 表示密集预测，TP 表示正确预测的正样本，FP 表示错误预测的正样本，TN 表示正确预测的副样本，FN 表示错误预测的副样本。这些指标的计算方式如下：</p>
-<p><img loading="lazy" src="https://oss.swimmingliu.cn/p3Jhd.png" alt="image-20231127185553944"  />
-</p>
+<p><img alt="image-20231127185553944" loading="lazy" src="https://oss.swimmingliu.cn/p3Jhd.png"></p>
 </blockquote>
 <p>这个HD（Hausdorff ）也是一种评估分割结果的方式 （alright  又多了一种指标）</p>
 <h3 id="42-肺部-ct-切片中的-covid-19-病灶的-2d-多病灶分割">4.2 肺部 CT 切片中的 COVID-19 病灶的 2D 多病灶分割<a hidden class="anchor" aria-hidden="true" href="#42-肺部-ct-切片中的-covid-19-病灶的-2d-多病灶分割">#</a></h3>
@@ -489,18 +468,15 @@ Related Work
 <p>3）定量结果：我们在两个数据集上的实验中不同模型的详细比较分别如<strong>表一和表二</strong>所示。如图所示，我们提出的网络在毛玻璃不透明度和固结的 Dice 分数方面优于 U-Net、Attention U-Net。所提出的 <strong>PANet 以更少的参数和计算成本</strong>实现了与级联 U-Net 竞争的结果。由于这些模型在模型主干和训练策略上是相同的，很明显，所提出的<strong>注意力引导解码器、中间监督和深度监督</strong>的组合对分割性能有很大贡献。<strong>注意力引导解码器的利用</strong>有助于模型更准确地检测感染组织并生成与感染相关的注意力图，从而有利于解码器中的多类分割。</p>
 <p>此外，中间监督和深度监督的引入促进了网络的收敛，这也有助于提高性能。</p>
 </blockquote>
-<p><img loading="lazy" src="https://oss.swimmingliu.cn/p3zUK.png" alt="image-20231127190349627"  />
-</p>
+<p><img alt="image-20231127190349627" loading="lazy" src="https://oss.swimmingliu.cn/p3zUK.png"></p>
 <p>好好好，这哥们儿，睁着眼睛说瞎话是吧（这Unet明明比你低啊，精度也没差多少啊）</p>
 <blockquote>
 <p>4）定性结果：不同模型在 2D COVID-19 切片上的视觉比较如图 4 所示。由于模型在 Dice 分数方面非常接近，因此乍一看这些模型的表现相似。但与 U-Net 和 Attention U-Net 相比，所提出的 PANet 在实变和微小病变的分割上表现更好。</p>
 <p>与 U-Net 和 Attention U-Net 相比，PANet 产生更准确的分割掩模，并且与 Cascaded U-Net 相比，所提出的网络以更少的计算成本实现了有竞争力的结果。</p>
 </blockquote>
 <p>额 只要定量结果上去了，好像定性结果都是挑好的说吧？</p>
-<p><img loading="lazy" src="https://oss.swimmingliu.cn/p31Fl.png" alt="image-20231128140016412"  />
-</p>
-<p><img loading="lazy" src="https://oss.swimmingliu.cn/p3gdu.png" alt="image-20231128140032492"  />
-</p>
+<p><img alt="image-20231128140016412" loading="lazy" src="https://oss.swimmingliu.cn/p31Fl.png"></p>
+<p><img alt="image-20231128140032492" loading="lazy" src="https://oss.swimmingliu.cn/p3gdu.png"></p>
 <blockquote>
 <ol start="5">
 <li>) 消融实验：进行了几次消融实验来评估我们模型中组件的性能，如表 III 所示。</li>
@@ -510,8 +486,7 @@ Related Work
 <p>c）参数化跳跃连接的有效性：为了探索所提出的参数化跳跃连接的有效性，我们建立了两个实验4（U-Net + AGD*）和5（U-Net + AGD）。引入参数化跳跃连接后，分割性能得到了提高，几乎没有额外的参数或计算成本。</p>
 <p>d）中间监督的有效性：为了研究所提出的 PANet 中中间监督策略的有效性，我们比较了第 3 号（U-Net + AGD w/o IS）和第 5 号（U-Net + AGD）。如表 III 所示，与第 3 种相比，具有中间监督的网络获得了额外的改进。此外，在比较第 6 种（U-Net + DS + AGD w/o IS）和第 7 种（PANet）时也可以观察到改进。 ）尽管改进相对较小。可以看出，深度监管的引入也对绩效产生了提升，因此中级监管对绩效的提升并不像以前那么显着。</p>
 </blockquote>
-<p><img loading="lazy" src="https://oss.swimmingliu.cn/p3eST.png" alt="image-20231128140745555"  />
-</p>
+<p><img alt="image-20231128140745555" loading="lazy" src="https://oss.swimmingliu.cn/p3eST.png"></p>
 <h3 id="43-3d-multi-lesion-segmentation-of-brain-tumor-from-multi-modality-brain-mris">4.3 3D Multi-Lesion Segmentation of Brain Tumor From Multi-Modality Brain MRIs<a hidden class="anchor" aria-hidden="true" href="#43-3d-multi-lesion-segmentation-of-brain-tumor-from-multi-modality-brain-mris">#</a></h3>
 <blockquote>
 <p>1）数据：我们使用来自 BraTS 2020 挑战赛的开源多模态 MRI 数据集 [29]、[36] [37]。训练集由 369 个多对比 MRI 扫描组成，其中每个扫描包含四种模式，即原生 T1 加权、对比后 T1 加权 (T1Gd)、T2 加权 (T2) 和 T2 流体衰减反转恢复 (FLAIR) ）。</p>
@@ -524,8 +499,7 @@ Related Work
 <p>所提出的 PANet 在 <strong>Dice 分数和 Hausdorff 距离方面</strong>优于所有其他网络。此外，我们还在 BraTS 2020 验证集上对训练后的模型进行了验证。通过这种方式，我们还将所提出的网络与模态配对学习（BraTS 2020 中的 Top-2 解决方案）[35] 和研究中的 Transformer TransBTS [23] 进行了比较，除了基于 U 的常用网络之外-网。</p>
 <p>性能列于表五中。我们提出的 PANet 在 BraTS 2020 验证集上优于 U-Net、Attention U-Net、级联 U-Net 和 TransBTS。此外，所提出的 PANet 在 BraTS 2020 上实现了与 Top2 解决方案类似的 Dice 分数，并且具有更好的 Hausdorff 距离。另外，值得注意的是，与 U-Net 相比，所提出的 PANet 仅增加了 3.9% 的额外 GFlops，并且以更少的计算成本实现了比级联 U-Net 更好的性能。这些结果表明，所提出的先验注意网络在 BraTS 2020 数据集上的分割性能和计算效率之间取得了复杂的平衡。</p>
 </blockquote>
-<p><img loading="lazy" src="https://oss.swimmingliu.cn/p3cMp.png" alt="image-20231128143139994"  />
-</p>
+<p><img alt="image-20231128143139994" loading="lazy" src="https://oss.swimmingliu.cn/p3cMp.png"></p>
 <blockquote>
 <p>4）定性结果：我们可视化具有<strong>不同分割难度</strong>的 3 幅 MRI 图像，以展示不同模型的性能。对于最简单的情况（BraTS20_Validation_077），所有模型都能够分割病变，而所提出的 PANet 获得最高的<strong>分割 Dice 分数</strong>。对于有一定难度的病例（BraTS20_Validation_028），Attention U-Net和级联U-Net在<strong>水肿分割方面都产生了严重的误报</strong>，导致整个<strong>肿瘤的Dice评分较低</strong>。对于最难的情况（BraTS20_Validation_076），由于<strong>增强肿瘤的假阳性分割</strong>，U-Net、Attention U-Net 和级联 U-Net 的性能并不乐观，而所提出的 PANet 产生了最好的分割性能。所提出的 PANet 的成功归功于具有中间监督的注意力引导解码器，特征图通过空间注意力图进行细化，这可以防止潜在的误报预测。</p>
 </blockquote>
@@ -533,10 +507,8 @@ Related Work
 <p>1.冠状面 （Coronal），又称额状面。即从左右方向，沿人体的长轴将人体纵切为前、后两部分的切面。这种提法只是为了在临床中将器官位置描述的更具体，英文名称是：Coronal section；</p>
 <p>2.矢状面 (Sagittal)就是把人体分成左右两面的解剖面，于这个面平行的也是矢状面。出于这个位置的叫矢状位。矢状位的英文名称是：Median sagittal section；</p>
 <p>3.水平位 (Axial)又称横断位，即左右、前后构成的面为水平位，英文名称是:Transverse section。</p>
-<p><img loading="lazy" src="https://oss.swimmingliu.cn/p376m.png" alt="image-20231128143857189"  />
-</p>
-<p><img loading="lazy" src="https://oss.swimmingliu.cn/p3Q9R.png" alt="image-20231128143306784"  />
-</p>
+<p><img alt="image-20231128143857189" loading="lazy" src="https://oss.swimmingliu.cn/p376m.png"></p>
+<p><img alt="image-20231128143306784" loading="lazy" src="https://oss.swimmingliu.cn/p3Q9R.png"></p>
 <blockquote>
 <p>5）消融分析：在 BraTS 2020 验证数据集上也进行了与 2D 分割类似的消融实验，以评估我们模型中呈现的组件的有效性，如表六所示。</p>
 <p>a）具有深度监督的多类解码器的有效性：我们通过向网络解码器引入深度监督来构建实验2（U-Net + DS）。与基线（No.1）相比，实验No.2在增强肿瘤、肿瘤核心和整个肿瘤的分割性能方面提供了一定程度的性能提升。此外，当引入注意力引导解码器时，可以观察到性能的提高（第3和第6）。</p>
@@ -544,8 +516,7 @@ Related Work
 <p>c）参数化跳跃连接的有效性：我们建立了两个实验No.4（U-Net + AGD*）和No.5（UNet + AGD）来探索所提出的参数化跳跃连接的有效性。引入参数化跳跃连接后，在增强肿瘤和肿瘤核心方面分割性能有所提高，但整个肿瘤的分割性能略有下降。</p>
 <p>d）中间监督的有效性：我们通过比较表六中的第3号和第5号来调查中间监督策略的有效性。在No.5（U-Net + AGD）中，通过引入中间监督，增强肿瘤和肿瘤核心的Dice得分显着提高。但是当引入深度监督时，中间监督的性能提升并不像以前那么显着（第6和第7），这与2D分割情况类似。</p>
 </blockquote>
-<p><img loading="lazy" src="https://oss.swimmingliu.cn/p3OcN.png" alt="image-20231128143636223"  />
-</p>
+<p><img alt="image-20231128143636223" loading="lazy" src="https://oss.swimmingliu.cn/p3OcN.png"></p>
 <h2 id="discussion-and-conclusion">DISCUSSION AND CONCLUSION<a hidden class="anchor" aria-hidden="true" href="#discussion-and-conclusion">#</a></h2>
 <blockquote>
 <p><strong>多病灶分割</strong>在临床场景中具有重要意义，因为<strong>某种疾病</strong>可能同时发生<strong>多种类型的感染，不同感染阶段的患者可能会出现不同类型的病灶</strong>。例如，<strong>磨玻璃样混浊</strong>（GGO）和<strong>实变</strong>（CON.）是COVID-19患者典型的肺部病变，前者<strong>通常发生在早期患者</strong>，而后者的增加<strong>可能表明病情恶化</strong>。胶质瘤可分为<strong>低级别胶质瘤</strong>（LGG）和<strong>胶质母细胞瘤</strong>，即<strong>高级别胶质瘤</strong>（GBM/HGG），并且在发生HGG的患者中更有可能发现<strong>强化肿瘤</strong>。因此，多病灶分割在患者的筛查和预后方面具有巨大的潜力。</p>
@@ -553,8 +524,7 @@ Related Work
 <p>与级联 U-Net 相比，我们提出的先验注意力网络在 2D 和 3D 任务中都实现了更好的性能和效率，如图 6 所示。</p>
 <p>总之，我们提出了一种新颖的分割网络，即先验注意网络，用于医学图像中的多病灶分割。受流行的从粗到细策略的启发，我们通过<strong>空间注意机制</strong>将级联网络的两个步骤聚合成一个网络。此外，我们引入了一种新颖的<strong>中间监督机制</strong>来指导与<strong>病变相关的注意图</strong>的生成，这可以指导解码器中的后续多类分割。所提出的网络在 2D 和 3D 医学图像（包括 CT 扫描和多模态 MRI）上进行评估。对于 2D 分割，与级联 U-Net 相比，所提出的先验注意力网络以更少的计算成本获得了有竞争力的结果。对于 3D 脑肿瘤分割，所提出的先验注意网络在 BraTS 2020 验证数据集上产生了最先进的性能，并且优于基于 U-Net 的其他基线方法。实验结果表明，该方法在医学影像中的许多多病灶分割任务中具有巨大的应用潜力，与二元分割相比可以提供更多信息，并有助于医生未来的临床诊断。</p>
 </blockquote>
-<p><img loading="lazy" src="https://oss.swimmingliu.cn/p3uCt.png" alt="image-20231128144442585"  />
-</p>
+<p><img alt="image-20231128144442585" loading="lazy" src="https://oss.swimmingliu.cn/p3uCt.png"></p>
 
 
   </div>

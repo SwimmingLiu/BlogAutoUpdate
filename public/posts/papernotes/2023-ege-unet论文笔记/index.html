@@ -27,7 +27,7 @@ Abstract提到当前医学分割模型大部分是Transformer &#43; Unet，这�
 先前的工作通过引入复杂的模块来提高性能，但忽略了实际医疗环境中计算资源的限制。因此，迫切需要为移动医疗中的分割任务设计一种低参数、低计算负载的模型。最近，UNeXt [22] 结合了 UNet [18] 和 MLP [21] 开发了一种轻量级模型，该模型可以获得优异的性能，同时减少参数和计算量。此外，MALUNet [19]通过减少模型通道数并引入多个注意力模块来减小模型大小，从而比 UNeXt 具有更好的皮肤病变分割性能。然而，尽管MALUNet大大减少了参数数量和计算量，但其分割性能仍然低于一些大型模型，例如TransFuse。因此，在本研究中，我们提出了 EGE-UNet，这是一种轻量级皮肤病变分割模型，可实现最先进的效果，同时显着降低参数和计算成本。此外，据我们所知，这是第一个将参数减少到大约 50KB 的工作。">
 <meta name="author" content="SwimmingLiu">
 <link rel="canonical" href="https://swimmingliu.cn/posts/papernotes/2023-ege-unet%E8%AE%BA%E6%96%87%E7%AC%94%E8%AE%B0/">
-<link crossorigin="anonymous" href="/assets/css/stylesheet.d0ba3726344b58c49d5f0d05195743e4438cff79cf2048e07443b1ea4d4fdbf5.css" integrity="sha256-0Lo3JjRLWMSdXw0FGVdD5EOM/3nPIEjgdEOx6k1P2/U=" rel="preload stylesheet" as="style">
+<link crossorigin="anonymous" href="/assets/css/stylesheet.6ecbb0040febd20e47edd88a662c19f1ea945bf7427774b86594271d18f88faf.css" integrity="sha256-bsuwBA/r0g5H7diKZiwZ8eqUW/dCd3S4ZZQnHRj4j68=" rel="preload stylesheet" as="style">
 <link rel="icon" href="https://swimmingliu.cn/images/swimmingliu_icon.png">
 <link rel="icon" type="image/png" sizes="16x16" href="https://swimmingliu.cn/images/swimmingliu_icon.png">
 <link rel="icon" type="image/png" sizes="32x32" href="https://swimmingliu.cn/images/swimmingliu_icon.png">
@@ -73,35 +73,29 @@ Abstract提到当前医学分割模型大部分是Transformer &#43; Unet，这�
 
     </style>
 </noscript>
-<meta property="og:title" content="EGE-UNet: an Efficient Group Enhanced UNet for skin lesion segmentation" />
-<meta property="og:description" content="EGE-UNet: an Efficient Group Enhanced UNet for skin lesion segmentation
-1. Abstract
-目前的医学图像分割模型大多是 Transformer &#43; Unet，这些模型的大量参数和计算负载使得它们不适合移动健康应用。
+<meta property="og:url" content="https://swimmingliu.cn/posts/papernotes/2023-ege-unet%E8%AE%BA%E6%96%87%E7%AC%94%E8%AE%B0/">
+  <meta property="og:site_name" content="SwimmingLiu&#39;s Blog">
+  <meta property="og:title" content="EGE-UNet: an Efficient Group Enhanced UNet for skin lesion segmentation">
+  <meta property="og:description" content="EGE-UNet: an Efficient Group Enhanced UNet for skin lesion segmentation 1. Abstract 目前的医学图像分割模型大多是 Transformer &#43; Unet，这些模型的大量参数和计算负载使得它们不适合移动健康应用。
 作者提出的EGE-UNet 模型轻量、高效。（与 TransFuse 相比，参数和计算成本分别降低了 494 倍和 160 倍，模型参数量只有50KB）
 创新点：组多轴哈达玛产品注意力模块（GHPA）和组聚合桥模块（GAB）。
 1.GHPA 对输入特征进行分组，并在不同轴上执行哈达玛产品注意力机制（HPA），以从不同角度提取病理信息。
 2.GAB 通过对低级特征、高级特征以及解码器在每个阶段生成的掩码进行分组，有效地融合了多尺度信息。
-2. Introduction
-
-背景: 恶性黑色素瘤是世界上增长最快的癌症之一。据美国癌症协会估计，2020 年约有 100,350 例新发病例，超过 6,500 例死亡。因此，自动化皮肤病变分割系统势在必行，因为它可以帮助医疗专业人员快速识别病变区域并促进后续治疗过程。
-
+2. Introduction 背景: 恶性黑色素瘤是世界上增长最快的癌症之一。据美国癌症协会估计，2020 年约有 100,350 例新发病例，超过 6,500 例死亡。因此，自动化皮肤病变分割系统势在必行，因为它可以帮助医疗专业人员快速识别病变区域并促进后续治疗过程。
 相同方式可引入脑瘤、肺癌。
-
 为了提高分割性能，最近的研究倾向于采用具有更大参数和计算复杂度的模块，例如结合视觉变换器（ViT）的自注意力机制[7]。例如，Swin-UNet [4]，基于Swin Transformer [11]，利用自注意力机制的特征提取能力来提高分割性能。 TransUNet [5] 开创了用于医学图像分割的 CNN 和 ViT 的串行融合。 TransFuse [26]采用双路径结构，利用 CNN 和 ViT 分别捕获局部和全局信息。UTNetV2[8]利用混合分层架构、高效的双向注意力和语义图来实现全局多尺度特征融合，结合了CNN和ViT的优点。 TransBTS [23] 将自注意力引入脑肿瘤分割任务中，并用它来聚合高级信息。
-
 Abstract提到当前医学分割模型大部分是Transformer &#43; Unet，这里做出具体阐述。
-
-先前的工作通过引入复杂的模块来提高性能，但忽略了实际医疗环境中计算资源的限制。因此，迫切需要为移动医疗中的分割任务设计一种低参数、低计算负载的模型。最近，UNeXt [22] 结合了 UNet [18] 和 MLP [21] 开发了一种轻量级模型，该模型可以获得优异的性能，同时减少参数和计算量。此外，MALUNet [19]通过减少模型通道数并引入多个注意力模块来减小模型大小，从而比 UNeXt 具有更好的皮肤病变分割性能。然而，尽管MALUNet大大减少了参数数量和计算量，但其分割性能仍然低于一些大型模型，例如TransFuse。因此，在本研究中，我们提出了 EGE-UNet，这是一种轻量级皮肤病变分割模型，可实现最先进的效果，同时显着降低参数和计算成本。此外，据我们所知，这是第一个将参数减少到大约 50KB 的工作。" />
-<meta property="og:type" content="article" />
-<meta property="og:url" content="https://swimmingliu.cn/posts/papernotes/2023-ege-unet%E8%AE%BA%E6%96%87%E7%AC%94%E8%AE%B0/" />
-<meta property="og:image" content="https://swimmingliu.cn/papermod-cover.png" />
-<meta property="article:section" content="posts" />
-<meta property="article:published_time" content="2023-11-11T19:51:21+08:00" />
-<meta property="article:modified_time" content="2023-11-11T19:51:21+08:00" />
-
-<meta name="twitter:card" content="summary_large_image" />
-<meta name="twitter:image" content="https://swimmingliu.cn/papermod-cover.png" />
-<meta name="twitter:title" content="EGE-UNet: an Efficient Group Enhanced UNet for skin lesion segmentation"/>
+先前的工作通过引入复杂的模块来提高性能，但忽略了实际医疗环境中计算资源的限制。因此，迫切需要为移动医疗中的分割任务设计一种低参数、低计算负载的模型。最近，UNeXt [22] 结合了 UNet [18] 和 MLP [21] 开发了一种轻量级模型，该模型可以获得优异的性能，同时减少参数和计算量。此外，MALUNet [19]通过减少模型通道数并引入多个注意力模块来减小模型大小，从而比 UNeXt 具有更好的皮肤病变分割性能。然而，尽管MALUNet大大减少了参数数量和计算量，但其分割性能仍然低于一些大型模型，例如TransFuse。因此，在本研究中，我们提出了 EGE-UNet，这是一种轻量级皮肤病变分割模型，可实现最先进的效果，同时显着降低参数和计算成本。此外，据我们所知，这是第一个将参数减少到大约 50KB 的工作。">
+  <meta property="og:locale" content="en">
+  <meta property="og:type" content="article">
+    <meta property="article:section" content="posts">
+    <meta property="article:published_time" content="2023-11-11T19:51:21+08:00">
+    <meta property="article:modified_time" content="2023-11-11T19:51:21+08:00">
+    <meta property="article:tag" content="Unet">
+      <meta property="og:image" content="https://swimmingliu.cn/papermod-cover.png">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://swimmingliu.cn/papermod-cover.png">
+<meta name="twitter:title" content="EGE-UNet: an Efficient Group Enhanced UNet for skin lesion segmentation">
 <meta name="twitter:description" content="EGE-UNet: an Efficient Group Enhanced UNet for skin lesion segmentation
 1. Abstract
 目前的医学图像分割模型大多是 Transformer &#43; Unet，这些模型的大量参数和计算负载使得它们不适合移动健康应用。
@@ -119,7 +113,7 @@ Abstract提到当前医学分割模型大部分是Transformer &#43; Unet，这�
 
 Abstract提到当前医学分割模型大部分是Transformer &#43; Unet，这里做出具体阐述。
 
-先前的工作通过引入复杂的模块来提高性能，但忽略了实际医疗环境中计算资源的限制。因此，迫切需要为移动医疗中的分割任务设计一种低参数、低计算负载的模型。最近，UNeXt [22] 结合了 UNet [18] 和 MLP [21] 开发了一种轻量级模型，该模型可以获得优异的性能，同时减少参数和计算量。此外，MALUNet [19]通过减少模型通道数并引入多个注意力模块来减小模型大小，从而比 UNeXt 具有更好的皮肤病变分割性能。然而，尽管MALUNet大大减少了参数数量和计算量，但其分割性能仍然低于一些大型模型，例如TransFuse。因此，在本研究中，我们提出了 EGE-UNet，这是一种轻量级皮肤病变分割模型，可实现最先进的效果，同时显着降低参数和计算成本。此外，据我们所知，这是第一个将参数减少到大约 50KB 的工作。"/>
+先前的工作通过引入复杂的模块来提高性能，但忽略了实际医疗环境中计算资源的限制。因此，迫切需要为移动医疗中的分割任务设计一种低参数、低计算负载的模型。最近，UNeXt [22] 结合了 UNet [18] 和 MLP [21] 开发了一种轻量级模型，该模型可以获得优异的性能，同时减少参数和计算量。此外，MALUNet [19]通过减少模型通道数并引入多个注意力模块来减小模型大小，从而比 UNeXt 具有更好的皮肤病变分割性能。然而，尽管MALUNet大大减少了参数数量和计算量，但其分割性能仍然低于一些大型模型，例如TransFuse。因此，在本研究中，我们提出了 EGE-UNet，这是一种轻量级皮肤病变分割模型，可实现最先进的效果，同时显着降低参数和计算成本。此外，据我们所知，这是第一个将参数减少到大约 50KB 的工作。">
 
 
 <script type="application/ld+json">
@@ -374,8 +368,7 @@ Abstract提到当前医学分割模型大部分是Transformer &#43; Unet，这�
 <p>与 UNet 中的简单跳跃连接相比，EGE-UNet 在编码器和解码器之间的每个阶段都采用了 GAB。</p>
 <p>利用深度监督生成不同规模的掩模预测，这些预测用于损失函数并作为 GAB 的输入之一。</p>
 <p>通过集成这些高级模块，EGE-UNet 显着减少了参数和计算负载，同时与之前的方法相比增强了分割性能。</p>
-<p><img loading="lazy" src="https://oss.swimmingliu.cn/nL0HA.png" alt="image-20231021142745286"  />
-</p>
+<p><img alt="image-20231021142745286" loading="lazy" src="https://oss.swimmingliu.cn/nL0HA.png"></p>
 <h3 id="32-ghpa-group-multi-axis-hadamard-product-attention-module">3.2 GHPA (Group multi-axis Hadamard Product Attention module)<a hidden class="anchor" aria-hidden="true" href="#32-ghpa-group-multi-axis-hadamard-product-attention-module">#</a></h3>
 <blockquote>
 <p>为了克服 MHSA 带来的二次复杂度问题，我们提出了具有线性复杂度的 HPA。给定输入 x 和随机初始化的可学习张量 p，首先使用双线性插值来调整 p 的大小以匹配 x 的大小。然后，我们在 p 上采用深度可分离卷积（DW）[10][20]，然后在 x 和 p 之间进行哈达玛乘积运算以获得输出。然而，仅利用简单的HPA不足以从多个角度提取信息，导致结果不理想。受 MHSA 中多头模式的启发，我们引入了基于 HPA 的 GHPA，如算法 1 所示。我们将输入沿通道维度平均分为四组，并在高度-宽度、通道-高度和通道上执行 HPA - 分别为前三组的宽度轴。对于最后一组，我们只在特征图上使用DW。最后，我们沿着通道维度连接四组，并应用另一个数据仓库来整合不同角度的信息。请注意，DW 中使用的所有内核大小均为 3。</p>
@@ -388,8 +381,7 @@ Abstract提到当前医学分割模型大部分是Transformer &#43; Unet，这�
 <p>第二步，将 x1, x2, x3 的对应切片分别使用双线插值法（bilinear）在Pxy, Pzx, Pzy中进行插值。</p>
 <p>第三步，对插值后的Pxy, Pzx, Pzy，进行深度可分离卷积，然后分别和x1, x2, x3进行哈达玛乘积</p>
 <p>第四步，连接4组特征信息，然后经过深度可分离卷积融合特征。</p>
-<p><img loading="lazy" src="https://oss.swimmingliu.cn/nLBo5.png" alt="image-20231022142317783"  />
-</p>
+<p><img alt="image-20231022142317783" loading="lazy" src="https://oss.swimmingliu.cn/nLBo5.png"></p>
 <h3 id="33-gab-group-aggregation-bridge-module">3.3 GAB (Group Aggregation Bridge module)<a hidden class="anchor" aria-hidden="true" href="#33-gab-group-aggregation-bridge-module">#</a></h3>
 <blockquote>
 <p>多尺度信息的获取被认为对于密集预测任务（例如医学图像分割）至关重要。因此，如图 3 所示，我们引入了 GAB，它接受三个输入：低级特征、高级特征和掩码。首先，采用深度可分离卷积（DW）和双线性插值来调整高层特征的大小，以匹配低层特征的大小。其次，我们沿通道维度将两个特征映射分为四组，并将一组低级特征与一组高级特征连接起来，以获得四组融合特征。对于每组融合特征，掩码被连接起来。接下来，将内核大小为3和不同扩张率{1,2,5,7}的扩张卷积[25]应用于不同的组，以提取不同尺度的信息。最后，将四组沿通道维度连接起来，然后应用内核大小为 1 的普通卷积，以实现不同尺度的特征之间的交互。</p>
@@ -400,14 +392,12 @@ Abstract提到当前医学分割模型大部分是Transformer &#43; Unet，这�
 <p>其次，沿通道维度将两个特征映射分为四组。（对应不同空洞卷积的扩张率：d1 = 1, d2 = 2, d3 = 5, d4 = 7）</p>
 <p>并将每一组的低级特、高级特征和掩码连接起来，总共四组融合特征。</p>
 <p>最后，将四组特征进行连接，并进行1x1卷积得到输出。</p>
-<p><img loading="lazy" src="https://oss.swimmingliu.cn/nLIYs.png" alt="image-20231022145558617"  />
-</p>
+<p><img alt="image-20231022145558617" loading="lazy" src="https://oss.swimmingliu.cn/nLIYs.png"></p>
 <h3 id="34-loss-function">3.4 Loss Function<a hidden class="anchor" aria-hidden="true" href="#34-loss-function">#</a></h3>
 <blockquote>
 <p>在本研究中，由于不同的GAB需要不同尺度的掩模信息，因此采用深度监督来计算不同阶段的损失函数，以生成更准确的掩模信息。我们的损失函数可以表示为方程（1）和（2）。其中 Bce 和 Dice 表示二元交叉熵和dice损失。 λi是不同阶段的权重。在本文中，我们默认将i=0到i=5之间的λi设置为1、0.5、0.4、0.3、0.2、0.1。</p>
 </blockquote>
-<p><img loading="lazy" src="https://oss.swimmingliu.cn/nLs2X.png" alt="image-20231022150445506"  />
-</p>
+<p><img alt="image-20231022150445506" loading="lazy" src="https://oss.swimmingliu.cn/nLs2X.png"></p>
 <p>分为6个阶段，逐一计算每个阶段的损失。然后按照权重对损失进行求和。</p>
 <h2 id="4experiments">4.Experiments<a hidden class="anchor" aria-hidden="true" href="#4experiments">#</a></h2>
 <h3 id="41-datasets-and-implementation-details">4.1 Datasets and Implementation details<a hidden class="anchor" aria-hidden="true" href="#41-datasets-and-implementation-details">#</a></h3>
@@ -418,14 +408,11 @@ Abstract提到当前医学分割模型大部分是Transformer &#43; Unet，这�
 <p>​	<strong>在公共皮肤病变分割数据集（ISIC2017 和 ISIC2018 ）进行对比实验，在ISIC2018进行消融实验</strong></p>
 <p><strong>采用并集平均交集 (mIoU)、Dice 相似度得分 (DSC) 作为评估指标</strong></p>
 <h3 id="42-comparison-experiments">4.2 Comparison Experiments<a hidden class="anchor" aria-hidden="true" href="#42-comparison-experiments">#</a></h3>
-<p><img loading="lazy" src="https://oss.swimmingliu.cn/nLxIU.png" alt="image-20231022164845223"  />
-</p>
+<p><img alt="image-20231022164845223" loading="lazy" src="https://oss.swimmingliu.cn/nLxIU.png"></p>
 <h3 id="43-ablation-experiments">4.3 Ablation Experiments<a hidden class="anchor" aria-hidden="true" href="#43-ablation-experiments">#</a></h3>
-<p><img loading="lazy" src="https://oss.swimmingliu.cn/nLKz0.png" alt="image-20231022164916666"  />
-</p>
+<p><img alt="image-20231022164916666" loading="lazy" src="https://oss.swimmingliu.cn/nLKz0.png"></p>
 <h3 id="44-qualitative-comparisons">4.4 Qualitative Comparisons<a hidden class="anchor" aria-hidden="true" href="#44-qualitative-comparisons">#</a></h3>
-<p><img loading="lazy" src="https://oss.swimmingliu.cn/nLoCC.png" alt="image-20231022164944831"  />
-</p>
+<p><img alt="image-20231022164944831" loading="lazy" src="https://oss.swimmingliu.cn/nLoCC.png"></p>
 <h2 id="5-conclusions">5. ConClusions<a hidden class="anchor" aria-hidden="true" href="#5-conclusions">#</a></h2>
 <blockquote>
 <p>在本文中，我们提出了两个高级模块。我们的 GHPA 使用一种新颖的 HPA 机制将自注意力的二次复杂度简化为线性复杂度。它还利用分组来充分捕获来自不同角度的信息。我们的 GAB 融合了低级和高级特征，并引入了一个掩模来集成多尺度信息。基于这些模块，我们提出了用于皮肤病变分割任务的 EGE-UNet。实验结果证明了我们的方法在显着降低资源需求的情况下实现最先进的性能的有效性。我们希望我们的工作能够激发医学图像界对轻量级模型的进一步研究。</p>

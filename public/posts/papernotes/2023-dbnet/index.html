@@ -28,7 +28,6 @@ Introduction
 
 
 
-
 其次，肺结节内部因素造成的分割困难在于医生注释、层厚、数据来源和数据质量。数据质量差或不同医生的经验可能会导致不同的注释和注释者数量。由多名医生注释的病变区域通常更可靠，减少了潜在的临床风险。在资源有限的地区，由于 CT 扫描仪短缺和成像设备陈旧，CT 扫描质量差的情况很常见。较厚的切片更有可能产生“体积平均效应”和伪影，使医生难以达成一致的诊断。即使使用移动 CT 扫描仪也可能无法提供完整的诊断详细信息。最后，目前大多数肺结节分割方法都是基于2D图像，但这些方法忽略了空间关系，因此提出一种有效的3D肺结节分割模型来捕获肺结节的空间位置、纹理和其他详细信息变得越来越重要以避免误诊和漏诊。
 
 Challenge:
@@ -37,7 +36,7 @@ Challenge:
 异质性: 肺结节的形状多异 （实心结节、磨玻璃结节 (GGO) 、空洞结节、血管和胸膜旁边的结节）">
 <meta name="author" content="SwimmingLiu">
 <link rel="canonical" href="https://swimmingliu.cn/posts/papernotes/2023-dbnet/">
-<link crossorigin="anonymous" href="/assets/css/stylesheet.d0ba3726344b58c49d5f0d05195743e4438cff79cf2048e07443b1ea4d4fdbf5.css" integrity="sha256-0Lo3JjRLWMSdXw0FGVdD5EOM/3nPIEjgdEOx6k1P2/U=" rel="preload stylesheet" as="style">
+<link crossorigin="anonymous" href="/assets/css/stylesheet.6ecbb0040febd20e47edd88a662c19f1ea945bf7427774b86594271d18f88faf.css" integrity="sha256-bsuwBA/r0g5H7diKZiwZ8eqUW/dCd3S4ZZQnHRj4j68=" rel="preload stylesheet" as="style">
 <link rel="icon" href="https://swimmingliu.cn/images/swimmingliu_icon.png">
 <link rel="icon" type="image/png" sizes="16x16" href="https://swimmingliu.cn/images/swimmingliu_icon.png">
 <link rel="icon" type="image/png" sizes="32x32" href="https://swimmingliu.cn/images/swimmingliu_icon.png">
@@ -108,45 +107,31 @@ Challenge:
     });
 </script>
 
-<meta property="og:title" content="A Dual-Branch Framework with Prior Knowledge for Precise Segmentation of Lung Nodules in Challenging CT Scans" />
-<meta property="og:description" content="Abstract
-
-肺癌是全球最致命的癌症之一，早期诊断对于患者的生存至关重要。肺结节是早期肺癌的主要表现，通常通过 CT 扫描进行评估。如今，计算机辅助诊断系统被广泛用于辅助医生进行疾病诊断。肺结节的准确分割受到内部异质性和外部数据因素的影响。为了克服结节的细微、混合、粘附型、良性和不确定类别的分割挑战，提出了一种新的混合手动特征网络，可增强灵敏度和准确性。该方法通过双分支网络框架和多维融合模块集成特征信息。通过使用多个数据源和不同数据质量进行训练和验证，我们的方法在 LUNA16、多厚度切片图像数据集 (Multi-thickness Slice Image dataset)、LIDC 和 UniToChest 上表现出领先的性能，Dice 相似系数达到 86.89%、75.72%、84.12% 和 80.74分别超过了当前大多数肺结节分割方法。我们的方法进一步提高了肺结节分割任务的准确性、可靠性和稳定性，即使是在具有挑战性的 CT 扫描中也是如此。本研究中使用的代码发布在 GitHub 上，可通过以下 URL (https://github.com/BITEWKRER/DBNet) 获取。
-
-Introduction
-
-肺癌是全球癌症相关死亡的主要原因[1]。仅在美国，预计 2023 年将有 127,070 人死于肺癌，占所有癌症死亡的 21% [2]。不幸的是，超过 50% 的肺癌病例发生在发展中国家或不发达国家，与发达国家相比，这些国家的医疗资源有限[3]。
+<meta property="og:url" content="https://swimmingliu.cn/posts/papernotes/2023-dbnet/">
+  <meta property="og:site_name" content="SwimmingLiu&#39;s Blog">
+  <meta property="og:title" content="A Dual-Branch Framework with Prior Knowledge for Precise Segmentation of Lung Nodules in Challenging CT Scans">
+  <meta property="og:description" content="Abstract 肺癌是全球最致命的癌症之一，早期诊断对于患者的生存至关重要。肺结节是早期肺癌的主要表现，通常通过 CT 扫描进行评估。如今，计算机辅助诊断系统被广泛用于辅助医生进行疾病诊断。肺结节的准确分割受到内部异质性和外部数据因素的影响。为了克服结节的细微、混合、粘附型、良性和不确定类别的分割挑战，提出了一种新的混合手动特征网络，可增强灵敏度和准确性。该方法通过双分支网络框架和多维融合模块集成特征信息。通过使用多个数据源和不同数据质量进行训练和验证，我们的方法在 LUNA16、多厚度切片图像数据集 (Multi-thickness Slice Image dataset)、LIDC 和 UniToChest 上表现出领先的性能，Dice 相似系数达到 86.89%、75.72%、84.12% 和 80.74分别超过了当前大多数肺结节分割方法。我们的方法进一步提高了肺结节分割任务的准确性、可靠性和稳定性，即使是在具有挑战性的 CT 扫描中也是如此。本研究中使用的代码发布在 GitHub 上，可通过以下 URL (https://github.com/BITEWKRER/DBNet) 获取。
+Introduction 肺癌是全球癌症相关死亡的主要原因[1]。仅在美国，预计 2023 年将有 127,070 人死于肺癌，占所有癌症死亡的 21% [2]。不幸的是，超过 50% 的肺癌病例发生在发展中国家或不发达国家，与发达国家相比，这些国家的医疗资源有限[3]。
 为了增加生存机会，早期诊断和治疗肺癌仍然至关重要。在中国，研究表明，小于1厘米的I期肺癌的5年生存率为92%。然而，晚期肺癌的5年生存率低得多，仅为7.0%[4]。利用计算机断层扫描 (CT) 进行肺癌筛查已显示出可大幅降低死亡率的潜力 [5]、[6]。低剂量CT是目前肺癌筛查最常用的方法。此外，移动CT的引入有助于解决欠发达国家和偏远地区缺乏CT扫描仪的问题[6]。由于可能没有明显的症状，检测早期肺癌的存在可能会带来重大挑战。
-
 这种医学背景数据可以直接借鉴，Chatgpt润色改写就完事儿
-
 在 CT 图像上识别肺结节提供了疾病的关键指标 [1], [3]。这些结节代表圆形异常，其大小各异，直径范围为 3 至 30 毫米 [7]。为了进一步研究肺结节，美国国家癌症研究所组装了“肺部图像数据库联盟和图像数据库资源计划（LIDC）”数据集[8]。
 欠发达地区设备不足、人员不足，导致医生的诊断和治疗时间有限[9]。在这种情况下，医生的工作量很大、重复且耗时[10]、[5]。此外，由于与CT切片相比，肺部结节性病变占据相对较小的面积，长时间和密集的CT筛查可能会导致漏检小的、细微的或 GGO (肺磨玻璃结节) [3]，[6]。为了解决这些问题，计算机辅助诊断系统（CAD）出现并得到了快速发展，特别是随着基于深度学习技术的诊断方法的进步。 CAD系统大大减轻了医生的工作量，最大限度地降低了未发现结节的风险，并提高了肺结节诊断的效率和可靠性。然而，当前用于肺结节分割的 CAD 系统仍然面临一些挑战。
-
 下面详细阐述了肺结节分割的几个现有挑战，可以从这些挑战入手
-
 首先，放射科医生标记的肺结节包含九个诊断特征[11]，异质性表型阻碍了肺结节分割的发展。如图1所示，实心结节（a，b）具有清晰的形状和边界，而微妙的GGO结节（e）具有低对比度和模糊的边界[4]，使得网络很容易将它们分类为背景区域。空洞（g）结节降低了网络分割的敏感性，并且由于背景和分割目标之间的极度不平衡，小结节很容易被遗漏[12]。
 由于周围多余的组织结构，血管旁或胸膜旁（c、d、f）可能会导致网络分类错误[13]。此外，部分实性结节（h）比纯GGO更致密，产生更复杂的异质纹理，更容易发展成恶性结节[14]。
-
-
-
-
 其次，肺结节内部因素造成的分割困难在于医生注释、层厚、数据来源和数据质量。数据质量差或不同医生的经验可能会导致不同的注释和注释者数量。由多名医生注释的病变区域通常更可靠，减少了潜在的临床风险。在资源有限的地区，由于 CT 扫描仪短缺和成像设备陈旧，CT 扫描质量差的情况很常见。较厚的切片更有可能产生“体积平均效应”和伪影，使医生难以达成一致的诊断。即使使用移动 CT 扫描仪也可能无法提供完整的诊断详细信息。最后，目前大多数肺结节分割方法都是基于2D图像，但这些方法忽略了空间关系，因此提出一种有效的3D肺结节分割模型来捕获肺结节的空间位置、纹理和其他详细信息变得越来越重要以避免误诊和漏诊。
-
 Challenge:
-
-
-异质性: 肺结节的形状多异 （实心结节、磨玻璃结节 (GGO) 、空洞结节、血管和胸膜旁边的结节）" />
-<meta property="og:type" content="article" />
-<meta property="og:url" content="https://swimmingliu.cn/posts/papernotes/2023-dbnet/" />
-<meta property="og:image" content="https://swimmingliu.cn/papermod-cover.png" />
-<meta property="article:section" content="posts" />
-<meta property="article:published_time" content="2024-03-03T15:37:07+08:00" />
-<meta property="article:modified_time" content="2024-03-03T15:37:07+08:00" />
-
-<meta name="twitter:card" content="summary_large_image" />
-<meta name="twitter:image" content="https://swimmingliu.cn/papermod-cover.png" />
-<meta name="twitter:title" content="A Dual-Branch Framework with Prior Knowledge for Precise Segmentation of Lung Nodules in Challenging CT Scans"/>
+异质性: 肺结节的形状多异 （实心结节、磨玻璃结节 (GGO) 、空洞结节、血管和胸膜旁边的结节）">
+  <meta property="og:locale" content="en">
+  <meta property="og:type" content="article">
+    <meta property="article:section" content="posts">
+    <meta property="article:published_time" content="2024-03-03T15:37:07+08:00">
+    <meta property="article:modified_time" content="2024-03-03T15:37:07+08:00">
+    <meta property="article:tag" content="Unet">
+      <meta property="og:image" content="https://swimmingliu.cn/papermod-cover.png">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://swimmingliu.cn/papermod-cover.png">
+<meta name="twitter:title" content="A Dual-Branch Framework with Prior Knowledge for Precise Segmentation of Lung Nodules in Challenging CT Scans">
 <meta name="twitter:description" content="Abstract
 
 肺癌是全球最致命的癌症之一，早期诊断对于患者的生存至关重要。肺结节是早期肺癌的主要表现，通常通过 CT 扫描进行评估。如今，计算机辅助诊断系统被广泛用于辅助医生进行疾病诊断。肺结节的准确分割受到内部异质性和外部数据因素的影响。为了克服结节的细微、混合、粘附型、良性和不确定类别的分割挑战，提出了一种新的混合手动特征网络，可增强灵敏度和准确性。该方法通过双分支网络框架和多维融合模块集成特征信息。通过使用多个数据源和不同数据质量进行训练和验证，我们的方法在 LUNA16、多厚度切片图像数据集 (Multi-thickness Slice Image dataset)、LIDC 和 UniToChest 上表现出领先的性能，Dice 相似系数达到 86.89%、75.72%、84.12% 和 80.74分别超过了当前大多数肺结节分割方法。我们的方法进一步提高了肺结节分割任务的准确性、可靠性和稳定性，即使是在具有挑战性的 CT 扫描中也是如此。本研究中使用的代码发布在 GitHub 上，可通过以下 URL (https://github.com/BITEWKRER/DBNet) 获取。
@@ -168,13 +153,12 @@ Introduction
 
 
 
-
 其次，肺结节内部因素造成的分割困难在于医生注释、层厚、数据来源和数据质量。数据质量差或不同医生的经验可能会导致不同的注释和注释者数量。由多名医生注释的病变区域通常更可靠，减少了潜在的临床风险。在资源有限的地区，由于 CT 扫描仪短缺和成像设备陈旧，CT 扫描质量差的情况很常见。较厚的切片更有可能产生“体积平均效应”和伪影，使医生难以达成一致的诊断。即使使用移动 CT 扫描仪也可能无法提供完整的诊断详细信息。最后，目前大多数肺结节分割方法都是基于2D图像，但这些方法忽略了空间关系，因此提出一种有效的3D肺结节分割模型来捕获肺结节的空间位置、纹理和其他详细信息变得越来越重要以避免误诊和漏诊。
 
 Challenge:
 
 
-异质性: 肺结节的形状多异 （实心结节、磨玻璃结节 (GGO) 、空洞结节、血管和胸膜旁边的结节）"/>
+异质性: 肺结节的形状多异 （实心结节、磨玻璃结节 (GGO) 、空洞结节、血管和胸膜旁边的结节）">
 
 
 <script type="application/ld+json">
@@ -438,8 +422,7 @@ Challenge:
 <p>首先，<strong>放射科医生标记的肺结节</strong>包含<strong>九个诊断特征</strong>[11]，<strong>异质性表型</strong>阻碍了<strong>肺结节分割的发展</strong>。如图1所示，<strong>实心结节（a，b）具有清晰的形状和边界</strong>，而<strong>微妙的GGO结节（e）具有低对比度和模糊的边界</strong>[4]，使得网络很容易将<strong>它们分类为背景区域</strong>。<strong>空洞（g）结节降低了网络分割的敏感性</strong>，并且由于<strong>背景和分割目标之间的极度不平衡，小结节很容易被遗漏</strong>[12]。</p>
 <p>由于周围多余的组织结构，<strong>血管旁或胸膜旁（c、d、f）可能会导致网络分类错误</strong>[13]。此外，<strong>部分实性结节（h）比纯GGO更致密</strong>，产生更<strong>复杂的异质纹理，更容易发展成恶性结节</strong>[14]。</p>
 </blockquote>
-<p><img loading="lazy" src="https://oss.swimmingliu.cn/262f8e71-d931-11ee-b68c-c858c0c1debd" alt="image-20240303102609243"  />
-</p>
+<p><img alt="image-20240303102609243" loading="lazy" src="https://oss.swimmingliu.cn/262f8e71-d931-11ee-b68c-c858c0c1debd"></p>
 <blockquote>
 <p>其次，肺结节内部因素造成的分割困难在于<strong>医生注释、层厚、数据来源和数据质量</strong>。<strong>数据质量差</strong>或<strong>不同医生的经验</strong>可能会导致<strong>不同的注释和注释者数量</strong>。由<strong>多名医生注释的病变区域</strong>通常更<strong>可靠</strong>，减少了潜在的临床风险。<strong>在资源有限的地区</strong>，由于 <strong>CT 扫描仪短缺和成像设备陈旧</strong>，<strong>CT 扫描质量差的情况很常见</strong>。<strong>较厚的切片</strong>更有可能产生“<strong>体积平均效应”和伪影</strong>，使医生<strong>难以达成一致的诊断</strong>。即使使用<strong>移动 CT 扫描仪</strong>也可能<strong>无法提供完整的诊断详细信息</strong>。最后，目前<strong>大多数肺结节分割方法</strong>都是基于<strong>2D图像</strong>，但这些方法忽略了<strong>空间关系</strong>，因此提出一种有效的<strong>3D肺结节分割模型</strong>来<strong>捕获肺结节的空间位置</strong>、<strong>纹理和其他详细信息变得越来越重要以避免误诊和漏诊</strong>。</p>
 </blockquote>
@@ -487,35 +470,28 @@ Challenge:
 <p>肺结节CT图像预处理步骤如下：</p>
 <p>(a) Ground Truth: 同一结节的Mask 根据<strong>质心坐标进行聚类</strong>，并使用<strong>开源Pyldc工具库对不同医生的注释进行平均</strong>，级别设置为0.5[27]。然后获得真实值 (GT)，如图 2 所示。</p>
 </blockquote>
-<p><img loading="lazy" src="https://oss.swimmingliu.cn/265f1704-d931-11ee-8eb8-c858c0c1debd" alt="image-20240303114739315"  />
-</p>
+<p><img alt="image-20240303114739315" loading="lazy" src="https://oss.swimmingliu.cn/265f1704-d931-11ee-8eb8-c858c0c1debd"></p>
 <blockquote>
 <p>(b) 重新采样：将裁剪后的<strong>肺结节区域</strong>重新采样为 <strong>1 mm</strong>，并将生成的图像块大小调整为 <strong>64×64×64</strong> [28]，[29].</p>
 <p>(c) <strong>归一化和混合特征</strong>：<strong>使用Z-score对原始图像块进行标准化</strong>，<strong>将CT图像转换为标准正态分布</strong>，提高网络训练的稳定性。<strong>混合特征通过变换和加权求和</strong>，<strong>同时保留了切归一化后的对比度信息</strong>（Cut-norm，eq（1））和 <strong>Sobel算子的边界信息</strong>，如图3所示。肺HU值的切归一化范围为**[-1000, 400]** [3]，然后<strong>将截断的 CT 图像映射到 [0,1]</strong>，从而<strong>提高 CT 图像中低对比度组织和细节的可视性</strong>，同时<strong>增强网络的灵敏度</strong>。 <strong>Sobel算子是一种简单且稳定的算子，可以有效突出细微、血管旁和胸膜旁结节的边界信息</strong>。另外，<strong>Prewitt算子的成像结果与Sobel算子相似</strong>，因此没有进行进一步的研究。</p>
-<p><img loading="lazy" src="https://oss.swimmingliu.cn/2667ac62-d931-11ee-a124-c858c0c1debd" alt="image-20240303114954965"  />
-</p>
+<p><img alt="image-20240303114954965" loading="lazy" src="https://oss.swimmingliu.cn/2667ac62-d931-11ee-a124-c858c0c1debd"></p>
 </blockquote>
-<p><img loading="lazy" src="https://oss.swimmingliu.cn/26719fd7-d931-11ee-ab7a-c858c0c1debd" alt="image-20240303142053806"  />
-</p>
+<p><img alt="image-20240303142053806" loading="lazy" src="https://oss.swimmingliu.cn/26719fd7-d931-11ee-ab7a-c858c0c1debd"></p>
 <h3 id="b-overall-design-of-the-dual-branch-network">B. Overall Design of the Dual-branch network<a hidden class="anchor" aria-hidden="true" href="#b-overall-design-of-the-dual-branch-network">#</a></h3>
 <blockquote>
 <p>双分支网络 (DBNet) 的架构如图 4 所示。它代表了一种端到端肺结节分割方法，包括信息编码和解码两个阶段。在编码阶段，我们采用<strong>主网络</strong>和<strong>辅助网络</strong>概念。主网络（$En_raw$）以原始CT图像作为输入，而辅助网络（$En_aid$）则利用<strong>混合特征图像</strong>作为输入。主、辅分支的输入图像块大小为 $Image^{C×H×W×D}<em>{raw}$ ,  $Image^{C×H×W×D}</em>{help}$ ∈ $R^{1×64×64×64}$，其中 $C$、$H$、$W$、$D$表示输入通道、长度、宽度和深度。编码阶段总共包括<strong>5个编码块</strong>和<strong>4次下采样</strong>操作，不同编码阶段的特征图可以表示为 $f^i_r$ , $f^i_a$ , $i$ ∈ [1, 5]，$r$  和 $a$ 表示主分支和辅助分支，特征图从 $32 × 64 × 64 × 64$ 过渡到 $64 × 32 × 32 × 32$，然后过渡到 $128 × 16 × 16 × 16$、$256 × 8 × 8 × 8$，最后过渡到 $512 × 4 × 4 × 4$</p>
 </blockquote>
-<p><img loading="lazy" src="https://oss.swimmingliu.cn/2693665c-d931-11ee-afc2-c858c0c1debd" alt="image-20240303120522585"  />
-</p>
+<p><img alt="image-20240303120522585" loading="lazy" src="https://oss.swimmingliu.cn/2693665c-d931-11ee-afc2-c858c0c1debd"></p>
 <blockquote>
 <p>在解码阶段，采用<strong>双分支设计</strong>，减少<strong>网络参数和计算量</strong>，同时提供<strong>更多的特征选择和更强的泛化能力</strong>。针对<strong>双分支特征信息的融合设计</strong>，提出了<strong>多维融合模块</strong>，从<strong>多个维度的空间通道</strong>中提取特征信息。然后，注意力模块的<strong>输出特征图</strong>将被<strong>上采样</strong>并与相应的编码阶<strong>段特征图</strong> $ f^i_r $ 和 $f^i_a$  融合，其中 $i$ ∈ [1,4]，以<strong>补偿下采样过程造成的信息损失</strong>。该融合过程重复四次，以逐渐预测肺结节区域。经过 $3×3×3$ 卷积的特征提取和优化后，得到预测的肺结节区域为 $Output^{1×64×64×64}$ ∈ [0,1]。设置<strong>阈值0.5</strong>，如果该值<strong>大于阈值</strong>，则该像素被认为是肺结节的一部分；否则，它被视为背景的一部分。</p>
-<p><img loading="lazy" src="https://oss.swimmingliu.cn/26a13610-d931-11ee-93c0-c858c0c1debd" alt="image-20240303143554988"  />
-</p>
+<p><img alt="image-20240303143554988" loading="lazy" src="https://oss.swimmingliu.cn/26a13610-d931-11ee-93c0-c858c0c1debd"></p>
 <p>网络的基本单元包括卷积（Conv）、BatchNorm（BN）和Swish激活函数[30]，统称为CBS。 BN <strong>加速网络收敛</strong>并<strong>增强其表达能力</strong>，而 Swish 激活函数可以<strong>减轻与更深网络相关的梯度消失问题</strong>。可训练参数 $beta$ = 1.0 动态调整 Swish 激活函数的形状，以更好地适应肺结节分割任务，如（2）所示，其中 $σ$ 表示 sigmoid 激活函数。将基本块的数量增加到2，并添加残差连接，得到残差基本块RCBS。</p>
 </blockquote>
-<p><img loading="lazy" src="https://oss.swimmingliu.cn/26a92600-d931-11ee-8f0c-c858c0c1debd" alt="image-20240303143854498"  />
-</p>
+<p><img alt="image-20240303143854498" loading="lazy" src="https://oss.swimmingliu.cn/26a92600-d931-11ee-8f0c-c858c0c1debd"></p>
 <h3 id="c-design-of-the-multi-dimensional-fusion-module">C. Design of the Multi-Dimensional Fusion Module<a hidden class="anchor" aria-hidden="true" href="#c-design-of-the-multi-dimensional-fusion-module">#</a></h3>
 <blockquote>
 <p><strong>多维融合模块（MDFM）<strong>由两部分组成：<strong>通道挤压洗牌注意力模块（CESA</strong>）和</strong>轴向多尺度空间注意力模块（AMSA）</strong>，模块设计和内部注意力变化[31]如图5所示，整个过程可以表示为方程3至方程5。</p>
-<p><img loading="lazy" src="https://oss.swimmingliu.cn/26c032c5-d931-11ee-94a2-c858c0c1debd" alt="image-20240303144204221"  />
-</p>
+<p><img alt="image-20240303144204221" loading="lazy" src="https://oss.swimmingliu.cn/26c032c5-d931-11ee-94a2-c858c0c1debd"></p>
 </blockquote>
 <h4 id="1-channel-extrusion-shuffle-attention-module">1) Channel Extrusion Shuffle Attention Module<a hidden class="anchor" aria-hidden="true" href="#1-channel-extrusion-shuffle-attention-module">#</a></h4>
 <blockquote>
@@ -528,8 +504,7 @@ Challenge:
 <h3 id="d-loss-function">D. Loss Function<a hidden class="anchor" aria-hidden="true" href="#d-loss-function">#</a></h3>
 <blockquote>
 <p>Dice相似系数[32]（DSC）是一种相似性测量函数，通常用于计算两个样本的相似性。 DSC ∈ [0,1]，<strong>值越小</strong>表明**模型预测结果 **与 <strong>真实标签差距越大</strong>。</p>
-<p><img loading="lazy" src="https://oss.swimmingliu.cn/26c860cf-d931-11ee-ac60-c858c0c1debd" alt="image-20240303145312767"  />
-</p>
+<p><img alt="image-20240303145312767" loading="lazy" src="https://oss.swimmingliu.cn/26c860cf-d931-11ee-ac60-c858c0c1debd"></p>
 <p>其中 $P$ 表示二进制预测结果像素的集合，$G$ 表示二进制真实标签结果的集合。 $| P ∩ G |$ 表示 $P $ 和 $G$ 的交集。</p>
 </blockquote>
 <h2 id="experiments">Experiments<a hidden class="anchor" aria-hidden="true" href="#experiments">#</a></h2>
@@ -538,24 +513,20 @@ Challenge:
 <p>本文在其实验设置中介绍了四个数据集：</p>
 <p>（1）LIDC： 肺部图像数据库联盟和图像数据库资源倡议 (LIDC) 数据集是<strong>全球最大的公开肺癌数据集</strong>。它包括来自多家医院的 1, 018 个研究病例，包含 11 种不同厚度类型的数据，最多有四名医生在 CT 图像中注释病变信息 [8]，<strong>如图 6 所示</strong>。首先，直径为 3mm 或 3mm 的结节由至少两名医生注释的较大的被保留[21]。然后，对由一名医生注释的结节进行二次筛查，以去除不确定或注释错误的样本，总共得到 2, 615 个肺结节样本。</p>
 </blockquote>
-<p><img loading="lazy" src="https://oss.swimmingliu.cn/26dcade4-d931-11ee-948a-c858c0c1debd" alt="image-20240303145815570"  />
-</p>
+<p><img alt="image-20240303145815570" loading="lazy" src="https://oss.swimmingliu.cn/26dcade4-d931-11ee-948a-c858c0c1debd"></p>
 <blockquote>
 <p>2）Luna16： <strong>Luna16 数据集是 LIDC 数据集的子集，旨在解决 LIDC 数据集中 CT 切片厚度变化和数据质量等问题。</strong> Luna16数据集总共包括1186个肺结节样本，这些样本由三名或更多医生注释，直径为3毫米或更大，切片厚度为2.5毫米或更小[33]。</p>
 <p>(3) 多厚度切片图像数据集(mThickSImg)： <strong>剔除Luna16肺结节样本后</strong>，共获得1429个多层结节，<strong>主要用于内模型性能测试</strong>，实验数据的样本分布如图7所示。</p>
 <p>(4) UniToChest： UniToChest [34] 数据集包括 306,440 个匿名胸部 CT 扫描切片和相应的肺结节分割掩模。这些数据来自623名不同的患者，经过处理和筛选后，总共获得了211张结节大小从3到35mm的多层CT图像用于外部测试集。</p>
 </blockquote>
-<p><img loading="lazy" src="https://oss.swimmingliu.cn/26ead66c-d931-11ee-94d9-c858c0c1debd" alt="image-20240303150101628"  />
-</p>
+<p><img alt="image-20240303150101628" loading="lazy" src="https://oss.swimmingliu.cn/26ead66c-d931-11ee-94d9-c858c0c1debd"></p>
 <h3 id="b-lung-nodule-characteristic-attributes-classification">B. Lung nodule characteristic attributes classification<a hidden class="anchor" aria-hidden="true" href="#b-lung-nodule-characteristic-attributes-classification">#</a></h3>
 <blockquote>
 <p>LIDC 数据集总共包含由医生注释的 <strong>9 个视觉特征</strong>。在该实验中，去除了<strong>内部结构和钙化特性</strong>，并重新定义了<strong>良性和恶性的分类</strong>[35]，同时还纳入了肺结节的大小[24]。为了保证<strong>多个医师对同一肺结节标注的一致性</strong>，肺结节属性分类采用两种策略：（1）<strong>良恶性肺结节</strong>的定义是<strong>多个医师对结节标注结果的中位数</strong> [35]。 (2)其他特征属性通过投票过程获得。肺结节属性分类如表1所示。</p>
 </blockquote>
-<p><img loading="lazy" src="https://oss.swimmingliu.cn/26f68504-d931-11ee-a565-c858c0c1debd" alt="image-20240303150245612"  />
-</p>
+<p><img alt="image-20240303150245612" loading="lazy" src="https://oss.swimmingliu.cn/26f68504-d931-11ee-a565-c858c0c1debd"></p>
 <h3 id="c-evaluation-metrics">C. Evaluation Metrics<a hidden class="anchor" aria-hidden="true" href="#c-evaluation-metrics">#</a></h3>
-<p><img loading="lazy" src="https://oss.swimmingliu.cn/270ba13a-d931-11ee-87b0-c858c0c1debd" alt="image-20240303150416975"  />
-</p>
+<p><img alt="image-20240303150416975" loading="lazy" src="https://oss.swimmingliu.cn/270ba13a-d931-11ee-87b0-c858c0c1debd"></p>
 <blockquote>
 <p>在本文中，我们使用<strong>精度（PRE）、灵敏度（SEN）、骰子相似系数（DSC）和并集平均交集（mIoU）作为评估指标</strong>，如方程（7）至（10）所示。 <strong>True Positive（TP）表示正确分割的焦点区域</strong>，<strong>True Negative（TN）表示正确分割的正常组织区域</strong>，<strong>False Positive（FP）表示正常组织区域被错误地分割为焦点区域</strong>，<strong>False Negative（FN）表示焦点区域被错误地分割为正常组织区域</strong>。</p>
 </blockquote>
@@ -570,16 +541,14 @@ Challenge:
 <p>如表2所示，所提出的方法与一些<strong>最近优秀的CAD模型</strong>进行了比较。根据<strong>样本数量和选择策略</strong>，这些方法<strong>分为小样本肺结节分割方法</strong>和<strong>一般样本数量肺结节分割方法</strong>。这些方法的筛选标准列于表中。<strong>在使用小样本量的肺结节分割方法中</strong>，我们提出的模型<strong>在包含 1,186 个结节的 Luna16 数据集上实现了最先进的性能</strong>，通过 <strong>5 folder 交叉验证</strong>实现了最高 DSC 87.68%（最佳）和 86.89%（平均）。就整体 DSC 而言，这比<strong>当前顶级小样本方法 DS-CMSF</strong> 领先 0.93%。这证明了我们的方法在相对较小的训练样本量下的有效性。此外，为了研究大样本量的性能，我们的方法在 <strong>LIDC 数据集中的 2,618 个节点集上进行了训练</strong>。我们取得了最佳 DSC 分数和平均 DSC 分数分别为 85.42% 和 84.12%，显着优于<strong>当前领先的 LNHG</strong> 模型（82.05%）和其他主流算法。</p>
 <p>总体而言，不同数据量下的测试结果表明本文方法具有较强的稳定性和泛化能力。</p>
 </blockquote>
-<p><img loading="lazy" src="https://oss.swimmingliu.cn/27167130-d931-11ee-812d-c858c0c1debd" alt="image-20240303151144111"  />
-</p>
+<p><img alt="image-20240303151144111" loading="lazy" src="https://oss.swimmingliu.cn/27167130-d931-11ee-812d-c858c0c1debd"></p>
 <h3 id="b-ablation-studies">B. Ablation studies<a hidden class="anchor" aria-hidden="true" href="#b-ablation-studies">#</a></h3>
 <blockquote>
 <p>在本节中，我们对所提出的 <strong>CAD 模型</strong>的不同部分进行了消融研究，以评估它们对性能的贡献。消融研究中使用的模型是<strong>基于 Luna16 数据集</strong>进行训练的。</p>
 <p>在影响模型性能的因素中，研究人员普遍认为模型规模是关键因素。目前，大多数学者倾向于使用 $64×64×64$ 的 patch大小作为神经网络的输入。按照此设置，模型的初始通道数设置为32，<strong>考虑到输入大小的约束</strong>，模型的<strong>最大下采样次数设置为</strong>4。此时，瓶颈层的输入大小为 $4 × 4 × 4$ ，512 个通道。基于此，我们设计了四种双分支分割模型（称为模型A、B、C和D），深度分别为2、3、4和5层。这些模型均使用CBAM模块作为双分支模型的融合模块。实验结果表明，随着网络深度和通道数的增加，模型性能呈现出不断增加的趋势，DSC从80.61%上升到85.8%，如表3所示。因此，得出结论：在输入尺寸为64×64×64的情况下，本研究模型的最佳深度为5，瓶颈层有512个通道。</p>
 <p>实验中主要探索了<strong>两类辅助特征</strong>。一种是利用<strong>Cut-norm来突出病变的特征信息</strong>，另一种方法<strong>主要利用Sobel梯度算子来增强边界信息</strong>。在最佳模型规模的讨论中，所有模型均使用Z-score标准方法进行训练。训练这<strong>两个手动特征并与模型 D</strong> 进行比较后，发现使用 <strong>Cut-norm 的模型 E 和使用 Sobel 算子的模型 F</strong> 在 DSC 中分别与模型 D 相差 0.61% 和 0.78%。这说明了该辅助分支策略的有效性。此外，进一步验证了Sobel算子在不同数据尺度下的有效性，发现<strong>模型D和模型F</strong>在LIDC数据集上的DSC性能分别达到83.56%和83.82%，相差0.26%。这表明，即使在更大规模的测试集中，Sobel算子仍然有效，因此，暂时将Sobel算子用作辅助特征。</p>
 </blockquote>
-<p><img loading="lazy" src="https://oss.swimmingliu.cn/2722d816-d931-11ee-a180-c858c0c1debd" alt="image-20240303151528629"  />
-</p>
+<p><img alt="image-20240303151528629" loading="lazy" src="https://oss.swimmingliu.cn/2722d816-d931-11ee-a180-c858c0c1debd"></p>
 <blockquote>
 <p>进一步<strong>基于Sobel算子作为辅助特征</strong>，提出了<strong>通道挤压洗牌注意力模块和轴向多尺度空间注意力模块，即模型G和模型H</strong>，模型性能最优达到86.63%。最后，为了同时保留高对比度病变区域和突出显示的边界细节以方便学习，我们使用<strong>变换操作和加权求和来整合这两个特征</strong>。通过这种策略，本文提出的方法获得了 86.89% DSC 的最佳结果，超过了<strong>单独使用 Sobel 滤波器特征的性能</strong>。直接的性能提升验证了我们辅助功能的有效性。</p>
 <p>虽然<strong>模型 H 和我们的整体性能差距并不显着</strong>，但模型 H <strong>在内部数据集中的 DSC 性能为 63.03%，对于 GGO 类型评估的灵敏度为 62.42%</strong>。然而，<strong>使用混合特征的进一步替代导致灵敏度和 DSC 性能显着提高，分别达到 65.27% 和 65.08%</strong>。观察模型G、H和Ours的收敛速度，随着注意力模块数量的增加和混合特征的替换，模型拟合所需的epoch逐渐增加，但综合考虑，总体费用是值得的。</p>
@@ -590,27 +559,22 @@ Challenge:
 <p>随后，所有方法都<strong>在内部 mThickImgs 数据集</strong>和<strong>外部 UniToChest 数据集</strong>上进行了验证。在这两个数据集上，UNet++ 达到了最高的精度，但灵敏度较低。这<strong>表明 UNet++ 在真阳性区域中假阴性的比例较大</strong>，<strong>丢失了更多样本并最终影响了灵敏度指标</strong>。这种<strong>不平衡对于临床目的是有害的</strong>。此外，ReconNet在mThickImgs数据集中具有较高的灵敏度。我们的方法在两个数据集中实现了 75.32% 和 80.64% DSC，分别超过次优方法 0.57% 和 0.59%，实验结果再次证明了我们方法强大的泛化能力。</p>
 <p>总体而言，我们的方法在不同数据集的指标上比其他最先进的3D CAD模型具有明显的优势，特别是在灵敏度和DSC这两个最关键的分割性能指标方面，验证了我们方法的分割能力在多源医学图像中。</p>
 </blockquote>
-<p><img loading="lazy" src="https://oss.swimmingliu.cn/272c056f-d931-11ee-8154-c858c0c1debd" alt="image-20240303152233467"  />
-</p>
+<p><img alt="image-20240303152233467" loading="lazy" src="https://oss.swimmingliu.cn/272c056f-d931-11ee-8154-c858c0c1debd"></p>
 <h2 id="analysis-of-lung-nodule-performance">Analysis of lung nodule performance<a hidden class="anchor" aria-hidden="true" href="#analysis-of-lung-nodule-performance">#</a></h2>
 <h3 id="a-effect-of-different-layer-thicknesses-on-model-performance">A. Effect of different layer thicknesses on model performance<a hidden class="anchor" aria-hidden="true" href="#a-effect-of-different-layer-thicknesses-on-model-performance">#</a></h3>
 <blockquote>
 <p>我们分析了 <strong>mThickSImg 数据集中肺结节的分布</strong>，并检查了<strong>不同 CT 切片厚度和尺寸的结节性能变化</strong>。我们将<strong>数据分为六组</strong>，数据样本分布如表六所示。然后对<strong>不同的CAD模型</strong>进行测试，并将不同模型的平均测试结果作为最终的性能趋势，如表5所示。</p>
 </blockquote>
-<p><img loading="lazy" src="https://oss.swimmingliu.cn/27354151-d931-11ee-b284-c858c0c1debd" alt="image-20240303152144809"  />
-</p>
-<p><img loading="lazy" src="https://oss.swimmingliu.cn/273f537a-d931-11ee-9f21-c858c0c1debd" alt="image-20240303152909321"  />
-</p>
+<p><img alt="image-20240303152144809" loading="lazy" src="https://oss.swimmingliu.cn/27354151-d931-11ee-b284-c858c0c1debd"></p>
+<p><img alt="image-20240303152909321" loading="lazy" src="https://oss.swimmingliu.cn/273f537a-d931-11ee-9f21-c858c0c1debd"></p>
 <blockquote>
 <p>我们的方法是基于2.5mm层厚度以下的样本进行训练的，通过观察精度，我们发现在1.5mm和1.5mm ~ 2.5mm的比较中，网络的灵敏度随着层厚度的减小而增加。</p>
 <p>另外，<strong>在观察DSC性能时</strong>，<strong>注意到DSC性能随着层厚度的增加而增加</strong>。然而，<strong>似乎存在随着层厚度减小灵敏度增加而DSC降低的现象</strong>。为什么会出现这种现象呢？<strong>一方面，这种趋势可能会受到数据分布、样本数量和样本标签的影响而有些偏差</strong>。一般来说，<strong>随着 CT 层厚度的增加，图像分辨率会降低，可能导致神经网络难以捕获更精细的特征和结构</strong>。</p>
 <p>因此，<strong>由于较厚的 CT 层中详细信息的丢失</strong>，<strong>网络随着层厚度的增加而表现出较低的灵敏度</strong>。另一方面，<strong>虽然层厚度的减少提高了 CT 图像的层内分辨率</strong>，并能够<strong>更准确地呈现解剖结构和病变</strong>，但同时<strong>也减少了接收到的光子数量</strong>。与较厚的图像相比，光子计数的减少可能会导致噪声增加和对比度降低。这些因素会对肺结节（尤其是 GGO）的分割产生负面影响，可能导致验证集的性能下降。</p>
 <p>我们还发现，在<strong>基于薄层图像进行训练然后在厚层图像上进行验证后</strong>，网络表现出更好的性能。我们相信，更<strong>薄的 CT 图像由于具有更高的分辨率和更详细的信息</strong>，<strong>使网络能够学习更微妙的特征</strong>。这些<strong>细微的特征在2.5mm以上的层厚图像中具有更强的泛化能力</strong>，这是基于厚层数据所不具备的。因此，这种现象可能表明关于层厚度效应的更好的性能。</p>
 </blockquote>
-<p><img loading="lazy" src="https://oss.swimmingliu.cn/274a63f2-d931-11ee-b1c2-c858c0c1debd" alt="image-20240303153007188"  />
-</p>
-<p><img loading="lazy" src="https://oss.swimmingliu.cn/27589c30-d931-11ee-b0fa-c858c0c1debd" alt="image-20240303153021615"  />
-</p>
+<p><img alt="image-20240303153007188" loading="lazy" src="https://oss.swimmingliu.cn/274a63f2-d931-11ee-b1c2-c858c0c1debd"></p>
+<p><img alt="image-20240303153021615" loading="lazy" src="https://oss.swimmingliu.cn/27589c30-d931-11ee-b0fa-c858c0c1debd"></p>
 <h3 id="b-heterogeneity-analysis-of-lung-nodules">B. Heterogeneity analysis of lung nodules<a hidden class="anchor" aria-hidden="true" href="#b-heterogeneity-analysis-of-lung-nodules">#</a></h3>
 <blockquote>
 <p>本节演示不同分割模型在Luna16数据集和mThickSImg数据集上的测试性能。总的来说，我们的方法在两个数据集上的大多数肺结节分割属性上都取得了领先的结果</p>
@@ -620,8 +584,7 @@ Challenge:
 <p>肺结节的早期诊断和治疗对于疾病的诊断具有重要意义。</p>
 <p>可以看出，在Luna16数据集中，我们的方法和UNet在 <strong>“Extremely Subtle” 属性和“Moderately Subtle”属性的分割上表现更好</strong>，并且<strong>我们的方法仅次于UNet的方法</strong>，达到了70.99%和76.69%。在mThickImgs测试集中，我们的方法<strong>在所有Subtlety特征属性上都达到了最佳性能</strong>，“Extremely Subtle”和“Moderately Subtle”属性分别<strong>超过UNet和ReconNet 2.75％、1.03％和2.33％、0.94％</strong> 。 UNet网络在两个数据集中<strong>表现出不同的性能变化，这并不排除数据分布和数据质量的影响</strong>。由于双分支和混合特征的设计，我们的方法在 mThickImgs 测试集上对“Extremely Subtle”属性和“Moderately Subtle”属性分割有较大的性能提升，这证明了我们的方法具有很强的泛化能力和鲁棒性，并提高了临床使用的可靠性。 Extremely Subtle GGO 的分割结果如图 10-(1) 所示。</p>
 </blockquote>
-<p><img loading="lazy" src="https://oss.swimmingliu.cn/276eb1c2-d931-11ee-8ed7-c858c0c1debd" alt="image-20240303152756024"  />
-</p>
+<p><img alt="image-20240303152756024" loading="lazy" src="https://oss.swimmingliu.cn/276eb1c2-d931-11ee-8ed7-c858c0c1debd"></p>
 <h4 id="2-texture-feature">2) Texture feature<a hidden class="anchor" aria-hidden="true" href="#2-texture-feature">#</a></h4>
 <blockquote>
 <p>观察两个数据集中“Texture”特征的测试结果可以发现，在Luna16数据集中，我们的方法在“Solid/Mixed”和“NonSolid/Mixed”类别上表现出了很大的进步，分别为2.73%与次优方法相比，分别提高了 1.62% 和 1.62%。在 mThickSImg 数据集中，我们的方法在 GGO 类和“NonSolid/Mixed”类中达到了 65.08% 和 70.2%，分别领先次优 0.35% 和 1.33%。</p>

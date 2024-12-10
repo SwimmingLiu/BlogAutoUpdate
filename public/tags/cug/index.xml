@@ -22,8 +22,7 @@
 &lt;h2 id=&#34;1-服务器环境介绍&#34;&gt;1. 服务器环境介绍&lt;/h2&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-shell&#34; data-lang=&#34;shell&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;NVIDIA RTX &lt;span class=&#34;m&#34;&gt;3090&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;(&lt;/span&gt;24GB&lt;span class=&#34;o&#34;&gt;)&lt;/span&gt;
 &lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;NVIDIA RTX &lt;span class=&#34;m&#34;&gt;2080&lt;/span&gt; Ti &lt;span class=&#34;o&#34;&gt;(&lt;/span&gt;11GB&lt;span class=&#34;o&#34;&gt;)&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;&lt;img loading=&#34;lazy&#34; src=&#34;https://oss.swimmingliu.cn/HoBnO.png&#34; alt=&#34;image-20231120113601423&#34;  /&gt;
-&lt;/p&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;&lt;img alt=&#34;image-20231120113601423&#34; loading=&#34;lazy&#34; src=&#34;https://oss.swimmingliu.cn/HoBnO.png&#34;&gt;&lt;/p&gt;
 &lt;h2 id=&#34;2-配置实验环境&#34;&gt;2. 配置实验环境&lt;/h2&gt;
 &lt;h3 id=&#34;21-conda环境安装&#34;&gt;2.1 Conda环境安装&lt;/h3&gt;
 &lt;p&gt;每位同学都会分配个人用户，大家在自己的用户上使用Conda进行环境配置。&lt;/p&gt;

@@ -37,8 +37,7 @@
 &lt;p&gt;首先，&lt;strong&gt;放射科医生标记的肺结节&lt;/strong&gt;包含&lt;strong&gt;九个诊断特征&lt;/strong&gt;[11]，&lt;strong&gt;异质性表型&lt;/strong&gt;阻碍了&lt;strong&gt;肺结节分割的发展&lt;/strong&gt;。如图1所示，&lt;strong&gt;实心结节（a，b）具有清晰的形状和边界&lt;/strong&gt;，而&lt;strong&gt;微妙的GGO结节（e）具有低对比度和模糊的边界&lt;/strong&gt;[4]，使得网络很容易将&lt;strong&gt;它们分类为背景区域&lt;/strong&gt;。&lt;strong&gt;空洞（g）结节降低了网络分割的敏感性&lt;/strong&gt;，并且由于&lt;strong&gt;背景和分割目标之间的极度不平衡，小结节很容易被遗漏&lt;/strong&gt;[12]。&lt;/p&gt;
 &lt;p&gt;由于周围多余的组织结构，&lt;strong&gt;血管旁或胸膜旁（c、d、f）可能会导致网络分类错误&lt;/strong&gt;[13]。此外，&lt;strong&gt;部分实性结节（h）比纯GGO更致密&lt;/strong&gt;，产生更&lt;strong&gt;复杂的异质纹理，更容易发展成恶性结节&lt;/strong&gt;[14]。&lt;/p&gt;
 &lt;/blockquote&gt;
-&lt;p&gt;&lt;img loading=&#34;lazy&#34; src=&#34;https://oss.swimmingliu.cn/262f8e71-d931-11ee-b68c-c858c0c1debd&#34; alt=&#34;image-20240303102609243&#34;  /&gt;
-&lt;/p&gt;
+&lt;p&gt;&lt;img alt=&#34;image-20240303102609243&#34; loading=&#34;lazy&#34; src=&#34;https://oss.swimmingliu.cn/262f8e71-d931-11ee-b68c-c858c0c1debd&#34;&gt;&lt;/p&gt;
 &lt;blockquote&gt;
 &lt;p&gt;其次，肺结节内部因素造成的分割困难在于&lt;strong&gt;医生注释、层厚、数据来源和数据质量&lt;/strong&gt;。&lt;strong&gt;数据质量差&lt;/strong&gt;或&lt;strong&gt;不同医生的经验&lt;/strong&gt;可能会导致&lt;strong&gt;不同的注释和注释者数量&lt;/strong&gt;。由&lt;strong&gt;多名医生注释的病变区域&lt;/strong&gt;通常更&lt;strong&gt;可靠&lt;/strong&gt;，减少了潜在的临床风险。&lt;strong&gt;在资源有限的地区&lt;/strong&gt;，由于 &lt;strong&gt;CT 扫描仪短缺和成像设备陈旧&lt;/strong&gt;，&lt;strong&gt;CT 扫描质量差的情况很常见&lt;/strong&gt;。&lt;strong&gt;较厚的切片&lt;/strong&gt;更有可能产生“&lt;strong&gt;体积平均效应”和伪影&lt;/strong&gt;，使医生&lt;strong&gt;难以达成一致的诊断&lt;/strong&gt;。即使使用&lt;strong&gt;移动 CT 扫描仪&lt;/strong&gt;也可能&lt;strong&gt;无法提供完整的诊断详细信息&lt;/strong&gt;。最后，目前&lt;strong&gt;大多数肺结节分割方法&lt;/strong&gt;都是基于&lt;strong&gt;2D图像&lt;/strong&gt;，但这些方法忽略了&lt;strong&gt;空间关系&lt;/strong&gt;，因此提出一种有效的&lt;strong&gt;3D肺结节分割模型&lt;/strong&gt;来&lt;strong&gt;捕获肺结节的空间位置&lt;/strong&gt;、&lt;strong&gt;纹理和其他详细信息变得越来越重要以避免误诊和漏诊&lt;/strong&gt;。&lt;/p&gt;
 &lt;/blockquote&gt;
@@ -62,8 +61,7 @@ PGI可以为&lt;strong&gt;目标任务计算目标函数&lt;/strong&gt;提供&lt
 &lt;li&gt;Programmable Gradient Information (PGI)&lt;/li&gt;
 &lt;li&gt;Generalized Efficient Layer Aggregation Network（GELAN）&lt;/li&gt;
 &lt;/ol&gt;
-&lt;p&gt;&lt;img loading=&#34;lazy&#34; src=&#34;https://oss.swimmingliu.cn/f6b3ea45-d79d-11ee-a66b-c858c0c1debd&#34; alt=&#34;image-20240301113226341&#34;  /&gt;
-&lt;/p&gt;
+&lt;p&gt;&lt;img alt=&#34;image-20240301113226341&#34; loading=&#34;lazy&#34; src=&#34;https://oss.swimmingliu.cn/f6b3ea45-d79d-11ee-a66b-c858c0c1debd&#34;&gt;&lt;/p&gt;
 &lt;h2 id=&#34;introduction&#34;&gt;Introduction&lt;/h2&gt;
 &lt;blockquote&gt;
 &lt;p&gt;基于深度学习的模型在计算机视觉、语言处理和语音识别等各个领域都表现出了比过去的人工智能系统更好的性能。近年来，深度学习领域的研究人员主要关注如何开发更强大的系统架构和学习方法，例如CNN，Transformers[8,9,40] 、41、60、69、70]，Perceivers[26、26、32、52、56、81、81]和Mambas[17、38、80]。此外，一些研究人员尝试开发更通用的目标函数，例如损失函数[5,45,46,50,77,78]，标签分配[10,12,33,67,79]和辅助监督[18] 、20、24、28、29、51、54、68、76]。上述研究都试图精确地找到&lt;strong&gt;输入和目标任务之间的映射&lt;/strong&gt;。然而，大多数过去的方法都忽略了&lt;strong&gt;输入数据在前馈过程中可能会产生不可忽略的信息丢失量&lt;/strong&gt;。这种&lt;strong&gt;信息丢失&lt;/strong&gt;可能会导致&lt;strong&gt;有偏差的梯度流&lt;/strong&gt;，随后用于更新模型。上述问题可能导致深度网络&lt;strong&gt;在目标和输入之间建立不正确的关联&lt;/strong&gt;，导致训练后的模型产生不正确的预测。&lt;/p&gt;
@@ -115,27 +113,22 @@ PGI可以为&lt;strong&gt;目标任务计算目标函数&lt;/strong&gt;提供&lt
       <pubDate>Sun, 18 Feb 2024 19:30:06 +0800</pubDate>
       <guid>https://swimmingliu.cn/posts/diary/yoloshow/</guid>
       <description>&lt;h2 id=&#34;introduction&#34;&gt;Introduction&lt;/h2&gt;
-&lt;p&gt;&lt;em&gt;&lt;strong&gt;YOLOSHOW&lt;/strong&gt;&lt;/em&gt; is a graphical user interface (GUI) application embed with&lt;code&gt;YOLOv5&lt;/code&gt; &lt;code&gt;YOLOv7&lt;/code&gt; &lt;code&gt;YOLOv8&lt;/code&gt; &lt;code&gt;YOLOv9&lt;/code&gt; &lt;code&gt;YOLOv10&lt;/code&gt; &lt;code&gt;RT-DETR&lt;/code&gt; algorithm.&lt;/p&gt;
+&lt;p&gt;&lt;em&gt;&lt;strong&gt;YOLOSHOW&lt;/strong&gt;&lt;/em&gt; is a graphical user interface (GUI) application embed with &lt;code&gt;YOLOv5&lt;/code&gt; &lt;code&gt;YOLOv7&lt;/code&gt; &lt;code&gt;YOLOv8&lt;/code&gt; &lt;code&gt;YOLOv9&lt;/code&gt; &lt;code&gt;YOLOv10&lt;/code&gt; &lt;code&gt;YOLOv11&lt;/code&gt;  &lt;code&gt;RT-DETR&lt;/code&gt; &lt;code&gt;SAM&lt;/code&gt; &lt;code&gt;MobileSAM&lt;/code&gt; &lt;code&gt;FastSAM&lt;/code&gt; algorithm.&lt;/p&gt;
  &lt;p align=&#34;center&#34;&gt; 
   English &amp;nbsp; | &amp;nbsp; &lt;a href=&#34;https://github.com/SwimmingLiu/YOLOSHOW/blob/master/README_cn.md&#34;&gt;简体中文&lt;/a&gt;
  &lt;/p&gt;
-&lt;p&gt;&lt;img loading=&#34;lazy&#34; src=&#34;https://oss.swimmingliu.cn/YOLOSHOW-SCREENSHOT.png&#34; alt=&#34;YOLOSHOW-Screen&#34;  /&gt;
-&lt;/p&gt;
+&lt;p&gt;&lt;img alt=&#34;YOLOSHOW-Screen&#34; loading=&#34;lazy&#34; src=&#34;https://oss.swimmingliu.cn/YOLOSHOW-SNAPSHOT.png&#34;&gt;&lt;/p&gt;
 &lt;h2 id=&#34;demo-video&#34;&gt;Demo Video&lt;/h2&gt;
 &lt;p&gt;&lt;code&gt;YOLOSHOW v1.x&lt;/code&gt; : &lt;a href=&#34;https://www.bilibili.com/video/BV1BC411x7fW&#34;&gt;YOLOSHOW-YOLOv9/YOLOv8/YOLOv7/YOLOv5/RTDETR GUI&lt;/a&gt;&lt;/p&gt;
 &lt;p&gt;&lt;code&gt;YOLOSHOW v2.x&lt;/code&gt; : &lt;a href=&#34;https://www.bilibili.com/video/BV1ZD421E7m3&#34;&gt;YOLOSHOWv2.0-YOLOv9/YOLOv8/YOLOv7/YOLOv5/RTDETR GUI&lt;/a&gt;&lt;/p&gt;
 &lt;h2 id=&#34;todo-list&#34;&gt;Todo List&lt;/h2&gt;
 &lt;ul&gt;
-&lt;li&gt;&lt;input checked=&#34;&#34; disabled=&#34;&#34; type=&#34;checkbox&#34;&gt; Add &lt;code&gt;YOLOv9&lt;/code&gt; Algorithm&lt;/li&gt;
-&lt;li&gt;&lt;input checked=&#34;&#34; disabled=&#34;&#34; type=&#34;checkbox&#34;&gt; Adjust User Interface (Menu Bar)&lt;/li&gt;
-&lt;li&gt;&lt;input checked=&#34;&#34; disabled=&#34;&#34; type=&#34;checkbox&#34;&gt; Complete Rtsp Function&lt;/li&gt;
-&lt;li&gt;&lt;input checked=&#34;&#34; disabled=&#34;&#34; type=&#34;checkbox&#34;&gt; Support Instance Segmentation （ &lt;code&gt;YOLOv5&lt;/code&gt; &amp;amp; &lt;code&gt;YOLOv8&lt;/code&gt; ）&lt;/li&gt;
-&lt;li&gt;&lt;input checked=&#34;&#34; disabled=&#34;&#34; type=&#34;checkbox&#34;&gt; Add &lt;code&gt;RT-DETR&lt;/code&gt; Algorithm ( &lt;code&gt;Ultralytics&lt;/code&gt; repo)&lt;/li&gt;
+&lt;li&gt;&lt;input checked=&#34;&#34; disabled=&#34;&#34; type=&#34;checkbox&#34;&gt; Add &lt;code&gt;YOLOv9&lt;/code&gt; &lt;code&gt;YOLOv10&lt;/code&gt;  &lt;code&gt;RT-DETR&lt;/code&gt;  &lt;code&gt;YOLOv11&lt;/code&gt;  &lt;code&gt;SAM&lt;/code&gt;  &lt;code&gt;MobileSAM&lt;/code&gt;  &lt;code&gt;FastSAM&lt;/code&gt; Algorithm&lt;/li&gt;
+&lt;li&gt;&lt;input checked=&#34;&#34; disabled=&#34;&#34; type=&#34;checkbox&#34;&gt; Support Instance Segmentation （ &lt;code&gt;YOLOv5&lt;/code&gt;  &lt;code&gt;YOLOv8&lt;/code&gt;  &lt;code&gt;YOLOv11&lt;/code&gt; &lt;code&gt;SAM&lt;/code&gt;  &lt;code&gt;MobileSAM&lt;/code&gt;  &lt;code&gt;FastSAM&lt;/code&gt;）&lt;/li&gt;
+&lt;li&gt;&lt;input checked=&#34;&#34; disabled=&#34;&#34; type=&#34;checkbox&#34;&gt; Support Pose Estimation （ &lt;code&gt;YOLOv8&lt;/code&gt;  &lt;code&gt;YOLOv11&lt;/code&gt;）&lt;/li&gt;
+&lt;li&gt;&lt;input checked=&#34;&#34; disabled=&#34;&#34; type=&#34;checkbox&#34;&gt; Support Oriented Bounding Boxes ( &lt;code&gt;YOLOv8&lt;/code&gt;  &lt;code&gt;YOLOv11&lt;/code&gt; )&lt;/li&gt;
+&lt;li&gt;&lt;input checked=&#34;&#34; disabled=&#34;&#34; type=&#34;checkbox&#34;&gt; Support Http Protocol in &lt;code&gt;RTSP&lt;/code&gt; Function ( &lt;code&gt;Single&lt;/code&gt; Mode )&lt;/li&gt;
 &lt;li&gt;&lt;input checked=&#34;&#34; disabled=&#34;&#34; type=&#34;checkbox&#34;&gt; Add Model Comparison Mode（VS Mode）&lt;/li&gt;
-&lt;li&gt;&lt;input checked=&#34;&#34; disabled=&#34;&#34; type=&#34;checkbox&#34;&gt; Support Pose Estimation （ &lt;code&gt;YOLOv8&lt;/code&gt; ）&lt;/li&gt;
-&lt;li&gt;&lt;input checked=&#34;&#34; disabled=&#34;&#34; type=&#34;checkbox&#34;&gt; Support Http Protocol in Rtsp Function ( Single Mode )&lt;/li&gt;
-&lt;li&gt;&lt;input checked=&#34;&#34; disabled=&#34;&#34; type=&#34;checkbox&#34;&gt; Support Oriented Bounding Boxes ( &lt;code&gt;YOLOv8&lt;/code&gt; )&lt;/li&gt;
-&lt;li&gt;&lt;input checked=&#34;&#34; disabled=&#34;&#34; type=&#34;checkbox&#34;&gt; Add &lt;code&gt;YOLOv10&lt;/code&gt; Algorithm&lt;/li&gt;
 &lt;li&gt;&lt;input checked=&#34;&#34; disabled=&#34;&#34; type=&#34;checkbox&#34;&gt; Support Dragging File Input&lt;/li&gt;
 &lt;li&gt;&lt;input disabled=&#34;&#34; type=&#34;checkbox&#34;&gt; Tracking &amp;amp; Counting ( &lt;code&gt;Industrialization&lt;/code&gt; )&lt;/li&gt;
 &lt;/ul&gt;
@@ -149,27 +142,22 @@ PGI可以为&lt;strong&gt;目标任务计算目标函数&lt;/strong&gt;提供&lt
       <pubDate>Sun, 18 Feb 2024 19:30:06 +0800</pubDate>
       <guid>https://swimmingliu.cn/posts/diary/yoloshow-cn/</guid>
       <description>&lt;h2 id=&#34;介绍&#34;&gt;介绍&lt;/h2&gt;
-&lt;p&gt;&lt;em&gt;&lt;strong&gt;YOLOSHOW&lt;/strong&gt;&lt;/em&gt; 是一款集合了 &lt;code&gt;YOLOv5&lt;/code&gt; &lt;code&gt;YOLOv7&lt;/code&gt; &lt;code&gt;YOLOv8&lt;/code&gt; &lt;code&gt;YOLOv9&lt;/code&gt;  &lt;code&gt;YOLOv10&lt;/code&gt; &lt;code&gt;RT-DETR&lt;/code&gt; 的图形化界面程序&lt;/p&gt;
+&lt;p&gt;&lt;em&gt;&lt;strong&gt;YOLOSHOW&lt;/strong&gt;&lt;/em&gt; 是一款集合了 &lt;code&gt;YOLOv5&lt;/code&gt; &lt;code&gt;YOLOv7&lt;/code&gt; &lt;code&gt;YOLOv8&lt;/code&gt; &lt;code&gt;YOLOv9&lt;/code&gt; &lt;code&gt;YOLOv10&lt;/code&gt; &lt;code&gt;YOLOv11&lt;/code&gt;  &lt;code&gt;RT-DETR&lt;/code&gt; &lt;code&gt;SAM&lt;/code&gt; &lt;code&gt;MobileSAM&lt;/code&gt; &lt;code&gt;FastSAM&lt;/code&gt; 的图形化界面程序&lt;/p&gt;
 &lt;p align=&#34;center&#34;&gt; 
   &lt;a href=&#34;https://github.com/SwimmingLiu/YOLOSHOW/blob/master/README.md&#34;&gt; English&lt;/a&gt; &amp;nbsp; | &amp;nbsp; 简体中文&lt;/a&gt;
  &lt;/p&gt;
-&lt;p&gt;&lt;img loading=&#34;lazy&#34; src=&#34;https://oss.swimmingliu.cn/YOLOSHOW-SCREENSHOT.png&#34; alt=&#34;YOLOSHOW-Screen&#34;  /&gt;
-&lt;/p&gt;
+&lt;p&gt;&lt;img alt=&#34;YOLOSHOW-Screen&#34; loading=&#34;lazy&#34; src=&#34;https://oss.swimmingliu.cn/YOLOSHOW-SNAPSHOT.png&#34;&gt;&lt;/p&gt;
 &lt;h2 id=&#34;演示视频&#34;&gt;演示视频&lt;/h2&gt;
 &lt;p&gt;&lt;code&gt;YOLOSHOW v1.x&lt;/code&gt; : &lt;a href=&#34;https://www.bilibili.com/video/BV1BC411x7fW&#34;&gt;YOLOSHOW-YOLOv9/YOLOv8/YOLOv7/YOLOv5/RTDETR GUI&lt;/a&gt;&lt;/p&gt;
 &lt;p&gt;&lt;code&gt;YOLOSHOW v2.x&lt;/code&gt; : &lt;a href=&#34;https://www.bilibili.com/video/BV1ZD421E7m3&#34;&gt;YOLOSHOWv2.0-YOLOv9/YOLOv8/YOLOv7/YOLOv5/RTDETR GUI&lt;/a&gt;&lt;/p&gt;
 &lt;h2 id=&#34;待做清单&#34;&gt;待做清单&lt;/h2&gt;
 &lt;ul&gt;
-&lt;li&gt;&lt;input checked=&#34;&#34; disabled=&#34;&#34; type=&#34;checkbox&#34;&gt; 加入 &lt;code&gt;YOLOv9&lt;/code&gt; 算法&lt;/li&gt;
-&lt;li&gt;&lt;input checked=&#34;&#34; disabled=&#34;&#34; type=&#34;checkbox&#34;&gt; 调整UI (菜单栏)&lt;/li&gt;
-&lt;li&gt;&lt;input checked=&#34;&#34; disabled=&#34;&#34; type=&#34;checkbox&#34;&gt; 完成Rtsp功能&lt;/li&gt;
-&lt;li&gt;&lt;input checked=&#34;&#34; disabled=&#34;&#34; type=&#34;checkbox&#34;&gt; 支持实例分割 （ &lt;code&gt;YOLOv5&lt;/code&gt; &amp;amp; &lt;code&gt;YOLOv8&lt;/code&gt; ）&lt;/li&gt;
-&lt;li&gt;&lt;input checked=&#34;&#34; disabled=&#34;&#34; type=&#34;checkbox&#34;&gt; 加入 &lt;code&gt;RT-DETR&lt;/code&gt; 算法 ( &lt;code&gt;Ultralytics&lt;/code&gt; 仓库)&lt;/li&gt;
-&lt;li&gt;&lt;input checked=&#34;&#34; disabled=&#34;&#34; type=&#34;checkbox&#34;&gt; 加入模型对比模式（VS Mode）&lt;/li&gt;
-&lt;li&gt;&lt;input checked=&#34;&#34; disabled=&#34;&#34; type=&#34;checkbox&#34;&gt; 支持姿态估计 （ &lt;code&gt;YOLOv8&lt;/code&gt; ）&lt;/li&gt;
-&lt;li&gt;&lt;input checked=&#34;&#34; disabled=&#34;&#34; type=&#34;checkbox&#34;&gt; 支持 Http 协议 ( Single Mode )&lt;/li&gt;
-&lt;li&gt;&lt;input checked=&#34;&#34; disabled=&#34;&#34; type=&#34;checkbox&#34;&gt; 支持旋转框 ( &lt;code&gt;YOLOv8&lt;/code&gt; )&lt;/li&gt;
-&lt;li&gt;&lt;input checked=&#34;&#34; disabled=&#34;&#34; type=&#34;checkbox&#34;&gt; 加入 &lt;code&gt;YOLOv10&lt;/code&gt; 算法&lt;/li&gt;
+&lt;li&gt;&lt;input checked=&#34;&#34; disabled=&#34;&#34; type=&#34;checkbox&#34;&gt; 加入 &lt;code&gt;YOLOv9&lt;/code&gt; &lt;code&gt;YOLOv10&lt;/code&gt;  &lt;code&gt;RT-DETR&lt;/code&gt;  &lt;code&gt;YOLOv11&lt;/code&gt;  &lt;code&gt;SAM&lt;/code&gt;  &lt;code&gt;MobileSAM&lt;/code&gt;  &lt;code&gt;FastSAM&lt;/code&gt;算法&lt;/li&gt;
+&lt;li&gt;&lt;input checked=&#34;&#34; disabled=&#34;&#34; type=&#34;checkbox&#34;&gt; 支持实例分割 （ &lt;code&gt;YOLOv5&lt;/code&gt;  &lt;code&gt;YOLOv8&lt;/code&gt;  &lt;code&gt;YOLOv11&lt;/code&gt; &lt;code&gt;SAM&lt;/code&gt;  &lt;code&gt;MobileSAM&lt;/code&gt;  &lt;code&gt;FastSAM&lt;/code&gt;）&lt;/li&gt;
+&lt;li&gt;&lt;input checked=&#34;&#34; disabled=&#34;&#34; type=&#34;checkbox&#34;&gt; 支持姿态估计 （&lt;code&gt;YOLOv8&lt;/code&gt; &lt;code&gt;YOLOv11&lt;/code&gt;）&lt;/li&gt;
+&lt;li&gt;&lt;input checked=&#34;&#34; disabled=&#34;&#34; type=&#34;checkbox&#34;&gt; 支持旋转框 (&lt;code&gt;YOLOv8&lt;/code&gt; &lt;code&gt;YOLOv11&lt;/code&gt;)&lt;/li&gt;
+&lt;li&gt;&lt;input checked=&#34;&#34; disabled=&#34;&#34; type=&#34;checkbox&#34;&gt; &lt;code&gt;RTSP&lt;/code&gt; 功能 支持 Http 协议 ( Single Mode )&lt;/li&gt;
+&lt;li&gt;&lt;input checked=&#34;&#34; disabled=&#34;&#34; type=&#34;checkbox&#34;&gt; 支持模型对比模式（VS Mode）&lt;/li&gt;
 &lt;li&gt;&lt;input checked=&#34;&#34; disabled=&#34;&#34; type=&#34;checkbox&#34;&gt; 支持拖拽文件输入&lt;/li&gt;
 &lt;li&gt;&lt;input disabled=&#34;&#34; type=&#34;checkbox&#34;&gt; 追踪和计数模型 ( &lt;code&gt;工业化&lt;/code&gt; )&lt;/li&gt;
 &lt;/ul&gt;
@@ -186,17 +174,14 @@ PGI可以为&lt;strong&gt;目标任务计算目标函数&lt;/strong&gt;提供&lt
 &lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;https://www.netsarang.com/en/xshell-download/ &lt;span class=&#34;c1&#34;&gt;# Xshell下载连接&lt;/span&gt;
 &lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;https://blog.csdn.net/m0_67400972/article/details/125346023 &lt;span class=&#34;c1&#34;&gt;# 安装教程&lt;/span&gt;
 &lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h2 id=&#34;添加xshell连接&#34;&gt;添加Xshell连接&lt;/h2&gt;
-&lt;p&gt;&lt;img loading=&#34;lazy&#34; src=&#34;https://oss.swimmingliu.cn/B6xRW.png&#34; alt=&#34;image-20240105113129928&#34;  /&gt;
-&lt;/p&gt;
+&lt;p&gt;&lt;img alt=&#34;image-20240105113129928&#34; loading=&#34;lazy&#34; src=&#34;https://oss.swimmingliu.cn/B6xRW.png&#34;&gt;&lt;/p&gt;
 &lt;p&gt;其中 &lt;code&gt;server.ip&lt;/code&gt; 为服务器公网ip地址，端口为 &lt;code&gt;6969&lt;/code&gt;&lt;/p&gt;
 &lt;h2 id=&#34;安装anaconda3&#34;&gt;安装Anaconda3&lt;/h2&gt;
 &lt;p&gt;每个用户均被分配 &lt;code&gt;AnacondaAnaconda3-2023.07-1-Linux-x86_64.sh &lt;/code&gt; 于主目录&lt;/p&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;bash AnacondaAnaconda3-2023.07-1-Linux-x86_64.sh &lt;span class=&#34;c1&#34;&gt;# 安装anaconda3&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;&lt;img loading=&#34;lazy&#34; src=&#34;https://oss.swimmingliu.cn/B6KTv.png&#34; alt=&#34;image-20240105113942737&#34;  /&gt;
-&lt;/p&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;&lt;img alt=&#34;image-20240105113942737&#34; loading=&#34;lazy&#34; src=&#34;https://oss.swimmingliu.cn/B6KTv.png&#34;&gt;&lt;/p&gt;
 &lt;p&gt;输入 &lt;code&gt;yes&lt;/code&gt; 后， 再按回车键 即可&lt;/p&gt;
-&lt;p&gt;&lt;img loading=&#34;lazy&#34; src=&#34;https://oss.swimmingliu.cn/B6one.png&#34; alt=&#34;image-20240105114146047&#34;  /&gt;
-&lt;/p&gt;
+&lt;p&gt;&lt;img alt=&#34;image-20240105114146047&#34; loading=&#34;lazy&#34; src=&#34;https://oss.swimmingliu.cn/B6one.png&#34;&gt;&lt;/p&gt;
 &lt;h2 id=&#34;初始化anaconda3&#34;&gt;初始化Anaconda3&lt;/h2&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;conda init bash	&lt;span class=&#34;c1&#34;&gt;# 初始化conda&lt;/span&gt;
 &lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;然后重新使用Xshell 连接即可&lt;/p&gt;
@@ -209,12 +194,20 @@ PGI可以为&lt;strong&gt;目标任务计算目标函数&lt;/strong&gt;提供&lt
 &lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;nb&#34;&gt;unset&lt;/span&gt; https_proxy
 &lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;如果使用上面的命令，不能连接Google. 需要远程桌面连接，打开CFW (默认是打开的)&lt;/p&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;nohup bash /home/dell/LYJ/Clash/cfw &amp;gt; cfw.out
-&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;&lt;img loading=&#34;lazy&#34; src=&#34;https://oss.swimmingliu.cn/B6So3.png&#34; alt=&#34;image-20240105115600487&#34;  /&gt;
-&lt;/p&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;&lt;img alt=&#34;image-20240105115600487&#34; loading=&#34;lazy&#34; src=&#34;https://oss.swimmingliu.cn/B6So3.png&#34;&gt;&lt;/p&gt;
 &lt;h2 id=&#34;国内镜像下载&#34;&gt;国内镜像下载&lt;/h2&gt;
 &lt;p&gt;pip 清华源下载&lt;/p&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;pip install -i https://pypi.tuna.tsinghua.edu.cn/simple packge      &lt;span class=&#34;c1&#34;&gt;# packge为包名&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;conda 配置镜像&lt;/p&gt;</description>
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;conda 配置镜像&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;conda config --add channels https://mirrors.tuna.tsinghua.edu.cn/anaconda/pkgs/free/
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;conda config --add channels https://mirrors.tuna.tsinghua.edu.cn/anaconda/pkgs/main/ 
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;c1&#34;&gt;# 以上两条是Anaconda官方库的镜像&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;conda config --add channels https://mirrors.tuna.tsinghua.edu.cn/anaconda/cloud/conda-forge/
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;c1&#34;&gt;# 以上是Anaconda第三方库 Conda Forge的镜像&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;conda config --add channels https://mirrors.tuna.tsinghua.edu.cn/anaconda/cloud/pytorch/
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;c1&#34;&gt;# 以上是Pytorch的Anaconda第三方镜像&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h2 id=&#34;远程桌面连接&#34;&gt;远程桌面连接&lt;/h2&gt;
+&lt;p&gt;远程连接直接找师兄问 向日葵 和 Teamviewer 密码，连接即可&lt;/p&gt;</description>
     </item>
     <item>
       <title>ZSTU Server Management</title>
@@ -293,15 +286,12 @@ PGI可以为&lt;strong&gt;目标任务计算目标函数&lt;/strong&gt;提供&lt
 &lt;li&gt;返回查询结果 （若问题类型为 演员信息 / 电影介绍，则附加图片url）&lt;/li&gt;
 &lt;/ol&gt;
 &lt;h3 id=&#34;workflow-graph&#34;&gt;WorkFlow Graph&lt;/h3&gt;
-&lt;p&gt;&lt;img loading=&#34;lazy&#34; src=&#34;https://oss.swimmingliu.cn/0IEuW.png&#34; alt=&#34;workflow graph&#34;  /&gt;
-&lt;/p&gt;
+&lt;p&gt;&lt;img alt=&#34;workflow graph&#34; loading=&#34;lazy&#34; src=&#34;https://oss.swimmingliu.cn/0IEuW.png&#34;&gt;&lt;/p&gt;
 &lt;h2 id=&#34;frame&#34;&gt;Frame&lt;/h2&gt;
 &lt;h3 id=&#34;database-1&#34;&gt;DataBase&lt;/h3&gt;
-&lt;p&gt;&lt;a href=&#34;https://neo4j.com/&#34;&gt;&lt;img loading=&#34;lazy&#34; src=&#34;https://img.shields.io/badge/neo4j-test?style=for-the-badge&amp;amp;logo=neo4j&amp;amp;logoColor=white&amp;amp;color=blue&#34; alt=&#34;Neo4j&#34;  /&gt;
-&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;&lt;a href=&#34;https://neo4j.com/&#34;&gt;&lt;img alt=&#34;Neo4j&#34; loading=&#34;lazy&#34; src=&#34;https://img.shields.io/badge/neo4j-test?style=for-the-badge&amp;logo=neo4j&amp;logoColor=white&amp;color=blue&#34;&gt;&lt;/a&gt;&lt;/p&gt;
 &lt;h3 id=&#34;frontend-1&#34;&gt;Frontend&lt;/h3&gt;
-&lt;p&gt;&lt;a href=&#34;https://developers.weixin.qq.com/&#34;&gt;&lt;img loading=&#34;lazy&#34; src=&#34;https://img.shields.io/badge/wechat%20mini%20programs-test?style=for-the-badge&amp;amp;logo=wechat&amp;amp;logoColor=white&amp;amp;color=%2320B2AA&#34; alt=&#34;wechat mini programs&#34;  /&gt;
-&lt;/a&gt;&lt;/p&gt;</description>
+&lt;p&gt;&lt;a href=&#34;https://developers.weixin.qq.com/&#34;&gt;&lt;img alt=&#34;wechat mini programs&#34; loading=&#34;lazy&#34; src=&#34;https://img.shields.io/badge/wechat%20mini%20programs-test?style=for-the-badge&amp;logo=wechat&amp;logoColor=white&amp;color=%2320B2AA&#34;&gt;&lt;/a&gt;&lt;/p&gt;</description>
     </item>
     <item>
       <title>U-NET V2: RETHINKING THE SKIP CONNECTIONS OF U-NET FOR MEDICAL IMAGE SEGMENTATION</title>
@@ -320,8 +310,7 @@ PGI可以为&lt;strong&gt;目标任务计算目标函数&lt;/strong&gt;提供&lt
 然而，基于 U-Net 的模型中的这些连接在&lt;strong&gt;集成低级和高级特征方面&lt;/strong&gt;可能&lt;strong&gt;不够有效&lt;/strong&gt;。例如，在 ResNet [7] 中，深度神经网络是作为&lt;strong&gt;多个浅层网络的集合&lt;/strong&gt;而形成的，并且&lt;strong&gt;显式添加的残差连接&lt;/strong&gt;表明，即使在百万规模的训练中，网络也很难学习&lt;strong&gt;恒等映射函数图像&lt;/strong&gt;数据集。&lt;/p&gt;
 &lt;p&gt;&lt;strong&gt;对于编码器提取的特征，低级特征通常保留更多细节，但缺乏足够的语义信息，并且可能包含不需要的噪声&lt;/strong&gt;。相反，&lt;strong&gt;高级特征包含更多语义信息，但由于分辨率显着降低而缺乏精确的细节（例如对象边界）&lt;/strong&gt;。通过&lt;strong&gt;串联简单地融合特征&lt;/strong&gt;将在&lt;strong&gt;很大程度上依赖于网络的学习能力&lt;/strong&gt;，这&lt;strong&gt;通常与训练数据集的大小成正比&lt;/strong&gt;。这是一个具有挑战性的问题，特别是在医学成像领域，&lt;strong&gt;通常受到有限数据的限制&lt;/strong&gt;。这种信息融合是&lt;strong&gt;通过密集连接跨多个级别连接低级和高级特征&lt;/strong&gt;来实现的，可能会限制来自&lt;strong&gt;不同级别的信息的贡献&lt;/strong&gt;并可能引入噪声。另一方面，尽管&lt;strong&gt;引入的额外卷积并没有显着增加参数数量&lt;/strong&gt;，但 &lt;strong&gt;GPU 内存消耗将会增加&lt;/strong&gt;，因为必须&lt;strong&gt;存储所有中间特征图和相应的梯度&lt;/strong&gt;以进行前向传递和后向梯度计算。这会导致 &lt;strong&gt;GPU 内存使用量&lt;/strong&gt;和&lt;strong&gt;浮点运算 (FLOP) 增加&lt;/strong&gt;。&lt;/p&gt;
 &lt;/blockquote&gt;
-&lt;p&gt;&lt;img loading=&#34;lazy&#34; src=&#34;https://oss.swimmingliu.cn/mCdvu.png&#34; alt=&#34;image-20231211193109745&#34;  /&gt;
-&lt;/p&gt;
+&lt;p&gt;&lt;img alt=&#34;image-20231211193109745&#34; loading=&#34;lazy&#34; src=&#34;https://oss.swimmingliu.cn/mCdvu.png&#34;&gt;&lt;/p&gt;
 &lt;p&gt;(a) U-Net v2 模型的整体架构，由&lt;strong&gt;编码器、SDI（语义和细节注入）模块和解码器&lt;/strong&gt;组成。 (b) SDI模块的架构。为简单起见，我们仅显示第三级特征的细化（l = 3）。 &lt;strong&gt;SmoothConv 表示用于特征平滑的 3 × 3 卷积&lt;/strong&gt;。$\bigotimes$ 表示哈达玛积。&lt;/p&gt;
 &lt;blockquote&gt;
 &lt;p&gt;在[8]中，利用&lt;strong&gt;反向注意力&lt;/strong&gt;来明确地建立&lt;strong&gt;多尺度特征之间&lt;/strong&gt;的联系。在[9]中，ReLU激活应用于&lt;strong&gt;较高级别&lt;/strong&gt;的特征，并&lt;strong&gt;将激活的特征与较低级别的特征相乘&lt;/strong&gt;。此外，在[10]中，作者提出分别从 &lt;strong&gt;CNN 和 Transformer 模型&lt;/strong&gt;中提取特征，在多个级别上组合&lt;strong&gt;来自 CNN 和 Transformer 分支&lt;/strong&gt;的特征来&lt;strong&gt;增强特征图&lt;/strong&gt;。然而，这些方法&lt;strong&gt;都很复杂&lt;/strong&gt;，而且它们的&lt;strong&gt;性能仍然不是很令人满意&lt;/strong&gt;，因此需要进一步改进。&lt;/p&gt;
@@ -348,8 +337,7 @@ PGI可以为&lt;strong&gt;目标任务计算目标函数&lt;/strong&gt;提供&lt
 &lt;p&gt;为了演示这种现象，我们引入了&lt;strong&gt;多重置信掩码&lt;/strong&gt; (MCM)，它结合了&lt;strong&gt;高置信度 (HC) 掩码&lt;/strong&gt;和低置信度 (LC) 掩码，如图 1 所示。 A. 交叉掩码等于 &lt;strong&gt;HC mask&lt;/strong&gt;，代表&lt;strong&gt;所有注释的交集&lt;/strong&gt;。&lt;/p&gt;
 &lt;p&gt;&lt;strong&gt;联合掩码是所有注释的联合&lt;/strong&gt;。 &lt;strong&gt;LC掩模是交集掩模和并集掩模之间的差异&lt;/strong&gt;。当在 LIDC-IDRI 数据集 [11] 上计算 HC 和 LC 的 Hounsfield 单位 (HU) 核估计时，&lt;strong&gt;如图 1.B 所示，我们可以观察到 LC 和 HC 掩模之间的 HU 分布存在明显区别&lt;/strong&gt;。具体地，LC区域具有比HC区域更低的HU值。从像素分布来看，&lt;strong&gt;HU值越低，对应区域的密度越低&lt;/strong&gt;。就CT图像特征而言，LC区域&lt;strong&gt;主要由结节边缘、毛刺和磨玻璃特征等边界相关特征组成&lt;/strong&gt;，而&lt;strong&gt;HC区域主要分布在结节核心内&lt;/strong&gt;。因此，我们提出了这样的假设：导致放射科医生之间差异的区域主要与&lt;strong&gt;低密度组织和边界相关特征&lt;/strong&gt;有关。&lt;/p&gt;
 &lt;/blockquote&gt;
-&lt;p&gt;&lt;img loading=&#34;lazy&#34; src=&#34;https://oss.swimmingliu.cn/327b2.png&#34; alt=&#34;image-20231130203343980&#34;  /&gt;
-&lt;/p&gt;
+&lt;p&gt;&lt;img alt=&#34;image-20231130203343980&#34; loading=&#34;lazy&#34; src=&#34;https://oss.swimmingliu.cn/327b2.png&#34;&gt;&lt;/p&gt;
 &lt;blockquote&gt;
 &lt;p&gt;与其他方法不同，我们建议利用 &lt;strong&gt;MCM (多重置信掩码) ** 和注释集作为具有&lt;/strong&gt;不同分割确定性的特征的学习指导**，有助于更好的分割性能。我们将这种训练称为&lt;strong&gt;UncertaintyAware Attention Mechanism&lt;/strong&gt;，如图2所示。按照这种机制，我们进一步设计了用于肺结节分割的&lt;strong&gt;Uncertainty-Guide Multi-Confidence Segmentation Network&lt;/strong&gt;（UGMCS-Net）。&lt;/p&gt;</description>
     </item>
@@ -499,8 +487,7 @@ PGI可以为&lt;strong&gt;目标任务计算目标函数&lt;/strong&gt;提供&lt
 &lt;h2 id=&#34;1-服务器环境介绍&#34;&gt;1. 服务器环境介绍&lt;/h2&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-shell&#34; data-lang=&#34;shell&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;NVIDIA RTX &lt;span class=&#34;m&#34;&gt;3090&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;(&lt;/span&gt;24GB&lt;span class=&#34;o&#34;&gt;)&lt;/span&gt;
 &lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;NVIDIA RTX &lt;span class=&#34;m&#34;&gt;2080&lt;/span&gt; Ti &lt;span class=&#34;o&#34;&gt;(&lt;/span&gt;11GB&lt;span class=&#34;o&#34;&gt;)&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;&lt;img loading=&#34;lazy&#34; src=&#34;https://oss.swimmingliu.cn/HoBnO.png&#34; alt=&#34;image-20231120113601423&#34;  /&gt;
-&lt;/p&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;&lt;img alt=&#34;image-20231120113601423&#34; loading=&#34;lazy&#34; src=&#34;https://oss.swimmingliu.cn/HoBnO.png&#34;&gt;&lt;/p&gt;
 &lt;h2 id=&#34;2-配置实验环境&#34;&gt;2. 配置实验环境&lt;/h2&gt;
 &lt;h3 id=&#34;21-conda环境安装&#34;&gt;2.1 Conda环境安装&lt;/h3&gt;
 &lt;p&gt;每位同学都会分配个人用户，大家在自己的用户上使用Conda进行环境配置。&lt;/p&gt;

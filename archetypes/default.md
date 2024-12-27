@@ -7,10 +7,10 @@ author: ["SwimmingLiu"]
 categories:
 - 📝 Paper Notes
 - 📓 Diary
+- 💻 Job
 
 tags:
-- Unet
-- YOLO
+- tag 1
 
 keywords:
 - word 1

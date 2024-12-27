@@ -11,8 +11,15 @@
     </image>
     <generator>Hugo -- 0.136.0</generator>
     <language>en</language>
-    <lastBuildDate>Tue, 20 Aug 2024 10:35:06 +0800</lastBuildDate>
+    <lastBuildDate>Fri, 27 Dec 2024 17:27:35 +0800</lastBuildDate>
     <atom:link href="https://swimmingliu.cn/tags/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Java</title>
+      <link>https://swimmingliu.cn/tags/java/</link>
+      <pubDate>Fri, 27 Dec 2024 17:27:35 +0800</pubDate>
+      <guid>https://swimmingliu.cn/tags/java/</guid>
+      <description></description>
+    </item>
     <item>
       <title>Unet</title>
       <link>https://swimmingliu.cn/tags/unet/</link>

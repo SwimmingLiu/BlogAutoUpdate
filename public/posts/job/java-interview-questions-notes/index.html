@@ -1,0 +1,1103 @@
+<!DOCTYPE html>
+<html lang="en" dir="auto">
+
+<head><meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta name="robots" content="index, follow">
+<title>Java面试题-随手记 | SwimmingLiu&#39;s Blog</title>
+<meta name="keywords" content="Java">
+<meta name="description" content="== 和 equals 区别
+== 基本类型(int, long, float, char, boolean) 值比较， 引用类型(String，List) 进行地址比较
+equals 默认就是 == ，但是部分引用类型(String，List)重写了该方法，进行值比较
+get 和 post 区别
+
+  
+      
+          特性
+          GET
+          POST
+      
+  
+  
+      
+          目的
+          获取资源，查询数据
+          提交数据，创建或更新资源
+      
+      
+          请求数据方式
+          参数通过 URL 查询字符串传递
+          数据通过请求体传递
+      
+      
+          数据暴露
+          数据暴露在 URL 中，较不安全
+          数据存储在请求体中，相对安全
+      
+      
+          数据大小限制
+          URL 长度有限制（约 2048 个字符）
+          没有数据大小限制
+      
+      
+          适用场景
+          获取数据，查询，展示资源
+          提交表单，上传文件，修改资源，发送敏感数据等
+      
+  
+
+SpringMVC中@ReponseBody、@PathVariable、@RequestParameters在什么情况下使用?
+@ReponseBody 用于接受请求体数据，一般用于POST请求
+@PathVariable 用于接受路径参数，一般用户接受 id
+@RequestParameters 用于接受请求参数，一般用于GET请求
+JVM堆的结构、GC介绍和作用
+JVM堆结构的参考文章 、 GC垃圾回收过程
+
+  
+      
+          区域
+          主要用途
+          特点
+      
+  
+  
+      
+          新生代（Young Generation）
+          存储新创建的对象，快速垃圾回收
+          包含 Eden 区和两个 Survivor 区，采用复制算法进行回收
+      
+      
+          老年代（Old Generation）
+          存储长期存活的对象
+          回收频率较低，垃圾回收较耗时
+      
+      
+          永久代（Permanent Generation) (jdk 1.7）
+          存储类的元数据、方法字节码等
+          在 jdk 1.8 被 Metaspace 替代
+      
+      
+          元空间（jdk 1.8）
+          存储类的元数据
+          不再属于堆，使用本地内存，大小由系统限制
+      
+  
+
+GC 是垃圾回收器， 作用是自动内存管理和避免内存泄漏">
+<meta name="author" content="SwimmingLiu">
+<link rel="canonical" href="https://swimmingliu.cn/posts/job/java-interview-questions-notes/">
+<link crossorigin="anonymous" href="/assets/css/stylesheet.6ecbb0040febd20e47edd88a662c19f1ea945bf7427774b86594271d18f88faf.css" integrity="sha256-bsuwBA/r0g5H7diKZiwZ8eqUW/dCd3S4ZZQnHRj4j68=" rel="preload stylesheet" as="style">
+<link rel="icon" href="https://swimmingliu.cn/images/swimmingliu_icon.png">
+<link rel="icon" type="image/png" sizes="16x16" href="https://swimmingliu.cn/images/swimmingliu_icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="https://swimmingliu.cn/images/swimmingliu_icon.png">
+<link rel="apple-touch-icon" href="https://swimmingliu.cn/images/swimmingliu_icon.png">
+<link rel="mask-icon" href="https://swimmingliu.cn/images/swimmingliu_icon.png">
+<meta name="theme-color" content="#2e2e33">
+<meta name="msapplication-TileColor" content="#2e2e33">
+<link rel="alternate" hreflang="en" href="https://swimmingliu.cn/posts/job/java-interview-questions-notes/">
+<noscript>
+    <style>
+        #theme-toggle,
+        .top-link {
+            display: none;
+        }
+
+    </style>
+    <style>
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --theme: rgb(29, 30, 32);
+                --entry: rgb(46, 46, 51);
+                --primary: rgb(218, 218, 219);
+                --secondary: rgb(155, 156, 157);
+                --tertiary: rgb(65, 66, 68);
+                --content: rgb(196, 196, 197);
+                --code-block-bg: rgb(46, 46, 51);
+                --code-bg: rgb(55, 56, 62);
+                --border: rgb(51, 51, 51);
+            }
+
+            .list {
+                background: var(--theme);
+            }
+
+            .list:not(.dark)::-webkit-scrollbar-track {
+                background: 0 0;
+            }
+
+            .list:not(.dark)::-webkit-scrollbar-thumb {
+                border-color: var(--theme);
+            }
+        }
+
+    </style>
+</noscript>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css" integrity="sha384-n8MVd4RsNIU0tAv4ct0nTaAbDJwPJzDEaqSD1odI+WdtXRGWt2kTvGFasHpSy3SV" crossorigin="anonymous">
+
+
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js" integrity="sha384-XjKyOOlGwcjNTAIQHIpgOno0Hl1YQqzUOEleOLALmuqehneUG+vnGctmUb0ZY0l8" crossorigin="anonymous"></script>
+
+
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js" integrity="sha384-+VBxd3r6XgURycqtZ117nYw44OOcIax56Z4dCRWbxyPt0Koah1uHoK0o4+/RRE05" crossorigin="anonymous"
+    onload="renderMathInElement(document.body);"></script>
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        renderMathInElement(document.body, {
+            
+            
+            delimiters: [
+                { left: '$$', right: '$$', display: true },
+                { left: '$', right: '$', display: false },
+                { left: '\\(', right: '\\)', display: false },
+                { left: '\\[', right: '\\]', display: true }
+            ],
+            
+            throwOnError: false
+        });
+    });
+</script>
+
+<meta property="og:url" content="https://swimmingliu.cn/posts/job/java-interview-questions-notes/">
+  <meta property="og:site_name" content="SwimmingLiu&#39;s Blog">
+  <meta property="og:title" content="Java面试题-随手记">
+  <meta property="og:description" content="== 和 equals 区别 == 基本类型(int, long, float, char, boolean) 值比较， 引用类型(String，List) 进行地址比较
+equals 默认就是 == ，但是部分引用类型(String，List)重写了该方法，进行值比较
+get 和 post 区别 特性 GET POST 目的 获取资源，查询数据 提交数据，创建或更新资源 请求数据方式 参数通过 URL 查询字符串传递 数据通过请求体传递 数据暴露 数据暴露在 URL 中，较不安全 数据存储在请求体中，相对安全 数据大小限制 URL 长度有限制（约 2048 个字符） 没有数据大小限制 适用场景 获取数据，查询，展示资源 提交表单，上传文件，修改资源，发送敏感数据等 SpringMVC中@ReponseBody、@PathVariable、@RequestParameters在什么情况下使用? @ReponseBody 用于接受请求体数据，一般用于POST请求
+@PathVariable 用于接受路径参数，一般用户接受 id
+@RequestParameters 用于接受请求参数，一般用于GET请求
+JVM堆的结构、GC介绍和作用 JVM堆结构的参考文章 、 GC垃圾回收过程
+区域 主要用途 特点 新生代（Young Generation） 存储新创建的对象，快速垃圾回收 包含 Eden 区和两个 Survivor 区，采用复制算法进行回收 老年代（Old Generation） 存储长期存活的对象 回收频率较低，垃圾回收较耗时 永久代（Permanent Generation) (jdk 1.7） 存储类的元数据、方法字节码等 在 jdk 1.8 被 Metaspace 替代 元空间（jdk 1.8） 存储类的元数据 不再属于堆，使用本地内存，大小由系统限制 GC 是垃圾回收器， 作用是自动内存管理和避免内存泄漏">
+  <meta property="og:locale" content="en">
+  <meta property="og:type" content="article">
+    <meta property="article:section" content="posts">
+    <meta property="article:published_time" content="2024-12-27T17:27:35+08:00">
+    <meta property="article:modified_time" content="2024-12-27T17:27:35+08:00">
+    <meta property="article:tag" content="Java">
+      <meta property="og:image" content="https://swimmingliu.cn/papermod-cover.png">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://swimmingliu.cn/papermod-cover.png">
+<meta name="twitter:title" content="Java面试题-随手记">
+<meta name="twitter:description" content="== 和 equals 区别
+== 基本类型(int, long, float, char, boolean) 值比较， 引用类型(String，List) 进行地址比较
+equals 默认就是 == ，但是部分引用类型(String，List)重写了该方法，进行值比较
+get 和 post 区别
+
+  
+      
+          特性
+          GET
+          POST
+      
+  
+  
+      
+          目的
+          获取资源，查询数据
+          提交数据，创建或更新资源
+      
+      
+          请求数据方式
+          参数通过 URL 查询字符串传递
+          数据通过请求体传递
+      
+      
+          数据暴露
+          数据暴露在 URL 中，较不安全
+          数据存储在请求体中，相对安全
+      
+      
+          数据大小限制
+          URL 长度有限制（约 2048 个字符）
+          没有数据大小限制
+      
+      
+          适用场景
+          获取数据，查询，展示资源
+          提交表单，上传文件，修改资源，发送敏感数据等
+      
+  
+
+SpringMVC中@ReponseBody、@PathVariable、@RequestParameters在什么情况下使用?
+@ReponseBody 用于接受请求体数据，一般用于POST请求
+@PathVariable 用于接受路径参数，一般用户接受 id
+@RequestParameters 用于接受请求参数，一般用于GET请求
+JVM堆的结构、GC介绍和作用
+JVM堆结构的参考文章 、 GC垃圾回收过程
+
+  
+      
+          区域
+          主要用途
+          特点
+      
+  
+  
+      
+          新生代（Young Generation）
+          存储新创建的对象，快速垃圾回收
+          包含 Eden 区和两个 Survivor 区，采用复制算法进行回收
+      
+      
+          老年代（Old Generation）
+          存储长期存活的对象
+          回收频率较低，垃圾回收较耗时
+      
+      
+          永久代（Permanent Generation) (jdk 1.7）
+          存储类的元数据、方法字节码等
+          在 jdk 1.8 被 Metaspace 替代
+      
+      
+          元空间（jdk 1.8）
+          存储类的元数据
+          不再属于堆，使用本地内存，大小由系统限制
+      
+  
+
+GC 是垃圾回收器， 作用是自动内存管理和避免内存泄漏">
+
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position":  1 ,
+      "name": "📚 Posts",
+      "item": "https://swimmingliu.cn/posts/"
+    }, 
+    {
+      "@type": "ListItem",
+      "position":  2 ,
+      "name": "💻 Job",
+      "item": "https://swimmingliu.cn/posts/job/"
+    }, 
+    {
+      "@type": "ListItem",
+      "position":  3 ,
+      "name": "Java面试题-随手记",
+      "item": "https://swimmingliu.cn/posts/job/java-interview-questions-notes/"
+    }
+  ]
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "Java面试题-随手记",
+  "name": "Java面试题-随手记",
+  "description": "== 和 equals 区别 == 基本类型(int, long, float, char, boolean) 值比较， 引用类型(String，List) 进行地址比较\nequals 默认就是 == ，但是部分引用类型(String，List)重写了该方法，进行值比较\nget 和 post 区别 特性 GET POST 目的 获取资源，查询数据 提交数据，创建或更新资源 请求数据方式 参数通过 URL 查询字符串传递 数据通过请求体传递 数据暴露 数据暴露在 URL 中，较不安全 数据存储在请求体中，相对安全 数据大小限制 URL 长度有限制（约 2048 个字符） 没有数据大小限制 适用场景 获取数据，查询，展示资源 提交表单，上传文件，修改资源，发送敏感数据等 SpringMVC中@ReponseBody、@PathVariable、@RequestParameters在什么情况下使用? @ReponseBody 用于接受请求体数据，一般用于POST请求\n@PathVariable 用于接受路径参数，一般用户接受 id\n@RequestParameters 用于接受请求参数，一般用于GET请求\nJVM堆的结构、GC介绍和作用 JVM堆结构的参考文章 、 GC垃圾回收过程\n区域 主要用途 特点 新生代（Young Generation） 存储新创建的对象，快速垃圾回收 包含 Eden 区和两个 Survivor 区，采用复制算法进行回收 老年代（Old Generation） 存储长期存活的对象 回收频率较低，垃圾回收较耗时 永久代（Permanent Generation) (jdk 1.7） 存储类的元数据、方法字节码等 在 jdk 1.8 被 Metaspace 替代 元空间（jdk 1.8） 存储类的元数据 不再属于堆，使用本地内存，大小由系统限制 GC 是垃圾回收器， 作用是自动内存管理和避免内存泄漏\n",
+  "keywords": [
+    "Java"
+  ],
+  "articleBody": "== 和 equals 区别 == 基本类型(int, long, float, char, boolean) 值比较， 引用类型(String，List) 进行地址比较\nequals 默认就是 == ，但是部分引用类型(String，List)重写了该方法，进行值比较\nget 和 post 区别 特性 GET POST 目的 获取资源，查询数据 提交数据，创建或更新资源 请求数据方式 参数通过 URL 查询字符串传递 数据通过请求体传递 数据暴露 数据暴露在 URL 中，较不安全 数据存储在请求体中，相对安全 数据大小限制 URL 长度有限制（约 2048 个字符） 没有数据大小限制 适用场景 获取数据，查询，展示资源 提交表单，上传文件，修改资源，发送敏感数据等 SpringMVC中@ReponseBody、@PathVariable、@RequestParameters在什么情况下使用? @ReponseBody 用于接受请求体数据，一般用于POST请求\n@PathVariable 用于接受路径参数，一般用户接受 id\n@RequestParameters 用于接受请求参数，一般用于GET请求\nJVM堆的结构、GC介绍和作用 JVM堆结构的参考文章 、 GC垃圾回收过程\n区域 主要用途 特点 新生代（Young Generation） 存储新创建的对象，快速垃圾回收 包含 Eden 区和两个 Survivor 区，采用复制算法进行回收 老年代（Old Generation） 存储长期存活的对象 回收频率较低，垃圾回收较耗时 永久代（Permanent Generation) (jdk 1.7） 存储类的元数据、方法字节码等 在 jdk 1.8 被 Metaspace 替代 元空间（jdk 1.8） 存储类的元数据 不再属于堆，使用本地内存，大小由系统限制 GC 是垃圾回收器， 作用是自动内存管理和避免内存泄漏\nInnodb和MYISAM的特点 InnoDB 和 MyISAM 是 MySQL 数据库管理系统中的两种主要存储引擎。 InnoDB 是 MySQL 5.5 版本的默认引擎。\n特性 InnoDB MyISAM 事务支持 支持事务（ACID），提供 COMMIT, ROLLBACK, SAVEPOINT 等语句 不支持事务 存储方式 行级锁（Row-level locking） 表级锁（Table-level locking） 支持外键 支持外键约束（Foreign Key） 不支持外键约束 崩溃恢复 支持崩溃恢复，自动恢复到一致性状态 不支持崩溃恢复，数据可能会丢失 性能特点 适合高并发读写的应用，性能较慢（因为使用行级锁） 适合读多写少的应用，性能较快（因为使用表级锁） 数据完整性 数据完整性和一致性强，支持原子性操作 不支持数据完整性，容易出现数据不一致 缓存机制 使用内存缓冲池来提高性能 使用内存缓存提高查询速度 适用场景 高并发、需要事务和数据一致性的应用，如金融、银行等 读多写少、数据一致性要求较低的应用，如日志记录、数据仓库等 行级锁（Row Lock）：InnoDB使用行级锁，避免了对整张表加锁的性能问题，允许多个事务并发访问不同的行。\n表级锁（Table Lock）：MySQL使用表级锁时，整个表会被锁定，导致其他事务无法访问表中的任何行，性能较低。\n意向锁（Intention Lock）：行锁和表锁之间的一种锁，InnoDB用来处理行锁和表锁之间的兼容性问题。\n如何理解数据库中的MVCC原理? MVCC原理解析\n脏读、幻读、不可重复读区别 快速理解脏读、不可重复读、幻读和MVCC\nMySQL事务 事务特性 (AIDC) 原子性（Atomicity）：事务中的操作要么全部成功，要么全部失败。MySQL会保证即使发生崩溃或中断，未提交的事务会被回滚。\n隔离性（Isolation）：事务的执行不应该被其他事务干扰。隔离级别控制了事务之间的“可见性”。\n持久性（Durability）：一旦事务提交，变更将永久保存，即使系统崩溃，数据也不会丢失。\n一致性（Consistency）：事务必须让数据库从一个一致的状态转换到另一个一致的状态，保证数据完整性。\n事务的隔离级别 读未提交：事务可以读取到其他事务未提交的数据，可能导致脏读。\n读已提交：事务只能读取已提交的事务数据，避免了脏读，但仍然可能出现不可重复读。\n可重复读：事务在其生命周期内读取的数据始终一致，避免了脏读和不可重复读。可能会出现幻读。\n串行化：最高的隔离级别，事务强制串行执行，避免脏读、不可重复读和幻读。但性能差，容易产生资源瓶颈。\n如何优化数据库 SQL优化 1.**避免使用 select ***\n2.索引优化\n索引使用：创建适当的索引，尤其是常用于 WHERE、ORDER BY、JOIN、GROUP BY 中的字段。\n覆盖索引：尽量让查询可以通过索引直接返回结果，避免回表。\n避免过多的索引：索引虽能加速查询，但也会增加插入、更新的成本。\n联合索引：对于多个字段常一起查询的情况，可以考虑创建联合索引。\n3.避免全表扫描\n使用 EXPLAIN 来分析SQL执行计划，检查是否有全表扫描，并优化查询。\n示例：EXPLAIN SELECT * FROM orders WHERE user_id = ? 可以检查是否使用了索引。\n数据库架构优化 1.分库分表：\n当数据量非常大时，可以通过分库分表来提高查询和插入的效率。 例如：按时间范围、ID范围或业务维度进行水平分表，按业务模块进行垂直分库。 2.读写分离 (Redis)：\n使用主从复制，主库处理写操作，从库处理读操作，减轻主库压力，提高系统的并发处理能力。 示例：主库执行 INSERT、UPDATE、DELETE，从库执行 SELECT。 (现在用Redis用来第一步判断，数据库后操作) 3.数据库冗余与备份：\n增加数据库的冗余副本，定期进行备份，确保数据的高可用性。 缓存优化 1.使用缓存来减轻数据库压力：对频繁查询的数据进行缓存（如使用 Redis），比如热门商品信息。\n2.合理的缓存策略：\n缓存穿透 : Redis 和 数据库都不存在，用空对象缓存到Redis\n缓存雪崩 :\n大量key同时过期：设置随机的TLL\nRedis服务宕机 : 设置Redis集群 + 哨兵模式 / 缓存业务降级限流 / 业务添加多级缓存\n缓存击穿：Redis的热点Key过期，互斥锁 / 逻辑过期\n3.避免缓存不一致：使用双写策略（更新数据库同时更新缓存），或通过异步更新缓存来避免缓存与数据库数据不一致。\n数据库连接池 使用连接池（如 HikariCP、Druid）可以有效地减少数据库连接的开销，避免频繁创建和销毁连接。\n数据库并发控制 1.事务与锁机制优化\n通过合理的事务管理和锁策略，避免死锁和性能瓶颈。 控制事务的粒度，避免长时间持有锁，减少锁竞争。 2.乐观锁与悲观锁：\n在适当的场景下使用乐观锁（如使用版本号），避免对数据加锁。 在高并发下，使用悲观锁（如数据库行级锁、悲观锁）确保数据一致性。 Redis一主两从+哨兵模式 Redis 采用一主两从+哨兵的集群方案，主要是为了在高并发和高可用的场景下保证系统的稳定性和可靠性。主节点(master)处理写请求，从节点(slave1 和 slave2)处理读请求，减少主节点的压力；哨兵机制监控主节点和从节点，能够自动进行故障转移，确保 Redis 集群在节点故障时的高可用性。\n普通的主从模式，当主数据库崩溃时，需要手动切换从数据库成为主数据库，这就需要人工干预，费事费力，还会造成一段时间内服务不可用，即存在高可用问题。我们又使用了哨兵。哨兵是一个独立的进程，作为进程，它会独立运行。其原理是哨兵通过发送ping命令，等待Redis服务器响应，从而监控运行的多个Redis实例。哨兵可以实现自动故障修复，当哨兵监测到master宕机，会自动将slave切换成master，然后通过发布订阅模式通知其他的从服务器，修改配置文件，让它们切换master。同时那台有问题的旧主节点也会变为新主节点的从节点，也就是说当旧的主即使恢复时，并不会恢复原来的主身份，而是作为新主的一个从。\nOAuth2.0 / 单点登录 (SSO) OAuth2.0 介绍、单点登录SSO介绍\n如何防注入攻击？ 1.使用预编译语句（Mybatis）： 将 SQL 语句与参数分离，防止恶意输入被解释为代码\n2.最小权限原则: 为指定数据库用户分配最小必要的权限，限制其只能执行特定操作，减少潜在的安全风险。\n3.避免动态拼接SQL ( XML里面 # 和 $ 区别): 使用#，而不用 $ 防止直接拼接\n如何设计表的映射关系 有一个订单表，一个产品表，一个产品订单表\n订单表（Order）：存储订单的基本信息，如订单ID、用户ID、订单日期、订单状态等。\n产品表（Product）：存储产品的详细信息，如产品ID、产品名称、产品价格、库存数量等。\n订单项表（Order_Item）：用于表示订单与产品之间的多对多关系，记录每个订单中包含的产品及其数量、价格等信息。\n哪些表需要加索引？对哪些字段加索引? 需要索引的表 对于记录数较多的表，建立索引可以显著提升查询性能。\n需要加索引的字段 1.主键字段：主键字段默认建立唯一索引，确保记录的唯一性和快速定位。\n2.经常作为查询条件的字段：在 WHERE 子句中频繁出现的字段，特别是在大表中，应建立索引，以提高查询效率。\n3.用于表连接的字段：在与其他表进行连接操作时，连接字段应建立索引，以加速连接操作。\n4.用于排序（ORDER BY）和分组（GROUP BY）的字段：这些字段建立索引后，可提高排序和分组操作的性能。\n5.选择性高的字段：选择性高意味着字段值的唯一性较高。在此类字段上建立索引，可以有效过滤数据，提高查询效率。\n下面是不需要加索引的\n避免在频繁更新的字段上建立索引：因为每次更新不仅要修改数据，还需维护索引，可能影响写操作性能。 (商品库存，商品信息)\n避免在低选择性字段上建立索引：如性别字段，只有 “男” 和 “女” 两种值，建立索引效果不明显。\n控制索引数量：过多的索引会增加数据库的维护成本，特别是在频繁写操作的场景下，需要在查询性能和写操作开销之间找到平衡点。\n组合索引 / 复合索引 / 联合索引 像组合索引和复合索引你知道吗?比如说我建了一个a,b,c联合索引。我写代码的时候先写的c，b，a可以吗?\n组合索引（也称复合索引或联合索引）是指在多个列上创建的单个索引，用于提高多条件查询的性能。\n当创建了包含列 a、b、c 的组合索引时，查询条件的顺序会影响索引的使用效果。\n这遵循 最左前缀原则，即索引的使用从最左边的列开始匹配，必须按照索引定义的列顺序进行匹配。\n所以不能使用 c，b ，a 查询。\nMySQL的索引在什么条件下会失效? 对索引字段的运算或函数操作\nSELECT * FROM users WHERE YEAR(birthdate) = 1990; 使用了通配符（LIKE '%abc'）\nSELECT * FROM products WHERE name LIKE '%abc'; 在 WHERE 子句中使用了不等于（\u003c\u003e）操作符\nSELECT * FROM orders WHERE status \u003c\u003e 1; 进行 NULL 值查询时未优化\nSELECT * FROM users WHERE phone_number IS NULL; 数据类型不匹配\nSELECT * FROM users WHERE age = '25'; 使用了 OR 操作符，特别是跨字段时\nSELECT * FROM products WHERE price = 100 OR category = 'electronics'; 索引列的数据分布不均匀: 当索引列的数据分布极其不均匀时，即使索引可以使用，MySQL 也可能选择不使用索引，因为扫描全表比扫描索引更高效。\n事务放在MVC当中的哪一层？ 事务的管理应放在 Service层，这是因为Service层负责业务逻辑，可以统一控制跨多个DAO操作的事务。Controller层应该尽量避免直接管理事务，以保持系统的解耦性和职责清晰。而DAO层则专注于数据的持久化操作，不应承担事务管理的责任。\n什么时候应该添加事务？ 那我们查询list会加事物吗? 使用delete删除时会加事物吗?\n事务的使用场景：事务通常用于数据修改操作（如插入、更新、删除），确保数据一致性。\n查询操作的事务性：查询操作一般不需要事务，除非有一致性需求，需通过隔离级别来控制。\n增、删、改操作的事务性：增、删、改应该放在事务中进行，确保增、删、改的原子性。\n并发修改请求如何控制? 假设我的银行卡里面只有10块钱，现在过来10个请求都要扣10块钱，是你的话你会怎么控制?\n最直接的方式是保证每个扣款操作具有原子性。可以通过悲观锁或乐观锁来控制并发，确保多个请求不会同时扣款。\n1.悲观锁和乐观锁\n悲观锁通过数据库层面的锁机制（如 SELECT FOR UPDATE）防止并发修改余额。\n乐观锁通过版本号或 CAS 原理进行操作，适用于并发冲突较少的情况。\n2.分布式锁 （Redission）\n在分布式系统中，可以使用分布式锁来保证对共享资源的独占访问。\n3.队列和限流 (RabbitMQ)\n队列和限流 控制请求的处理速度，避免突发的高并发请求。\n分布式事务如何处理？它的作用? 为什么需要分布式事务：分布式事务用于解决分布式系统中不同服务之间的数据一致性问题，确保跨服务操作能够保证最终的一致性。\n分布式事务解决什么问题：主要解决跨服务的一致性，保证多个服务中的操作要么全部成功，要么全部回滚，保持数据一致性。\n分布式事务的解决方案：（后期学习）\n2PC：适合强一致性要求的场景。 TCC：用于操作更复杂的分布式场景。 Saga模式：适合长事务的分布式事务，通常用于最终一致性场景。 开发过程中Git分支管理 1.开发的时候来了一个新需求，你们的分支是怎么管理的?\n我们采用三种不同的前缀来管理 feat 新增、fix 修复、refactor 重构\n2.增加新需求，分支是从哪里新增的?\n每个新需求都会从 main 分支上创建一个 feat 分支进行开发。\n3.建完一个分支之后就开始改代码吗?\n确保你从主分支（main）创建了最新的分支，避免后续合并时的冲突。\n在开发前，应该确认需求的具体内容，并与相关团队成员对接，然后配置好对应环境，再进行开发。\n4.开发完之后测试的话，这个代码放到哪里去?\n我们会commit feat 分支，然后打包上传到测试环境，提交给测试\n5.假如现在又来了两个新需求，一个需求先上线，一个需求过几天上线。你们的分支是怎么管理的?\n当有多个需求时，先满足第一个要上线的 需求A 。然后再拉取代码，编写 需求B 的代码\n6.你们那个测试拉代码是运维拉代码还是测试拉代码？\n测试拉取代码\nSpringboot和Spring区别及理解 Spring：\n核心特性：Spring 提供了控制反转（IoC）和面向切面编程（AOP）的支持，主要用于构建企业级应用程序。 配置方式：Spring的配置是非常灵活但复杂的。通常，开发者需要通过 XML 配置、注解配置或 Java 配置类来配置 Spring 容器和各种模块。 模块化：Spring 框架分为多个模块，如 Spring Core、Spring AOP、Spring Data、Spring MVC 等，开发者需要根据需要集成和配置这些模块。 Spring Boot：\n自动配置：Spring Boot 提供了大量的自动化配置，开发者只需要少量的配置，甚至可以省去 XML 配置，简化了传统 Spring 配置的复杂度。 内嵌服务器：Spring Boot 提供了 Tomcat、Jetty、Undertow 等内嵌服务器，使得应用可以直接打包为可执行 JAR 文件，无需外部容器支持。 开箱即用：Spring Boot 提供了很多开箱即用的功能，例如，默认的应用结构、内置的健康检查、自动化的日志配置等，极大提高了开发效率。 Spring Boot Starter：使用“Starter”可以让开发者方便地引入常见的依赖包，避免手动配置和集成常用组件。 Spring和Springboot区别 特性 Spring Spring Boot 目标 提供企业级应用开发框架。 简化 Spring 应用的配置和启动过程。 配置方式 需要大量的 XML 或 Java 配置。 通过自动配置简化配置，几乎不需要手动配置。 应用启动 需要外部应用服务器（如 Tomcat）。 支持内嵌服务器，应用可以打包为可执行 JAR 文件。 依赖管理 需要手动配置依赖和版本。 提供预设的 Spring Boot Starter，自动管理依赖。 模块集成 需要开发者手动集成各个模块（如 Spring MVC, Spring Data）。 自动化集成各个模块，并提供开箱即用的功能。 开发效率 配置和集成较为繁琐，开发效率较低。 通过自动配置和开箱即用的功能，大大提高开发效率。 启动时间 启动速度较慢，需要等待容器的初始化。 启动速度快，集成化和内嵌式服务减少了初始化时间。 环境依赖 配置较为灵活，环境依赖需要手动管理。 内嵌服务器和自动配置降低了环境依赖问题。 RabbitMQ和Kafka区别和理解 Kafka 和 RabbitMQ 对比 - 原理\n应用场景 RabbitMQ Kafka 消息大小和格式 适合处理中小型消息，支持各种消息格式，包括文本、JSON等 适合处理大型消息和流式数据，支持批量消息传递和日志存储 实时性要求 支持低延迟的消息传递和定时功能，适用于实时消息处理 （微秒级） 延迟较高，主要优化吞吐量，适合高吞吐量数据流处理 （毫秒级） 吞吐量 吞吐量较低，适合低并发场景 吞吐量极高，适用于高并发、大数据场景 数据一致性和可靠性 提供消息确认机制和强大的持久化功能，保证消息不丢失 通过日志存储、分区和副本机制保证数据可靠性和高可用性 分布式系统支持 支持集群模式，但在扩展性上不如 Kafka 原生支持分布式架构，适用于大规模分布式系统 插件支持和生态系统 丰富的插件支持，易与各种技术和工具集成，功能多样化 插件支持较少，但生态系统广泛，主要用于流处理、大数据平台 ",
+  "wordCount" : "557",
+  "inLanguage": "en",
+  "image": "https://swimmingliu.cn/papermod-cover.png","datePublished": "2024-12-27T17:27:35+08:00",
+  "dateModified": "2024-12-27T17:27:35+08:00",
+  "author":[{
+    "@type": "Person",
+    "name": "SwimmingLiu"
+  }],
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": "https://swimmingliu.cn/posts/job/java-interview-questions-notes/"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "SwimmingLiu's Blog",
+    "logo": {
+      "@type": "ImageObject",
+      "url": "https://swimmingliu.cn/images/swimmingliu_icon.png"
+    }
+  }
+}
+</script>
+</head>
+
+<body class="" id="top">
+<script>
+    if (localStorage.getItem("pref-theme") === "dark") {
+        document.body.classList.add('dark');
+    } else if (localStorage.getItem("pref-theme") === "light") {
+        document.body.classList.remove('dark')
+    } else if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+        document.body.classList.add('dark');
+    }
+
+</script>
+
+<header class="header">
+    <nav class="nav">
+        <div class="logo">
+            <a href="https://swimmingliu.cn/" accesskey="h" title="𝓢𝔀𝓲𝓶𝓶𝓲𝓷𝓰𝓛𝓲𝓾&#39;𝓼 𝓑𝓵𝓸𝓰 (Alt + H)">
+                <img src="https://swimmingliu.cn/images/swimmingliu_icon.png" alt="" aria-label="logo"
+                    height="30">𝓢𝔀𝓲𝓶𝓶𝓲𝓷𝓰𝓛𝓲𝓾&#39;𝓼 𝓑𝓵𝓸𝓰</a>
+            <div class="logo-switches">
+                <button id="theme-toggle" accesskey="t" title="(Alt + T)">
+                    <svg id="moon" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                    </svg>
+                    <svg id="sun" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="5"></circle>
+                        <line x1="12" y1="1" x2="12" y2="3"></line>
+                        <line x1="12" y1="21" x2="12" y2="23"></line>
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                        <line x1="1" y1="12" x2="3" y2="12"></line>
+                        <line x1="21" y1="12" x2="23" y2="12"></line>
+                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                    </svg>
+                </button>
+            </div>
+        </div>
+        <ul id="menu">
+            <li>
+                <a href="https://swimmingliu.cn/index.html" title="🏡 Home">
+                    <span>🏡 Home</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://swimmingliu.cn/search/" title="🔍 Search">
+                    <span>🔍 Search</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://swimmingliu.cn/posts/" title="🗒️ Posts">
+                    <span>🗒️ Posts</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://swimmingliu.cn/archives/" title="📃 Archive">
+                    <span>📃 Archive</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://swimmingliu.cn/tags/" title="📑 Tags">
+                    <span>📑 Tags</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://bento.me/swimmingliu" title="👨🏻‍🎓 About Me">
+                    <span>👨🏻‍🎓 About Me</span>&nbsp;
+                    <svg fill="none" shape-rendering="geometricPrecision" stroke="currentColor" stroke-linecap="round"
+                        stroke-linejoin="round" stroke-width="2.5" viewBox="0 0 24 24" height="12" width="12">
+                        <path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"></path>
+                        <path d="M15 3h6v6"></path>
+                        <path d="M10 14L21 3"></path>
+                    </svg>
+                </a>
+            </li>
+            <li>
+                <a href="https://www.emojisearch.app/" title="Emoji">
+                    <span>Emoji</span>&nbsp;
+                    <svg fill="none" shape-rendering="geometricPrecision" stroke="currentColor" stroke-linecap="round"
+                        stroke-linejoin="round" stroke-width="2.5" viewBox="0 0 24 24" height="12" width="12">
+                        <path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"></path>
+                        <path d="M15 3h6v6"></path>
+                        <path d="M10 14L21 3"></path>
+                    </svg>
+                </a>
+            </li>
+        </ul>
+    </nav>
+</header>
+<main class="main">
+
+<article class="post-single">
+  <header class="post-header">
+    <div class="breadcrumbs"><a href="https://swimmingliu.cn/">Home</a>&nbsp;»&nbsp;<a href="https://swimmingliu.cn/posts/">📚 Posts</a>&nbsp;»&nbsp;<a href="https://swimmingliu.cn/posts/job/">💻 Job</a></div>
+    <h1 class="post-title entry-hint-parent">
+      Java面试题-随手记
+    </h1>
+    <div class="post-meta"><span title='2024-12-27 17:27:35 +0800 CST'>December 27, 2024</span>&nbsp;·&nbsp;3 min&nbsp;·&nbsp;SwimmingLiu
+
+</div>
+  </header> <div class="toc">
+    <details >
+        <summary accesskey="c" title="(Alt + C)">
+            <span class="details">Table of Contents</span>
+        </summary>
+
+        <div class="inner"><ul>
+                <li>
+                    <a href="#-%e5%92%8c-equals-%e5%8c%ba%e5%88%ab" aria-label="== 和 equals 区别">== 和 equals 区别</a></li>
+                <li>
+                    <a href="#get-%e5%92%8c-post-%e5%8c%ba%e5%88%ab" aria-label="get 和 post 区别">get 和 post 区别</a></li>
+                <li>
+                    <a href="#springmvc%e4%b8%adreponsebodypathvariablerequestparameters%e5%9c%a8%e4%bb%80%e4%b9%88%e6%83%85%e5%86%b5%e4%b8%8b%e4%bd%bf%e7%94%a8" aria-label="SpringMVC中@ReponseBody、@PathVariable、@RequestParameters在什么情况下使用?">SpringMVC中@ReponseBody、@PathVariable、@RequestParameters在什么情况下使用?</a></li>
+                <li>
+                    <a href="#jvm%e5%a0%86%e7%9a%84%e7%bb%93%e6%9e%84gc%e4%bb%8b%e7%bb%8d%e5%92%8c%e4%bd%9c%e7%94%a8" aria-label="JVM堆的结构、GC介绍和作用">JVM堆的结构、GC介绍和作用</a></li>
+                <li>
+                    <a href="#innodb%e5%92%8cmyisam%e7%9a%84%e7%89%b9%e7%82%b9" aria-label="Innodb和MYISAM的特点">Innodb和MYISAM的特点</a></li>
+                <li>
+                    <a href="#%e5%a6%82%e4%bd%95%e7%90%86%e8%a7%a3%e6%95%b0%e6%8d%ae%e5%ba%93%e4%b8%ad%e7%9a%84mvcc%e5%8e%9f%e7%90%86" aria-label="如何理解数据库中的MVCC原理?">如何理解数据库中的MVCC原理?</a></li>
+                <li>
+                    <a href="#%e8%84%8f%e8%af%bb%e5%b9%bb%e8%af%bb%e4%b8%8d%e5%8f%af%e9%87%8d%e5%a4%8d%e8%af%bb%e5%8c%ba%e5%88%ab" aria-label="脏读、幻读、不可重复读区别">脏读、幻读、不可重复读区别</a></li>
+                <li>
+                    <a href="#mysql%e4%ba%8b%e5%8a%a1" aria-label="MySQL事务">MySQL事务</a><ul>
+                        
+                <li>
+                    <a href="#%e4%ba%8b%e5%8a%a1%e7%89%b9%e6%80%a7-aidc" aria-label="事务特性 (AIDC)">事务特性 (AIDC)</a></li>
+                <li>
+                    <a href="#%e4%ba%8b%e5%8a%a1%e7%9a%84%e9%9a%94%e7%a6%bb%e7%ba%a7%e5%88%ab" aria-label="事务的隔离级别">事务的隔离级别</a></li></ul>
+                </li>
+                <li>
+                    <a href="#%e5%a6%82%e4%bd%95%e4%bc%98%e5%8c%96%e6%95%b0%e6%8d%ae%e5%ba%93" aria-label="如何优化数据库">如何优化数据库</a><ul>
+                        
+                <li>
+                    <a href="#sql%e4%bc%98%e5%8c%96" aria-label="SQL优化">SQL优化</a></li>
+                <li>
+                    <a href="#%e6%95%b0%e6%8d%ae%e5%ba%93%e6%9e%b6%e6%9e%84%e4%bc%98%e5%8c%96" aria-label="数据库架构优化">数据库架构优化</a></li>
+                <li>
+                    <a href="#%e7%bc%93%e5%ad%98%e4%bc%98%e5%8c%96" aria-label="缓存优化">缓存优化</a></li>
+                <li>
+                    <a href="#%e6%95%b0%e6%8d%ae%e5%ba%93%e8%bf%9e%e6%8e%a5%e6%b1%a0" aria-label="数据库连接池">数据库连接池</a></li>
+                <li>
+                    <a href="#%e6%95%b0%e6%8d%ae%e5%ba%93%e5%b9%b6%e5%8f%91%e6%8e%a7%e5%88%b6" aria-label="数据库并发控制">数据库并发控制</a></li></ul>
+                </li>
+                <li>
+                    <a href="#redis%e4%b8%80%e4%b8%bb%e4%b8%a4%e4%bb%8e%e5%93%a8%e5%85%b5%e6%a8%a1%e5%bc%8f" aria-label="Redis一主两从&#43;哨兵模式">Redis一主两从+哨兵模式</a></li>
+                <li>
+                    <a href="#oauth20--%e5%8d%95%e7%82%b9%e7%99%bb%e5%bd%95-sso" aria-label="OAuth2.0 / 单点登录 (SSO)">OAuth2.0 / 单点登录 (SSO)</a></li>
+                <li>
+                    <a href="#%e5%a6%82%e4%bd%95%e9%98%b2%e6%b3%a8%e5%85%a5%e6%94%bb%e5%87%bb" aria-label="如何防注入攻击？">如何防注入攻击？</a></li>
+                <li>
+                    <a href="#%e5%a6%82%e4%bd%95%e8%ae%be%e8%ae%a1%e8%a1%a8%e7%9a%84%e6%98%a0%e5%b0%84%e5%85%b3%e7%b3%bb" aria-label="如何设计表的映射关系">如何设计表的映射关系</a></li>
+                <li>
+                    <a href="#%e5%93%aa%e4%ba%9b%e8%a1%a8%e9%9c%80%e8%a6%81%e5%8a%a0%e7%b4%a2%e5%bc%95%e5%af%b9%e5%93%aa%e4%ba%9b%e5%ad%97%e6%ae%b5%e5%8a%a0%e7%b4%a2%e5%bc%95" aria-label="哪些表需要加索引？对哪些字段加索引?">哪些表需要加索引？对哪些字段加索引?</a><ul>
+                        
+                <li>
+                    <a href="#%e9%9c%80%e8%a6%81%e7%b4%a2%e5%bc%95%e7%9a%84%e8%a1%a8" aria-label="需要索引的表">需要索引的表</a></li>
+                <li>
+                    <a href="#%e9%9c%80%e8%a6%81%e5%8a%a0%e7%b4%a2%e5%bc%95%e7%9a%84%e5%ad%97%e6%ae%b5" aria-label="需要加索引的字段">需要加索引的字段</a></li></ul>
+                </li>
+                <li>
+                    <a href="#%e7%bb%84%e5%90%88%e7%b4%a2%e5%bc%95--%e5%a4%8d%e5%90%88%e7%b4%a2%e5%bc%95--%e8%81%94%e5%90%88%e7%b4%a2%e5%bc%95" aria-label="组合索引 / 复合索引 / 联合索引">组合索引 / 复合索引 / 联合索引</a></li>
+                <li>
+                    <a href="#mysql%e7%9a%84%e7%b4%a2%e5%bc%95%e5%9c%a8%e4%bb%80%e4%b9%88%e6%9d%a1%e4%bb%b6%e4%b8%8b%e4%bc%9a%e5%a4%b1%e6%95%88" aria-label="MySQL的索引在什么条件下会失效?">MySQL的索引在什么条件下会失效?</a></li>
+                <li>
+                    <a href="#%e4%ba%8b%e5%8a%a1%e6%94%be%e5%9c%a8mvc%e5%bd%93%e4%b8%ad%e7%9a%84%e5%93%aa%e4%b8%80%e5%b1%82" aria-label="事务放在MVC当中的哪一层？">事务放在MVC当中的哪一层？</a></li>
+                <li>
+                    <a href="#%e4%bb%80%e4%b9%88%e6%97%b6%e5%80%99%e5%ba%94%e8%af%a5%e6%b7%bb%e5%8a%a0%e4%ba%8b%e5%8a%a1" aria-label="什么时候应该添加事务？">什么时候应该添加事务？</a></li>
+                <li>
+                    <a href="#%e5%b9%b6%e5%8f%91%e4%bf%ae%e6%94%b9%e8%af%b7%e6%b1%82%e5%a6%82%e4%bd%95%e6%8e%a7%e5%88%b6" aria-label="并发修改请求如何控制?">并发修改请求如何控制?</a></li>
+                <li>
+                    <a href="#%e5%88%86%e5%b8%83%e5%bc%8f%e4%ba%8b%e5%8a%a1%e5%a6%82%e4%bd%95%e5%a4%84%e7%90%86%e5%ae%83%e7%9a%84%e4%bd%9c%e7%94%a8" aria-label="分布式事务如何处理？它的作用?">分布式事务如何处理？它的作用?</a></li>
+                <li>
+                    <a href="#%e5%bc%80%e5%8f%91%e8%bf%87%e7%a8%8b%e4%b8%adgit%e5%88%86%e6%94%af%e7%ae%a1%e7%90%86" aria-label="开发过程中Git分支管理">开发过程中Git分支管理</a></li>
+                <li>
+                    <a href="#springboot%e5%92%8cspring%e5%8c%ba%e5%88%ab%e5%8f%8a%e7%90%86%e8%a7%a3" aria-label="Springboot和Spring区别及理解">Springboot和Spring区别及理解</a><ul>
+                        
+                <li>
+                    <a href="#spring%e5%92%8cspringboot%e5%8c%ba%e5%88%ab" aria-label="Spring和Springboot区别">Spring和Springboot区别</a></li></ul>
+                </li>
+                <li>
+                    <a href="#rabbitmq%e5%92%8ckafka%e5%8c%ba%e5%88%ab%e5%92%8c%e7%90%86%e8%a7%a3" aria-label="RabbitMQ和Kafka区别和理解">RabbitMQ和Kafka区别和理解</a>
+                </li>
+            </ul>
+        </div>
+    </details>
+</div>
+  <div class="post-content"><h2 id="-和-equals-区别">== 和 equals 区别<a hidden class="anchor" aria-hidden="true" href="#-和-equals-区别">#</a></h2>
+<p><code>==</code> 基本类型(int, long, float, char, boolean) 值比较， 引用类型(String，List) 进行地址比较</p>
+<p><code>equals</code> 默认就是 <code>==</code> ，但是部分引用类型(String，List)重写了该方法，进行值比较</p>
+<h2 id="get-和-post-区别">get 和 post 区别<a hidden class="anchor" aria-hidden="true" href="#get-和-post-区别">#</a></h2>
+<table>
+  <thead>
+      <tr>
+          <th>特性</th>
+          <th>GET</th>
+          <th>POST</th>
+      </tr>
+  </thead>
+  <tbody>
+      <tr>
+          <td><strong>目的</strong></td>
+          <td>获取资源，查询数据</td>
+          <td>提交数据，创建或更新资源</td>
+      </tr>
+      <tr>
+          <td><strong>请求数据方式</strong></td>
+          <td>参数通过 URL 查询字符串传递</td>
+          <td>数据通过请求体传递</td>
+      </tr>
+      <tr>
+          <td><strong>数据暴露</strong></td>
+          <td>数据暴露在 URL 中，较不安全</td>
+          <td>数据存储在请求体中，相对安全</td>
+      </tr>
+      <tr>
+          <td><strong>数据大小限制</strong></td>
+          <td>URL 长度有限制（约 2048 个字符）</td>
+          <td>没有数据大小限制</td>
+      </tr>
+      <tr>
+          <td><strong>适用场景</strong></td>
+          <td>获取数据，查询，展示资源</td>
+          <td>提交表单，上传文件，修改资源，发送敏感数据等</td>
+      </tr>
+  </tbody>
+</table>
+<h2 id="springmvc中reponsebodypathvariablerequestparameters在什么情况下使用">SpringMVC中@ReponseBody、@PathVariable、@RequestParameters在什么情况下使用?<a hidden class="anchor" aria-hidden="true" href="#springmvc中reponsebodypathvariablerequestparameters在什么情况下使用">#</a></h2>
+<p><code>@ReponseBody</code> 用于接受请求体数据，一般用于POST请求</p>
+<p><code>@PathVariable</code> 用于接受路径参数，一般用户接受 <code>id</code></p>
+<p><code>@RequestParameters</code> 用于接受请求参数，一般用于GET请求</p>
+<h2 id="jvm堆的结构gc介绍和作用">JVM堆的结构、GC介绍和作用<a hidden class="anchor" aria-hidden="true" href="#jvm堆的结构gc介绍和作用">#</a></h2>
+<p><a href="https://www.51cto.com/article/710705.html">JVM堆结构的参考文章</a> 、 <a href="https://www.bilibili.com/video/BV1dt411u7wi">GC垃圾回收过程</a></p>
+<table>
+  <thead>
+      <tr>
+          <th>区域</th>
+          <th>主要用途</th>
+          <th>特点</th>
+      </tr>
+  </thead>
+  <tbody>
+      <tr>
+          <td><strong>新生代（Young Generation）</strong></td>
+          <td>存储新创建的对象，快速垃圾回收</td>
+          <td>包含 Eden 区和两个 Survivor 区，采用复制算法进行回收</td>
+      </tr>
+      <tr>
+          <td><strong>老年代（Old Generation）</strong></td>
+          <td>存储长期存活的对象</td>
+          <td>回收频率较低，垃圾回收较耗时</td>
+      </tr>
+      <tr>
+          <td><strong>永久代（Permanent Generation) (jdk 1.7）</strong></td>
+          <td>存储类的元数据、方法字节码等</td>
+          <td>在 jdk 1.8 被 Metaspace 替代</td>
+      </tr>
+      <tr>
+          <td><strong>元空间（jdk 1.8）</strong></td>
+          <td>存储类的元数据</td>
+          <td>不再属于堆，使用本地内存，大小由系统限制</td>
+      </tr>
+  </tbody>
+</table>
+<p><code>GC</code> 是垃圾回收器， 作用是自动内存管理和避免内存泄漏</p>
+<h2 id="innodb和myisam的特点">Innodb和MYISAM的特点<a hidden class="anchor" aria-hidden="true" href="#innodb和myisam的特点">#</a></h2>
+<p><code>InnoDB</code> 和 <code>MyISAM</code> 是 MySQL 数据库管理系统中的两种主要存储引擎。 <code>InnoDB</code> 是  MySQL 5.5 版本的默认引擎。</p>
+<table>
+  <thead>
+      <tr>
+          <th>特性</th>
+          <th><strong>InnoDB</strong></th>
+          <th><strong>MyISAM</strong></th>
+      </tr>
+  </thead>
+  <tbody>
+      <tr>
+          <td><strong>事务支持</strong></td>
+          <td>支持事务（ACID），提供 <strong>COMMIT</strong>, <strong>ROLLBACK</strong>, <strong>SAVEPOINT</strong> 等语句</td>
+          <td>不支持事务</td>
+      </tr>
+      <tr>
+          <td><strong>存储方式</strong></td>
+          <td>行级锁（Row-level locking）</td>
+          <td>表级锁（Table-level locking）</td>
+      </tr>
+      <tr>
+          <td><strong>支持外键</strong></td>
+          <td>支持外键约束（Foreign Key）</td>
+          <td>不支持外键约束</td>
+      </tr>
+      <tr>
+          <td><strong>崩溃恢复</strong></td>
+          <td>支持崩溃恢复，自动恢复到一致性状态</td>
+          <td>不支持崩溃恢复，数据可能会丢失</td>
+      </tr>
+      <tr>
+          <td><strong>性能特点</strong></td>
+          <td>适合高并发读写的应用，性能较慢（因为使用行级锁）</td>
+          <td>适合读多写少的应用，性能较快（因为使用表级锁）</td>
+      </tr>
+      <tr>
+          <td><strong>数据完整性</strong></td>
+          <td>数据完整性和一致性强，支持原子性操作</td>
+          <td>不支持数据完整性，容易出现数据不一致</td>
+      </tr>
+      <tr>
+          <td><strong>缓存机制</strong></td>
+          <td>使用内存缓冲池来提高性能</td>
+          <td>使用内存缓存提高查询速度</td>
+      </tr>
+      <tr>
+          <td><strong>适用场景</strong></td>
+          <td>高并发、需要事务和数据一致性的应用，如金融、银行等</td>
+          <td>读多写少、数据一致性要求较低的应用，如日志记录、数据仓库等</td>
+      </tr>
+  </tbody>
+</table>
+<p><strong>行级锁（Row Lock）</strong>：InnoDB使用行级锁，避免了对整张表加锁的性能问题，允许多个事务并发访问不同的行。</p>
+<p><strong>表级锁（Table Lock）</strong>：MySQL使用表级锁时，整个表会被锁定，导致其他事务无法访问表中的任何行，性能较低。</p>
+<p><strong>意向锁（Intention Lock）</strong>：行锁和表锁之间的一种锁，InnoDB用来处理行锁和表锁之间的兼容性问题。</p>
+<h2 id="如何理解数据库中的mvcc原理">如何理解数据库中的MVCC原理?<a hidden class="anchor" aria-hidden="true" href="#如何理解数据库中的mvcc原理">#</a></h2>
+<p><a href="https://xie.infoq.cn/article/aada42abfebc550d053c01784">MVCC原理解析</a></p>
+<h2 id="脏读幻读不可重复读区别">脏读、幻读、不可重复读区别<a hidden class="anchor" aria-hidden="true" href="#脏读幻读不可重复读区别">#</a></h2>
+<p><a href="https://cloud.tencent.com/developer/article/1450773">快速理解脏读、不可重复读、幻读和MVCC</a></p>
+<h2 id="mysql事务">MySQL事务<a hidden class="anchor" aria-hidden="true" href="#mysql事务">#</a></h2>
+<h3 id="事务特性-aidc">事务特性 (AIDC)<a hidden class="anchor" aria-hidden="true" href="#事务特性-aidc">#</a></h3>
+<p><strong>原子性（Atomicity）</strong>：事务中的操作要么全部成功，要么全部失败。MySQL会保证即使发生崩溃或中断，未提交的事务会被回滚。</p>
+<p><strong>隔离性（Isolation）</strong>：事务的执行不应该被其他事务干扰。隔离级别控制了事务之间的“可见性”。</p>
+<p><strong>持久性（Durability）</strong>：一旦事务提交，变更将永久保存，即使系统崩溃，数据也不会丢失。</p>
+<p><strong>一致性（Consistency）</strong>：事务必须让数据库从一个一致的状态转换到另一个一致的状态，保证数据完整性。</p>
+<h3 id="事务的隔离级别">事务的隔离级别<a hidden class="anchor" aria-hidden="true" href="#事务的隔离级别">#</a></h3>
+<p><strong>读未提交</strong>：事务可以读取到其他事务未提交的数据，可能导致脏读。</p>
+<p><strong>读已提交</strong>：事务只能读取已提交的事务数据，避免了脏读，但仍然可能出现不可重复读。</p>
+<p><strong>可重复读</strong>：事务在其生命周期内读取的数据始终一致，避免了脏读和不可重复读。可能会出现幻读。</p>
+<p><strong>串行化</strong>：最高的隔离级别，事务强制串行执行，避免脏读、不可重复读和幻读。但性能差，容易产生资源瓶颈。</p>
+<h2 id="如何优化数据库">如何优化数据库<a hidden class="anchor" aria-hidden="true" href="#如何优化数据库">#</a></h2>
+<h3 id="sql优化">SQL优化<a hidden class="anchor" aria-hidden="true" href="#sql优化">#</a></h3>
+<p>1.**避免使用 select ***</p>
+<p>2.<strong>索引优化</strong></p>
+<ul>
+<li>
+<p><strong>索引使用</strong>：创建适当的索引，尤其是常用于 <code>WHERE</code>、<code>ORDER BY</code>、<code>JOIN</code>、<code>GROUP BY</code> 中的字段。</p>
+</li>
+<li>
+<p><strong>覆盖索引</strong>：尽量让查询可以通过索引直接返回结果，避免回表。</p>
+</li>
+<li>
+<p><strong>避免过多的索引</strong>：索引虽能加速查询，但也会增加插入、更新的成本。</p>
+</li>
+<li>
+<p><strong>联合索引</strong>：对于多个字段常一起查询的情况，可以考虑创建联合索引。</p>
+</li>
+</ul>
+<p>3.<strong>避免全表扫描</strong></p>
+<ul>
+<li>
+<p>使用 <code>EXPLAIN</code> 来分析SQL执行计划，检查是否有全表扫描，并优化查询。</p>
+</li>
+<li>
+<p>示例：<code>EXPLAIN SELECT * FROM orders WHERE user_id = ?</code> 可以检查是否使用了索引。</p>
+</li>
+</ul>
+<h3 id="数据库架构优化">数据库架构优化<a hidden class="anchor" aria-hidden="true" href="#数据库架构优化">#</a></h3>
+<p>1.<strong>分库分表</strong>：</p>
+<ul>
+<li>当数据量非常大时，可以通过分库分表来提高查询和插入的效率。</li>
+<li>例如：按时间范围、ID范围或业务维度进行水平分表，按业务模块进行垂直分库。</li>
+</ul>
+<p>2.<strong>读写分离</strong> (Redis)：</p>
+<ul>
+<li>使用主从复制，主库处理写操作，从库处理读操作，减轻主库压力，提高系统的并发处理能力。</li>
+<li>示例：主库执行 <code>INSERT</code>、<code>UPDATE</code>、<code>DELETE</code>，从库执行 <code>SELECT</code>。 (现在用Redis用来第一步判断，数据库后操作)</li>
+</ul>
+<p>3.<strong>数据库冗余与备份</strong>：</p>
+<ul>
+<li>增加数据库的冗余副本，定期进行备份，确保数据的高可用性。</li>
+</ul>
+<h3 id="缓存优化">缓存优化<a hidden class="anchor" aria-hidden="true" href="#缓存优化">#</a></h3>
+<p>1.<strong>使用缓存来减轻数据库压力</strong>：对频繁查询的数据进行缓存（如使用 Redis），比如热门商品信息。</p>
+<p>2.<strong>合理的缓存策略</strong>：</p>
+<p><strong>缓存穿透</strong> : Redis 和 数据库都不存在，用空对象缓存到Redis</p>
+<p><strong>缓存雪崩</strong> :</p>
+<ul>
+<li>
+<p><strong>大量key同时过期</strong>：设置随机的TLL</p>
+</li>
+<li>
+<p><strong>Redis服务宕机</strong> : 设置Redis集群 + 哨兵模式 / 缓存业务降级限流 / 业务添加多级缓存</p>
+</li>
+</ul>
+<p><strong>缓存击穿</strong>：Redis的热点Key过期，互斥锁 / <strong>逻辑过期</strong></p>
+<p>3.<strong>避免缓存不一致</strong>：使用双写策略（更新数据库同时更新缓存），或通过异步更新缓存来避免缓存与数据库数据不一致。</p>
+<h3 id="数据库连接池">数据库连接池<a hidden class="anchor" aria-hidden="true" href="#数据库连接池">#</a></h3>
+<p>使用连接池（如 HikariCP、Druid）可以有效地减少数据库连接的开销，避免频繁创建和销毁连接。</p>
+<h3 id="数据库并发控制">数据库并发控制<a hidden class="anchor" aria-hidden="true" href="#数据库并发控制">#</a></h3>
+<p>1.<strong>事务与锁机制优化</strong></p>
+<ul>
+<li>通过合理的事务管理和锁策略，避免死锁和性能瓶颈。</li>
+<li>控制事务的粒度，避免长时间持有锁，减少锁竞争。</li>
+</ul>
+<p>2.<strong>乐观锁与悲观锁</strong>：</p>
+<ul>
+<li>在适当的场景下使用乐观锁（如使用版本号），避免对数据加锁。</li>
+<li>在高并发下，使用悲观锁（如数据库行级锁、悲观锁）确保数据一致性。</li>
+</ul>
+<h2 id="redis一主两从哨兵模式">Redis一主两从+哨兵模式<a hidden class="anchor" aria-hidden="true" href="#redis一主两从哨兵模式">#</a></h2>
+<p>Redis 采用<strong>一主两从+哨兵</strong>的集群方案，主要是为了在高并发和高可用的场景下保证系统的稳定性和可靠性。<strong>主节点(master)<strong>处理</strong>写</strong>请求，<strong>从节点(slave1 和 slave2)<strong>处理</strong>读</strong>请求，<strong>减少主节点的压力</strong>；哨兵机制监控<strong>主节点和从节点</strong>，能够自动进行故障转移，确保 Redis 集群在节点故障时的高可用性。</p>
+<p><strong>普通的主从模式，当主数据库崩溃时，需要手动切换从数据库成为主数据库</strong>，这就需要人工干预，费事费力，还会造成一段时间内服务不可用，即存在高可用问题。我们又使用了哨兵。<strong>哨兵</strong>是一个<strong>独立的进程</strong>，作为进程，它会独立运行。其原理是<strong>哨兵通过发送ping命令，等待Redis服务器响应，从而监控运行的多个Redis实例。<strong>哨兵可以实现</strong>自动故障修复</strong>，当<strong>哨兵监测到master宕机</strong>，会自动将<strong>slave</strong>切换成<strong>master</strong>，然后<strong>通过发布订阅模式通知其他的从服务器</strong>，修改配置文件，<strong>让它们切换master</strong>。同时那台有问题的<strong>旧主节点</strong>也会变为新主节点的从节点，也就是说当<strong>旧的主即使恢复时</strong>，并不会<strong>恢复原来的主身份</strong>，而是作为<strong>新主的一个从</strong>。</p>
+<h2 id="oauth20--单点登录-sso">OAuth2.0 / 单点登录 (SSO)<a hidden class="anchor" aria-hidden="true" href="#oauth20--单点登录-sso">#</a></h2>
+<p><a href="https://blog.51cto.com/u_15344989/4964824">OAuth2.0 介绍</a>、<a href="https://developer.aliyun.com/article/636281">单点登录SSO介绍</a></p>
+<p><img alt="Spring Security OAuth2 四种认证模式（含流程图）_spring" loading="lazy" src="https://oss.swimmingliu.cn/b2d1d0db-c435-11ef-abfb-c858c0c1deba"></p>
+<p><img alt="cas_flow_diagram" loading="lazy" src="https://oss.swimmingliu.cn/b2fd3d99-c435-11ef-80ac-c858c0c1deba"></p>
+<h2 id="如何防注入攻击">如何防注入攻击？<a hidden class="anchor" aria-hidden="true" href="#如何防注入攻击">#</a></h2>
+<p>1.<strong>使用预编译语句（Mybatis）</strong>： 将 SQL 语句与参数分离，防止恶意输入被解释为代码</p>
+<p>2.<strong>最小权限原则</strong>: 为指定数据库用户分配最小必要的权限，限制其只能执行特定操作，减少潜在的安全风险。</p>
+<p>3.<strong>避免动态拼接SQL</strong> ( XML里面 <code>#</code> 和 <code>$</code> 区别): 使用<code>#</code>，而不用 <code>$</code> 防止直接拼接</p>
+<h2 id="如何设计表的映射关系">如何设计表的映射关系<a hidden class="anchor" aria-hidden="true" href="#如何设计表的映射关系">#</a></h2>
+<blockquote>
+<p>有一个订单表，一个产品表，一个产品订单表</p>
+</blockquote>
+<p><strong>订单表（Order）</strong>：存储订单的基本信息，如订单ID、用户ID、订单日期、订单状态等。</p>
+<p><strong>产品表（Product）</strong>：存储产品的详细信息，如产品ID、产品名称、产品价格、库存数量等。</p>
+<p><strong>订单项表（Order_Item）</strong>：用于表示订单与产品之间的多对多关系，记录每个订单中包含的产品及其数量、价格等信息。</p>
+<h2 id="哪些表需要加索引对哪些字段加索引">哪些表需要加索引？对哪些字段加索引?<a hidden class="anchor" aria-hidden="true" href="#哪些表需要加索引对哪些字段加索引">#</a></h2>
+<h3 id="需要索引的表">需要索引的表<a hidden class="anchor" aria-hidden="true" href="#需要索引的表">#</a></h3>
+<p>对于记录数较多的表，建立索引可以显著提升查询性能。</p>
+<h3 id="需要加索引的字段">需要加索引的字段<a hidden class="anchor" aria-hidden="true" href="#需要加索引的字段">#</a></h3>
+<p>1.<strong>主键字段</strong>：主键字段默认建立唯一索引，确保记录的唯一性和快速定位。</p>
+<p>2.<strong>经常作为查询条件的字段</strong>：在 <code>WHERE</code> 子句中频繁出现的字段，特别是在大表中，应建立索引，以提高查询效率。</p>
+<p>3.<strong>用于表连接的字段</strong>：在与其他表进行连接操作时，连接字段应建立索引，以加速连接操作。</p>
+<p>4.<strong>用于排序（<code>ORDER BY</code>）和分组（<code>GROUP BY</code>）的字段</strong>：这些字段建立索引后，可提高排序和分组操作的性能。</p>
+<p>5.<strong>选择性高的字段</strong>：选择性高意味着字段值的唯一性较高。在此类字段上建立索引，可以有效过滤数据，提高查询效率。</p>
+<p>下面是不需要加索引的</p>
+<blockquote>
+<p><strong>避免在频繁更新的字段上建立索引</strong>：因为每次更新不仅要修改数据，还需维护索引，可能影响写操作性能。 (商品库存，商品信息)</p>
+<p><strong>避免在低选择性字段上建立索引</strong>：如性别字段，只有 &ldquo;男&rdquo; 和 &ldquo;女&rdquo; 两种值，建立索引效果不明显。</p>
+<p><strong>控制索引数量</strong>：过多的索引会增加数据库的维护成本，特别是在频繁写操作的场景下，需要在查询性能和写操作开销之间找到平衡点。</p>
+</blockquote>
+<h2 id="组合索引--复合索引--联合索引">组合索引 / 复合索引 / 联合索引<a hidden class="anchor" aria-hidden="true" href="#组合索引--复合索引--联合索引">#</a></h2>
+<blockquote>
+<p>像组合索引和复合索引你知道吗?比如说我建了一个a,b,c联合索引。我写代码的时候先写的c，b，a可以吗?</p>
+</blockquote>
+<p><strong>组合索引</strong>（也称复合索引或联合索引）是指在多个列上创建的单个索引，用于提高多条件查询的性能。</p>
+<p>当创建了包含列 <code>a</code>、<code>b</code>、<code>c</code> 的组合索引时，查询条件的顺序会影响索引的使用效果。</p>
+<p>这遵循 <strong>最左前缀原则</strong>，即索引的使用从最左边的列开始匹配，必须按照索引定义的列顺序进行匹配。</p>
+<p>所以不能使用 <code>c</code>，<code>b</code> ，<code>a</code> 查询。</p>
+<h2 id="mysql的索引在什么条件下会失效">MySQL的索引在什么条件下会失效?<a hidden class="anchor" aria-hidden="true" href="#mysql的索引在什么条件下会失效">#</a></h2>
+<ul>
+<li>
+<p><strong>对索引字段的运算或函数操作</strong></p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-sql" data-lang="sql"><span class="line"><span class="cl"><span class="k">SELECT</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="k">FROM</span><span class="w"> </span><span class="n">users</span><span class="w"> </span><span class="k">WHERE</span><span class="w"> </span><span class="k">YEAR</span><span class="p">(</span><span class="n">birthdate</span><span class="p">)</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">1990</span><span class="p">;</span><span class="w">
+</span></span></span></code></pre></div></li>
+<li>
+<p><strong>使用了通配符（<code>LIKE '%abc'</code>）</strong></p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-sql" data-lang="sql"><span class="line"><span class="cl"><span class="k">SELECT</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="k">FROM</span><span class="w"> </span><span class="n">products</span><span class="w"> </span><span class="k">WHERE</span><span class="w"> </span><span class="n">name</span><span class="w"> </span><span class="k">LIKE</span><span class="w"> </span><span class="s1">&#39;%abc&#39;</span><span class="p">;</span><span class="w">
+</span></span></span></code></pre></div></li>
+<li>
+<p><strong>在 WHERE 子句中使用了不等于（<code>&lt;&gt;</code>）操作符</strong></p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-sql" data-lang="sql"><span class="line"><span class="cl"><span class="k">SELECT</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="k">FROM</span><span class="w"> </span><span class="n">orders</span><span class="w"> </span><span class="k">WHERE</span><span class="w"> </span><span class="n">status</span><span class="w"> </span><span class="o">&lt;&gt;</span><span class="w"> </span><span class="mi">1</span><span class="p">;</span><span class="w">
+</span></span></span></code></pre></div></li>
+<li>
+<p><strong>进行 NULL 值查询时未优化</strong></p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-sql" data-lang="sql"><span class="line"><span class="cl"><span class="k">SELECT</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="k">FROM</span><span class="w"> </span><span class="n">users</span><span class="w"> </span><span class="k">WHERE</span><span class="w"> </span><span class="n">phone_number</span><span class="w"> </span><span class="k">IS</span><span class="w"> </span><span class="k">NULL</span><span class="p">;</span><span class="w">
+</span></span></span></code></pre></div></li>
+<li>
+<p><strong>数据类型不匹配</strong></p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-sql" data-lang="sql"><span class="line"><span class="cl"><span class="k">SELECT</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="k">FROM</span><span class="w"> </span><span class="n">users</span><span class="w"> </span><span class="k">WHERE</span><span class="w"> </span><span class="n">age</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s1">&#39;25&#39;</span><span class="p">;</span><span class="w">
+</span></span></span></code></pre></div></li>
+<li>
+<p><strong>使用了 OR 操作符，特别是跨字段时</strong></p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-sql" data-lang="sql"><span class="line"><span class="cl"><span class="k">SELECT</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="k">FROM</span><span class="w"> </span><span class="n">products</span><span class="w"> </span><span class="k">WHERE</span><span class="w"> </span><span class="n">price</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">100</span><span class="w"> </span><span class="k">OR</span><span class="w"> </span><span class="n">category</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s1">&#39;electronics&#39;</span><span class="p">;</span><span class="w">
+</span></span></span></code></pre></div></li>
+<li>
+<p><strong>索引列的数据分布不均匀</strong>: 当索引列的数据分布极其不均匀时，即使索引可以使用，MySQL 也可能选择不使用索引，因为扫描全表比扫描索引更高效。</p>
+</li>
+</ul>
+<h2 id="事务放在mvc当中的哪一层">事务放在MVC当中的哪一层？<a hidden class="anchor" aria-hidden="true" href="#事务放在mvc当中的哪一层">#</a></h2>
+<p>事务的管理应放在 <strong>Service层</strong>，这是因为Service层负责业务逻辑，可以统一控制跨多个DAO操作的事务。Controller层应该尽量避免直接管理事务，以保持系统的解耦性和职责清晰。而DAO层则专注于数据的持久化操作，不应承担事务管理的责任。</p>
+<h2 id="什么时候应该添加事务">什么时候应该添加事务？<a hidden class="anchor" aria-hidden="true" href="#什么时候应该添加事务">#</a></h2>
+<blockquote>
+<p>那我们查询list会加事物吗? 使用delete删除时会加事物吗?</p>
+</blockquote>
+<p><strong>事务的使用场景</strong>：事务通常用于数据修改操作（如插入、更新、删除），确保数据一致性。</p>
+<p><strong>查询操作的事务性</strong>：查询操作一般不需要事务，除非有一致性需求，需通过隔离级别来控制。</p>
+<p><strong>增、删、改操作的事务性</strong>：增、删、改应该放在事务中进行，确保增、删、改的原子性。</p>
+<h2 id="并发修改请求如何控制">并发修改请求如何控制?<a hidden class="anchor" aria-hidden="true" href="#并发修改请求如何控制">#</a></h2>
+<blockquote>
+<p>假设我的银行卡里面只有10块钱，现在过来10个请求都要扣10块钱，是你的话你会怎么控制?</p>
+</blockquote>
+<p>最直接的方式是保证每个扣款操作具有<strong>原子性</strong>。可以通过<strong>悲观锁</strong>或<strong>乐观锁</strong>来控制并发，确保多个请求不会同时扣款。</p>
+<p>1.<strong>悲观锁和乐观锁</strong></p>
+<ul>
+<li>
+<p><strong>悲观锁</strong>通过数据库层面的锁机制（如 <code>SELECT FOR UPDATE</code>）防止并发修改余额。</p>
+</li>
+<li>
+<p><strong>乐观锁</strong>通过版本号或 CAS 原理进行操作，适用于并发冲突较少的情况。</p>
+</li>
+</ul>
+<p>2.<strong>分布式锁</strong> （<code>Redission</code>）</p>
+<p>在分布式系统中，可以使用<strong>分布式锁</strong>来保证对共享资源的独占访问。</p>
+<p>3.<strong>队列和限流</strong> (<code>RabbitMQ</code>)</p>
+<p><strong>队列和限流</strong> 控制请求的处理速度，避免突发的高并发请求。</p>
+<h2 id="分布式事务如何处理它的作用">分布式事务如何处理？它的作用?<a hidden class="anchor" aria-hidden="true" href="#分布式事务如何处理它的作用">#</a></h2>
+<p><strong>为什么需要分布式事务</strong>：分布式事务用于解决分布式系统中不同服务之间的数据一致性问题，确保跨服务操作能够保证最终的一致性。</p>
+<p><strong>分布式事务解决什么问题</strong>：主要解决<strong>跨服务的一致性</strong>，保证多个服务中的操作要么全部成功，要么全部回滚，保持数据一致性。</p>
+<p><strong>分布式事务的解决方案</strong>：（后期学习）</p>
+<ul>
+<li><strong>2PC</strong>：适合强一致性要求的场景。</li>
+<li><strong>TCC</strong>：用于操作更复杂的分布式场景。</li>
+<li><strong>Saga模式</strong>：适合长事务的分布式事务，通常用于最终一致性场景。</li>
+</ul>
+<h2 id="开发过程中git分支管理">开发过程中Git分支管理<a hidden class="anchor" aria-hidden="true" href="#开发过程中git分支管理">#</a></h2>
+<p>1.开发的时候来了一个新需求，你们的分支是怎么管理的?</p>
+<p>我们采用三种不同的前缀来管理 <code>feat</code> 新增、<code>fix</code> 修复、<code>refactor</code> 重构</p>
+<p>2.增加新需求，分支是从哪里新增的?</p>
+<p>每个新需求都会从 <code>main</code> 分支上创建一个 <code>feat</code> 分支进行开发。</p>
+<p>3.建完一个分支之后就开始改代码吗?</p>
+<p>确保你从主分支（<code>main</code>）创建了最新的分支，避免后续合并时的冲突。</p>
+<p>在开发前，应该确认需求的具体内容，并与相关团队成员对接，然后配置好对应环境，再进行开发。</p>
+<p>4.开发完之后测试的话，这个代码放到哪里去?</p>
+<p>我们会commit <code>feat</code> 分支，然后打包上传到测试环境，提交给测试</p>
+<p>5.假如现在又来了两个新需求，一个需求先上线，一个需求过几天上线。你们的分支是怎么管理的?</p>
+<p>当有多个需求时，先满足第一个要上线的 <code>需求A</code> 。然后再拉取代码，编写 <code>需求B</code> 的代码</p>
+<p>6.你们那个测试拉代码是运维拉代码还是测试拉代码？</p>
+<p>测试拉取代码</p>
+<h2 id="springboot和spring区别及理解">Springboot和Spring区别及理解<a hidden class="anchor" aria-hidden="true" href="#springboot和spring区别及理解">#</a></h2>
+<p><strong>Spring</strong>：</p>
+<ul>
+<li><strong>核心特性</strong>：Spring 提供了控制反转（IoC）和面向切面编程（AOP）的支持，主要用于构建企业级应用程序。</li>
+<li><strong>配置方式</strong>：Spring的配置是非常灵活但复杂的。通常，开发者需要通过 XML 配置、注解配置或 Java 配置类来配置 Spring 容器和各种模块。</li>
+<li><strong>模块化</strong>：Spring 框架分为多个模块，如 Spring Core、Spring AOP、Spring Data、Spring MVC 等，开发者需要根据需要集成和配置这些模块。</li>
+</ul>
+<p><strong>Spring Boot</strong>：</p>
+<ul>
+<li><strong>自动配置</strong>：Spring Boot 提供了大量的自动化配置，开发者只需要少量的配置，甚至可以省去 XML 配置，简化了传统 Spring 配置的复杂度。</li>
+<li><strong>内嵌服务器</strong>：Spring Boot 提供了 Tomcat、Jetty、Undertow 等内嵌服务器，使得应用可以直接打包为可执行 JAR 文件，无需外部容器支持。</li>
+<li><strong>开箱即用</strong>：Spring Boot 提供了很多开箱即用的功能，例如，默认的应用结构、内置的健康检查、自动化的日志配置等，极大提高了开发效率。</li>
+<li><strong>Spring Boot Starter</strong>：使用“Starter”可以让开发者方便地引入常见的依赖包，避免手动配置和集成常用组件。</li>
+</ul>
+<h3 id="spring和springboot区别">Spring和Springboot区别<a hidden class="anchor" aria-hidden="true" href="#spring和springboot区别">#</a></h3>
+<table>
+  <thead>
+      <tr>
+          <th><strong>特性</strong></th>
+          <th><strong>Spring</strong></th>
+          <th><strong>Spring Boot</strong></th>
+      </tr>
+  </thead>
+  <tbody>
+      <tr>
+          <td><strong>目标</strong></td>
+          <td>提供企业级应用开发框架。</td>
+          <td>简化 Spring 应用的配置和启动过程。</td>
+      </tr>
+      <tr>
+          <td><strong>配置方式</strong></td>
+          <td>需要大量的 XML 或 Java 配置。</td>
+          <td>通过自动配置简化配置，几乎不需要手动配置。</td>
+      </tr>
+      <tr>
+          <td><strong>应用启动</strong></td>
+          <td>需要外部应用服务器（如 Tomcat）。</td>
+          <td>支持内嵌服务器，应用可以打包为可执行 JAR 文件。</td>
+      </tr>
+      <tr>
+          <td><strong>依赖管理</strong></td>
+          <td>需要手动配置依赖和版本。</td>
+          <td>提供预设的 <strong>Spring Boot Starter</strong>，自动管理依赖。</td>
+      </tr>
+      <tr>
+          <td><strong>模块集成</strong></td>
+          <td>需要开发者手动集成各个模块（如 Spring MVC, Spring Data）。</td>
+          <td>自动化集成各个模块，并提供开箱即用的功能。</td>
+      </tr>
+      <tr>
+          <td><strong>开发效率</strong></td>
+          <td>配置和集成较为繁琐，开发效率较低。</td>
+          <td>通过自动配置和开箱即用的功能，大大提高开发效率。</td>
+      </tr>
+      <tr>
+          <td><strong>启动时间</strong></td>
+          <td>启动速度较慢，需要等待容器的初始化。</td>
+          <td>启动速度快，集成化和内嵌式服务减少了初始化时间。</td>
+      </tr>
+      <tr>
+          <td><strong>环境依赖</strong></td>
+          <td>配置较为灵活，环境依赖需要手动管理。</td>
+          <td>内嵌服务器和自动配置降低了环境依赖问题。</td>
+      </tr>
+  </tbody>
+</table>
+<h2 id="rabbitmq和kafka区别和理解">RabbitMQ和Kafka区别和理解<a hidden class="anchor" aria-hidden="true" href="#rabbitmq和kafka区别和理解">#</a></h2>
+<p><a href="https://yindongliang.com/posts/compare-kafka-and-rabbitmq/">Kafka 和 RabbitMQ 对比 - 原理</a></p>
+<table>
+  <thead>
+      <tr>
+          <th><strong>应用场景</strong></th>
+          <th><strong>RabbitMQ</strong></th>
+          <th><strong>Kafka</strong></th>
+      </tr>
+  </thead>
+  <tbody>
+      <tr>
+          <td><strong>消息大小和格式</strong></td>
+          <td>适合处理中小型消息，支持各种消息格式，包括文本、JSON等</td>
+          <td>适合处理大型消息和流式数据，支持批量消息传递和日志存储</td>
+      </tr>
+      <tr>
+          <td><strong>实时性要求</strong></td>
+          <td>支持低延迟的消息传递和定时功能，适用于实时消息处理 （微秒级）</td>
+          <td>延迟较高，主要优化吞吐量，适合高吞吐量数据流处理 （毫秒级）</td>
+      </tr>
+      <tr>
+          <td><strong>吞吐量</strong></td>
+          <td>吞吐量较低，适合低并发场景</td>
+          <td>吞吐量极高，适用于高并发、大数据场景</td>
+      </tr>
+      <tr>
+          <td><strong>数据一致性和可靠性</strong></td>
+          <td>提供消息确认机制和强大的持久化功能，保证消息不丢失</td>
+          <td>通过日志存储、分区和副本机制保证数据可靠性和高可用性</td>
+      </tr>
+      <tr>
+          <td><strong>分布式系统支持</strong></td>
+          <td>支持集群模式，但在扩展性上不如 Kafka</td>
+          <td>原生支持分布式架构，适用于大规模分布式系统</td>
+      </tr>
+      <tr>
+          <td><strong>插件支持和生态系统</strong></td>
+          <td>丰富的插件支持，易与各种技术和工具集成，功能多样化</td>
+          <td>插件支持较少，但生态系统广泛，主要用于流处理、大数据平台</td>
+      </tr>
+  </tbody>
+</table>
+
+
+  </div>
+
+
+
+  <footer class="post-footer">
+    <ul class="post-tags">
+      <li><a href="https://swimmingliu.cn/tags/java/">Java</a></li>
+    </ul>
+<nav class="paginav">
+  <a class="next" href="https://swimmingliu.cn/posts/papernotes/2023-dbnet/">
+    <span class="title">Next »</span>
+    <br>
+    <span>A Dual-Branch Framework with Prior Knowledge for Precise Segmentation of Lung Nodules in Challenging CT Scans</span>
+  </a>
+</nav>
+
+  </footer>
+</article>
+    </main>
+    
+<footer class="footer">
+        <span>&copy; 2023-2024 <a href="https://swimmingliu.cn/">SwimmingLiu&#39;s Blog</a></span> · 
+
+    <span>
+        Powered by
+        <a href="https://gohugo.io/" rel="noopener noreferrer" target="_blank">Hugo</a> &
+        <a href="https://github.com/adityatelange/hugo-PaperMod/" rel="noopener" target="_blank">PaperMod</a>
+    </span>
+    <span>
+        <a href="https://beian.miit.gov.cn/">浙ICP备2024056260号</a>
+    </span>
+</footer>
+<a href="#top" aria-label="go to top" title="Go to Top (Alt + G)" class="top-link" id="top-link" accesskey="g">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 6" fill="currentColor">
+        <path d="M12 6H0l6-6z" />
+    </svg>
+</a>
+
+<script>
+    let menu = document.getElementById('menu')
+    if (menu) {
+        menu.scrollLeft = localStorage.getItem("menu-scroll-position");
+        menu.onscroll = function () {
+            localStorage.setItem("menu-scroll-position", menu.scrollLeft);
+        }
+    }
+
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener("click", function (e) {
+            e.preventDefault();
+            var id = this.getAttribute("href").substr(1);
+            if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView({
+                    behavior: "smooth"
+                });
+            } else {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView();
+            }
+            if (id === "top") {
+                history.replaceState(null, null, " ");
+            } else {
+                history.pushState(null, null, `#${id}`);
+            }
+        });
+    });
+
+</script>
+<script>
+    var mybutton = document.getElementById("top-link");
+    window.onscroll = function () {
+        if (document.body.scrollTop > 800 || document.documentElement.scrollTop > 800) {
+            mybutton.style.visibility = "visible";
+            mybutton.style.opacity = "1";
+        } else {
+            mybutton.style.visibility = "hidden";
+            mybutton.style.opacity = "0";
+        }
+    };
+
+</script>
+<script>
+    document.getElementById("theme-toggle").addEventListener("click", () => {
+        if (document.body.className.includes("dark")) {
+            document.body.classList.remove('dark');
+            localStorage.setItem("pref-theme", 'light');
+        } else {
+            document.body.classList.add('dark');
+            localStorage.setItem("pref-theme", 'dark');
+        }
+    })
+
+</script>
+<script>
+    document.querySelectorAll('pre > code').forEach((codeblock) => {
+        const container = codeblock.parentNode.parentNode;
+
+        const copybutton = document.createElement('button');
+        copybutton.classList.add('copy-code');
+        copybutton.innerHTML = 'copy';
+
+        function copyingDone() {
+            copybutton.innerHTML = 'copied!';
+            setTimeout(() => {
+                copybutton.innerHTML = 'copy';
+            }, 2000);
+        }
+
+        copybutton.addEventListener('click', (cb) => {
+            if ('clipboard' in navigator) {
+                navigator.clipboard.writeText(codeblock.textContent);
+                copyingDone();
+                return;
+            }
+
+            const range = document.createRange();
+            range.selectNodeContents(codeblock);
+            const selection = window.getSelection();
+            selection.removeAllRanges();
+            selection.addRange(range);
+            try {
+                document.execCommand('copy');
+                copyingDone();
+            } catch (e) { };
+            selection.removeRange(range);
+        });
+
+        if (container.classList.contains("highlight")) {
+            container.appendChild(copybutton);
+        } else if (container.parentNode.firstChild == container) {
+            
+        } else if (codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.nodeName == "TABLE") {
+            
+            codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.appendChild(copybutton);
+        } else {
+            
+            codeblock.parentNode.appendChild(copybutton);
+        }
+    });
+</script>
+</body>
+
+</html>

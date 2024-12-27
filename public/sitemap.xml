@@ -2,8 +2,29 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url>
+    <loc>https://swimmingliu.cn/categories/-job/</loc>
+    <lastmod>2024-12-27T17:27:35+08:00</lastmod>
+  </url><url>
+    <loc>https://swimmingliu.cn/posts/job/</loc>
+    <lastmod>2024-12-27T17:27:35+08:00</lastmod>
+  </url><url>
     <loc>https://swimmingliu.cn/posts/</loc>
-    <lastmod>2024-08-20T10:35:06+08:00</lastmod>
+    <lastmod>2024-12-27T17:27:35+08:00</lastmod>
+  </url><url>
+    <loc>https://swimmingliu.cn/categories/</loc>
+    <lastmod>2024-12-27T17:27:35+08:00</lastmod>
+  </url><url>
+    <loc>https://swimmingliu.cn/tags/java/</loc>
+    <lastmod>2024-12-27T17:27:35+08:00</lastmod>
+  </url><url>
+    <loc>https://swimmingliu.cn/posts/job/java-interview-questions-notes/</loc>
+    <lastmod>2024-12-27T17:27:35+08:00</lastmod>
+  </url><url>
+    <loc>https://swimmingliu.cn/tags/</loc>
+    <lastmod>2024-12-27T17:27:35+08:00</lastmod>
+  </url><url>
+    <loc>https://swimmingliu.cn/</loc>
+    <lastmod>2024-12-27T17:27:35+08:00</lastmod>
   </url><url>
     <loc>https://swimmingliu.cn/categories/-paper-notes/</loc>
     <lastmod>2024-03-03T15:37:07+08:00</lastmod>
@@ -13,15 +34,6 @@
   </url><url>
     <loc>https://swimmingliu.cn/posts/papernotes/2023-dbnet/</loc>
     <lastmod>2024-03-03T15:37:07+08:00</lastmod>
-  </url><url>
-    <loc>https://swimmingliu.cn/categories/</loc>
-    <lastmod>2024-08-20T10:35:06+08:00</lastmod>
-  </url><url>
-    <loc>https://swimmingliu.cn/tags/</loc>
-    <lastmod>2024-08-20T10:35:06+08:00</lastmod>
-  </url><url>
-    <loc>https://swimmingliu.cn/</loc>
-    <lastmod>2024-08-20T10:35:06+08:00</lastmod>
   </url><url>
     <loc>https://swimmingliu.cn/tags/unet/</loc>
     <lastmod>2024-03-03T15:37:07+08:00</lastmod>

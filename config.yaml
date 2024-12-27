@@ -89,6 +89,8 @@ params:
               url: posts/papernotes
             - name: 📓 Diary
               url: posts/diary
+            - name: 💻 Job
+              url: posts/job
 
 
     socialIcons:

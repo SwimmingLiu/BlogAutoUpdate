@@ -1,0 +1,672 @@
+<!DOCTYPE html>
+<html lang="en" dir="auto">
+
+<head><meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta name="robots" content="index, follow">
+<title>Mysql Interview Questions | SwimmingLiu&#39;s Blog</title>
+<meta name="keywords" content="Java, MySQL">
+<meta name="description" content="MySQL面试题
+1.MySQL 中的数据排序是怎么实现的？
+1.排序方法：索引排序和文件排序 (filesort)
+2.索引排序：如果order by xxx的字段为索引字段，则利用索引进行排序。效率最高，索引默认有序。
+3.文件排序 (filesort)：内存排序(单路排序和双路排序)和磁盘排序，具体取决于排序数据的大小。其中，内存排序使用单路排序或双路排序，取决于max_length_for_sort_data(默认为4096个字节)
+4.双路排序：取row_id(如果有主键，则为主键)和select a,b,c order by xxx的xxx字段放入sort_buffer(排序缓存)中，将排序后的row_id回表查询a,b,c
+5.单路排序: 直接把要查的所有字段放入sort_buffer里，排序后直接得到结果集合
+6.磁盘排序（归并排序）:将数据分为多份文件，单独对文件进行排序，然后合并成一个有序的大文件
+2. MySQL 的 Change Buffer 是什么？它有什么作用？
+1.ChangeBuffer定义：Change Buffer是InnoDB缓冲当中的一块缓存区，用于暂存二级索引的修改，避免二级索引页修改产生的随机IO
+2.ChangeBuffer注意事项：只能用于二级索引，不能用于其他任何索引，包括主键索引和唯一索引都不行。
+3.如果ChangeBuffer挂了，更改操作未执行，是否会出现脏数据？
+首先，ChangeBuffer也会保存在磁盘空间里面，redo log会记录Change Buffer当中的修改操作，确保数据一致性。
+知识拓展1：一级索引和二级索引区别
+
+一级索引（聚簇索引）：数据表的主键索引，数据和索引存储在同一B&#43;树的叶子节点中。每个表只能有一个一级索引。
+二级索引（非聚簇索引）：除主键外的其他索引，叶子节点存储索引列的值和对应的主键值。通过二级索引查询时，需要先通过二级索引获取主键值，再通过主键值查询数据，这个过程称为“回表”。
+
+知识拓展2:  MySQL中有哪些常见索引？都有什么区别？
+
+在MySQL中，索引是提高查询效率的关键工具。常见的索引类型包括主键索引、唯一索引、普通索引、全文索引和空间索引。
+1. 主键索引（Primary Key Index）
+
+定义：主键索引是一种特殊的唯一索引，用于唯一标识表中的每一行数据。每个表只能有一个主键索引，且主键列的值不能为空。
+特点：主键索引的叶子节点存储完整的数据行，因此查询效率高。在InnoDB存储引擎中，主键索引是聚簇索引，数据存储与索引结构合并。
+
+2. 唯一索引（Unique Index）
+
+定义：唯一索引确保索引列的每个值都是唯一的，但允许有空值。与主键索引类似，不同之处在于唯一索引允许列值为NULL。
+特点：唯一索引的叶子节点存储索引列的值和对应的主键值。在InnoDB中，唯一索引是非聚簇索引，数据存储与索引结构分开。
+
+3. 普通索引（Index）
+
+定义：普通索引是最基本的索引类型，没有任何限制。索引列的值可以重复，也可以为NULL。
+特点：普通索引的叶子节点存储索引列的值和对应的主键值。在InnoDB中，普通索引是非聚簇索引，数据存储与索引结构分开。
+
+4. 全文索引（Fulltext Index）
+
+定义：全文索引用于对文本数据进行全文搜索，适用于MyISAM存储引擎。它允许对文本字段进行复杂的搜索，如查找包含特定单词的记录。
+特点：全文索引的叶子节点存储文档的词项信息。在MyISAM中，全文索引是非聚簇索引，数据存储与索引结构分开。
+
+5. 空间索引（Spatial Index）
+
+定义：空间索引用于对地理空间数据进行索引，支持空间数据类型的快速查询。它适用于存储地理位置、地图等空间数据的表。
+特点：空间索引的叶子节点存储空间数据的索引信息。在MyISAM中，空间索引是非聚簇索引，数据存储与索引结构分开。
+
+总结：
+
+主键索引：用于唯一标识每一行数据，值不能为空。
+唯一索引：确保索引列的值唯一，但允许有空值。
+普通索引：最基本的索引类型，允许重复和空值。
+全文索引：用于对文本数据进行全文搜索，适用于MyISAM存储引擎。
+空间索引：用于对地理空间数据进行索引，支持空间数据类型的快速查询。
+
+
+3. 详细描述一条 SQL 语句在 MySQL 中的执行过程。
+1.连接器判断用户是否成功建立连接，数据库连接的权限校验
+2.分析器分析SQL语法和词法是否有误
+3.优化器生成SQL的执行计划，确定使用的索引和调整where的执行顺序（包括连表顺序）
+4.执行器判断当前用户是否有权限查询该表，然后执行该SQL语句">
+<meta name="author" content="SwimmingLiu">
+<link rel="canonical" href="https://swimmingliu.cn/posts/job/mysql-interview-questions/">
+<link crossorigin="anonymous" href="/assets/css/stylesheet.6ecbb0040febd20e47edd88a662c19f1ea945bf7427774b86594271d18f88faf.css" integrity="sha256-bsuwBA/r0g5H7diKZiwZ8eqUW/dCd3S4ZZQnHRj4j68=" rel="preload stylesheet" as="style">
+<link rel="icon" href="https://swimmingliu.cn/images/swimmingliu_icon.png">
+<link rel="icon" type="image/png" sizes="16x16" href="https://swimmingliu.cn/images/swimmingliu_icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="https://swimmingliu.cn/images/swimmingliu_icon.png">
+<link rel="apple-touch-icon" href="https://swimmingliu.cn/images/swimmingliu_icon.png">
+<link rel="mask-icon" href="https://swimmingliu.cn/images/swimmingliu_icon.png">
+<meta name="theme-color" content="#2e2e33">
+<meta name="msapplication-TileColor" content="#2e2e33">
+<link rel="alternate" hreflang="en" href="https://swimmingliu.cn/posts/job/mysql-interview-questions/">
+<noscript>
+    <style>
+        #theme-toggle,
+        .top-link {
+            display: none;
+        }
+
+    </style>
+    <style>
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --theme: rgb(29, 30, 32);
+                --entry: rgb(46, 46, 51);
+                --primary: rgb(218, 218, 219);
+                --secondary: rgb(155, 156, 157);
+                --tertiary: rgb(65, 66, 68);
+                --content: rgb(196, 196, 197);
+                --code-block-bg: rgb(46, 46, 51);
+                --code-bg: rgb(55, 56, 62);
+                --border: rgb(51, 51, 51);
+            }
+
+            .list {
+                background: var(--theme);
+            }
+
+            .list:not(.dark)::-webkit-scrollbar-track {
+                background: 0 0;
+            }
+
+            .list:not(.dark)::-webkit-scrollbar-thumb {
+                border-color: var(--theme);
+            }
+        }
+
+    </style>
+</noscript>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css" integrity="sha384-n8MVd4RsNIU0tAv4ct0nTaAbDJwPJzDEaqSD1odI+WdtXRGWt2kTvGFasHpSy3SV" crossorigin="anonymous">
+
+
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js" integrity="sha384-XjKyOOlGwcjNTAIQHIpgOno0Hl1YQqzUOEleOLALmuqehneUG+vnGctmUb0ZY0l8" crossorigin="anonymous"></script>
+
+
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js" integrity="sha384-+VBxd3r6XgURycqtZ117nYw44OOcIax56Z4dCRWbxyPt0Koah1uHoK0o4+/RRE05" crossorigin="anonymous"
+    onload="renderMathInElement(document.body);"></script>
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        renderMathInElement(document.body, {
+            
+            
+            delimiters: [
+                { left: '$$', right: '$$', display: true },
+                { left: '$', right: '$', display: false },
+                { left: '\\(', right: '\\)', display: false },
+                { left: '\\[', right: '\\]', display: true }
+            ],
+            
+            throwOnError: false
+        });
+    });
+</script>
+
+<meta property="og:url" content="https://swimmingliu.cn/posts/job/mysql-interview-questions/">
+  <meta property="og:site_name" content="SwimmingLiu&#39;s Blog">
+  <meta property="og:title" content="Mysql Interview Questions">
+  <meta property="og:description" content="MySQL面试题 1.MySQL 中的数据排序是怎么实现的？ 1.排序方法：索引排序和文件排序 (filesort) 2.索引排序：如果order by xxx的字段为索引字段，则利用索引进行排序。效率最高，索引默认有序。 3.文件排序 (filesort)：内存排序(单路排序和双路排序)和磁盘排序，具体取决于排序数据的大小。其中，内存排序使用单路排序或双路排序，取决于max_length_for_sort_data(默认为4096个字节) 4.双路排序：取row_id(如果有主键，则为主键)和select a,b,c order by xxx的xxx字段放入sort_buffer(排序缓存)中，将排序后的row_id回表查询a,b,c 5.单路排序: 直接把要查的所有字段放入sort_buffer里，排序后直接得到结果集合 6.磁盘排序（归并排序）:将数据分为多份文件，单独对文件进行排序，然后合并成一个有序的大文件
+2. MySQL 的 Change Buffer 是什么？它有什么作用？ 1.ChangeBuffer定义：Change Buffer是InnoDB缓冲当中的一块缓存区，用于暂存二级索引的修改，避免二级索引页修改产生的随机IO 2.ChangeBuffer注意事项：只能用于二级索引，不能用于其他任何索引，包括主键索引和唯一索引都不行。 3.如果ChangeBuffer挂了，更改操作未执行，是否会出现脏数据？ 首先，ChangeBuffer也会保存在磁盘空间里面，redo log会记录Change Buffer当中的修改操作，确保数据一致性。
+知识拓展1：一级索引和二级索引区别
+一级索引（聚簇索引）：数据表的主键索引，数据和索引存储在同一B&#43;树的叶子节点中。每个表只能有一个一级索引。
+二级索引（非聚簇索引）：除主键外的其他索引，叶子节点存储索引列的值和对应的主键值。通过二级索引查询时，需要先通过二级索引获取主键值，再通过主键值查询数据，这个过程称为“回表”。
+知识拓展2: MySQL中有哪些常见索引？都有什么区别？
+在MySQL中，索引是提高查询效率的关键工具。常见的索引类型包括主键索引、唯一索引、普通索引、全文索引和空间索引。
+1. 主键索引（Primary Key Index）
+定义：主键索引是一种特殊的唯一索引，用于唯一标识表中的每一行数据。每个表只能有一个主键索引，且主键列的值不能为空。 特点：主键索引的叶子节点存储完整的数据行，因此查询效率高。在InnoDB存储引擎中，主键索引是聚簇索引，数据存储与索引结构合并。 2. 唯一索引（Unique Index）
+定义：唯一索引确保索引列的每个值都是唯一的，但允许有空值。与主键索引类似，不同之处在于唯一索引允许列值为NULL。 特点：唯一索引的叶子节点存储索引列的值和对应的主键值。在InnoDB中，唯一索引是非聚簇索引，数据存储与索引结构分开。 3. 普通索引（Index）
+定义：普通索引是最基本的索引类型，没有任何限制。索引列的值可以重复，也可以为NULL。 特点：普通索引的叶子节点存储索引列的值和对应的主键值。在InnoDB中，普通索引是非聚簇索引，数据存储与索引结构分开。 4. 全文索引（Fulltext Index）
+定义：全文索引用于对文本数据进行全文搜索，适用于MyISAM存储引擎。它允许对文本字段进行复杂的搜索，如查找包含特定单词的记录。 特点：全文索引的叶子节点存储文档的词项信息。在MyISAM中，全文索引是非聚簇索引，数据存储与索引结构分开。 5. 空间索引（Spatial Index）
+定义：空间索引用于对地理空间数据进行索引，支持空间数据类型的快速查询。它适用于存储地理位置、地图等空间数据的表。 特点：空间索引的叶子节点存储空间数据的索引信息。在MyISAM中，空间索引是非聚簇索引，数据存储与索引结构分开。 总结：
+主键索引：用于唯一标识每一行数据，值不能为空。 唯一索引：确保索引列的值唯一，但允许有空值。 普通索引：最基本的索引类型，允许重复和空值。 全文索引：用于对文本数据进行全文搜索，适用于MyISAM存储引擎。 空间索引：用于对地理空间数据进行索引，支持空间数据类型的快速查询。 3. 详细描述一条 SQL 语句在 MySQL 中的执行过程。 1.连接器判断用户是否成功建立连接，数据库连接的权限校验 2.分析器分析SQL语法和词法是否有误 3.优化器生成SQL的执行计划，确定使用的索引和调整where的执行顺序（包括连表顺序） 4.执行器判断当前用户是否有权限查询该表，然后执行该SQL语句">
+  <meta property="og:locale" content="en">
+  <meta property="og:type" content="article">
+    <meta property="article:section" content="posts">
+    <meta property="article:published_time" content="2025-02-19T15:16:42+08:00">
+    <meta property="article:modified_time" content="2025-02-19T15:16:42+08:00">
+    <meta property="article:tag" content="Java">
+    <meta property="article:tag" content="MySQL">
+      <meta property="og:image" content="https://swimmingliu.cn/papermod-cover.png">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://swimmingliu.cn/papermod-cover.png">
+<meta name="twitter:title" content="Mysql Interview Questions">
+<meta name="twitter:description" content="MySQL面试题
+1.MySQL 中的数据排序是怎么实现的？
+1.排序方法：索引排序和文件排序 (filesort)
+2.索引排序：如果order by xxx的字段为索引字段，则利用索引进行排序。效率最高，索引默认有序。
+3.文件排序 (filesort)：内存排序(单路排序和双路排序)和磁盘排序，具体取决于排序数据的大小。其中，内存排序使用单路排序或双路排序，取决于max_length_for_sort_data(默认为4096个字节)
+4.双路排序：取row_id(如果有主键，则为主键)和select a,b,c order by xxx的xxx字段放入sort_buffer(排序缓存)中，将排序后的row_id回表查询a,b,c
+5.单路排序: 直接把要查的所有字段放入sort_buffer里，排序后直接得到结果集合
+6.磁盘排序（归并排序）:将数据分为多份文件，单独对文件进行排序，然后合并成一个有序的大文件
+2. MySQL 的 Change Buffer 是什么？它有什么作用？
+1.ChangeBuffer定义：Change Buffer是InnoDB缓冲当中的一块缓存区，用于暂存二级索引的修改，避免二级索引页修改产生的随机IO
+2.ChangeBuffer注意事项：只能用于二级索引，不能用于其他任何索引，包括主键索引和唯一索引都不行。
+3.如果ChangeBuffer挂了，更改操作未执行，是否会出现脏数据？
+首先，ChangeBuffer也会保存在磁盘空间里面，redo log会记录Change Buffer当中的修改操作，确保数据一致性。
+知识拓展1：一级索引和二级索引区别
+
+一级索引（聚簇索引）：数据表的主键索引，数据和索引存储在同一B&#43;树的叶子节点中。每个表只能有一个一级索引。
+二级索引（非聚簇索引）：除主键外的其他索引，叶子节点存储索引列的值和对应的主键值。通过二级索引查询时，需要先通过二级索引获取主键值，再通过主键值查询数据，这个过程称为“回表”。
+
+知识拓展2:  MySQL中有哪些常见索引？都有什么区别？
+
+在MySQL中，索引是提高查询效率的关键工具。常见的索引类型包括主键索引、唯一索引、普通索引、全文索引和空间索引。
+1. 主键索引（Primary Key Index）
+
+定义：主键索引是一种特殊的唯一索引，用于唯一标识表中的每一行数据。每个表只能有一个主键索引，且主键列的值不能为空。
+特点：主键索引的叶子节点存储完整的数据行，因此查询效率高。在InnoDB存储引擎中，主键索引是聚簇索引，数据存储与索引结构合并。
+
+2. 唯一索引（Unique Index）
+
+定义：唯一索引确保索引列的每个值都是唯一的，但允许有空值。与主键索引类似，不同之处在于唯一索引允许列值为NULL。
+特点：唯一索引的叶子节点存储索引列的值和对应的主键值。在InnoDB中，唯一索引是非聚簇索引，数据存储与索引结构分开。
+
+3. 普通索引（Index）
+
+定义：普通索引是最基本的索引类型，没有任何限制。索引列的值可以重复，也可以为NULL。
+特点：普通索引的叶子节点存储索引列的值和对应的主键值。在InnoDB中，普通索引是非聚簇索引，数据存储与索引结构分开。
+
+4. 全文索引（Fulltext Index）
+
+定义：全文索引用于对文本数据进行全文搜索，适用于MyISAM存储引擎。它允许对文本字段进行复杂的搜索，如查找包含特定单词的记录。
+特点：全文索引的叶子节点存储文档的词项信息。在MyISAM中，全文索引是非聚簇索引，数据存储与索引结构分开。
+
+5. 空间索引（Spatial Index）
+
+定义：空间索引用于对地理空间数据进行索引，支持空间数据类型的快速查询。它适用于存储地理位置、地图等空间数据的表。
+特点：空间索引的叶子节点存储空间数据的索引信息。在MyISAM中，空间索引是非聚簇索引，数据存储与索引结构分开。
+
+总结：
+
+主键索引：用于唯一标识每一行数据，值不能为空。
+唯一索引：确保索引列的值唯一，但允许有空值。
+普通索引：最基本的索引类型，允许重复和空值。
+全文索引：用于对文本数据进行全文搜索，适用于MyISAM存储引擎。
+空间索引：用于对地理空间数据进行索引，支持空间数据类型的快速查询。
+
+
+3. 详细描述一条 SQL 语句在 MySQL 中的执行过程。
+1.连接器判断用户是否成功建立连接，数据库连接的权限校验
+2.分析器分析SQL语法和词法是否有误
+3.优化器生成SQL的执行计划，确定使用的索引和调整where的执行顺序（包括连表顺序）
+4.执行器判断当前用户是否有权限查询该表，然后执行该SQL语句">
+
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position":  1 ,
+      "name": "📚 Posts",
+      "item": "https://swimmingliu.cn/posts/"
+    }, 
+    {
+      "@type": "ListItem",
+      "position":  2 ,
+      "name": "💻 Job",
+      "item": "https://swimmingliu.cn/posts/job/"
+    }, 
+    {
+      "@type": "ListItem",
+      "position":  3 ,
+      "name": "Mysql Interview Questions",
+      "item": "https://swimmingliu.cn/posts/job/mysql-interview-questions/"
+    }
+  ]
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "Mysql Interview Questions",
+  "name": "Mysql Interview Questions",
+  "description": "MySQL面试题 1.MySQL 中的数据排序是怎么实现的？ 1.排序方法：索引排序和文件排序 (filesort) 2.索引排序：如果order by xxx的字段为索引字段，则利用索引进行排序。效率最高，索引默认有序。 3.文件排序 (filesort)：内存排序(单路排序和双路排序)和磁盘排序，具体取决于排序数据的大小。其中，内存排序使用单路排序或双路排序，取决于max_length_for_sort_data(默认为4096个字节) 4.双路排序：取row_id(如果有主键，则为主键)和select a,b,c order by xxx的xxx字段放入sort_buffer(排序缓存)中，将排序后的row_id回表查询a,b,c 5.单路排序: 直接把要查的所有字段放入sort_buffer里，排序后直接得到结果集合 6.磁盘排序（归并排序）:将数据分为多份文件，单独对文件进行排序，然后合并成一个有序的大文件\n2. MySQL 的 Change Buffer 是什么？它有什么作用？ 1.ChangeBuffer定义：Change Buffer是InnoDB缓冲当中的一块缓存区，用于暂存二级索引的修改，避免二级索引页修改产生的随机IO 2.ChangeBuffer注意事项：只能用于二级索引，不能用于其他任何索引，包括主键索引和唯一索引都不行。 3.如果ChangeBuffer挂了，更改操作未执行，是否会出现脏数据？ 首先，ChangeBuffer也会保存在磁盘空间里面，redo log会记录Change Buffer当中的修改操作，确保数据一致性。\n知识拓展1：一级索引和二级索引区别\n一级索引（聚簇索引）：数据表的主键索引，数据和索引存储在同一B+树的叶子节点中。每个表只能有一个一级索引。\n二级索引（非聚簇索引）：除主键外的其他索引，叶子节点存储索引列的值和对应的主键值。通过二级索引查询时，需要先通过二级索引获取主键值，再通过主键值查询数据，这个过程称为“回表”。\n知识拓展2: MySQL中有哪些常见索引？都有什么区别？\n在MySQL中，索引是提高查询效率的关键工具。常见的索引类型包括主键索引、唯一索引、普通索引、全文索引和空间索引。\n1. 主键索引（Primary Key Index）\n定义：主键索引是一种特殊的唯一索引，用于唯一标识表中的每一行数据。每个表只能有一个主键索引，且主键列的值不能为空。 特点：主键索引的叶子节点存储完整的数据行，因此查询效率高。在InnoDB存储引擎中，主键索引是聚簇索引，数据存储与索引结构合并。 2. 唯一索引（Unique Index）\n定义：唯一索引确保索引列的每个值都是唯一的，但允许有空值。与主键索引类似，不同之处在于唯一索引允许列值为NULL。 特点：唯一索引的叶子节点存储索引列的值和对应的主键值。在InnoDB中，唯一索引是非聚簇索引，数据存储与索引结构分开。 3. 普通索引（Index）\n定义：普通索引是最基本的索引类型，没有任何限制。索引列的值可以重复，也可以为NULL。 特点：普通索引的叶子节点存储索引列的值和对应的主键值。在InnoDB中，普通索引是非聚簇索引，数据存储与索引结构分开。 4. 全文索引（Fulltext Index）\n定义：全文索引用于对文本数据进行全文搜索，适用于MyISAM存储引擎。它允许对文本字段进行复杂的搜索，如查找包含特定单词的记录。 特点：全文索引的叶子节点存储文档的词项信息。在MyISAM中，全文索引是非聚簇索引，数据存储与索引结构分开。 5. 空间索引（Spatial Index）\n定义：空间索引用于对地理空间数据进行索引，支持空间数据类型的快速查询。它适用于存储地理位置、地图等空间数据的表。 特点：空间索引的叶子节点存储空间数据的索引信息。在MyISAM中，空间索引是非聚簇索引，数据存储与索引结构分开。 总结：\n主键索引：用于唯一标识每一行数据，值不能为空。 唯一索引：确保索引列的值唯一，但允许有空值。 普通索引：最基本的索引类型，允许重复和空值。 全文索引：用于对文本数据进行全文搜索，适用于MyISAM存储引擎。 空间索引：用于对地理空间数据进行索引，支持空间数据类型的快速查询。 3. 详细描述一条 SQL 语句在 MySQL 中的执行过程。 1.连接器判断用户是否成功建立连接，数据库连接的权限校验 2.分析器分析SQL语法和词法是否有误 3.优化器生成SQL的执行计划，确定使用的索引和调整where的执行顺序（包括连表顺序） 4.执行器判断当前用户是否有权限查询该表，然后执行该SQL语句\n",
+  "keywords": [
+    "Java", "MySQL"
+  ],
+  "articleBody": "MySQL面试题 1.MySQL 中的数据排序是怎么实现的？ 1.排序方法：索引排序和文件排序 (filesort) 2.索引排序：如果order by xxx的字段为索引字段，则利用索引进行排序。效率最高，索引默认有序。 3.文件排序 (filesort)：内存排序(单路排序和双路排序)和磁盘排序，具体取决于排序数据的大小。其中，内存排序使用单路排序或双路排序，取决于max_length_for_sort_data(默认为4096个字节) 4.双路排序：取row_id(如果有主键，则为主键)和select a,b,c order by xxx的xxx字段放入sort_buffer(排序缓存)中，将排序后的row_id回表查询a,b,c 5.单路排序: 直接把要查的所有字段放入sort_buffer里，排序后直接得到结果集合 6.磁盘排序（归并排序）:将数据分为多份文件，单独对文件进行排序，然后合并成一个有序的大文件\n2. MySQL 的 Change Buffer 是什么？它有什么作用？ 1.ChangeBuffer定义：Change Buffer是InnoDB缓冲当中的一块缓存区，用于暂存二级索引的修改，避免二级索引页修改产生的随机IO 2.ChangeBuffer注意事项：只能用于二级索引，不能用于其他任何索引，包括主键索引和唯一索引都不行。 3.如果ChangeBuffer挂了，更改操作未执行，是否会出现脏数据？ 首先，ChangeBuffer也会保存在磁盘空间里面，redo log会记录Change Buffer当中的修改操作，确保数据一致性。\n知识拓展1：一级索引和二级索引区别\n一级索引（聚簇索引）：数据表的主键索引，数据和索引存储在同一B+树的叶子节点中。每个表只能有一个一级索引。\n二级索引（非聚簇索引）：除主键外的其他索引，叶子节点存储索引列的值和对应的主键值。通过二级索引查询时，需要先通过二级索引获取主键值，再通过主键值查询数据，这个过程称为“回表”。\n知识拓展2: MySQL中有哪些常见索引？都有什么区别？\n在MySQL中，索引是提高查询效率的关键工具。常见的索引类型包括主键索引、唯一索引、普通索引、全文索引和空间索引。\n1. 主键索引（Primary Key Index）\n定义：主键索引是一种特殊的唯一索引，用于唯一标识表中的每一行数据。每个表只能有一个主键索引，且主键列的值不能为空。 特点：主键索引的叶子节点存储完整的数据行，因此查询效率高。在InnoDB存储引擎中，主键索引是聚簇索引，数据存储与索引结构合并。 2. 唯一索引（Unique Index）\n定义：唯一索引确保索引列的每个值都是唯一的，但允许有空值。与主键索引类似，不同之处在于唯一索引允许列值为NULL。 特点：唯一索引的叶子节点存储索引列的值和对应的主键值。在InnoDB中，唯一索引是非聚簇索引，数据存储与索引结构分开。 3. 普通索引（Index）\n定义：普通索引是最基本的索引类型，没有任何限制。索引列的值可以重复，也可以为NULL。 特点：普通索引的叶子节点存储索引列的值和对应的主键值。在InnoDB中，普通索引是非聚簇索引，数据存储与索引结构分开。 4. 全文索引（Fulltext Index）\n定义：全文索引用于对文本数据进行全文搜索，适用于MyISAM存储引擎。它允许对文本字段进行复杂的搜索，如查找包含特定单词的记录。 特点：全文索引的叶子节点存储文档的词项信息。在MyISAM中，全文索引是非聚簇索引，数据存储与索引结构分开。 5. 空间索引（Spatial Index）\n定义：空间索引用于对地理空间数据进行索引，支持空间数据类型的快速查询。它适用于存储地理位置、地图等空间数据的表。 特点：空间索引的叶子节点存储空间数据的索引信息。在MyISAM中，空间索引是非聚簇索引，数据存储与索引结构分开。 总结：\n主键索引：用于唯一标识每一行数据，值不能为空。 唯一索引：确保索引列的值唯一，但允许有空值。 普通索引：最基本的索引类型，允许重复和空值。 全文索引：用于对文本数据进行全文搜索，适用于MyISAM存储引擎。 空间索引：用于对地理空间数据进行索引，支持空间数据类型的快速查询。 3. 详细描述一条 SQL 语句在 MySQL 中的执行过程。 1.连接器判断用户是否成功建立连接，数据库连接的权限校验 2.分析器分析SQL语法和词法是否有误 3.优化器生成SQL的执行计划，确定使用的索引和调整where的执行顺序（包括连表顺序） 4.执行器判断当前用户是否有权限查询该表，然后执行该SQL语句\n[参考文献] 执行一条 select 语句，期间发生了什么？\n[补充] 3. MySQL 日志：undo log、redo log、binlog 有什么用？ undo log（回滚日志）：是 Innodb 存储引擎层生成的日志，实现了事务中的原子性，主要用于事务回滚和 MVCC。 redo log（重做日志）：是 Innodb 存储引擎层生成的日志，实现了事务中的持久性，主要用于掉电等故障恢复； binlog （归档日志）：是 Server 层生成的日志，主要用于数据备份和主从复制；\n直接看参考文献当中的七个问题和其解决方案\n[参考文献] MySQL 日志：undo log、redo log、binlog 有什么用？\n4. MySQL 的存储引擎有哪些？它们之间有什么区别？ InnoDB : 支持事务、行锁、外键; 高并发性能、支持高负载的OLTP应用 (银行交易、电子商务订单、库存管理等); 聚集索引存储，检索效率高\nMyISAM: 表锁、不支持事务和外键; 适用于读多写少的场景(数据仓库); 较高读性能和j较快的表级锁定\nMEMORY: 存储在内存中，速度快，重启后数据丢失; 适用于临时数据存储和快速存储\n5. MySQL 的索引类型有哪些？ 划分方向 索引类型 数据结构 B+树索引、Hash索引、倒排索引 (全文索引)、R-树索引 (多维空间树)、位图索引(Bitmap) 物理存储 聚簇索引、非聚簇索引 字段特性 主键索引、唯一索引、普通索引(二级索引、辅助索引)、前缀索引 字段个数 单列索引、联合索引 huafen\n",
+  "wordCount" : "141",
+  "inLanguage": "en",
+  "image": "https://swimmingliu.cn/papermod-cover.png","datePublished": "2025-02-19T15:16:42+08:00",
+  "dateModified": "2025-02-19T15:16:42+08:00",
+  "author":[{
+    "@type": "Person",
+    "name": "SwimmingLiu"
+  }],
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": "https://swimmingliu.cn/posts/job/mysql-interview-questions/"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "SwimmingLiu's Blog",
+    "logo": {
+      "@type": "ImageObject",
+      "url": "https://swimmingliu.cn/images/swimmingliu_icon.png"
+    }
+  }
+}
+</script>
+</head>
+
+<body class="" id="top">
+<script>
+    if (localStorage.getItem("pref-theme") === "dark") {
+        document.body.classList.add('dark');
+    } else if (localStorage.getItem("pref-theme") === "light") {
+        document.body.classList.remove('dark')
+    } else if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+        document.body.classList.add('dark');
+    }
+
+</script>
+
+<header class="header">
+    <nav class="nav">
+        <div class="logo">
+            <a href="https://swimmingliu.cn/" accesskey="h" title="𝓢𝔀𝓲𝓶𝓶𝓲𝓷𝓰𝓛𝓲𝓾&#39;𝓼 𝓑𝓵𝓸𝓰 (Alt + H)">
+                <img src="https://swimmingliu.cn/images/swimmingliu_icon.png" alt="" aria-label="logo"
+                    height="30">𝓢𝔀𝓲𝓶𝓶𝓲𝓷𝓰𝓛𝓲𝓾&#39;𝓼 𝓑𝓵𝓸𝓰</a>
+            <div class="logo-switches">
+                <button id="theme-toggle" accesskey="t" title="(Alt + T)">
+                    <svg id="moon" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                    </svg>
+                    <svg id="sun" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="5"></circle>
+                        <line x1="12" y1="1" x2="12" y2="3"></line>
+                        <line x1="12" y1="21" x2="12" y2="23"></line>
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                        <line x1="1" y1="12" x2="3" y2="12"></line>
+                        <line x1="21" y1="12" x2="23" y2="12"></line>
+                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                    </svg>
+                </button>
+            </div>
+        </div>
+        <ul id="menu">
+            <li>
+                <a href="https://swimmingliu.cn/index.html" title="🏡 Home">
+                    <span>🏡 Home</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://swimmingliu.cn/search/" title="🔍 Search">
+                    <span>🔍 Search</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://swimmingliu.cn/posts/" title="🗒️ Posts">
+                    <span>🗒️ Posts</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://swimmingliu.cn/archives/" title="📃 Archive">
+                    <span>📃 Archive</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://swimmingliu.cn/tags/" title="📑 Tags">
+                    <span>📑 Tags</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://bento.me/swimmingliu" title="👨🏻‍🎓 About Me">
+                    <span>👨🏻‍🎓 About Me</span>&nbsp;
+                    <svg fill="none" shape-rendering="geometricPrecision" stroke="currentColor" stroke-linecap="round"
+                        stroke-linejoin="round" stroke-width="2.5" viewBox="0 0 24 24" height="12" width="12">
+                        <path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"></path>
+                        <path d="M15 3h6v6"></path>
+                        <path d="M10 14L21 3"></path>
+                    </svg>
+                </a>
+            </li>
+            <li>
+                <a href="https://www.emojisearch.app/" title="Emoji">
+                    <span>Emoji</span>&nbsp;
+                    <svg fill="none" shape-rendering="geometricPrecision" stroke="currentColor" stroke-linecap="round"
+                        stroke-linejoin="round" stroke-width="2.5" viewBox="0 0 24 24" height="12" width="12">
+                        <path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"></path>
+                        <path d="M15 3h6v6"></path>
+                        <path d="M10 14L21 3"></path>
+                    </svg>
+                </a>
+            </li>
+        </ul>
+    </nav>
+</header>
+<main class="main">
+
+<article class="post-single">
+  <header class="post-header">
+    <div class="breadcrumbs"><a href="https://swimmingliu.cn/">Home</a>&nbsp;»&nbsp;<a href="https://swimmingliu.cn/posts/">📚 Posts</a>&nbsp;»&nbsp;<a href="https://swimmingliu.cn/posts/job/">💻 Job</a></div>
+    <h1 class="post-title entry-hint-parent">
+      Mysql Interview Questions
+    </h1>
+    <div class="post-meta"><span title='2025-02-19 15:16:42 +0800 CST'>February 19, 2025</span>&nbsp;·&nbsp;1 min&nbsp;·&nbsp;SwimmingLiu
+
+</div>
+  </header> <div class="toc">
+    <details >
+        <summary accesskey="c" title="(Alt + C)">
+            <span class="details">Table of Contents</span>
+        </summary>
+
+        <div class="inner"><ul>
+                <li>
+                    <a href="#mysql%e9%9d%a2%e8%af%95%e9%a2%98" aria-label="MySQL面试题">MySQL面试题</a><ul>
+                        
+                <li>
+                    <a href="#1mysql-%e4%b8%ad%e7%9a%84%e6%95%b0%e6%8d%ae%e6%8e%92%e5%ba%8f%e6%98%af%e6%80%8e%e4%b9%88%e5%ae%9e%e7%8e%b0%e7%9a%84" aria-label="1.MySQL 中的数据排序是怎么实现的？">1.MySQL 中的数据排序是怎么实现的？</a></li>
+                <li>
+                    <a href="#2-mysql-%e7%9a%84-change-buffer-%e6%98%af%e4%bb%80%e4%b9%88%e5%ae%83%e6%9c%89%e4%bb%80%e4%b9%88%e4%bd%9c%e7%94%a8" aria-label="2. MySQL 的 Change Buffer 是什么？它有什么作用？">2. MySQL 的 Change Buffer 是什么？它有什么作用？</a></li>
+                <li>
+                    <a href="#3-%e8%af%a6%e7%bb%86%e6%8f%8f%e8%bf%b0%e4%b8%80%e6%9d%a1-sql-%e8%af%ad%e5%8f%a5%e5%9c%a8-mysql-%e4%b8%ad%e7%9a%84%e6%89%a7%e8%a1%8c%e8%bf%87%e7%a8%8b" aria-label="3. 详细描述一条 SQL 语句在 MySQL 中的执行过程。">3. 详细描述一条 SQL 语句在 MySQL 中的执行过程。</a></li>
+                <li>
+                    <a href="#%e8%a1%a5%e5%85%85-3--mysql-%e6%97%a5%e5%bf%97undo-logredo-logbinlog-%e6%9c%89%e4%bb%80%e4%b9%88%e7%94%a8" aria-label="[补充] 3.  MySQL 日志：undo log、redo log、binlog 有什么用？">[补充] 3.  MySQL 日志：undo log、redo log、binlog 有什么用？</a></li>
+                <li>
+                    <a href="#4-mysql-%e7%9a%84%e5%ad%98%e5%82%a8%e5%bc%95%e6%93%8e%e6%9c%89%e5%93%aa%e4%ba%9b%e5%ae%83%e4%bb%ac%e4%b9%8b%e9%97%b4%e6%9c%89%e4%bb%80%e4%b9%88%e5%8c%ba%e5%88%ab" aria-label="4. MySQL 的存储引擎有哪些？它们之间有什么区别？">4. MySQL 的存储引擎有哪些？它们之间有什么区别？</a></li>
+                <li>
+                    <a href="#5-mysql-%e7%9a%84%e7%b4%a2%e5%bc%95%e7%b1%bb%e5%9e%8b%e6%9c%89%e5%93%aa%e4%ba%9b" aria-label="5. MySQL 的索引类型有哪些？">5. MySQL 的索引类型有哪些？</a>
+                </li>
+            </ul>
+            </li>
+            </ul>
+        </div>
+    </details>
+</div>
+  <div class="post-content"><h1 id="mysql面试题">MySQL面试题<a hidden class="anchor" aria-hidden="true" href="#mysql面试题">#</a></h1>
+<h2 id="1mysql-中的数据排序是怎么实现的">1.MySQL 中的数据排序是怎么实现的？<a hidden class="anchor" aria-hidden="true" href="#1mysql-中的数据排序是怎么实现的">#</a></h2>
+<p>1.排序方法：索引排序和文件排序 (filesort)
+2.索引排序：如果<code>order by xxx</code>的字段为索引字段，则利用索引进行排序。效率最高，索引默认有序。
+3.文件排序 (filesort)：内存排序(单路排序和双路排序)和磁盘排序，具体取决于排序数据的大小。其中，内存排序使用单路排序或双路排序，取决于<code>max_length_for_sort_data</code>(默认为4096个字节)
+4.双路排序：取<code>row_id</code>(如果有主键，则为主键)和<code>select a,b,c order by xxx</code>的<code>xxx</code>字段放入<code>sort_buffer</code>(排序缓存)中，将排序后的<code>row_id</code>回表查询<code>a,b,c</code>
+5.单路排序: 直接把要查的所有字段放入<code>sort_buffer</code>里，排序后直接得到结果集合
+6.磁盘排序（归并排序）:将数据分为多份文件，单独对文件进行排序，然后合并成一个有序的大文件</p>
+<h2 id="2-mysql-的-change-buffer-是什么它有什么作用">2. MySQL 的 Change Buffer 是什么？它有什么作用？<a hidden class="anchor" aria-hidden="true" href="#2-mysql-的-change-buffer-是什么它有什么作用">#</a></h2>
+<p>1.ChangeBuffer定义：Change Buffer是InnoDB缓冲当中的一块缓存区，用于暂存二级索引的修改，避免二级索引页修改产生的随机IO
+2.ChangeBuffer注意事项：只能用于二级索引，不能用于其他任何索引，包括主键索引和唯一索引都不行。
+3.如果ChangeBuffer挂了，更改操作未执行，是否会出现脏数据？
+首先，ChangeBuffer也会保存在磁盘空间里面，redo log会记录Change Buffer当中的修改操作，确保数据一致性。</p>
+<p>知识拓展1：一级索引和二级索引区别</p>
+<blockquote>
+<p><strong>一级索引（聚簇索引）</strong>：数据表的主键索引，数据和索引存储在同一B+树的叶子节点中。每个表只能有一个一级索引。</p>
+<p><strong>二级索引（非聚簇索引）</strong>：除主键外的其他索引，叶子节点存储索引列的值和对应的主键值。通过二级索引查询时，需要先通过二级索引获取主键值，再通过主键值查询数据，这个过程称为“回表”。</p>
+</blockquote>
+<p>知识拓展2:  MySQL中有哪些常见索引？都有什么区别？</p>
+<blockquote>
+<p>在MySQL中，索引是提高查询效率的关键工具。常见的索引类型包括主键索引、唯一索引、普通索引、全文索引和空间索引。</p>
+<p><strong>1. 主键索引（Primary Key Index）</strong></p>
+<ul>
+<li><strong>定义</strong>：主键索引是一种特殊的唯一索引，用于唯一标识表中的每一行数据。每个表只能有一个主键索引，且主键列的值不能为空。</li>
+<li><strong>特点</strong>：主键索引的叶子节点存储完整的数据行，因此查询效率高。在InnoDB存储引擎中，主键索引是聚簇索引，数据存储与索引结构合并。</li>
+</ul>
+<p><strong>2. 唯一索引（Unique Index）</strong></p>
+<ul>
+<li><strong>定义</strong>：唯一索引确保索引列的每个值都是唯一的，但允许有空值。与主键索引类似，不同之处在于唯一索引允许列值为NULL。</li>
+<li><strong>特点</strong>：唯一索引的叶子节点存储索引列的值和对应的主键值。在InnoDB中，唯一索引是非聚簇索引，数据存储与索引结构分开。</li>
+</ul>
+<p><strong>3. 普通索引（Index）</strong></p>
+<ul>
+<li><strong>定义</strong>：普通索引是最基本的索引类型，没有任何限制。索引列的值可以重复，也可以为NULL。</li>
+<li><strong>特点</strong>：普通索引的叶子节点存储索引列的值和对应的主键值。在InnoDB中，普通索引是非聚簇索引，数据存储与索引结构分开。</li>
+</ul>
+<p><strong>4. 全文索引（Fulltext Index）</strong></p>
+<ul>
+<li><strong>定义</strong>：全文索引用于对文本数据进行全文搜索，适用于MyISAM存储引擎。它允许对文本字段进行复杂的搜索，如查找包含特定单词的记录。</li>
+<li><strong>特点</strong>：全文索引的叶子节点存储文档的词项信息。在MyISAM中，全文索引是非聚簇索引，数据存储与索引结构分开。</li>
+</ul>
+<p><strong>5. 空间索引（Spatial Index）</strong></p>
+<ul>
+<li><strong>定义</strong>：空间索引用于对地理空间数据进行索引，支持空间数据类型的快速查询。它适用于存储地理位置、地图等空间数据的表。</li>
+<li><strong>特点</strong>：空间索引的叶子节点存储空间数据的索引信息。在MyISAM中，空间索引是非聚簇索引，数据存储与索引结构分开。</li>
+</ul>
+<p><strong>总结</strong>：</p>
+<ul>
+<li><strong>主键索引</strong>：用于唯一标识每一行数据，值不能为空。</li>
+<li><strong>唯一索引</strong>：确保索引列的值唯一，但允许有空值。</li>
+<li><strong>普通索引</strong>：最基本的索引类型，允许重复和空值。</li>
+<li><strong>全文索引</strong>：用于对文本数据进行全文搜索，适用于MyISAM存储引擎。</li>
+<li><strong>空间索引</strong>：用于对地理空间数据进行索引，支持空间数据类型的快速查询。</li>
+</ul>
+</blockquote>
+<h2 id="3-详细描述一条-sql-语句在-mysql-中的执行过程">3. 详细描述一条 SQL 语句在 MySQL 中的执行过程。<a hidden class="anchor" aria-hidden="true" href="#3-详细描述一条-sql-语句在-mysql-中的执行过程">#</a></h2>
+<p>1.连接器判断用户是否成功建立连接，数据库连接的权限校验
+2.分析器分析SQL语法和词法是否有误
+3.优化器生成SQL的执行计划，确定使用的索引和调整where的执行顺序（包括连表顺序）
+4.执行器判断当前用户是否有权限查询该表，然后执行该SQL语句</p>
+<p>[参考文献] <a href="https://xiaolincoding.com/mysql/base/how_select.html">执行一条 select 语句，期间发生了什么？</a></p>
+<h2 id="补充-3--mysql-日志undo-logredo-logbinlog-有什么用">[补充] 3.  MySQL 日志：undo log、redo log、binlog 有什么用？<a hidden class="anchor" aria-hidden="true" href="#补充-3--mysql-日志undo-logredo-logbinlog-有什么用">#</a></h2>
+<blockquote>
+<p>undo log（回滚日志）：是 Innodb 存储引擎层生成的日志，实现了事务中的原子性，主要用于事务回滚和 MVCC。
+redo log（重做日志）：是 Innodb 存储引擎层生成的日志，实现了事务中的持久性，主要用于掉电等故障恢复；
+binlog （归档日志）：是 Server 层生成的日志，主要用于数据备份和主从复制；</p>
+</blockquote>
+<p>直接看参考文献当中的七个问题和其解决方案</p>
+<p>[参考文献] <a href="https://xiaolincoding.com/mysql/log/how_update.html">MySQL 日志：undo log、redo log、binlog 有什么用？</a></p>
+<h2 id="4-mysql-的存储引擎有哪些它们之间有什么区别">4. MySQL 的存储引擎有哪些？它们之间有什么区别？<a hidden class="anchor" aria-hidden="true" href="#4-mysql-的存储引擎有哪些它们之间有什么区别">#</a></h2>
+<p><code>InnoDB</code> : 支持事务、<strong>行锁</strong>、外键; 高并发性能、支持高负载的OLTP应用 (银行交易、电子商务订单、库存管理等);  聚集索引存储，检索效率高</p>
+<p><code>MyISAM</code>: <strong>表锁</strong>、<strong>不</strong>支持事务和外键; 适用于读多写少的场景(数据仓库); 较高读性能和j较快的表级锁定</p>
+<p><code>MEMORY</code>: 存储在内存中，速度快，重启后数据丢失; 适用于临时数据存储和快速存储</p>
+<p><img alt="MySQL常见存储引擎" loading="lazy" src="https://pic.code-nav.cn/mianshiya/question_picture/1853124367721336833/Xk2YjZcF_MySQL_Storage_Engine_mianshiya.png"></p>
+<h2 id="5-mysql-的索引类型有哪些">5. MySQL 的索引类型有哪些？<a hidden class="anchor" aria-hidden="true" href="#5-mysql-的索引类型有哪些">#</a></h2>
+<table>
+  <thead>
+      <tr>
+          <th>划分方向</th>
+          <th>索引类型</th>
+      </tr>
+  </thead>
+  <tbody>
+      <tr>
+          <td>数据结构</td>
+          <td>B+树索引、Hash索引、倒排索引 (全文索引)、R-树索引 (多维空间树)、位图索引(Bitmap)</td>
+      </tr>
+      <tr>
+          <td>物理存储</td>
+          <td>聚簇索引、非聚簇索引</td>
+      </tr>
+      <tr>
+          <td>字段特性</td>
+          <td>主键索引、唯一索引、普通索引(二级索引、辅助索引)、前缀索引</td>
+      </tr>
+      <tr>
+          <td>字段个数</td>
+          <td>单列索引、联合索引</td>
+      </tr>
+  </tbody>
+</table>
+<p>huafen<img alt="MySQL索引类型" loading="lazy" src="https://pic.code-nav.cn/mianshiya/question_picture/1870039863862304769/K21MUn6b_1_mianshiya.png"></p>
+
+
+  </div>
+
+
+
+  <footer class="post-footer">
+    <ul class="post-tags">
+      <li><a href="https://swimmingliu.cn/tags/java/">Java</a></li>
+      <li><a href="https://swimmingliu.cn/tags/mysql/">MySQL</a></li>
+    </ul>
+<nav class="paginav">
+  <a class="next" href="https://swimmingliu.cn/posts/job/java-interview-questions-notes/">
+    <span class="title">Next »</span>
+    <br>
+    <span>Java面试题-随手记</span>
+  </a>
+</nav>
+
+  </footer>
+</article>
+    </main>
+    
+<footer class="footer">
+        <span>&copy; 2023-2025 <a href="https://swimmingliu.cn/">SwimmingLiu&#39;s Blog</a></span> · 
+
+    <span>
+        Powered by
+        <a href="https://gohugo.io/" rel="noopener noreferrer" target="_blank">Hugo</a> &
+        <a href="https://github.com/adityatelange/hugo-PaperMod/" rel="noopener" target="_blank">PaperMod</a>
+    </span>
+    <span>
+        <a href="https://beian.miit.gov.cn/">浙ICP备2024056260号</a>
+    </span>
+</footer>
+<a href="#top" aria-label="go to top" title="Go to Top (Alt + G)" class="top-link" id="top-link" accesskey="g">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 6" fill="currentColor">
+        <path d="M12 6H0l6-6z" />
+    </svg>
+</a>
+
+<script>
+    let menu = document.getElementById('menu')
+    if (menu) {
+        menu.scrollLeft = localStorage.getItem("menu-scroll-position");
+        menu.onscroll = function () {
+            localStorage.setItem("menu-scroll-position", menu.scrollLeft);
+        }
+    }
+
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener("click", function (e) {
+            e.preventDefault();
+            var id = this.getAttribute("href").substr(1);
+            if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView({
+                    behavior: "smooth"
+                });
+            } else {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView();
+            }
+            if (id === "top") {
+                history.replaceState(null, null, " ");
+            } else {
+                history.pushState(null, null, `#${id}`);
+            }
+        });
+    });
+
+</script>
+<script>
+    var mybutton = document.getElementById("top-link");
+    window.onscroll = function () {
+        if (document.body.scrollTop > 800 || document.documentElement.scrollTop > 800) {
+            mybutton.style.visibility = "visible";
+            mybutton.style.opacity = "1";
+        } else {
+            mybutton.style.visibility = "hidden";
+            mybutton.style.opacity = "0";
+        }
+    };
+
+</script>
+<script>
+    document.getElementById("theme-toggle").addEventListener("click", () => {
+        if (document.body.className.includes("dark")) {
+            document.body.classList.remove('dark');
+            localStorage.setItem("pref-theme", 'light');
+        } else {
+            document.body.classList.add('dark');
+            localStorage.setItem("pref-theme", 'dark');
+        }
+    })
+
+</script>
+<script>
+    document.querySelectorAll('pre > code').forEach((codeblock) => {
+        const container = codeblock.parentNode.parentNode;
+
+        const copybutton = document.createElement('button');
+        copybutton.classList.add('copy-code');
+        copybutton.innerHTML = 'copy';
+
+        function copyingDone() {
+            copybutton.innerHTML = 'copied!';
+            setTimeout(() => {
+                copybutton.innerHTML = 'copy';
+            }, 2000);
+        }
+
+        copybutton.addEventListener('click', (cb) => {
+            if ('clipboard' in navigator) {
+                navigator.clipboard.writeText(codeblock.textContent);
+                copyingDone();
+                return;
+            }
+
+            const range = document.createRange();
+            range.selectNodeContents(codeblock);
+            const selection = window.getSelection();
+            selection.removeAllRanges();
+            selection.addRange(range);
+            try {
+                document.execCommand('copy');
+                copyingDone();
+            } catch (e) { };
+            selection.removeRange(range);
+        });
+
+        if (container.classList.contains("highlight")) {
+            container.appendChild(copybutton);
+        } else if (container.parentNode.firstChild == container) {
+            
+        } else if (codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.nodeName == "TABLE") {
+            
+            codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.appendChild(copybutton);
+        } else {
+            
+            codeblock.parentNode.appendChild(copybutton);
+        }
+    });
+</script>
+</body>
+
+</html>

@@ -5,11 +5,11 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 <meta name="robots" content="index, follow">
-<title>DeepSupervision | SwimmingLiu&#39;s Blog</title>
+<title>MySQL | SwimmingLiu&#39;s Blog</title>
 <meta name="keywords" content="">
 <meta name="description" content="">
 <meta name="author" content="👨🏻‍🎓 SwimmingLiu">
-<link rel="canonical" href="https://swimmingliu.cn/tags/deepsupervision/">
+<link rel="canonical" href="https://swimmingliu.cn/tags/mysql/">
 <link crossorigin="anonymous" href="/assets/css/stylesheet.6ecbb0040febd20e47edd88a662c19f1ea945bf7427774b86594271d18f88faf.css" integrity="sha256-bsuwBA/r0g5H7diKZiwZ8eqUW/dCd3S4ZZQnHRj4j68=" rel="preload stylesheet" as="style">
 <link rel="icon" href="https://swimmingliu.cn/images/swimmingliu_icon.png">
 <link rel="icon" type="image/png" sizes="16x16" href="https://swimmingliu.cn/images/swimmingliu_icon.png">
@@ -18,8 +18,8 @@
 <link rel="mask-icon" href="https://swimmingliu.cn/images/swimmingliu_icon.png">
 <meta name="theme-color" content="#2e2e33">
 <meta name="msapplication-TileColor" content="#2e2e33">
-<link rel="alternate" type="application/rss+xml" href="https://swimmingliu.cn/tags/deepsupervision/index.xml">
-<link rel="alternate" hreflang="en" href="https://swimmingliu.cn/tags/deepsupervision/">
+<link rel="alternate" type="application/rss+xml" href="https://swimmingliu.cn/tags/mysql/index.xml">
+<link rel="alternate" hreflang="en" href="https://swimmingliu.cn/tags/mysql/">
 <noscript>
     <style>
         #theme-toggle,
@@ -57,15 +57,15 @@
 
     </style>
 </noscript>
-<meta property="og:url" content="https://swimmingliu.cn/tags/deepsupervision/">
+<meta property="og:url" content="https://swimmingliu.cn/tags/mysql/">
   <meta property="og:site_name" content="SwimmingLiu&#39;s Blog">
-  <meta property="og:title" content="DeepSupervision">
+  <meta property="og:title" content="MySQL">
   <meta property="og:locale" content="en">
   <meta property="og:type" content="website">
       <meta property="og:image" content="https://swimmingliu.cn/papermod-cover.png">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:image" content="https://swimmingliu.cn/papermod-cover.png">
-<meta name="twitter:title" content="DeepSupervision">
+<meta name="twitter:title" content="MySQL">
 <meta name="twitter:description" content="">
 
 </head>
@@ -165,8 +165,8 @@
 <main class="main"> 
 <header class="page-header"><div class="breadcrumbs"><a href="https://swimmingliu.cn/">Home</a>&nbsp;»&nbsp;<a href="https://swimmingliu.cn/tags/">Tags</a></div>
   <h1>
-    DeepSupervision
-    <a href="/tags/deepsupervision/index.xml" title="RSS" aria-label="RSS">
+    MySQL
+    <a href="/tags/mysql/index.xml" title="RSS" aria-label="RSS">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
         stroke-linecap="round" stroke-linejoin="round" height="23">
         <path d="M4 11a9 9 0 0 1 9 9" />
@@ -179,31 +179,28 @@
 
 <article class="post-entry tag-entry"> 
   <header class="entry-header">
-    <h2 class="entry-hint-parent">Prior Attention Network: 用于医学图像中多病灶分割的预先注意网络
+    <h2 class="entry-hint-parent">Mysql Interview Questions
     </h2>
   </header>
   <div class="entry-content">
-    <p>Prior Attention Network: 用于医学图像中多病灶分割的预先注意网络 Abstract 医学图像中邻近组织的多种类型病变的准确分割在临床实践中具有重要意义。基于从粗到精策略的卷积神经网络（CNN）已广泛应用于该领域。然而，由于组织的大小、对比度和高类间相似性的不确定性，多病灶分割仍然具有挑战性。此外，普遍采用的级联策略对硬件要求较高，限制了临床部署的潜力。为了解决上述问题，我们提出了一种新颖的先验注意网络（PANet），它遵循从粗到细的策略来在医学图像中执行多病灶分割。所提出的网络通过在网络中插入与病变相关的空间注意机制，在单个网络中实现了两个步骤的分割。此外，我们还提出了中间监督策略，用于生成与病变相关的注意力来获取感兴趣区域（ROI），这加速了收敛并明显提高了分割性能。我们在两个应用中研究了所提出的分割框架：肺部 CT 切片中多发性肺部感染的 2D 分割和脑 MRI 中多发性病变的 3D 分割。实验结果表明，与级联网络相比，在 2D 和 3D 分割任务中，我们提出的网络以更少的计算成本实现了更好的性能。所提出的网络可以被视为 2D 和 3D 任务中多病灶分割的通用解决方案。源代码可在 https://github.com/hsiangyuzhao/PANet 获取
-问题导向：
-①组织的大小、对比度和高类间相似性的不确定性
-②多类别病灶分割
-③普遍采用的级联策略对硬件要求较高
-Introduction 医学图像分割对于疾病的准确筛查和患者的预后具有重要意义。基于病灶分割的病灶评估提供了疾病进展的信息，帮助医生提高临床诊断和治疗的质量。然而，手动病变分割相当主观且费力，这限制了其潜在的临床应用。近年来，随着人工智能的快速发展，基于深度学习的算法得到了广泛的应用，并在医学图像分割方面取得了最先进的性能[1]。卷积神经网络（CNN）由于其高分割质量而在医学图像中的病变分割中很受欢迎。此类算法通常具有深度编码器，可从输入图像中自动提取特征，并通过以下操作生成密集预测。例如，Long等人[2]提出了一种用于图像语义分割的全卷积网络，该网络颇具影响力，并启发了后来的医学分割中的端到端框架。 Ronneberger等人[3]提出了一种用于医学图像分割的U形网络（U-Net），该网络在医学分割的许多领域都显示出了可喜的结果，并已成为许多医学分割任务的虚拟基准。
-这一段都可以当成经典医学图像分割的背景引入
-然而，尽管医学分割取得了这些突破，但目前的医学分割方法主要集中在病灶的二元分割上，即区分病灶（前景）和其他一切（背景）。尽管二元分割确实有助于隔离某些感兴趣区域并允许对医学图像进行精确分析，但在某些需要对病变进行多类分割的场景中，二元分割还不够。与二元分割相比，由于组织的类间相似性，这种情况要困难得多，因为不同类型的病变在纹理、大小和形状上可能相似。具有从粗到细策略的级联网络已广泛应用于此类场景，例如肝脏和病变的分割、脑肿瘤分割[4]、[5][6]、[7]。
-此类网络通常由两个独立的网络组成，其中第一个网络执行粗分割，第二个网络基于从第一个网络分割的 ROI 细化分割。然而，尽管级联网络已广泛应用于医学图像的多病灶分割，但级联策略也有其缺点。由于级联网络由两个独立的网络组成，参数量和显存占用通常是单个网络的两倍，这对硬件要求较高，限制了其在临床使用的潜力。更重要的是，由于级联网络中的两个网络通常是独立的，因此级联网络的训练过程有时比单个网络更困难，这可能导致欠拟合。
-级联网络：参数量大、容易欠拟合。
-在本文中，我们提出了一种名为先验注意网络（PANet）的新型网络结构，用于在医学图像中执行多病灶分割。所提出的网络由一个用于特征提取的编码器和两个分别生成病变区域注意力和最终预测的解码器组成。该网络与注意力机制结合在一起。为了减少参数大小和硬件占用，我们使用网络编码器的深层、语义丰富的特征来生成病变区域的空间注意力。
-然后，编码器生成的特征表示通过空间注意力进行细化，并将其发送到解码器以进行最终的多类预测。为了提高分割性能并加速收敛，我们还在网络结构中引入了中间监督和深度监督。通过这些改进，与传统的级联网络相比，所提出的网络以显着降低的参数大小和计算成本实现了有竞争力的结果。
-利用网络编码器的深层、特征信息来生成空间注意力（WTF ???）
-中间监督、深度监督 （不错不错， 好多一区和顶会的文章都用深度监督）
-这项工作的贡献体现在三个方面。首先，我们提出了一种新颖的网络架构，通过将传统级联网络中的两个分割步骤结合在单个网络中，遵循 2D 和 3D 医学图像中多病灶分割的从粗到细的策略。与级联网络相比，所提出的架构以更少的额外计算成本实现了有竞争力的分割性能，更容易训练和部署到生产环境。其次，我们提出了一种监督空间注意力机制，将病变区域的注意力与网络提取的特征相结合，将多病变分割分解为两个更容易的阶段，并且与当前基于注意力的方法相比具有更好的可解释性。第三，所提出的网络已在两个实际应用中得到验证，包括肺部 CT 切片中的 COVID-19 病变的 2D 分割和多模态 MRI 中的脑肿瘤的 3D 分割。所提出的网络在 2D 和 3D 任务中都优于前沿方法，并且在参数和计算成本方面比当前网络更高效。
-一个网络、监督空间注意力机制、参数和计算成本方面比当前网络更高效。
-Related Work 1）图像分割的网络结构：用于图像分割的典型卷积神经网络通常由一个卷积特征提取器组成，其拓扑类似于常见的分类网络，自动从输入图像中提取特征，并进行基于卷积的操作以生成最终的密集预测。在自然图像分割领域，FCN [2]、DeepLab [8]、PSPNet [9] 和 SegNet [10] 因其性能和效率而颇受欢迎。对于医学分割，U-Net [3] 在许多任务中相当流行，并且已被修改为许多改进版本，例如 Attention U-Net [11]、U-Net&#43;&#43; [12]、V-Net [13] 和H-DenseUNet [14]在某些领域获得更好的性能。
+    <p>MySQL面试题 1.MySQL 中的数据排序是怎么实现的？ 1.排序方法：索引排序和文件排序 (filesort) 2.索引排序：如果order by xxx的字段为索引字段，则利用索引进行排序。效率最高，索引默认有序。 3.文件排序 (filesort)：内存排序(单路排序和双路排序)和磁盘排序，具体取决于排序数据的大小。其中，内存排序使用单路排序或双路排序，取决于max_length_for_sort_data(默认为4096个字节) 4.双路排序：取row_id(如果有主键，则为主键)和select a,b,c order by xxx的xxx字段放入sort_buffer(排序缓存)中，将排序后的row_id回表查询a,b,c 5.单路排序: 直接把要查的所有字段放入sort_buffer里，排序后直接得到结果集合 6.磁盘排序（归并排序）:将数据分为多份文件，单独对文件进行排序，然后合并成一个有序的大文件
+2. MySQL 的 Change Buffer 是什么？它有什么作用？ 1.ChangeBuffer定义：Change Buffer是InnoDB缓冲当中的一块缓存区，用于暂存二级索引的修改，避免二级索引页修改产生的随机IO 2.ChangeBuffer注意事项：只能用于二级索引，不能用于其他任何索引，包括主键索引和唯一索引都不行。 3.如果ChangeBuffer挂了，更改操作未执行，是否会出现脏数据？ 首先，ChangeBuffer也会保存在磁盘空间里面，redo log会记录Change Buffer当中的修改操作，确保数据一致性。
+知识拓展1：一级索引和二级索引区别
+一级索引（聚簇索引）：数据表的主键索引，数据和索引存储在同一B&#43;树的叶子节点中。每个表只能有一个一级索引。
+二级索引（非聚簇索引）：除主键外的其他索引，叶子节点存储索引列的值和对应的主键值。通过二级索引查询时，需要先通过二级索引获取主键值，再通过主键值查询数据，这个过程称为“回表”。
+知识拓展2: MySQL中有哪些常见索引？都有什么区别？
+在MySQL中，索引是提高查询效率的关键工具。常见的索引类型包括主键索引、唯一索引、普通索引、全文索引和空间索引。
+1. 主键索引（Primary Key Index）
+定义：主键索引是一种特殊的唯一索引，用于唯一标识表中的每一行数据。每个表只能有一个主键索引，且主键列的值不能为空。 特点：主键索引的叶子节点存储完整的数据行，因此查询效率高。在InnoDB存储引擎中，主键索引是聚簇索引，数据存储与索引结构合并。 2. 唯一索引（Unique Index）
+定义：唯一索引确保索引列的每个值都是唯一的，但允许有空值。与主键索引类似，不同之处在于唯一索引允许列值为NULL。 特点：唯一索引的叶子节点存储索引列的值和对应的主键值。在InnoDB中，唯一索引是非聚簇索引，数据存储与索引结构分开。 3. 普通索引（Index）
+定义：普通索引是最基本的索引类型，没有任何限制。索引列的值可以重复，也可以为NULL。 特点：普通索引的叶子节点存储索引列的值和对应的主键值。在InnoDB中，普通索引是非聚簇索引，数据存储与索引结构分开。 4. 全文索引（Fulltext Index）
+定义：全文索引用于对文本数据进行全文搜索，适用于MyISAM存储引擎。它允许对文本字段进行复杂的搜索，如查找包含特定单词的记录。 特点：全文索引的叶子节点存储文档的词项信息。在MyISAM中，全文索引是非聚簇索引，数据存储与索引结构分开。 5. 空间索引（Spatial Index）
+定义：空间索引用于对地理空间数据进行索引，支持空间数据类型的快速查询。它适用于存储地理位置、地图等空间数据的表。 特点：空间索引的叶子节点存储空间数据的索引信息。在MyISAM中，空间索引是非聚簇索引，数据存储与索引结构分开。 总结：
+主键索引：用于唯一标识每一行数据，值不能为空。 唯一索引：确保索引列的值唯一，但允许有空值。 普通索引：最基本的索引类型，允许重复和空值。 全文索引：用于对文本数据进行全文搜索，适用于MyISAM存储引擎。 空间索引：用于对地理空间数据进行索引，支持空间数据类型的快速查询。 3. 详细描述一条 SQL 语句在 MySQL 中的执行过程。 1.连接器判断用户是否成功建立连接，数据库连接的权限校验 2.分析器分析SQL语法和词法是否有误 3.优化器生成SQL的执行计划，确定使用的索引和调整where的执行顺序（包括连表顺序） 4.执行器判断当前用户是否有权限查询该表，然后执行该SQL语句
 ...</p>
   </div>
-  <footer class="entry-footer"><span title='2023-11-28 14:55:47 +0800 CST'>November 28, 2023</span>&nbsp;·&nbsp;4 min&nbsp;·&nbsp;SwimmingLiu</footer>
-  <a class="entry-link" aria-label="post link to Prior Attention Network: 用于医学图像中多病灶分割的预先注意网络" href="https://swimmingliu.cn/posts/papernotes/2022-priorattentionnetwork/"></a>
+  <footer class="entry-footer"><span title='2025-02-19 15:16:42 +0800 CST'>February 19, 2025</span>&nbsp;·&nbsp;1 min&nbsp;·&nbsp;SwimmingLiu</footer>
+  <a class="entry-link" aria-label="post link to Mysql Interview Questions" href="https://swimmingliu.cn/posts/job/mysql-interview-questions/"></a>
 </article>
     </main>
     

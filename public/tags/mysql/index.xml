@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/">
   <channel>
-    <title>💻 Job on SwimmingLiu&#39;s Blog</title>
-    <link>https://swimmingliu.cn/categories/-job/</link>
-    <description>Recent content in 💻 Job on SwimmingLiu&#39;s Blog</description>
+    <title>MySQL on SwimmingLiu&#39;s Blog</title>
+    <link>https://swimmingliu.cn/tags/mysql/</link>
+    <description>Recent content in MySQL on SwimmingLiu&#39;s Blog</description>
     <image>
       <title>SwimmingLiu&#39;s Blog</title>
       <url>https://swimmingliu.cn/papermod-cover.png</url>
@@ -12,7 +12,7 @@
     <generator>Hugo -- 0.136.0</generator>
     <language>en</language>
     <lastBuildDate>Wed, 19 Feb 2025 15:16:42 +0800</lastBuildDate>
-    <atom:link href="https://swimmingliu.cn/categories/-job/index.xml" rel="self" type="application/rss+xml" />
+    <atom:link href="https://swimmingliu.cn/tags/mysql/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>Mysql Interview Questions</title>
       <link>https://swimmingliu.cn/posts/job/mysql-interview-questions/</link>
@@ -78,90 +78,6 @@
 2.分析器分析SQL语法和词法是否有误
 3.优化器生成SQL的执行计划，确定使用的索引和调整where的执行顺序（包括连表顺序）
 4.执行器判断当前用户是否有权限查询该表，然后执行该SQL语句&lt;/p&gt;</description>
-    </item>
-    <item>
-      <title>Java面试题-随手记</title>
-      <link>https://swimmingliu.cn/posts/job/java-interview-questions-notes/</link>
-      <pubDate>Fri, 27 Dec 2024 17:27:35 +0800</pubDate>
-      <guid>https://swimmingliu.cn/posts/job/java-interview-questions-notes/</guid>
-      <description>&lt;h2 id=&#34;-和-equals-区别&#34;&gt;== 和 equals 区别&lt;/h2&gt;
-&lt;p&gt;&lt;code&gt;==&lt;/code&gt; 基本类型(int, long, float, char, boolean) 值比较， 引用类型(String，List) 进行地址比较&lt;/p&gt;
-&lt;p&gt;&lt;code&gt;equals&lt;/code&gt; 默认就是 &lt;code&gt;==&lt;/code&gt; ，但是部分引用类型(String，List)重写了该方法，进行值比较&lt;/p&gt;
-&lt;h2 id=&#34;get-和-post-区别&#34;&gt;get 和 post 区别&lt;/h2&gt;
-&lt;table&gt;
-  &lt;thead&gt;
-      &lt;tr&gt;
-          &lt;th&gt;特性&lt;/th&gt;
-          &lt;th&gt;GET&lt;/th&gt;
-          &lt;th&gt;POST&lt;/th&gt;
-      &lt;/tr&gt;
-  &lt;/thead&gt;
-  &lt;tbody&gt;
-      &lt;tr&gt;
-          &lt;td&gt;&lt;strong&gt;目的&lt;/strong&gt;&lt;/td&gt;
-          &lt;td&gt;获取资源，查询数据&lt;/td&gt;
-          &lt;td&gt;提交数据，创建或更新资源&lt;/td&gt;
-      &lt;/tr&gt;
-      &lt;tr&gt;
-          &lt;td&gt;&lt;strong&gt;请求数据方式&lt;/strong&gt;&lt;/td&gt;
-          &lt;td&gt;参数通过 URL 查询字符串传递&lt;/td&gt;
-          &lt;td&gt;数据通过请求体传递&lt;/td&gt;
-      &lt;/tr&gt;
-      &lt;tr&gt;
-          &lt;td&gt;&lt;strong&gt;数据暴露&lt;/strong&gt;&lt;/td&gt;
-          &lt;td&gt;数据暴露在 URL 中，较不安全&lt;/td&gt;
-          &lt;td&gt;数据存储在请求体中，相对安全&lt;/td&gt;
-      &lt;/tr&gt;
-      &lt;tr&gt;
-          &lt;td&gt;&lt;strong&gt;数据大小限制&lt;/strong&gt;&lt;/td&gt;
-          &lt;td&gt;URL 长度有限制（约 2048 个字符）&lt;/td&gt;
-          &lt;td&gt;没有数据大小限制&lt;/td&gt;
-      &lt;/tr&gt;
-      &lt;tr&gt;
-          &lt;td&gt;&lt;strong&gt;适用场景&lt;/strong&gt;&lt;/td&gt;
-          &lt;td&gt;获取数据，查询，展示资源&lt;/td&gt;
-          &lt;td&gt;提交表单，上传文件，修改资源，发送敏感数据等&lt;/td&gt;
-      &lt;/tr&gt;
-  &lt;/tbody&gt;
-&lt;/table&gt;
-&lt;h2 id=&#34;springmvc中reponsebodypathvariablerequestparameters在什么情况下使用&#34;&gt;SpringMVC中@ReponseBody、@PathVariable、@RequestParameters在什么情况下使用?&lt;/h2&gt;
-&lt;p&gt;&lt;code&gt;@ReponseBody&lt;/code&gt; 用于接受请求体数据，一般用于POST请求&lt;/p&gt;
-&lt;p&gt;&lt;code&gt;@PathVariable&lt;/code&gt; 用于接受路径参数，一般用户接受 &lt;code&gt;id&lt;/code&gt;&lt;/p&gt;
-&lt;p&gt;&lt;code&gt;@RequestParameters&lt;/code&gt; 用于接受请求参数，一般用于GET请求&lt;/p&gt;
-&lt;h2 id=&#34;jvm堆的结构gc介绍和作用&#34;&gt;JVM堆的结构、GC介绍和作用&lt;/h2&gt;
-&lt;p&gt;&lt;a href=&#34;https://www.51cto.com/article/710705.html&#34;&gt;JVM堆结构的参考文章&lt;/a&gt; 、 &lt;a href=&#34;https://www.bilibili.com/video/BV1dt411u7wi&#34;&gt;GC垃圾回收过程&lt;/a&gt;&lt;/p&gt;
-&lt;table&gt;
-  &lt;thead&gt;
-      &lt;tr&gt;
-          &lt;th&gt;区域&lt;/th&gt;
-          &lt;th&gt;主要用途&lt;/th&gt;
-          &lt;th&gt;特点&lt;/th&gt;
-      &lt;/tr&gt;
-  &lt;/thead&gt;
-  &lt;tbody&gt;
-      &lt;tr&gt;
-          &lt;td&gt;&lt;strong&gt;新生代（Young Generation）&lt;/strong&gt;&lt;/td&gt;
-          &lt;td&gt;存储新创建的对象，快速垃圾回收&lt;/td&gt;
-          &lt;td&gt;包含 Eden 区和两个 Survivor 区，采用复制算法进行回收&lt;/td&gt;
-      &lt;/tr&gt;
-      &lt;tr&gt;
-          &lt;td&gt;&lt;strong&gt;老年代（Old Generation）&lt;/strong&gt;&lt;/td&gt;
-          &lt;td&gt;存储长期存活的对象&lt;/td&gt;
-          &lt;td&gt;回收频率较低，垃圾回收较耗时&lt;/td&gt;
-      &lt;/tr&gt;
-      &lt;tr&gt;
-          &lt;td&gt;&lt;strong&gt;永久代（Permanent Generation) (jdk 1.7）&lt;/strong&gt;&lt;/td&gt;
-          &lt;td&gt;存储类的元数据、方法字节码等&lt;/td&gt;
-          &lt;td&gt;在 jdk 1.8 被 Metaspace 替代&lt;/td&gt;
-      &lt;/tr&gt;
-      &lt;tr&gt;
-          &lt;td&gt;&lt;strong&gt;元空间（jdk 1.8）&lt;/strong&gt;&lt;/td&gt;
-          &lt;td&gt;存储类的元数据&lt;/td&gt;
-          &lt;td&gt;不再属于堆，使用本地内存，大小由系统限制&lt;/td&gt;
-      &lt;/tr&gt;
-  &lt;/tbody&gt;
-&lt;/table&gt;
-&lt;p&gt;&lt;code&gt;GC&lt;/code&gt; 是垃圾回收器， 作用是自动内存管理和避免内存泄漏&lt;/p&gt;</description>
     </item>
   </channel>
 </rss>

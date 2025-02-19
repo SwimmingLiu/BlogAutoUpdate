@@ -1,5 +1,5 @@
 ---
-title: "Mysql Interview Questions"
+title: "MySQL面试题"
 date: 2025-02-19T15:16:42+08:00
 lastmod: 2025-02-19T15:16:42+08:00
 author: ["SwimmingLiu"]
@@ -36,8 +36,6 @@ cover:
     alt: ""
     relative: false
 ---
-
-# MySQL面试题
 
 ## 1.MySQL 中的数据排序是怎么实现的？
 

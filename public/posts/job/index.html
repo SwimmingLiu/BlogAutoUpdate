@@ -200,11 +200,26 @@
 
 <article class="post-entry"> 
   <header class="entry-header">
-    <h2 class="entry-hint-parent">Mysql Interview Questions
+    <h2 class="entry-hint-parent">Java基础题面试
     </h2>
   </header>
   <div class="entry-content">
-    <p>MySQL面试题 1.MySQL 中的数据排序是怎么实现的？ 1.排序方法：索引排序和文件排序 (filesort) 2.索引排序：如果order by xxx的字段为索引字段，则利用索引进行排序。效率最高，索引默认有序。 3.文件排序 (filesort)：内存排序(单路排序和双路排序)和磁盘排序，具体取决于排序数据的大小。其中，内存排序使用单路排序或双路排序，取决于max_length_for_sort_data(默认为4096个字节) 4.双路排序：取row_id(如果有主键，则为主键)和select a,b,c order by xxx的xxx字段放入sort_buffer(排序缓存)中，将排序后的row_id回表查询a,b,c 5.单路排序: 直接把要查的所有字段放入sort_buffer里，排序后直接得到结果集合 6.磁盘排序（归并排序）:将数据分为多份文件，单独对文件进行排序，然后合并成一个有序的大文件
+    <p>1. 序列化和反序列化 1.序列化和反序列化：把对象转换为字节流，用于存储和传输；读取字节流数据，重新创建对象。 2.序列化不包括静态对象：序列化和反序列化的本质是调用对象的writeObject和readObject方法,来实现将对象写入输出流和读取输入流。但是，静态变量不属于对象，所以调用这两个方法就没法儿让静态变量参与。
+2. 什么是不可变类？ 1.不可变类：初始化之后，就不能修改的类。 2.修饰方法：final 和 private 修饰所有类和变量 3.不可修改：不暴露set方法，只能通过重新创建对象替代修改功能(String的replace方法) 4.优缺点： 优点：线程安全，缓存友好 缺点：频繁拼接和修改会浪费资源
+3. Exception和Error区别? 1.Exception和Error定义区别：Exception是可处理程序异常，Error是系统级不可回复错误 2.try-catch建议： 1.范围能小则小 2.Exception最好要写清楚具体是哪一个Exception(IOException) 3.null值等能用if判断的，不要用try-catch,因为异常比条件语句低效 4.finally不要直接return和处理返回值
+4. Java有什么优势?</p>
+  </div>
+  <footer class="entry-footer"><span title='2025-02-19 15:18:58 +0800 CST'>February 19, 2025</span>&nbsp;·&nbsp;1 min&nbsp;·&nbsp;SwimmingLiu</footer>
+  <a class="entry-link" aria-label="post link to Java基础题面试" href="https://swimmingliu.cn/posts/job/java-basic-interview-questions/"></a>
+</article>
+
+<article class="post-entry"> 
+  <header class="entry-header">
+    <h2 class="entry-hint-parent">MySQL面试题
+    </h2>
+  </header>
+  <div class="entry-content">
+    <p>1.MySQL 中的数据排序是怎么实现的？ 1.排序方法：索引排序和文件排序 (filesort) 2.索引排序：如果order by xxx的字段为索引字段，则利用索引进行排序。效率最高，索引默认有序。 3.文件排序 (filesort)：内存排序(单路排序和双路排序)和磁盘排序，具体取决于排序数据的大小。其中，内存排序使用单路排序或双路排序，取决于max_length_for_sort_data(默认为4096个字节) 4.双路排序：取row_id(如果有主键，则为主键)和select a,b,c order by xxx的xxx字段放入sort_buffer(排序缓存)中，将排序后的row_id回表查询a,b,c 5.单路排序: 直接把要查的所有字段放入sort_buffer里，排序后直接得到结果集合 6.磁盘排序（归并排序）:将数据分为多份文件，单独对文件进行排序，然后合并成一个有序的大文件
 2. MySQL 的 Change Buffer 是什么？它有什么作用？ 1.ChangeBuffer定义：Change Buffer是InnoDB缓冲当中的一块缓存区，用于暂存二级索引的修改，避免二级索引页修改产生的随机IO 2.ChangeBuffer注意事项：只能用于二级索引，不能用于其他任何索引，包括主键索引和唯一索引都不行。 3.如果ChangeBuffer挂了，更改操作未执行，是否会出现脏数据？ 首先，ChangeBuffer也会保存在磁盘空间里面，redo log会记录Change Buffer当中的修改操作，确保数据一致性。
 知识拓展1：一级索引和二级索引区别
 一级索引（聚簇索引）：数据表的主键索引，数据和索引存储在同一B&#43;树的叶子节点中。每个表只能有一个一级索引。
@@ -221,7 +236,7 @@
 ...</p>
   </div>
   <footer class="entry-footer"><span title='2025-02-19 15:16:42 +0800 CST'>February 19, 2025</span>&nbsp;·&nbsp;1 min&nbsp;·&nbsp;SwimmingLiu</footer>
-  <a class="entry-link" aria-label="post link to Mysql Interview Questions" href="https://swimmingliu.cn/posts/job/mysql-interview-questions/"></a>
+  <a class="entry-link" aria-label="post link to MySQL面试题" href="https://swimmingliu.cn/posts/job/mysql-interview-questions/"></a>
 </article>
 
 <article class="post-entry"> 

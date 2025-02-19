@@ -14,12 +14,11 @@
     <lastBuildDate>Wed, 19 Feb 2025 15:16:42 +0800</lastBuildDate>
     <atom:link href="https://swimmingliu.cn/tags/mysql/index.xml" rel="self" type="application/rss+xml" />
     <item>
-      <title>Mysql Interview Questions</title>
+      <title>MySQL面试题</title>
       <link>https://swimmingliu.cn/posts/job/mysql-interview-questions/</link>
       <pubDate>Wed, 19 Feb 2025 15:16:42 +0800</pubDate>
       <guid>https://swimmingliu.cn/posts/job/mysql-interview-questions/</guid>
-      <description>&lt;h1 id=&#34;mysql面试题&#34;&gt;MySQL面试题&lt;/h1&gt;
-&lt;h2 id=&#34;1mysql-中的数据排序是怎么实现的&#34;&gt;1.MySQL 中的数据排序是怎么实现的？&lt;/h2&gt;
+      <description>&lt;h2 id=&#34;1mysql-中的数据排序是怎么实现的&#34;&gt;1.MySQL 中的数据排序是怎么实现的？&lt;/h2&gt;
 &lt;p&gt;1.排序方法：索引排序和文件排序 (filesort)
 2.索引排序：如果&lt;code&gt;order by xxx&lt;/code&gt;的字段为索引字段，则利用索引进行排序。效率最高，索引默认有序。
 3.文件排序 (filesort)：内存排序(单路排序和双路排序)和磁盘排序，具体取决于排序数据的大小。其中，内存排序使用单路排序或双路排序，取决于&lt;code&gt;max_length_for_sort_data&lt;/code&gt;(默认为4096个字节)

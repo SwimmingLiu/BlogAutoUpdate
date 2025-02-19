@@ -5,10 +5,9 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 <meta name="robots" content="index, follow">
-<title>Mysql Interview Questions | SwimmingLiu&#39;s Blog</title>
+<title>MySQL面试题 | SwimmingLiu&#39;s Blog</title>
 <meta name="keywords" content="Java, MySQL">
-<meta name="description" content="MySQL面试题
-1.MySQL 中的数据排序是怎么实现的？
+<meta name="description" content="1.MySQL 中的数据排序是怎么实现的？
 1.排序方法：索引排序和文件排序 (filesort)
 2.索引排序：如果order by xxx的字段为索引字段，则利用索引进行排序。效率最高，索引默认有序。
 3.文件排序 (filesort)：内存排序(单路排序和双路排序)和磁盘排序，具体取决于排序数据的大小。其中，内存排序使用单路排序或双路排序，取决于max_length_for_sort_data(默认为4096个字节)
@@ -142,8 +141,8 @@
 
 <meta property="og:url" content="https://swimmingliu.cn/posts/job/mysql-interview-questions/">
   <meta property="og:site_name" content="SwimmingLiu&#39;s Blog">
-  <meta property="og:title" content="Mysql Interview Questions">
-  <meta property="og:description" content="MySQL面试题 1.MySQL 中的数据排序是怎么实现的？ 1.排序方法：索引排序和文件排序 (filesort) 2.索引排序：如果order by xxx的字段为索引字段，则利用索引进行排序。效率最高，索引默认有序。 3.文件排序 (filesort)：内存排序(单路排序和双路排序)和磁盘排序，具体取决于排序数据的大小。其中，内存排序使用单路排序或双路排序，取决于max_length_for_sort_data(默认为4096个字节) 4.双路排序：取row_id(如果有主键，则为主键)和select a,b,c order by xxx的xxx字段放入sort_buffer(排序缓存)中，将排序后的row_id回表查询a,b,c 5.单路排序: 直接把要查的所有字段放入sort_buffer里，排序后直接得到结果集合 6.磁盘排序（归并排序）:将数据分为多份文件，单独对文件进行排序，然后合并成一个有序的大文件
+  <meta property="og:title" content="MySQL面试题">
+  <meta property="og:description" content="1.MySQL 中的数据排序是怎么实现的？ 1.排序方法：索引排序和文件排序 (filesort) 2.索引排序：如果order by xxx的字段为索引字段，则利用索引进行排序。效率最高，索引默认有序。 3.文件排序 (filesort)：内存排序(单路排序和双路排序)和磁盘排序，具体取决于排序数据的大小。其中，内存排序使用单路排序或双路排序，取决于max_length_for_sort_data(默认为4096个字节) 4.双路排序：取row_id(如果有主键，则为主键)和select a,b,c order by xxx的xxx字段放入sort_buffer(排序缓存)中，将排序后的row_id回表查询a,b,c 5.单路排序: 直接把要查的所有字段放入sort_buffer里，排序后直接得到结果集合 6.磁盘排序（归并排序）:将数据分为多份文件，单独对文件进行排序，然后合并成一个有序的大文件
 2. MySQL 的 Change Buffer 是什么？它有什么作用？ 1.ChangeBuffer定义：Change Buffer是InnoDB缓冲当中的一块缓存区，用于暂存二级索引的修改，避免二级索引页修改产生的随机IO 2.ChangeBuffer注意事项：只能用于二级索引，不能用于其他任何索引，包括主键索引和唯一索引都不行。 3.如果ChangeBuffer挂了，更改操作未执行，是否会出现脏数据？ 首先，ChangeBuffer也会保存在磁盘空间里面，redo log会记录Change Buffer当中的修改操作，确保数据一致性。
 知识拓展1：一级索引和二级索引区别
 一级索引（聚簇索引）：数据表的主键索引，数据和索引存储在同一B&#43;树的叶子节点中。每个表只能有一个一级索引。
@@ -167,9 +166,8 @@
       <meta property="og:image" content="https://swimmingliu.cn/papermod-cover.png">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:image" content="https://swimmingliu.cn/papermod-cover.png">
-<meta name="twitter:title" content="Mysql Interview Questions">
-<meta name="twitter:description" content="MySQL面试题
-1.MySQL 中的数据排序是怎么实现的？
+<meta name="twitter:title" content="MySQL面试题">
+<meta name="twitter:description" content="1.MySQL 中的数据排序是怎么实现的？
 1.排序方法：索引排序和文件排序 (filesort)
 2.索引排序：如果order by xxx的字段为索引字段，则利用索引进行排序。效率最高，索引默认有序。
 3.文件排序 (filesort)：内存排序(单路排序和双路排序)和磁盘排序，具体取决于排序数据的大小。其中，内存排序使用单路排序或双路排序，取决于max_length_for_sort_data(默认为4096个字节)
@@ -250,7 +248,7 @@
     {
       "@type": "ListItem",
       "position":  3 ,
-      "name": "Mysql Interview Questions",
+      "name": "MySQL面试题",
       "item": "https://swimmingliu.cn/posts/job/mysql-interview-questions/"
     }
   ]
@@ -260,14 +258,14 @@
 {
   "@context": "https://schema.org",
   "@type": "BlogPosting",
-  "headline": "Mysql Interview Questions",
-  "name": "Mysql Interview Questions",
-  "description": "MySQL面试题 1.MySQL 中的数据排序是怎么实现的？ 1.排序方法：索引排序和文件排序 (filesort) 2.索引排序：如果order by xxx的字段为索引字段，则利用索引进行排序。效率最高，索引默认有序。 3.文件排序 (filesort)：内存排序(单路排序和双路排序)和磁盘排序，具体取决于排序数据的大小。其中，内存排序使用单路排序或双路排序，取决于max_length_for_sort_data(默认为4096个字节) 4.双路排序：取row_id(如果有主键，则为主键)和select a,b,c order by xxx的xxx字段放入sort_buffer(排序缓存)中，将排序后的row_id回表查询a,b,c 5.单路排序: 直接把要查的所有字段放入sort_buffer里，排序后直接得到结果集合 6.磁盘排序（归并排序）:将数据分为多份文件，单独对文件进行排序，然后合并成一个有序的大文件\n2. MySQL 的 Change Buffer 是什么？它有什么作用？ 1.ChangeBuffer定义：Change Buffer是InnoDB缓冲当中的一块缓存区，用于暂存二级索引的修改，避免二级索引页修改产生的随机IO 2.ChangeBuffer注意事项：只能用于二级索引，不能用于其他任何索引，包括主键索引和唯一索引都不行。 3.如果ChangeBuffer挂了，更改操作未执行，是否会出现脏数据？ 首先，ChangeBuffer也会保存在磁盘空间里面，redo log会记录Change Buffer当中的修改操作，确保数据一致性。\n知识拓展1：一级索引和二级索引区别\n一级索引（聚簇索引）：数据表的主键索引，数据和索引存储在同一B+树的叶子节点中。每个表只能有一个一级索引。\n二级索引（非聚簇索引）：除主键外的其他索引，叶子节点存储索引列的值和对应的主键值。通过二级索引查询时，需要先通过二级索引获取主键值，再通过主键值查询数据，这个过程称为“回表”。\n知识拓展2: MySQL中有哪些常见索引？都有什么区别？\n在MySQL中，索引是提高查询效率的关键工具。常见的索引类型包括主键索引、唯一索引、普通索引、全文索引和空间索引。\n1. 主键索引（Primary Key Index）\n定义：主键索引是一种特殊的唯一索引，用于唯一标识表中的每一行数据。每个表只能有一个主键索引，且主键列的值不能为空。 特点：主键索引的叶子节点存储完整的数据行，因此查询效率高。在InnoDB存储引擎中，主键索引是聚簇索引，数据存储与索引结构合并。 2. 唯一索引（Unique Index）\n定义：唯一索引确保索引列的每个值都是唯一的，但允许有空值。与主键索引类似，不同之处在于唯一索引允许列值为NULL。 特点：唯一索引的叶子节点存储索引列的值和对应的主键值。在InnoDB中，唯一索引是非聚簇索引，数据存储与索引结构分开。 3. 普通索引（Index）\n定义：普通索引是最基本的索引类型，没有任何限制。索引列的值可以重复，也可以为NULL。 特点：普通索引的叶子节点存储索引列的值和对应的主键值。在InnoDB中，普通索引是非聚簇索引，数据存储与索引结构分开。 4. 全文索引（Fulltext Index）\n定义：全文索引用于对文本数据进行全文搜索，适用于MyISAM存储引擎。它允许对文本字段进行复杂的搜索，如查找包含特定单词的记录。 特点：全文索引的叶子节点存储文档的词项信息。在MyISAM中，全文索引是非聚簇索引，数据存储与索引结构分开。 5. 空间索引（Spatial Index）\n定义：空间索引用于对地理空间数据进行索引，支持空间数据类型的快速查询。它适用于存储地理位置、地图等空间数据的表。 特点：空间索引的叶子节点存储空间数据的索引信息。在MyISAM中，空间索引是非聚簇索引，数据存储与索引结构分开。 总结：\n主键索引：用于唯一标识每一行数据，值不能为空。 唯一索引：确保索引列的值唯一，但允许有空值。 普通索引：最基本的索引类型，允许重复和空值。 全文索引：用于对文本数据进行全文搜索，适用于MyISAM存储引擎。 空间索引：用于对地理空间数据进行索引，支持空间数据类型的快速查询。 3. 详细描述一条 SQL 语句在 MySQL 中的执行过程。 1.连接器判断用户是否成功建立连接，数据库连接的权限校验 2.分析器分析SQL语法和词法是否有误 3.优化器生成SQL的执行计划，确定使用的索引和调整where的执行顺序（包括连表顺序） 4.执行器判断当前用户是否有权限查询该表，然后执行该SQL语句\n",
+  "headline": "MySQL面试题",
+  "name": "MySQL面试题",
+  "description": "1.MySQL 中的数据排序是怎么实现的？ 1.排序方法：索引排序和文件排序 (filesort) 2.索引排序：如果order by xxx的字段为索引字段，则利用索引进行排序。效率最高，索引默认有序。 3.文件排序 (filesort)：内存排序(单路排序和双路排序)和磁盘排序，具体取决于排序数据的大小。其中，内存排序使用单路排序或双路排序，取决于max_length_for_sort_data(默认为4096个字节) 4.双路排序：取row_id(如果有主键，则为主键)和select a,b,c order by xxx的xxx字段放入sort_buffer(排序缓存)中，将排序后的row_id回表查询a,b,c 5.单路排序: 直接把要查的所有字段放入sort_buffer里，排序后直接得到结果集合 6.磁盘排序（归并排序）:将数据分为多份文件，单独对文件进行排序，然后合并成一个有序的大文件\n2. MySQL 的 Change Buffer 是什么？它有什么作用？ 1.ChangeBuffer定义：Change Buffer是InnoDB缓冲当中的一块缓存区，用于暂存二级索引的修改，避免二级索引页修改产生的随机IO 2.ChangeBuffer注意事项：只能用于二级索引，不能用于其他任何索引，包括主键索引和唯一索引都不行。 3.如果ChangeBuffer挂了，更改操作未执行，是否会出现脏数据？ 首先，ChangeBuffer也会保存在磁盘空间里面，redo log会记录Change Buffer当中的修改操作，确保数据一致性。\n知识拓展1：一级索引和二级索引区别\n一级索引（聚簇索引）：数据表的主键索引，数据和索引存储在同一B+树的叶子节点中。每个表只能有一个一级索引。\n二级索引（非聚簇索引）：除主键外的其他索引，叶子节点存储索引列的值和对应的主键值。通过二级索引查询时，需要先通过二级索引获取主键值，再通过主键值查询数据，这个过程称为“回表”。\n知识拓展2: MySQL中有哪些常见索引？都有什么区别？\n在MySQL中，索引是提高查询效率的关键工具。常见的索引类型包括主键索引、唯一索引、普通索引、全文索引和空间索引。\n1. 主键索引（Primary Key Index）\n定义：主键索引是一种特殊的唯一索引，用于唯一标识表中的每一行数据。每个表只能有一个主键索引，且主键列的值不能为空。 特点：主键索引的叶子节点存储完整的数据行，因此查询效率高。在InnoDB存储引擎中，主键索引是聚簇索引，数据存储与索引结构合并。 2. 唯一索引（Unique Index）\n定义：唯一索引确保索引列的每个值都是唯一的，但允许有空值。与主键索引类似，不同之处在于唯一索引允许列值为NULL。 特点：唯一索引的叶子节点存储索引列的值和对应的主键值。在InnoDB中，唯一索引是非聚簇索引，数据存储与索引结构分开。 3. 普通索引（Index）\n定义：普通索引是最基本的索引类型，没有任何限制。索引列的值可以重复，也可以为NULL。 特点：普通索引的叶子节点存储索引列的值和对应的主键值。在InnoDB中，普通索引是非聚簇索引，数据存储与索引结构分开。 4. 全文索引（Fulltext Index）\n定义：全文索引用于对文本数据进行全文搜索，适用于MyISAM存储引擎。它允许对文本字段进行复杂的搜索，如查找包含特定单词的记录。 特点：全文索引的叶子节点存储文档的词项信息。在MyISAM中，全文索引是非聚簇索引，数据存储与索引结构分开。 5. 空间索引（Spatial Index）\n定义：空间索引用于对地理空间数据进行索引，支持空间数据类型的快速查询。它适用于存储地理位置、地图等空间数据的表。 特点：空间索引的叶子节点存储空间数据的索引信息。在MyISAM中，空间索引是非聚簇索引，数据存储与索引结构分开。 总结：\n主键索引：用于唯一标识每一行数据，值不能为空。 唯一索引：确保索引列的值唯一，但允许有空值。 普通索引：最基本的索引类型，允许重复和空值。 全文索引：用于对文本数据进行全文搜索，适用于MyISAM存储引擎。 空间索引：用于对地理空间数据进行索引，支持空间数据类型的快速查询。 3. 详细描述一条 SQL 语句在 MySQL 中的执行过程。 1.连接器判断用户是否成功建立连接，数据库连接的权限校验 2.分析器分析SQL语法和词法是否有误 3.优化器生成SQL的执行计划，确定使用的索引和调整where的执行顺序（包括连表顺序） 4.执行器判断当前用户是否有权限查询该表，然后执行该SQL语句\n",
   "keywords": [
     "Java", "MySQL"
   ],
-  "articleBody": "MySQL面试题 1.MySQL 中的数据排序是怎么实现的？ 1.排序方法：索引排序和文件排序 (filesort) 2.索引排序：如果order by xxx的字段为索引字段，则利用索引进行排序。效率最高，索引默认有序。 3.文件排序 (filesort)：内存排序(单路排序和双路排序)和磁盘排序，具体取决于排序数据的大小。其中，内存排序使用单路排序或双路排序，取决于max_length_for_sort_data(默认为4096个字节) 4.双路排序：取row_id(如果有主键，则为主键)和select a,b,c order by xxx的xxx字段放入sort_buffer(排序缓存)中，将排序后的row_id回表查询a,b,c 5.单路排序: 直接把要查的所有字段放入sort_buffer里，排序后直接得到结果集合 6.磁盘排序（归并排序）:将数据分为多份文件，单独对文件进行排序，然后合并成一个有序的大文件\n2. MySQL 的 Change Buffer 是什么？它有什么作用？ 1.ChangeBuffer定义：Change Buffer是InnoDB缓冲当中的一块缓存区，用于暂存二级索引的修改，避免二级索引页修改产生的随机IO 2.ChangeBuffer注意事项：只能用于二级索引，不能用于其他任何索引，包括主键索引和唯一索引都不行。 3.如果ChangeBuffer挂了，更改操作未执行，是否会出现脏数据？ 首先，ChangeBuffer也会保存在磁盘空间里面，redo log会记录Change Buffer当中的修改操作，确保数据一致性。\n知识拓展1：一级索引和二级索引区别\n一级索引（聚簇索引）：数据表的主键索引，数据和索引存储在同一B+树的叶子节点中。每个表只能有一个一级索引。\n二级索引（非聚簇索引）：除主键外的其他索引，叶子节点存储索引列的值和对应的主键值。通过二级索引查询时，需要先通过二级索引获取主键值，再通过主键值查询数据，这个过程称为“回表”。\n知识拓展2: MySQL中有哪些常见索引？都有什么区别？\n在MySQL中，索引是提高查询效率的关键工具。常见的索引类型包括主键索引、唯一索引、普通索引、全文索引和空间索引。\n1. 主键索引（Primary Key Index）\n定义：主键索引是一种特殊的唯一索引，用于唯一标识表中的每一行数据。每个表只能有一个主键索引，且主键列的值不能为空。 特点：主键索引的叶子节点存储完整的数据行，因此查询效率高。在InnoDB存储引擎中，主键索引是聚簇索引，数据存储与索引结构合并。 2. 唯一索引（Unique Index）\n定义：唯一索引确保索引列的每个值都是唯一的，但允许有空值。与主键索引类似，不同之处在于唯一索引允许列值为NULL。 特点：唯一索引的叶子节点存储索引列的值和对应的主键值。在InnoDB中，唯一索引是非聚簇索引，数据存储与索引结构分开。 3. 普通索引（Index）\n定义：普通索引是最基本的索引类型，没有任何限制。索引列的值可以重复，也可以为NULL。 特点：普通索引的叶子节点存储索引列的值和对应的主键值。在InnoDB中，普通索引是非聚簇索引，数据存储与索引结构分开。 4. 全文索引（Fulltext Index）\n定义：全文索引用于对文本数据进行全文搜索，适用于MyISAM存储引擎。它允许对文本字段进行复杂的搜索，如查找包含特定单词的记录。 特点：全文索引的叶子节点存储文档的词项信息。在MyISAM中，全文索引是非聚簇索引，数据存储与索引结构分开。 5. 空间索引（Spatial Index）\n定义：空间索引用于对地理空间数据进行索引，支持空间数据类型的快速查询。它适用于存储地理位置、地图等空间数据的表。 特点：空间索引的叶子节点存储空间数据的索引信息。在MyISAM中，空间索引是非聚簇索引，数据存储与索引结构分开。 总结：\n主键索引：用于唯一标识每一行数据，值不能为空。 唯一索引：确保索引列的值唯一，但允许有空值。 普通索引：最基本的索引类型，允许重复和空值。 全文索引：用于对文本数据进行全文搜索，适用于MyISAM存储引擎。 空间索引：用于对地理空间数据进行索引，支持空间数据类型的快速查询。 3. 详细描述一条 SQL 语句在 MySQL 中的执行过程。 1.连接器判断用户是否成功建立连接，数据库连接的权限校验 2.分析器分析SQL语法和词法是否有误 3.优化器生成SQL的执行计划，确定使用的索引和调整where的执行顺序（包括连表顺序） 4.执行器判断当前用户是否有权限查询该表，然后执行该SQL语句\n[参考文献] 执行一条 select 语句，期间发生了什么？\n[补充] 3. MySQL 日志：undo log、redo log、binlog 有什么用？ undo log（回滚日志）：是 Innodb 存储引擎层生成的日志，实现了事务中的原子性，主要用于事务回滚和 MVCC。 redo log（重做日志）：是 Innodb 存储引擎层生成的日志，实现了事务中的持久性，主要用于掉电等故障恢复； binlog （归档日志）：是 Server 层生成的日志，主要用于数据备份和主从复制；\n直接看参考文献当中的七个问题和其解决方案\n[参考文献] MySQL 日志：undo log、redo log、binlog 有什么用？\n4. MySQL 的存储引擎有哪些？它们之间有什么区别？ InnoDB : 支持事务、行锁、外键; 高并发性能、支持高负载的OLTP应用 (银行交易、电子商务订单、库存管理等); 聚集索引存储，检索效率高\nMyISAM: 表锁、不支持事务和外键; 适用于读多写少的场景(数据仓库); 较高读性能和j较快的表级锁定\nMEMORY: 存储在内存中，速度快，重启后数据丢失; 适用于临时数据存储和快速存储\n5. MySQL 的索引类型有哪些？ 划分方向 索引类型 数据结构 B+树索引、Hash索引、倒排索引 (全文索引)、R-树索引 (多维空间树)、位图索引(Bitmap) 物理存储 聚簇索引、非聚簇索引 字段特性 主键索引、唯一索引、普通索引(二级索引、辅助索引)、前缀索引 字段个数 单列索引、联合索引 huafen\n",
-  "wordCount" : "141",
+  "articleBody": "1.MySQL 中的数据排序是怎么实现的？ 1.排序方法：索引排序和文件排序 (filesort) 2.索引排序：如果order by xxx的字段为索引字段，则利用索引进行排序。效率最高，索引默认有序。 3.文件排序 (filesort)：内存排序(单路排序和双路排序)和磁盘排序，具体取决于排序数据的大小。其中，内存排序使用单路排序或双路排序，取决于max_length_for_sort_data(默认为4096个字节) 4.双路排序：取row_id(如果有主键，则为主键)和select a,b,c order by xxx的xxx字段放入sort_buffer(排序缓存)中，将排序后的row_id回表查询a,b,c 5.单路排序: 直接把要查的所有字段放入sort_buffer里，排序后直接得到结果集合 6.磁盘排序（归并排序）:将数据分为多份文件，单独对文件进行排序，然后合并成一个有序的大文件\n2. MySQL 的 Change Buffer 是什么？它有什么作用？ 1.ChangeBuffer定义：Change Buffer是InnoDB缓冲当中的一块缓存区，用于暂存二级索引的修改，避免二级索引页修改产生的随机IO 2.ChangeBuffer注意事项：只能用于二级索引，不能用于其他任何索引，包括主键索引和唯一索引都不行。 3.如果ChangeBuffer挂了，更改操作未执行，是否会出现脏数据？ 首先，ChangeBuffer也会保存在磁盘空间里面，redo log会记录Change Buffer当中的修改操作，确保数据一致性。\n知识拓展1：一级索引和二级索引区别\n一级索引（聚簇索引）：数据表的主键索引，数据和索引存储在同一B+树的叶子节点中。每个表只能有一个一级索引。\n二级索引（非聚簇索引）：除主键外的其他索引，叶子节点存储索引列的值和对应的主键值。通过二级索引查询时，需要先通过二级索引获取主键值，再通过主键值查询数据，这个过程称为“回表”。\n知识拓展2: MySQL中有哪些常见索引？都有什么区别？\n在MySQL中，索引是提高查询效率的关键工具。常见的索引类型包括主键索引、唯一索引、普通索引、全文索引和空间索引。\n1. 主键索引（Primary Key Index）\n定义：主键索引是一种特殊的唯一索引，用于唯一标识表中的每一行数据。每个表只能有一个主键索引，且主键列的值不能为空。 特点：主键索引的叶子节点存储完整的数据行，因此查询效率高。在InnoDB存储引擎中，主键索引是聚簇索引，数据存储与索引结构合并。 2. 唯一索引（Unique Index）\n定义：唯一索引确保索引列的每个值都是唯一的，但允许有空值。与主键索引类似，不同之处在于唯一索引允许列值为NULL。 特点：唯一索引的叶子节点存储索引列的值和对应的主键值。在InnoDB中，唯一索引是非聚簇索引，数据存储与索引结构分开。 3. 普通索引（Index）\n定义：普通索引是最基本的索引类型，没有任何限制。索引列的值可以重复，也可以为NULL。 特点：普通索引的叶子节点存储索引列的值和对应的主键值。在InnoDB中，普通索引是非聚簇索引，数据存储与索引结构分开。 4. 全文索引（Fulltext Index）\n定义：全文索引用于对文本数据进行全文搜索，适用于MyISAM存储引擎。它允许对文本字段进行复杂的搜索，如查找包含特定单词的记录。 特点：全文索引的叶子节点存储文档的词项信息。在MyISAM中，全文索引是非聚簇索引，数据存储与索引结构分开。 5. 空间索引（Spatial Index）\n定义：空间索引用于对地理空间数据进行索引，支持空间数据类型的快速查询。它适用于存储地理位置、地图等空间数据的表。 特点：空间索引的叶子节点存储空间数据的索引信息。在MyISAM中，空间索引是非聚簇索引，数据存储与索引结构分开。 总结：\n主键索引：用于唯一标识每一行数据，值不能为空。 唯一索引：确保索引列的值唯一，但允许有空值。 普通索引：最基本的索引类型，允许重复和空值。 全文索引：用于对文本数据进行全文搜索，适用于MyISAM存储引擎。 空间索引：用于对地理空间数据进行索引，支持空间数据类型的快速查询。 3. 详细描述一条 SQL 语句在 MySQL 中的执行过程。 1.连接器判断用户是否成功建立连接，数据库连接的权限校验 2.分析器分析SQL语法和词法是否有误 3.优化器生成SQL的执行计划，确定使用的索引和调整where的执行顺序（包括连表顺序） 4.执行器判断当前用户是否有权限查询该表，然后执行该SQL语句\n[参考文献] 执行一条 select 语句，期间发生了什么？\n[补充] 3. MySQL 日志：undo log、redo log、binlog 有什么用？ undo log（回滚日志）：是 Innodb 存储引擎层生成的日志，实现了事务中的原子性，主要用于事务回滚和 MVCC。 redo log（重做日志）：是 Innodb 存储引擎层生成的日志，实现了事务中的持久性，主要用于掉电等故障恢复； binlog （归档日志）：是 Server 层生成的日志，主要用于数据备份和主从复制；\n直接看参考文献当中的七个问题和其解决方案\n[参考文献] MySQL 日志：undo log、redo log、binlog 有什么用？\n4. MySQL 的存储引擎有哪些？它们之间有什么区别？ InnoDB : 支持事务、行锁、外键; 高并发性能、支持高负载的OLTP应用 (银行交易、电子商务订单、库存管理等); 聚集索引存储，检索效率高\nMyISAM: 表锁、不支持事务和外键; 适用于读多写少的场景(数据仓库); 较高读性能和j较快的表级锁定\nMEMORY: 存储在内存中，速度快，重启后数据丢失; 适用于临时数据存储和快速存储\n5. MySQL 的索引类型有哪些？ 划分方向 索引类型 数据结构 B+树索引、Hash索引、倒排索引 (全文索引)、R-树索引 (多维空间树)、位图索引(Bitmap) 物理存储 聚簇索引、非聚簇索引 字段特性 主键索引、唯一索引、普通索引(二级索引、辅助索引)、前缀索引 字段个数 单列索引、联合索引 huafen\n",
+  "wordCount" : "140",
   "inLanguage": "en",
   "image": "https://swimmingliu.cn/papermod-cover.png","datePublished": "2025-02-19T15:16:42+08:00",
   "dateModified": "2025-02-19T15:16:42+08:00",
@@ -389,7 +387,7 @@
   <header class="post-header">
     <div class="breadcrumbs"><a href="https://swimmingliu.cn/">Home</a>&nbsp;»&nbsp;<a href="https://swimmingliu.cn/posts/">📚 Posts</a>&nbsp;»&nbsp;<a href="https://swimmingliu.cn/posts/job/">💻 Job</a></div>
     <h1 class="post-title entry-hint-parent">
-      Mysql Interview Questions
+      MySQL面试题
     </h1>
     <div class="post-meta"><span title='2025-02-19 15:16:42 +0800 CST'>February 19, 2025</span>&nbsp;·&nbsp;1 min&nbsp;·&nbsp;SwimmingLiu
 
@@ -401,9 +399,6 @@
         </summary>
 
         <div class="inner"><ul>
-                <li>
-                    <a href="#mysql%e9%9d%a2%e8%af%95%e9%a2%98" aria-label="MySQL面试题">MySQL面试题</a><ul>
-                        
                 <li>
                     <a href="#1mysql-%e4%b8%ad%e7%9a%84%e6%95%b0%e6%8d%ae%e6%8e%92%e5%ba%8f%e6%98%af%e6%80%8e%e4%b9%88%e5%ae%9e%e7%8e%b0%e7%9a%84" aria-label="1.MySQL 中的数据排序是怎么实现的？">1.MySQL 中的数据排序是怎么实现的？</a></li>
                 <li>
@@ -418,13 +413,10 @@
                     <a href="#5-mysql-%e7%9a%84%e7%b4%a2%e5%bc%95%e7%b1%bb%e5%9e%8b%e6%9c%89%e5%93%aa%e4%ba%9b" aria-label="5. MySQL 的索引类型有哪些？">5. MySQL 的索引类型有哪些？</a>
                 </li>
             </ul>
-            </li>
-            </ul>
         </div>
     </details>
 </div>
-  <div class="post-content"><h1 id="mysql面试题">MySQL面试题<a hidden class="anchor" aria-hidden="true" href="#mysql面试题">#</a></h1>
-<h2 id="1mysql-中的数据排序是怎么实现的">1.MySQL 中的数据排序是怎么实现的？<a hidden class="anchor" aria-hidden="true" href="#1mysql-中的数据排序是怎么实现的">#</a></h2>
+  <div class="post-content"><h2 id="1mysql-中的数据排序是怎么实现的">1.MySQL 中的数据排序是怎么实现的？<a hidden class="anchor" aria-hidden="true" href="#1mysql-中的数据排序是怎么实现的">#</a></h2>
 <p>1.排序方法：索引排序和文件排序 (filesort)
 2.索引排序：如果<code>order by xxx</code>的字段为索引字段，则利用索引进行排序。效率最高，索引默认有序。
 3.文件排序 (filesort)：内存排序(单路排序和双路排序)和磁盘排序，具体取决于排序数据的大小。其中，内存排序使用单路排序或双路排序，取决于<code>max_length_for_sort_data</code>(默认为4096个字节)
@@ -537,6 +529,11 @@ binlog （归档日志）：是 Server 层生成的日志，主要用于数据�
       <li><a href="https://swimmingliu.cn/tags/mysql/">MySQL</a></li>
     </ul>
 <nav class="paginav">
+  <a class="prev" href="https://swimmingliu.cn/posts/job/java-basic-interview-questions/">
+    <span class="title">« Prev</span>
+    <br>
+    <span>Java基础题面试</span>
+  </a>
   <a class="next" href="https://swimmingliu.cn/posts/job/java-interview-questions-notes/">
     <span class="title">Next »</span>
     <br>

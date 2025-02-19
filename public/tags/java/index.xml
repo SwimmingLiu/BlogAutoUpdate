@@ -11,15 +11,39 @@
     </image>
     <generator>Hugo -- 0.136.0</generator>
     <language>en</language>
-    <lastBuildDate>Wed, 19 Feb 2025 15:16:42 +0800</lastBuildDate>
+    <lastBuildDate>Wed, 19 Feb 2025 15:18:58 +0800</lastBuildDate>
     <atom:link href="https://swimmingliu.cn/tags/java/index.xml" rel="self" type="application/rss+xml" />
     <item>
-      <title>Mysql Interview Questions</title>
+      <title>Java基础题面试</title>
+      <link>https://swimmingliu.cn/posts/job/java-basic-interview-questions/</link>
+      <pubDate>Wed, 19 Feb 2025 15:18:58 +0800</pubDate>
+      <guid>https://swimmingliu.cn/posts/job/java-basic-interview-questions/</guid>
+      <description>&lt;h2 id=&#34;1-序列化和反序列化&#34;&gt;1. 序列化和反序列化&lt;/h2&gt;
+&lt;p&gt;1.序列化和反序列化：把对象转换为字节流，用于存储和传输；读取字节流数据，重新创建对象。
+2.序列化不包括静态对象：序列化和反序列化的本质是调用对象的&lt;code&gt;writeObject&lt;/code&gt;和&lt;code&gt;readObject&lt;/code&gt;方法,来实现将对象写入输出流和读取输入流。但是，静态变量不属于对象，所以调用这两个方法就没法儿让静态变量参与。&lt;/p&gt;
+&lt;h2 id=&#34;2-什么是不可变类&#34;&gt;2. 什么是不可变类？&lt;/h2&gt;
+&lt;p&gt;1.不可变类：初始化之后，就不能修改的类。
+2.修饰方法：final 和 private 修饰所有类和变量
+3.不可修改：不暴露set方法，只能通过重新创建对象替代修改功能(&lt;code&gt;String&lt;/code&gt;的replace方法)
+4.优缺点：
+优点：线程安全，缓存友好
+缺点：频繁拼接和修改会浪费资源&lt;/p&gt;
+&lt;h2 id=&#34;3-exception和error区别&#34;&gt;3. Exception和Error区别?&lt;/h2&gt;
+&lt;p&gt;1.Exception和Error定义区别：Exception是可处理程序异常，Error是系统级不可回复错误
+2.try-catch建议：
+1.范围能小则小
+2.Exception最好要写清楚具体是哪一个Exception(IOException)
+3.null值等能用if判断的，不要用try-catch,因为异常比条件语句低效
+4.finally不要直接return和处理返回值&lt;/p&gt;
+&lt;p&gt;&lt;img alt=&#34;Exception和Error区别&#34; loading=&#34;lazy&#34; src=&#34;https://pic.code-nav.cn/mianshiya/question_picture/1814905001808924674/j0JcqCQh_image_mianshiya.png&#34;&gt;&lt;/p&gt;
+&lt;h2 id=&#34;4-java有什么优势&#34;&gt;4. Java有什么优势?&lt;/h2&gt;</description>
+    </item>
+    <item>
+      <title>MySQL面试题</title>
       <link>https://swimmingliu.cn/posts/job/mysql-interview-questions/</link>
       <pubDate>Wed, 19 Feb 2025 15:16:42 +0800</pubDate>
       <guid>https://swimmingliu.cn/posts/job/mysql-interview-questions/</guid>
-      <description>&lt;h1 id=&#34;mysql面试题&#34;&gt;MySQL面试题&lt;/h1&gt;
-&lt;h2 id=&#34;1mysql-中的数据排序是怎么实现的&#34;&gt;1.MySQL 中的数据排序是怎么实现的？&lt;/h2&gt;
+      <description>&lt;h2 id=&#34;1mysql-中的数据排序是怎么实现的&#34;&gt;1.MySQL 中的数据排序是怎么实现的？&lt;/h2&gt;
 &lt;p&gt;1.排序方法：索引排序和文件排序 (filesort)
 2.索引排序：如果&lt;code&gt;order by xxx&lt;/code&gt;的字段为索引字段，则利用索引进行排序。效率最高，索引默认有序。
 3.文件排序 (filesort)：内存排序(单路排序和双路排序)和磁盘排序，具体取决于排序数据的大小。其中，内存排序使用单路排序或双路排序，取决于&lt;code&gt;max_length_for_sort_data&lt;/code&gt;(默认为4096个字节)

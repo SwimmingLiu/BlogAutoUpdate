@@ -5,7 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 <meta name="robots" content="index, follow">
-<title>Java基础题面试 | SwimmingLiu&#39;s Blog</title>
+<title>Java基础题面试笔记 | SwimmingLiu&#39;s Blog</title>
 <meta name="keywords" content="Java">
 <meta name="description" content="1. 序列化和反序列化
 1.序列化和反序列化：把对象转换为字节流，用于存储和传输；读取字节流数据，重新创建对象。
@@ -25,7 +25,29 @@
 3.null值等能用if判断的，不要用try-catch,因为异常比条件语句低效
 4.finally不要直接return和处理返回值
 
-4. Java有什么优势?">
+4. Java 中的 hashCode 和 equals 方法之间有什么关系？
+1、equals() 和 hashCode() 的关系
+
+如果两个对象euqals() 为 true， 则其 hashCode()一定相同
+如果两个对象hashCode() 相同，其equals()结果不一定为true
+
+2、为什么重写equals()之后，一定要重写hashCode()
+当重写equals() 之后，通常是重新定义了两个对象相等的逻辑。如果不重写hashCode()方法， 则在散列集合（HashMap 和 HashSet）中，可能无法正确存储和检索，因为两个相同的对象可能有不同的hash值。
+
+例如，下方Person类重写了equals() 方法，但是没有重新hashCode()
+public class Person {
+private String name;
+private int age;
+
+@Override
+public boolean equals(Object obj) {
+  if (this == obj) return true;
+  if (obj == null || getClass() != obj.getClass()) return false;
+  Person person = (Person) obj;
+  return age == person.age &amp;&amp; Objects.equals(name, person.name);
+}
+}
+创建相同的对象，并添加到HashSet中">
 <meta name="author" content="SwimmingLiu">
 <link rel="canonical" href="https://swimmingliu.cn/posts/job/java-basic-interview-questions/">
 <link crossorigin="anonymous" href="/assets/css/stylesheet.6ecbb0040febd20e47edd88a662c19f1ea945bf7427774b86594271d18f88faf.css" integrity="sha256-bsuwBA/r0g5H7diKZiwZ8eqUW/dCd3S4ZZQnHRj4j68=" rel="preload stylesheet" as="style">
@@ -101,11 +123,15 @@
 
 <meta property="og:url" content="https://swimmingliu.cn/posts/job/java-basic-interview-questions/">
   <meta property="og:site_name" content="SwimmingLiu&#39;s Blog">
-  <meta property="og:title" content="Java基础题面试">
+  <meta property="og:title" content="Java基础题面试笔记">
   <meta property="og:description" content="1. 序列化和反序列化 1.序列化和反序列化：把对象转换为字节流，用于存储和传输；读取字节流数据，重新创建对象。 2.序列化不包括静态对象：序列化和反序列化的本质是调用对象的writeObject和readObject方法,来实现将对象写入输出流和读取输入流。但是，静态变量不属于对象，所以调用这两个方法就没法儿让静态变量参与。
 2. 什么是不可变类？ 1.不可变类：初始化之后，就不能修改的类。 2.修饰方法：final 和 private 修饰所有类和变量 3.不可修改：不暴露set方法，只能通过重新创建对象替代修改功能(String的replace方法) 4.优缺点： 优点：线程安全，缓存友好 缺点：频繁拼接和修改会浪费资源
 3. Exception和Error区别? 1.Exception和Error定义区别：Exception是可处理程序异常，Error是系统级不可回复错误 2.try-catch建议： 1.范围能小则小 2.Exception最好要写清楚具体是哪一个Exception(IOException) 3.null值等能用if判断的，不要用try-catch,因为异常比条件语句低效 4.finally不要直接return和处理返回值
-4. Java有什么优势?">
+4. Java 中的 hashCode 和 equals 方法之间有什么关系？ 1、equals() 和 hashCode() 的关系
+如果两个对象euqals() 为 true， 则其 hashCode()一定相同 如果两个对象hashCode() 相同，其equals()结果不一定为true 2、为什么重写equals()之后，一定要重写hashCode()
+当重写equals() 之后，通常是重新定义了两个对象相等的逻辑。如果不重写hashCode()方法， 则在散列集合（HashMap 和 HashSet）中，可能无法正确存储和检索，因为两个相同的对象可能有不同的hash值。
+例如，下方Person类重写了equals() 方法，但是没有重新hashCode()
+public class Person { private String name; private int age; @Override public boolean equals(Object obj) { if (this == obj) return true; if (obj == null || getClass() != obj.getClass()) return false; Person person = (Person) obj; return age == person.age &amp;&amp; Objects.equals(name, person.name); } } 创建相同的对象，并添加到HashSet中">
   <meta property="og:locale" content="en">
   <meta property="og:type" content="article">
     <meta property="article:section" content="posts">
@@ -115,7 +141,7 @@
       <meta property="og:image" content="https://swimmingliu.cn/papermod-cover.png">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:image" content="https://swimmingliu.cn/papermod-cover.png">
-<meta name="twitter:title" content="Java基础题面试">
+<meta name="twitter:title" content="Java基础题面试笔记">
 <meta name="twitter:description" content="1. 序列化和反序列化
 1.序列化和反序列化：把对象转换为字节流，用于存储和传输；读取字节流数据，重新创建对象。
 2.序列化不包括静态对象：序列化和反序列化的本质是调用对象的writeObject和readObject方法,来实现将对象写入输出流和读取输入流。但是，静态变量不属于对象，所以调用这两个方法就没法儿让静态变量参与。
@@ -134,7 +160,29 @@
 3.null值等能用if判断的，不要用try-catch,因为异常比条件语句低效
 4.finally不要直接return和处理返回值
 
-4. Java有什么优势?">
+4. Java 中的 hashCode 和 equals 方法之间有什么关系？
+1、equals() 和 hashCode() 的关系
+
+如果两个对象euqals() 为 true， 则其 hashCode()一定相同
+如果两个对象hashCode() 相同，其equals()结果不一定为true
+
+2、为什么重写equals()之后，一定要重写hashCode()
+当重写equals() 之后，通常是重新定义了两个对象相等的逻辑。如果不重写hashCode()方法， 则在散列集合（HashMap 和 HashSet）中，可能无法正确存储和检索，因为两个相同的对象可能有不同的hash值。
+
+例如，下方Person类重写了equals() 方法，但是没有重新hashCode()
+public class Person {
+private String name;
+private int age;
+
+@Override
+public boolean equals(Object obj) {
+  if (this == obj) return true;
+  if (obj == null || getClass() != obj.getClass()) return false;
+  Person person = (Person) obj;
+  return age == person.age &amp;&amp; Objects.equals(name, person.name);
+}
+}
+创建相同的对象，并添加到HashSet中">
 
 
 <script type="application/ld+json">
@@ -157,7 +205,7 @@
     {
       "@type": "ListItem",
       "position":  3 ,
-      "name": "Java基础题面试",
+      "name": "Java基础题面试笔记",
       "item": "https://swimmingliu.cn/posts/job/java-basic-interview-questions/"
     }
   ]
@@ -167,14 +215,14 @@
 {
   "@context": "https://schema.org",
   "@type": "BlogPosting",
-  "headline": "Java基础题面试",
-  "name": "Java基础题面试",
-  "description": "1. 序列化和反序列化 1.序列化和反序列化：把对象转换为字节流，用于存储和传输；读取字节流数据，重新创建对象。 2.序列化不包括静态对象：序列化和反序列化的本质是调用对象的writeObject和readObject方法,来实现将对象写入输出流和读取输入流。但是，静态变量不属于对象，所以调用这两个方法就没法儿让静态变量参与。\n2. 什么是不可变类？ 1.不可变类：初始化之后，就不能修改的类。 2.修饰方法：final 和 private 修饰所有类和变量 3.不可修改：不暴露set方法，只能通过重新创建对象替代修改功能(String的replace方法) 4.优缺点： 优点：线程安全，缓存友好 缺点：频繁拼接和修改会浪费资源\n3. Exception和Error区别? 1.Exception和Error定义区别：Exception是可处理程序异常，Error是系统级不可回复错误 2.try-catch建议： 1.范围能小则小 2.Exception最好要写清楚具体是哪一个Exception(IOException) 3.null值等能用if判断的，不要用try-catch,因为异常比条件语句低效 4.finally不要直接return和处理返回值\n4. Java有什么优势?",
+  "headline": "Java基础题面试笔记",
+  "name": "Java基础题面试笔记",
+  "description": "1. 序列化和反序列化 1.序列化和反序列化：把对象转换为字节流，用于存储和传输；读取字节流数据，重新创建对象。 2.序列化不包括静态对象：序列化和反序列化的本质是调用对象的writeObject和readObject方法,来实现将对象写入输出流和读取输入流。但是，静态变量不属于对象，所以调用这两个方法就没法儿让静态变量参与。\n2. 什么是不可变类？ 1.不可变类：初始化之后，就不能修改的类。 2.修饰方法：final 和 private 修饰所有类和变量 3.不可修改：不暴露set方法，只能通过重新创建对象替代修改功能(String的replace方法) 4.优缺点： 优点：线程安全，缓存友好 缺点：频繁拼接和修改会浪费资源\n3. Exception和Error区别? 1.Exception和Error定义区别：Exception是可处理程序异常，Error是系统级不可回复错误 2.try-catch建议： 1.范围能小则小 2.Exception最好要写清楚具体是哪一个Exception(IOException) 3.null值等能用if判断的，不要用try-catch,因为异常比条件语句低效 4.finally不要直接return和处理返回值\n4. Java 中的 hashCode 和 equals 方法之间有什么关系？ 1、equals() 和 hashCode() 的关系\n如果两个对象euqals() 为 true， 则其 hashCode()一定相同 如果两个对象hashCode() 相同，其equals()结果不一定为true 2、为什么重写equals()之后，一定要重写hashCode()\n当重写equals() 之后，通常是重新定义了两个对象相等的逻辑。如果不重写hashCode()方法， 则在散列集合（HashMap 和 HashSet）中，可能无法正确存储和检索，因为两个相同的对象可能有不同的hash值。\n例如，下方Person类重写了equals() 方法，但是没有重新hashCode()\npublic class Person { private String name; private int age; @Override public boolean equals(Object obj) { if (this == obj) return true; if (obj == null || getClass() != obj.getClass()) return false; Person person = (Person) obj; return age == person.age \u0026amp;\u0026amp; Objects.equals(name, person.name); } } 创建相同的对象，并添加到HashSet中\n",
   "keywords": [
     "Java"
   ],
-  "articleBody": "1. 序列化和反序列化 1.序列化和反序列化：把对象转换为字节流，用于存储和传输；读取字节流数据，重新创建对象。 2.序列化不包括静态对象：序列化和反序列化的本质是调用对象的writeObject和readObject方法,来实现将对象写入输出流和读取输入流。但是，静态变量不属于对象，所以调用这两个方法就没法儿让静态变量参与。\n2. 什么是不可变类？ 1.不可变类：初始化之后，就不能修改的类。 2.修饰方法：final 和 private 修饰所有类和变量 3.不可修改：不暴露set方法，只能通过重新创建对象替代修改功能(String的replace方法) 4.优缺点： 优点：线程安全，缓存友好 缺点：频繁拼接和修改会浪费资源\n3. Exception和Error区别? 1.Exception和Error定义区别：Exception是可处理程序异常，Error是系统级不可回复错误 2.try-catch建议： 1.范围能小则小 2.Exception最好要写清楚具体是哪一个Exception(IOException) 3.null值等能用if判断的，不要用try-catch,因为异常比条件语句低效 4.finally不要直接return和处理返回值\n4. Java有什么优势? ",
-  "wordCount" : "25",
+  "articleBody": "1. 序列化和反序列化 1.序列化和反序列化：把对象转换为字节流，用于存储和传输；读取字节流数据，重新创建对象。 2.序列化不包括静态对象：序列化和反序列化的本质是调用对象的writeObject和readObject方法,来实现将对象写入输出流和读取输入流。但是，静态变量不属于对象，所以调用这两个方法就没法儿让静态变量参与。\n2. 什么是不可变类？ 1.不可变类：初始化之后，就不能修改的类。 2.修饰方法：final 和 private 修饰所有类和变量 3.不可修改：不暴露set方法，只能通过重新创建对象替代修改功能(String的replace方法) 4.优缺点： 优点：线程安全，缓存友好 缺点：频繁拼接和修改会浪费资源\n3. Exception和Error区别? 1.Exception和Error定义区别：Exception是可处理程序异常，Error是系统级不可回复错误 2.try-catch建议： 1.范围能小则小 2.Exception最好要写清楚具体是哪一个Exception(IOException) 3.null值等能用if判断的，不要用try-catch,因为异常比条件语句低效 4.finally不要直接return和处理返回值\n4. Java 中的 hashCode 和 equals 方法之间有什么关系？ 1、equals() 和 hashCode() 的关系\n如果两个对象euqals() 为 true， 则其 hashCode()一定相同 如果两个对象hashCode() 相同，其equals()结果不一定为true 2、为什么重写equals()之后，一定要重写hashCode()\n当重写equals() 之后，通常是重新定义了两个对象相等的逻辑。如果不重写hashCode()方法， 则在散列集合（HashMap 和 HashSet）中，可能无法正确存储和检索，因为两个相同的对象可能有不同的hash值。\n例如，下方Person类重写了equals() 方法，但是没有重新hashCode()\npublic class Person { private String name; private int age; @Override public boolean equals(Object obj) { if (this == obj) return true; if (obj == null || getClass() != obj.getClass()) return false; Person person = (Person) obj; return age == person.age \u0026\u0026 Objects.equals(name, person.name); } } 创建相同的对象，并添加到HashSet中\nPerson p1 = new Person(\"Alice\", 25); Person p2 = new Person(\"Alice\", 25); Set\u003cPerson\u003e set = new HashSet\u003c\u003e(); set.add(p1); set.add(p2); 由于hashCode() 没有重写，所有两个相同的对象可能有不同的散列码，导致集合当中有两个相同的元素\n如何重写hashCode()?\n只需要让其hash值，采用equals()当中相同的判断条件生成合理的散列值即可\n@Override public int hashCode() { return Objects.hash(name, age); } ",
+  "wordCount" : "128",
   "inLanguage": "en",
   "image": "https://swimmingliu.cn/papermod-cover.png","datePublished": "2025-02-19T15:18:58+08:00",
   "dateModified": "2025-02-19T15:18:58+08:00",
@@ -296,7 +344,7 @@
   <header class="post-header">
     <div class="breadcrumbs"><a href="https://swimmingliu.cn/">Home</a>&nbsp;»&nbsp;<a href="https://swimmingliu.cn/posts/">📚 Posts</a>&nbsp;»&nbsp;<a href="https://swimmingliu.cn/posts/job/">💻 Job</a></div>
     <h1 class="post-title entry-hint-parent">
-      Java基础题面试
+      Java基础题面试笔记
     </h1>
     <div class="post-meta"><span title='2025-02-19 15:18:58 +0800 CST'>February 19, 2025</span>&nbsp;·&nbsp;1 min&nbsp;·&nbsp;SwimmingLiu
 
@@ -315,7 +363,7 @@
                 <li>
                     <a href="#3-exception%e5%92%8cerror%e5%8c%ba%e5%88%ab" aria-label="3. Exception和Error区别?">3. Exception和Error区别?</a></li>
                 <li>
-                    <a href="#4-java%e6%9c%89%e4%bb%80%e4%b9%88%e4%bc%98%e5%8a%bf" aria-label="4. Java有什么优势?">4. Java有什么优势?</a>
+                    <a href="#4-java-%e4%b8%ad%e7%9a%84-hashcode-%e5%92%8c-equals-%e6%96%b9%e6%b3%95%e4%b9%8b%e9%97%b4%e6%9c%89%e4%bb%80%e4%b9%88%e5%85%b3%e7%b3%bb" aria-label="4. Java 中的 hashCode 和 equals 方法之间有什么关系？">4. Java 中的 hashCode 和 equals 方法之间有什么关系？</a>
                 </li>
             </ul>
         </div>
@@ -338,8 +386,43 @@
 2.Exception最好要写清楚具体是哪一个Exception(IOException)
 3.null值等能用if判断的，不要用try-catch,因为异常比条件语句低效
 4.finally不要直接return和处理返回值</p>
-<p><img alt="Exception和Error区别" loading="lazy" src="https://pic.code-nav.cn/mianshiya/question_picture/1814905001808924674/j0JcqCQh_image_mianshiya.png"></p>
-<h2 id="4-java有什么优势">4. Java有什么优势?<a hidden class="anchor" aria-hidden="true" href="#4-java有什么优势">#</a></h2>
+<p><img alt="Exception和Error区别" loading="lazy" src="https://oss.swimmingliu.cn/946b73cc-ef5d-11ef-95ab-c858c0c1deba"></p>
+<h2 id="4-java-中的-hashcode-和-equals-方法之间有什么关系">4. Java 中的 hashCode 和 equals 方法之间有什么关系？<a hidden class="anchor" aria-hidden="true" href="#4-java-中的-hashcode-和-equals-方法之间有什么关系">#</a></h2>
+<p>1、<code>equals()</code> 和 <code>hashCode()</code> 的关系</p>
+<ul>
+<li>如果两个对象<code>euqals()</code> 为 <code>true</code>， 则其 <code>hashCode()</code>一定相同</li>
+<li>如果两个对象<code>hashCode()</code> 相同，其<code>equals()</code>结果不一定为<code>true</code></li>
+</ul>
+<p>2、为什么重写<code>equals()</code>之后，一定要重写<code>hashCode()</code></p>
+<p>当重写<code>equals()</code> 之后，通常是重新定义了两个对象相等的逻辑。如果不重写<code>hashCode()</code>方法， 则在散列集合（<code>HashMap</code> 和 <code>HashSet</code>）中，可能无法正确存储和检索，因为两个相同的对象可能有不同的<code>hash</code>值。</p>
+<blockquote>
+<p>例如，下方Person类重写了<code>equals()</code> 方法，但是没有重新<code>hashCode()</code></p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-Java" data-lang="Java"><span class="line"><span class="cl"><span class="kd">public</span><span class="w"> </span><span class="kd">class</span> <span class="nc">Person</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="kd">private</span><span class="w"> </span><span class="n">String</span><span class="w"> </span><span class="n">name</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="kd">private</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">age</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="nd">@Override</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="kd">public</span><span class="w"> </span><span class="kt">boolean</span><span class="w"> </span><span class="nf">equals</span><span class="p">(</span><span class="n">Object</span><span class="w"> </span><span class="n">obj</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="k">this</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">obj</span><span class="p">)</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="kc">true</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">obj</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="kc">null</span><span class="w"> </span><span class="o">||</span><span class="w"> </span><span class="n">getClass</span><span class="p">()</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="n">obj</span><span class="p">.</span><span class="na">getClass</span><span class="p">())</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="kc">false</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="n">Person</span><span class="w"> </span><span class="n">person</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">(</span><span class="n">Person</span><span class="p">)</span><span class="w"> </span><span class="n">obj</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="k">return</span><span class="w"> </span><span class="n">age</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">person</span><span class="p">.</span><span class="na">age</span><span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="n">Objects</span><span class="p">.</span><span class="na">equals</span><span class="p">(</span><span class="n">name</span><span class="p">,</span><span class="w"> </span><span class="n">person</span><span class="p">.</span><span class="na">name</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="p">}</span><span class="w">
+</span></span></span></code></pre></div><p>创建相同的对象，并添加到<code>HashSet</code>中</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="n">Person</span><span class="w"> </span><span class="n">p1</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">Person</span><span class="p">(</span><span class="s">&#34;Alice&#34;</span><span class="p">,</span><span class="w"> </span><span class="n">25</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="n">Person</span><span class="w"> </span><span class="n">p2</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">Person</span><span class="p">(</span><span class="s">&#34;Alice&#34;</span><span class="p">,</span><span class="w"> </span><span class="n">25</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="n">Set</span><span class="o">&lt;</span><span class="n">Person</span><span class="o">&gt;</span><span class="w"> </span><span class="n">set</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">HashSet</span><span class="o">&lt;&gt;</span><span class="p">();</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="n">set</span><span class="p">.</span><span class="na">add</span><span class="p">(</span><span class="n">p1</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="n">set</span><span class="p">.</span><span class="na">add</span><span class="p">(</span><span class="n">p2</span><span class="p">);</span><span class="w">
+</span></span></span></code></pre></div><p>由于<code>hashCode</code>() 没有重写，所有两个相同的对象可能有不同的散列码，导致集合当中有两个相同的元素</p>
+<p>如何重写<code>hashCode()</code>?</p>
+<p>只需要让其hash值，采用<code>equals()</code>当中相同的判断条件生成合理的散列值即可</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="nd">@Override</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="kd">public</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="nf">hashCode</span><span class="p">()</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="k">return</span><span class="w"> </span><span class="n">Objects</span><span class="p">.</span><span class="na">hash</span><span class="p">(</span><span class="n">name</span><span class="p">,</span><span class="w"> </span><span class="n">age</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="p">}</span><span class="w">
+</span></span></span></code></pre></div></blockquote>
 
 
   </div>
@@ -354,7 +437,7 @@
   <a class="next" href="https://swimmingliu.cn/posts/job/mysql-interview-questions/">
     <span class="title">Next »</span>
     <br>
-    <span>MySQL面试题</span>
+    <span>MySQL面试题笔记</span>
   </a>
 </nav>
 

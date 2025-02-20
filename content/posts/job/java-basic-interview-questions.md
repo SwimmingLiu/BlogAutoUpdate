@@ -1,5 +1,5 @@
 ---
-title: "Java基础题面试"
+title: "Java基础题面试笔记"
 date: 2025-02-19T15:18:58+08:00
 lastmod: 2025-02-19T15:18:58+08:00
 author: ["SwimmingLiu"]
@@ -58,7 +58,56 @@ cover:
     3.null值等能用if判断的，不要用try-catch,因为异常比条件语句低效
     4.finally不要直接return和处理返回值
 
-![Exception和Error区别](https://pic.code-nav.cn/mianshiya/question_picture/1814905001808924674/j0JcqCQh_image_mianshiya.png)
+![Exception和Error区别](https://oss.swimmingliu.cn/946b73cc-ef5d-11ef-95ab-c858c0c1deba)
 
-## 4. Java有什么优势?
+## 4. Java 中的 hashCode 和 equals 方法之间有什么关系？
+
+1、`equals()` 和 `hashCode()` 的关系
+
+- 如果两个对象`euqals()` 为 `true`， 则其 `hashCode()`一定相同
+- 如果两个对象`hashCode()` 相同，其`equals()`结果不一定为`true`
+
+2、为什么重写`equals()`之后，一定要重写`hashCode()`
+
+当重写`equals()` 之后，通常是重新定义了两个对象相等的逻辑。如果不重写`hashCode()`方法， 则在散列集合（`HashMap` 和 `HashSet`）中，可能无法正确存储和检索，因为两个相同的对象可能有不同的`hash`值。
+
+>例如，下方Person类重写了`equals()` 方法，但是没有重新`hashCode()`
+>
+>``` Java
+>public class Person {
+>private String name;
+>private int age;
+>
+>@Override
+>public boolean equals(Object obj) {
+>   if (this == obj) return true;
+>   if (obj == null || getClass() != obj.getClass()) return false;
+>   Person person = (Person) obj;
+>   return age == person.age && Objects.equals(name, person.name);
+>}
+>}
+>```
+>
+>创建相同的对象，并添加到`HashSet`中
+>
+>```java
+>Person p1 = new Person("Alice", 25);
+>Person p2 = new Person("Alice", 25);
+>Set<Person> set = new HashSet<>();
+>set.add(p1);
+>set.add(p2);
+>```
+>
+>由于`hashCode`() 没有重写，所有两个相同的对象可能有不同的散列码，导致集合当中有两个相同的元素
+>
+>如何重写`hashCode()`?
+>
+>只需要让其hash值，采用`equals()`当中相同的判断条件生成合理的散列值即可
+>
+>```java
+>@Override
+>public int hashCode() {
+>return Objects.hash(name, age);
+>}
+>```
 

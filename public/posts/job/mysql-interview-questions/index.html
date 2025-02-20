@@ -5,7 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 <meta name="robots" content="index, follow">
-<title>MySQL面试题 | SwimmingLiu&#39;s Blog</title>
+<title>MySQL面试题笔记 | SwimmingLiu&#39;s Blog</title>
 <meta name="keywords" content="Java, MySQL">
 <meta name="description" content="1.MySQL 中的数据排序是怎么实现的？
 1.排序方法：索引排序和文件排序 (filesort)
@@ -141,7 +141,7 @@
 
 <meta property="og:url" content="https://swimmingliu.cn/posts/job/mysql-interview-questions/">
   <meta property="og:site_name" content="SwimmingLiu&#39;s Blog">
-  <meta property="og:title" content="MySQL面试题">
+  <meta property="og:title" content="MySQL面试题笔记">
   <meta property="og:description" content="1.MySQL 中的数据排序是怎么实现的？ 1.排序方法：索引排序和文件排序 (filesort) 2.索引排序：如果order by xxx的字段为索引字段，则利用索引进行排序。效率最高，索引默认有序。 3.文件排序 (filesort)：内存排序(单路排序和双路排序)和磁盘排序，具体取决于排序数据的大小。其中，内存排序使用单路排序或双路排序，取决于max_length_for_sort_data(默认为4096个字节) 4.双路排序：取row_id(如果有主键，则为主键)和select a,b,c order by xxx的xxx字段放入sort_buffer(排序缓存)中，将排序后的row_id回表查询a,b,c 5.单路排序: 直接把要查的所有字段放入sort_buffer里，排序后直接得到结果集合 6.磁盘排序（归并排序）:将数据分为多份文件，单独对文件进行排序，然后合并成一个有序的大文件
 2. MySQL 的 Change Buffer 是什么？它有什么作用？ 1.ChangeBuffer定义：Change Buffer是InnoDB缓冲当中的一块缓存区，用于暂存二级索引的修改，避免二级索引页修改产生的随机IO 2.ChangeBuffer注意事项：只能用于二级索引，不能用于其他任何索引，包括主键索引和唯一索引都不行。 3.如果ChangeBuffer挂了，更改操作未执行，是否会出现脏数据？ 首先，ChangeBuffer也会保存在磁盘空间里面，redo log会记录Change Buffer当中的修改操作，确保数据一致性。
 知识拓展1：一级索引和二级索引区别
@@ -166,7 +166,7 @@
       <meta property="og:image" content="https://swimmingliu.cn/papermod-cover.png">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:image" content="https://swimmingliu.cn/papermod-cover.png">
-<meta name="twitter:title" content="MySQL面试题">
+<meta name="twitter:title" content="MySQL面试题笔记">
 <meta name="twitter:description" content="1.MySQL 中的数据排序是怎么实现的？
 1.排序方法：索引排序和文件排序 (filesort)
 2.索引排序：如果order by xxx的字段为索引字段，则利用索引进行排序。效率最高，索引默认有序。
@@ -248,7 +248,7 @@
     {
       "@type": "ListItem",
       "position":  3 ,
-      "name": "MySQL面试题",
+      "name": "MySQL面试题笔记",
       "item": "https://swimmingliu.cn/posts/job/mysql-interview-questions/"
     }
   ]
@@ -258,14 +258,14 @@
 {
   "@context": "https://schema.org",
   "@type": "BlogPosting",
-  "headline": "MySQL面试题",
-  "name": "MySQL面试题",
+  "headline": "MySQL面试题笔记",
+  "name": "MySQL面试题笔记",
   "description": "1.MySQL 中的数据排序是怎么实现的？ 1.排序方法：索引排序和文件排序 (filesort) 2.索引排序：如果order by xxx的字段为索引字段，则利用索引进行排序。效率最高，索引默认有序。 3.文件排序 (filesort)：内存排序(单路排序和双路排序)和磁盘排序，具体取决于排序数据的大小。其中，内存排序使用单路排序或双路排序，取决于max_length_for_sort_data(默认为4096个字节) 4.双路排序：取row_id(如果有主键，则为主键)和select a,b,c order by xxx的xxx字段放入sort_buffer(排序缓存)中，将排序后的row_id回表查询a,b,c 5.单路排序: 直接把要查的所有字段放入sort_buffer里，排序后直接得到结果集合 6.磁盘排序（归并排序）:将数据分为多份文件，单独对文件进行排序，然后合并成一个有序的大文件\n2. MySQL 的 Change Buffer 是什么？它有什么作用？ 1.ChangeBuffer定义：Change Buffer是InnoDB缓冲当中的一块缓存区，用于暂存二级索引的修改，避免二级索引页修改产生的随机IO 2.ChangeBuffer注意事项：只能用于二级索引，不能用于其他任何索引，包括主键索引和唯一索引都不行。 3.如果ChangeBuffer挂了，更改操作未执行，是否会出现脏数据？ 首先，ChangeBuffer也会保存在磁盘空间里面，redo log会记录Change Buffer当中的修改操作，确保数据一致性。\n知识拓展1：一级索引和二级索引区别\n一级索引（聚簇索引）：数据表的主键索引，数据和索引存储在同一B+树的叶子节点中。每个表只能有一个一级索引。\n二级索引（非聚簇索引）：除主键外的其他索引，叶子节点存储索引列的值和对应的主键值。通过二级索引查询时，需要先通过二级索引获取主键值，再通过主键值查询数据，这个过程称为“回表”。\n知识拓展2: MySQL中有哪些常见索引？都有什么区别？\n在MySQL中，索引是提高查询效率的关键工具。常见的索引类型包括主键索引、唯一索引、普通索引、全文索引和空间索引。\n1. 主键索引（Primary Key Index）\n定义：主键索引是一种特殊的唯一索引，用于唯一标识表中的每一行数据。每个表只能有一个主键索引，且主键列的值不能为空。 特点：主键索引的叶子节点存储完整的数据行，因此查询效率高。在InnoDB存储引擎中，主键索引是聚簇索引，数据存储与索引结构合并。 2. 唯一索引（Unique Index）\n定义：唯一索引确保索引列的每个值都是唯一的，但允许有空值。与主键索引类似，不同之处在于唯一索引允许列值为NULL。 特点：唯一索引的叶子节点存储索引列的值和对应的主键值。在InnoDB中，唯一索引是非聚簇索引，数据存储与索引结构分开。 3. 普通索引（Index）\n定义：普通索引是最基本的索引类型，没有任何限制。索引列的值可以重复，也可以为NULL。 特点：普通索引的叶子节点存储索引列的值和对应的主键值。在InnoDB中，普通索引是非聚簇索引，数据存储与索引结构分开。 4. 全文索引（Fulltext Index）\n定义：全文索引用于对文本数据进行全文搜索，适用于MyISAM存储引擎。它允许对文本字段进行复杂的搜索，如查找包含特定单词的记录。 特点：全文索引的叶子节点存储文档的词项信息。在MyISAM中，全文索引是非聚簇索引，数据存储与索引结构分开。 5. 空间索引（Spatial Index）\n定义：空间索引用于对地理空间数据进行索引，支持空间数据类型的快速查询。它适用于存储地理位置、地图等空间数据的表。 特点：空间索引的叶子节点存储空间数据的索引信息。在MyISAM中，空间索引是非聚簇索引，数据存储与索引结构分开。 总结：\n主键索引：用于唯一标识每一行数据，值不能为空。 唯一索引：确保索引列的值唯一，但允许有空值。 普通索引：最基本的索引类型，允许重复和空值。 全文索引：用于对文本数据进行全文搜索，适用于MyISAM存储引擎。 空间索引：用于对地理空间数据进行索引，支持空间数据类型的快速查询。 3. 详细描述一条 SQL 语句在 MySQL 中的执行过程。 1.连接器判断用户是否成功建立连接，数据库连接的权限校验 2.分析器分析SQL语法和词法是否有误 3.优化器生成SQL的执行计划，确定使用的索引和调整where的执行顺序（包括连表顺序） 4.执行器判断当前用户是否有权限查询该表，然后执行该SQL语句\n",
   "keywords": [
     "Java", "MySQL"
   ],
-  "articleBody": "1.MySQL 中的数据排序是怎么实现的？ 1.排序方法：索引排序和文件排序 (filesort) 2.索引排序：如果order by xxx的字段为索引字段，则利用索引进行排序。效率最高，索引默认有序。 3.文件排序 (filesort)：内存排序(单路排序和双路排序)和磁盘排序，具体取决于排序数据的大小。其中，内存排序使用单路排序或双路排序，取决于max_length_for_sort_data(默认为4096个字节) 4.双路排序：取row_id(如果有主键，则为主键)和select a,b,c order by xxx的xxx字段放入sort_buffer(排序缓存)中，将排序后的row_id回表查询a,b,c 5.单路排序: 直接把要查的所有字段放入sort_buffer里，排序后直接得到结果集合 6.磁盘排序（归并排序）:将数据分为多份文件，单独对文件进行排序，然后合并成一个有序的大文件\n2. MySQL 的 Change Buffer 是什么？它有什么作用？ 1.ChangeBuffer定义：Change Buffer是InnoDB缓冲当中的一块缓存区，用于暂存二级索引的修改，避免二级索引页修改产生的随机IO 2.ChangeBuffer注意事项：只能用于二级索引，不能用于其他任何索引，包括主键索引和唯一索引都不行。 3.如果ChangeBuffer挂了，更改操作未执行，是否会出现脏数据？ 首先，ChangeBuffer也会保存在磁盘空间里面，redo log会记录Change Buffer当中的修改操作，确保数据一致性。\n知识拓展1：一级索引和二级索引区别\n一级索引（聚簇索引）：数据表的主键索引，数据和索引存储在同一B+树的叶子节点中。每个表只能有一个一级索引。\n二级索引（非聚簇索引）：除主键外的其他索引，叶子节点存储索引列的值和对应的主键值。通过二级索引查询时，需要先通过二级索引获取主键值，再通过主键值查询数据，这个过程称为“回表”。\n知识拓展2: MySQL中有哪些常见索引？都有什么区别？\n在MySQL中，索引是提高查询效率的关键工具。常见的索引类型包括主键索引、唯一索引、普通索引、全文索引和空间索引。\n1. 主键索引（Primary Key Index）\n定义：主键索引是一种特殊的唯一索引，用于唯一标识表中的每一行数据。每个表只能有一个主键索引，且主键列的值不能为空。 特点：主键索引的叶子节点存储完整的数据行，因此查询效率高。在InnoDB存储引擎中，主键索引是聚簇索引，数据存储与索引结构合并。 2. 唯一索引（Unique Index）\n定义：唯一索引确保索引列的每个值都是唯一的，但允许有空值。与主键索引类似，不同之处在于唯一索引允许列值为NULL。 特点：唯一索引的叶子节点存储索引列的值和对应的主键值。在InnoDB中，唯一索引是非聚簇索引，数据存储与索引结构分开。 3. 普通索引（Index）\n定义：普通索引是最基本的索引类型，没有任何限制。索引列的值可以重复，也可以为NULL。 特点：普通索引的叶子节点存储索引列的值和对应的主键值。在InnoDB中，普通索引是非聚簇索引，数据存储与索引结构分开。 4. 全文索引（Fulltext Index）\n定义：全文索引用于对文本数据进行全文搜索，适用于MyISAM存储引擎。它允许对文本字段进行复杂的搜索，如查找包含特定单词的记录。 特点：全文索引的叶子节点存储文档的词项信息。在MyISAM中，全文索引是非聚簇索引，数据存储与索引结构分开。 5. 空间索引（Spatial Index）\n定义：空间索引用于对地理空间数据进行索引，支持空间数据类型的快速查询。它适用于存储地理位置、地图等空间数据的表。 特点：空间索引的叶子节点存储空间数据的索引信息。在MyISAM中，空间索引是非聚簇索引，数据存储与索引结构分开。 总结：\n主键索引：用于唯一标识每一行数据，值不能为空。 唯一索引：确保索引列的值唯一，但允许有空值。 普通索引：最基本的索引类型，允许重复和空值。 全文索引：用于对文本数据进行全文搜索，适用于MyISAM存储引擎。 空间索引：用于对地理空间数据进行索引，支持空间数据类型的快速查询。 3. 详细描述一条 SQL 语句在 MySQL 中的执行过程。 1.连接器判断用户是否成功建立连接，数据库连接的权限校验 2.分析器分析SQL语法和词法是否有误 3.优化器生成SQL的执行计划，确定使用的索引和调整where的执行顺序（包括连表顺序） 4.执行器判断当前用户是否有权限查询该表，然后执行该SQL语句\n[参考文献] 执行一条 select 语句，期间发生了什么？\n[补充] 3. MySQL 日志：undo log、redo log、binlog 有什么用？ undo log（回滚日志）：是 Innodb 存储引擎层生成的日志，实现了事务中的原子性，主要用于事务回滚和 MVCC。 redo log（重做日志）：是 Innodb 存储引擎层生成的日志，实现了事务中的持久性，主要用于掉电等故障恢复； binlog （归档日志）：是 Server 层生成的日志，主要用于数据备份和主从复制；\n直接看参考文献当中的七个问题和其解决方案\n[参考文献] MySQL 日志：undo log、redo log、binlog 有什么用？\n4. MySQL 的存储引擎有哪些？它们之间有什么区别？ InnoDB : 支持事务、行锁、外键; 高并发性能、支持高负载的OLTP应用 (银行交易、电子商务订单、库存管理等); 聚集索引存储，检索效率高\nMyISAM: 表锁、不支持事务和外键; 适用于读多写少的场景(数据仓库); 较高读性能和j较快的表级锁定\nMEMORY: 存储在内存中，速度快，重启后数据丢失; 适用于临时数据存储和快速存储\n5. MySQL 的索引类型有哪些？ 划分方向 索引类型 数据结构 B+树索引、Hash索引、倒排索引 (全文索引)、R-树索引 (多维空间树)、位图索引(Bitmap) 物理存储 聚簇索引、非聚簇索引 字段特性 主键索引、唯一索引、普通索引(二级索引、辅助索引)、前缀索引 字段个数 单列索引、联合索引 huafen\n",
-  "wordCount" : "140",
+  "articleBody": "1.MySQL 中的数据排序是怎么实现的？ 1.排序方法：索引排序和文件排序 (filesort) 2.索引排序：如果order by xxx的字段为索引字段，则利用索引进行排序。效率最高，索引默认有序。 3.文件排序 (filesort)：内存排序(单路排序和双路排序)和磁盘排序，具体取决于排序数据的大小。其中，内存排序使用单路排序或双路排序，取决于max_length_for_sort_data(默认为4096个字节) 4.双路排序：取row_id(如果有主键，则为主键)和select a,b,c order by xxx的xxx字段放入sort_buffer(排序缓存)中，将排序后的row_id回表查询a,b,c 5.单路排序: 直接把要查的所有字段放入sort_buffer里，排序后直接得到结果集合 6.磁盘排序（归并排序）:将数据分为多份文件，单独对文件进行排序，然后合并成一个有序的大文件\n2. MySQL 的 Change Buffer 是什么？它有什么作用？ 1.ChangeBuffer定义：Change Buffer是InnoDB缓冲当中的一块缓存区，用于暂存二级索引的修改，避免二级索引页修改产生的随机IO 2.ChangeBuffer注意事项：只能用于二级索引，不能用于其他任何索引，包括主键索引和唯一索引都不行。 3.如果ChangeBuffer挂了，更改操作未执行，是否会出现脏数据？ 首先，ChangeBuffer也会保存在磁盘空间里面，redo log会记录Change Buffer当中的修改操作，确保数据一致性。\n知识拓展1：一级索引和二级索引区别\n一级索引（聚簇索引）：数据表的主键索引，数据和索引存储在同一B+树的叶子节点中。每个表只能有一个一级索引。\n二级索引（非聚簇索引）：除主键外的其他索引，叶子节点存储索引列的值和对应的主键值。通过二级索引查询时，需要先通过二级索引获取主键值，再通过主键值查询数据，这个过程称为“回表”。\n知识拓展2: MySQL中有哪些常见索引？都有什么区别？\n在MySQL中，索引是提高查询效率的关键工具。常见的索引类型包括主键索引、唯一索引、普通索引、全文索引和空间索引。\n1. 主键索引（Primary Key Index）\n定义：主键索引是一种特殊的唯一索引，用于唯一标识表中的每一行数据。每个表只能有一个主键索引，且主键列的值不能为空。 特点：主键索引的叶子节点存储完整的数据行，因此查询效率高。在InnoDB存储引擎中，主键索引是聚簇索引，数据存储与索引结构合并。 2. 唯一索引（Unique Index）\n定义：唯一索引确保索引列的每个值都是唯一的，但允许有空值。与主键索引类似，不同之处在于唯一索引允许列值为NULL。 特点：唯一索引的叶子节点存储索引列的值和对应的主键值。在InnoDB中，唯一索引是非聚簇索引，数据存储与索引结构分开。 3. 普通索引（Index）\n定义：普通索引是最基本的索引类型，没有任何限制。索引列的值可以重复，也可以为NULL。 特点：普通索引的叶子节点存储索引列的值和对应的主键值。在InnoDB中，普通索引是非聚簇索引，数据存储与索引结构分开。 4. 全文索引（Fulltext Index）\n定义：全文索引用于对文本数据进行全文搜索，适用于MyISAM存储引擎。它允许对文本字段进行复杂的搜索，如查找包含特定单词的记录。 特点：全文索引的叶子节点存储文档的词项信息。在MyISAM中，全文索引是非聚簇索引，数据存储与索引结构分开。 5. 空间索引（Spatial Index）\n定义：空间索引用于对地理空间数据进行索引，支持空间数据类型的快速查询。它适用于存储地理位置、地图等空间数据的表。 特点：空间索引的叶子节点存储空间数据的索引信息。在MyISAM中，空间索引是非聚簇索引，数据存储与索引结构分开。 总结：\n主键索引：用于唯一标识每一行数据，值不能为空。 唯一索引：确保索引列的值唯一，但允许有空值。 普通索引：最基本的索引类型，允许重复和空值。 全文索引：用于对文本数据进行全文搜索，适用于MyISAM存储引擎。 空间索引：用于对地理空间数据进行索引，支持空间数据类型的快速查询。 3. 详细描述一条 SQL 语句在 MySQL 中的执行过程。 1.连接器判断用户是否成功建立连接，数据库连接的权限校验 2.分析器分析SQL语法和词法是否有误 3.优化器生成SQL的执行计划，确定使用的索引和调整where的执行顺序（包括连表顺序） 4.执行器判断当前用户是否有权限查询该表，然后执行该SQL语句\n[参考文献] 执行一条 select 语句，期间发生了什么？\n[补充] 3. MySQL 日志：undo log、redo log、binlog 有什么用？ undo log（回滚日志）：是 Innodb 存储引擎层生成的日志，实现了事务中的原子性，主要用于事务回滚和 MVCC。 redo log（重做日志）：是 Innodb 存储引擎层生成的日志，实现了事务中的持久性，主要用于掉电等故障恢复； binlog （归档日志）：是 Server 层生成的日志，主要用于数据备份和主从复制；\n直接看参考文献当中的七个问题和其解决方案\n[参考文献] MySQL 日志：undo log、redo log、binlog 有什么用？\n4. MySQL 的存储引擎有哪些？它们之间有什么区别？ InnoDB : 支持事务、行锁、外键; 高并发性能、支持高负载的OLTP应用 (银行交易、电子商务订单、库存管理等); 聚集索引存储，检索效率高\nMyISAM: 表锁、不支持事务和外键; 适用于读多写少的场景(数据仓库); 较高读性能和j较快的表级锁定\nMEMORY: 存储在内存中，速度快，重启后数据丢失; 适用于临时数据存储和快速存储\n5. MySQL 的索引类型有哪些？ 划分方向 索引类型 数据结构 B+树索引、Hash索引、倒排索引 (全文索引)、R-树索引 (多维空间树)、位图索引(Bitmap) 物理存储 聚簇索引、非聚簇索引 字段特性 主键索引、唯一索引、普通索引(二级索引、辅助索引)、前缀索引 字段个数 单列索引、联合索引 6. MySQL InnoDB 引擎中的聚簇索引和非聚簇索引有什么区别？ 聚簇索引：就像是图书馆里按照书籍主题顺序摆放的书架。在这个书架（也就是聚簇索引）上，每本书（也就是数据库中的行数据）都是按照某个主题（通常是主键）来排列的。所以，当你想要找某一主题的书时，只要知道主题名（主键值），就能很快在书架上找到它，而且相邻主题的书也是挨在一起的，找起来很方便。但是，这种方式的缺点是，如果你想要改变某本书的主题（更新主键），可能就需要移动整本书到新的位置，甚至可能需要重新整理整个书架（数据页），这样就比较麻烦了。\n非聚簇索引：则更像是图书馆里的一个索引卡片箱。在这个卡片箱里，每张卡片（也就是非聚簇索引的节点）上都写着书籍的主题（索引列的值）和书籍在书架上的位置（主键值或ROWID）。当你想要找一本书时，可以先在卡片箱里找到对应的卡片，然后根据卡片上的位置信息去书架上找书。这种方式的好处是灵活，你可以为不同的书籍主题制作多张卡片，方便从不同的角度查找书籍。但是，坏处是每次找书都需要两步：先在卡片箱里找卡片，再去书架上找书，这样可能会比直接在书架上找书要慢一些。\n总的来说，聚簇索引和非聚簇索引的主要区别在于它们如何存储数据和索引，以及它们如何影响数据的查询和更新操作。聚簇索引将数据直接存储在索引上，查询效率高，但更新操作可能较复杂；而非聚簇索引则通过索引指向数据，提供了更多的灵活性，但查询时可能需要额外的步骤。在选择使用哪种索引时，需要根据具体的应用场景和查询需求来决定。\nMySQL InnoDB的聚簇索引和非聚簇索引就像图书馆的两种找书的方式。 1.聚簇索引：图书馆在书架上(聚簇索引)摆放各种编号(主键名称)的书本(数据库中每一行的数据)。当你需要从图书馆找某一本书时，只需要知道书籍的编号(主键值)，就能够快速找到他。它的缺点是，如果需要换某一本书的编号(更新主键)，就需要移动整本书到新的位置，甚至重新整理书架(数据页)。这也是推荐使用select *的原因，因为如果需要查找索引列的数据，直接用二级索引就可以找到数据。例如通过姓名（二级索引）查询id(主键索引)，直接用二级索引就可以拿到对应的id.但是如果用select *,数据库就会回表查询其他的数据（性别，年龄等等）。 2.非聚簇索引：就像图书馆单独设置编号卡片箱，每张卡片(非聚簇索引)上包含了书籍名称(索引列的值)和书籍在书架上的编号位置(主键值或者ROWID)。当你想要找某本书的时候，可以根据卡片里面对应的编号进行查找。坏处是每次都需要两步走，查找起来没那么方便。 总结：聚簇索引是包含数据的，所以查找起来方便，但是更新操作开销大。非聚簇索引不包含数据，只包含索引列的值和其指向的数据索引，需要两步走才能查到数据。\n7. MySQL 中的回表是什么？ 回表：用二级索引中的主键取聚簇索引中查找数据行的过程 为什么需要回表：使用非聚簇索引的二级索引查询时，只能查到索引列的值和其主键值，无法获取其他数据 回表的缺点：回表会带来随机I/O, 频繁回表会导致效率非常低。所以不推荐使用 select * 回表的其他场景：当查询的部分列没有包含在索引中时，即便使用了索引，也需要会去获取缺失的列数据，称为覆盖索引缺失。 覆盖索引缺失发送场景：select 语句当中包含了非索引列; 索引的类型为Hash和full-text索引 （不存储列的值），不支持覆盖索引。 如何减少回表：MySQL5.6之后，引入了提高查询效率的优化技术，默认开启。允许MySQL用索引查找数据时，将部分查询条件下推到索引引擎层来过滤，减少了需要读取的数据行。 8. MySQL索引的最左前缀匹配原则是什么? 最左前缀匹配原则的定义：使用联合索引的时候，查询的条件必须从索引的最左侧开始匹配。如果联合索引包含多个列，查询条件必须包含第一个列，然后是第二个列，以此类推。 最左前缀匹配原则的原理：联合索引在B+树中的排列方式遵循从左到右的原则，例如联合索引(a, b, c)，在查询时，首先按照a的值进行排序，如果a的值相同，再查b的值，以此类推。 常见场景：= 、\u003e= 、\u003c= 、 BETWEEN 、like (xx%) 都包含等值的情况，可以定位到某个数，然后进行范围扫描，不会出现停止匹配的现象。但是 \u003e 和 \u003c 则不行。 部分不符合最左前缀匹配原则也能使用索引的原因：MySQL8当中引入了 Skip Can Range Access Method, 将缺失的左边的值查出来，如果左边缺失的列数据量少，则拼凑左边的索引，让SQL符合最左前缀匹配原则。 9. MySQL的覆盖索引是什么？ 覆盖索引定义：查询的所有字段都是二级索引，从而使查询可以直接访问二级索引二不需要访问实习的表数据(主键索引)。 覆盖索引优点：减少I/O操作 ; 提高查询速度 (索引比表数据更加紧凑); 减少内存占用 (读取的索引页面而不是表数据页面) 10. MySQL的索引下推 (ICP) 是什么? 索引下推(ICP)定义: 减少回表查询，提高查询效率的行为。允许MySQL使用索引查找数据的时候，将部分查询条件下推到存储引擎层进行过滤，从而减少需要从表中读取的数据行，减少I/O。\n应用场景：比如当前表建了一个联合索引(a, b, c)，使用where条件的时候，由于b用得是 like '%xxx%' 需要回表查询 (like 'xx%' 不需要)。即先查询a = '1' 的数据， 然后回表查询，最后进行where条件的过滤。如果使用索引下推之后 (MySQL 5.6)，在查询晚a = '1'的数据之后，可以先由存储引擎层进行where条件过滤，然后再回表查询， 减少回表查询的次数。\nSELECT * FROM people WHERE a='1' AND b LIKE '%123%' 如联合索引index_name_age，假设数据库中有数据（张三，18）、（张三，28）、（张三，48）、（张三，8)\n【没有索引下推】查询name=‘张三’和age\u003e30的数据时，会先匹配有四条数据name=‘张三’匹配成功，回表四次查询出带有name=‘张三’的四条数据，然后再根据age\u003e30对这四条数据进行范围查找\n【使用索引下推】查询name=‘张三’和age\u003e30的数据时，会先匹配有四条数据name=‘张三’匹配成功，然后age\u003e30的数据，过滤完成后，再用主键索引去进行一次回表操作\n11. MySQL建索引需要注意哪些事项？ 【索引适合场景】\n频繁使用where 、order by 、group by、distinct 的字段 (加快操作速度) 关联字段 (如果没有索引，连接的过程中，每个只都会进行一次全表扫描) 【不适合场景】\n字段频繁更新 (更新除了修改数据外，还需要维护索引信息 =\u003e 调整B+树会降低性能) 字段值重复率高（区分度低，建立索引更加消耗资源） 参与列计算的字段 (索引会失效) 长字段 (text、 longtext) ：长字段占据的内存大，提升性能不明显。 【注】索引不是越多越好，因为每次修改都需要维护索引数据，消耗资源\n12. MySQL中使用索引一定有效吗？如何排查索引效果？ 【索引失效的情况】\n联合索引不符合最左匹配原则 对索引列使用了运算(where id + 3 = 8)、函数 (lower()、count())、like '%xx%' 等操作 对索引列和非索引列使用 or 操作 (where name = \"swimmingliu\" or age = 34) 索引列类型不匹配导致的强制转换 (where name = 1 ==\u003e where CAST(name AS signed int) = 1) 【如何查看失效】\n利用explain命令 (前面最好加上analyse table xxx)\nEXPLAIN 的 type 表示查询的访问类型，影响查询的效率。常见的值：\nref: 使用索引，查找匹配某个单一列的值（比如通过外键查找）。比 range 更高效。 range: 使用索引扫描某个范围内的值，适用于 BETWEEN、\u003e \u003c 等条件。 index: 全索引扫描，扫描整个索引结构，不读表数据，通常效率比全表扫描好。 all: 全表扫描，没有使用索引 总结：ref \u003e range \u003e index \u003e all。\n13. MySQL的索引数是否越多越好？why? 索引不是越多越好，因为对索引字段进行更新操作，需要调整B+树的结构，会导致数据库增加开销。\n【注】阿里巴巴规范上表示索引一般不超过16个\n**【时间开销】**进行增删改操作的时候，索引也必须更新。索引越多，需要修改的地方就越多，时间开销大。B+树可能会出现页分裂、合并等操作，时间开销更大。\n【空间开销】 建立二级索引，都需要新建一个B+树，每个数据页面都是16KB。如果数据大，索引又多，占用的空间不小。\n14. 为什么 MySQL 选择使用 B+ 树作为索引结构？ 【B+树的优势】\n高效的查找性能：B+树是一种自平衡树，每个叶子结点到根节点的路径长度相同。增删改查的事件复杂度都是O(logn)，且具有一定的冗余节点，删除节点的时候，树的结构变化较小。 I/O次数相对较少：首先，B+树不会像红黑树一样，随着数据的增多树变得越来越高，它是多叉树。计算机访问数据时，往往具有局部性原理。当读取一个节点时，B树和B+树会将多个相关的数据加载到内存中，后续直接从内存反问，减少了磁盘的I/O。另外，相较于B树来说， B+树所有的数据都存放在叶子节点，而不像B树会在非叶子节点存储数据。B+树的非叶子节点仅存储索引值/主键和页面指针。 对范围查询友好：B+树的叶子节点之间通过链表链接。当使用between语句时，会从根节点找到满足条件的起始记录。然后从起始记录，沿着叶子结点的链表进行顺序遍历。 【B+树存在的部分缺点】\n当插入和删除节点，会触发分裂和合并操作，保持树的平衡，有一定的开销。\n【跳表】\n跳表其实就是一个多级链表，为了让链表更高效的查询。在不同的部分插入高级索引，让其能够缩小查找范围。有一种二分的思想在里面。其中，Redis的有序集合(sorted set)底层的结构就是跳表结构。\n【为什么MySQL不用跳表而用B+树】\n跳表的I/O效率低：B+树通常只有3~4层，可以存储海量的数据。B+树的节点大小设计适配磁盘页的大小，磁盘页能够顺序存储大量数据。一次磁盘I/O操作就能读取节点的数据，减少I/O。跳表是多级索引的结构，虽然可以加速查找，但是其查找的过程当中会涉及到多次随机的I/O。 范围查询： B+树的叶子节点是有序链表，在采用between时，能够找从叶子结点按照链表顺序遍历即可。跳表虽然支持范围查询，但是实现起来很复杂， 而且其多层的索引结构，范围查询时不能像B+树那样直接高效。 跳表维护成本高：B+树在增删改的时候，又高效的算法平衡树结构，确保性能稳定。而跳表在新增和删除操作的时候，涉及多层链表的调整，开销较大，容易出现性能波动。 跳表内存占用大：B+树的节点紧凑，非叶子节点只存储索引项和页面指针。而跳表除了每个节点存储数据以外，还需要额外的开销存储多层索引。相同数据量下，跳表的开销比B+树大得多。 15. MySQL 三层 B+ 树能存多少数据？ 算法名称 数据页大小 叶子节点存储的数据记录大小 (假设) 节点的索引值(主键大小) 节点的页面指针大小 B+树 16KB 1KB 8B （bigint） 6B 【三层B+树存储数据计算】\nnodesCount = 16KB * 1024 / (6 + 8) = 1170 // 每个节点可以存多少个子节点 recordCount = 16KB / 1KB = 16 // 每个节点可以存多少条数据记录 dataCount = nodesCount * nodesCount * recordCount = 1170 * 1170 * 16 = 21,902,400 所以如果一条数据为1KB大小，B+树大约能存2000w条数据 【拓展】\nMySQL的InnoDB引擎中，B+树m每个节点的数据页大小可以通过调整innodb_page_size来修改 (一般为 4KB / 8KB / 16KB)\n",
+  "wordCount" : "424",
   "inLanguage": "en",
   "image": "https://swimmingliu.cn/papermod-cover.png","datePublished": "2025-02-19T15:16:42+08:00",
   "dateModified": "2025-02-19T15:16:42+08:00",
@@ -387,9 +387,9 @@
   <header class="post-header">
     <div class="breadcrumbs"><a href="https://swimmingliu.cn/">Home</a>&nbsp;»&nbsp;<a href="https://swimmingliu.cn/posts/">📚 Posts</a>&nbsp;»&nbsp;<a href="https://swimmingliu.cn/posts/job/">💻 Job</a></div>
     <h1 class="post-title entry-hint-parent">
-      MySQL面试题
+      MySQL面试题笔记
     </h1>
-    <div class="post-meta"><span title='2025-02-19 15:16:42 +0800 CST'>February 19, 2025</span>&nbsp;·&nbsp;1 min&nbsp;·&nbsp;SwimmingLiu
+    <div class="post-meta"><span title='2025-02-19 15:16:42 +0800 CST'>February 19, 2025</span>&nbsp;·&nbsp;2 min&nbsp;·&nbsp;SwimmingLiu
 
 </div>
   </header> <div class="toc">
@@ -410,7 +410,27 @@
                 <li>
                     <a href="#4-mysql-%e7%9a%84%e5%ad%98%e5%82%a8%e5%bc%95%e6%93%8e%e6%9c%89%e5%93%aa%e4%ba%9b%e5%ae%83%e4%bb%ac%e4%b9%8b%e9%97%b4%e6%9c%89%e4%bb%80%e4%b9%88%e5%8c%ba%e5%88%ab" aria-label="4. MySQL 的存储引擎有哪些？它们之间有什么区别？">4. MySQL 的存储引擎有哪些？它们之间有什么区别？</a></li>
                 <li>
-                    <a href="#5-mysql-%e7%9a%84%e7%b4%a2%e5%bc%95%e7%b1%bb%e5%9e%8b%e6%9c%89%e5%93%aa%e4%ba%9b" aria-label="5. MySQL 的索引类型有哪些？">5. MySQL 的索引类型有哪些？</a>
+                    <a href="#5-mysql-%e7%9a%84%e7%b4%a2%e5%bc%95%e7%b1%bb%e5%9e%8b%e6%9c%89%e5%93%aa%e4%ba%9b" aria-label="5. MySQL 的索引类型有哪些？">5. MySQL 的索引类型有哪些？</a></li>
+                <li>
+                    <a href="#6-mysql-innodb-%e5%bc%95%e6%93%8e%e4%b8%ad%e7%9a%84%e8%81%9a%e7%b0%87%e7%b4%a2%e5%bc%95%e5%92%8c%e9%9d%9e%e8%81%9a%e7%b0%87%e7%b4%a2%e5%bc%95%e6%9c%89%e4%bb%80%e4%b9%88%e5%8c%ba%e5%88%ab" aria-label="6. MySQL InnoDB 引擎中的聚簇索引和非聚簇索引有什么区别？">6. MySQL InnoDB 引擎中的聚簇索引和非聚簇索引有什么区别？</a></li>
+                <li>
+                    <a href="#7-mysql-%e4%b8%ad%e7%9a%84%e5%9b%9e%e8%a1%a8%e6%98%af%e4%bb%80%e4%b9%88" aria-label="7. MySQL 中的回表是什么？">7. MySQL 中的回表是什么？</a></li>
+                <li>
+                    <a href="#8-mysql%e7%b4%a2%e5%bc%95%e7%9a%84%e6%9c%80%e5%b7%a6%e5%89%8d%e7%bc%80%e5%8c%b9%e9%85%8d%e5%8e%9f%e5%88%99%e6%98%af%e4%bb%80%e4%b9%88" aria-label="8. MySQL索引的最左前缀匹配原则是什么?">8. MySQL索引的最左前缀匹配原则是什么?</a></li>
+                <li>
+                    <a href="#9-mysql%e7%9a%84%e8%a6%86%e7%9b%96%e7%b4%a2%e5%bc%95%e6%98%af%e4%bb%80%e4%b9%88" aria-label="9. MySQL的覆盖索引是什么？">9. MySQL的覆盖索引是什么？</a></li>
+                <li>
+                    <a href="#10-mysql%e7%9a%84%e7%b4%a2%e5%bc%95%e4%b8%8b%e6%8e%a8-icp-%e6%98%af%e4%bb%80%e4%b9%88" aria-label="10. MySQL的索引下推 (ICP) 是什么?">10. MySQL的索引下推 (ICP) 是什么?</a></li>
+                <li>
+                    <a href="#11-mysql%e5%bb%ba%e7%b4%a2%e5%bc%95%e9%9c%80%e8%a6%81%e6%b3%a8%e6%84%8f%e5%93%aa%e4%ba%9b%e4%ba%8b%e9%a1%b9" aria-label="11. MySQL建索引需要注意哪些事项？">11. MySQL建索引需要注意哪些事项？</a></li>
+                <li>
+                    <a href="#12-mysql%e4%b8%ad%e4%bd%bf%e7%94%a8%e7%b4%a2%e5%bc%95%e4%b8%80%e5%ae%9a%e6%9c%89%e6%95%88%e5%90%97%e5%a6%82%e4%bd%95%e6%8e%92%e6%9f%a5%e7%b4%a2%e5%bc%95%e6%95%88%e6%9e%9c" aria-label="12. MySQL中使用索引一定有效吗？如何排查索引效果？">12. MySQL中使用索引一定有效吗？如何排查索引效果？</a></li>
+                <li>
+                    <a href="#13-mysql%e7%9a%84%e7%b4%a2%e5%bc%95%e6%95%b0%e6%98%af%e5%90%a6%e8%b6%8a%e5%a4%9a%e8%b6%8a%e5%a5%bdwhy" aria-label="13. MySQL的索引数是否越多越好？why?">13. MySQL的索引数是否越多越好？why?</a></li>
+                <li>
+                    <a href="#14-%e4%b8%ba%e4%bb%80%e4%b9%88-mysql-%e9%80%89%e6%8b%a9%e4%bd%bf%e7%94%a8-b-%e6%a0%91%e4%bd%9c%e4%b8%ba%e7%b4%a2%e5%bc%95%e7%bb%93%e6%9e%84" aria-label="14. 为什么 MySQL 选择使用 B&#43; 树作为索引结构？">14. 为什么 MySQL 选择使用 B+ 树作为索引结构？</a></li>
+                <li>
+                    <a href="#15-mysql-%e4%b8%89%e5%b1%82-b-%e6%a0%91%e8%83%bd%e5%ad%98%e5%a4%9a%e5%b0%91%e6%95%b0%e6%8d%ae" aria-label="15. MySQL 三层 B&#43; 树能存多少数据？">15. MySQL 三层 B+ 树能存多少数据？</a>
                 </li>
             </ul>
         </div>
@@ -475,6 +495,7 @@
 2.分析器分析SQL语法和词法是否有误
 3.优化器生成SQL的执行计划，确定使用的索引和调整where的执行顺序（包括连表顺序）
 4.执行器判断当前用户是否有权限查询该表，然后执行该SQL语句</p>
+<p><img alt="MySQL架构图" loading="lazy" src="https://oss.swimmingliu.cn/7457976c-ef5d-11ef-b738-c858c0c1deba"></p>
 <p>[参考文献] <a href="https://xiaolincoding.com/mysql/base/how_select.html">执行一条 select 语句，期间发生了什么？</a></p>
 <h2 id="补充-3--mysql-日志undo-logredo-logbinlog-有什么用">[补充] 3.  MySQL 日志：undo log、redo log、binlog 有什么用？<a hidden class="anchor" aria-hidden="true" href="#补充-3--mysql-日志undo-logredo-logbinlog-有什么用">#</a></h2>
 <blockquote>
@@ -488,7 +509,7 @@ binlog （归档日志）：是 Server 层生成的日志，主要用于数据�
 <p><code>InnoDB</code> : 支持事务、<strong>行锁</strong>、外键; 高并发性能、支持高负载的OLTP应用 (银行交易、电子商务订单、库存管理等);  聚集索引存储，检索效率高</p>
 <p><code>MyISAM</code>: <strong>表锁</strong>、<strong>不</strong>支持事务和外键; 适用于读多写少的场景(数据仓库); 较高读性能和j较快的表级锁定</p>
 <p><code>MEMORY</code>: 存储在内存中，速度快，重启后数据丢失; 适用于临时数据存储和快速存储</p>
-<p><img alt="MySQL常见存储引擎" loading="lazy" src="https://pic.code-nav.cn/mianshiya/question_picture/1853124367721336833/Xk2YjZcF_MySQL_Storage_Engine_mianshiya.png"></p>
+<p><img alt="MySQL常见存储引擎" loading="lazy" src="https://oss.swimmingliu.cn/749c5e36-ef5d-11ef-9041-c858c0c1deba"></p>
 <h2 id="5-mysql-的索引类型有哪些">5. MySQL 的索引类型有哪些？<a hidden class="anchor" aria-hidden="true" href="#5-mysql-的索引类型有哪些">#</a></h2>
 <table>
   <thead>
@@ -516,7 +537,140 @@ binlog （归档日志）：是 Server 层生成的日志，主要用于数据�
       </tr>
   </tbody>
 </table>
-<p>huafen<img alt="MySQL索引类型" loading="lazy" src="https://pic.code-nav.cn/mianshiya/question_picture/1870039863862304769/K21MUn6b_1_mianshiya.png"></p>
+<p><img alt="MySQL索引类型" loading="lazy" src="https://oss.swimmingliu.cn/74d567c0-ef5d-11ef-8176-c858c0c1deba"></p>
+<h2 id="6-mysql-innodb-引擎中的聚簇索引和非聚簇索引有什么区别">6. MySQL InnoDB 引擎中的聚簇索引和非聚簇索引有什么区别？<a hidden class="anchor" aria-hidden="true" href="#6-mysql-innodb-引擎中的聚簇索引和非聚簇索引有什么区别">#</a></h2>
+<blockquote>
+<p><strong>聚簇索引</strong>：就像是图书馆里按照书籍主题顺序摆放的书架。在这个书架（也就是聚簇索引）上，每本书（也就是数据库中的行数据）都是按照某个主题（通常是主键）来排列的。所以，当你想要找某一主题的书时，只要知道主题名（主键值），就能很快在书架上找到它，而且相邻主题的书也是挨在一起的，找起来很方便。但是，这种方式的缺点是，如果你想要改变某本书的主题（更新主键），可能就需要移动整本书到新的位置，甚至可能需要重新整理整个书架（数据页），这样就比较麻烦了。</p>
+<p><strong>非聚簇索引</strong>：则更像是图书馆里的一个索引卡片箱。在这个卡片箱里，每张卡片（也就是非聚簇索引的节点）上都写着书籍的主题（索引列的值）和书籍在书架上的位置（主键值或ROWID）。当你想要找一本书时，可以先在卡片箱里找到对应的卡片，然后根据卡片上的位置信息去书架上找书。这种方式的好处是灵活，你可以为不同的书籍主题制作多张卡片，方便从不同的角度查找书籍。但是，坏处是每次找书都需要两步：先在卡片箱里找卡片，再去书架上找书，这样可能会比直接在书架上找书要慢一些。</p>
+<p>总的来说，聚簇索引和非聚簇索引的主要区别在于它们如何存储数据和索引，以及它们如何影响数据的查询和更新操作。聚簇索引将数据直接存储在索引上，查询效率高，但更新操作可能较复杂；而非聚簇索引则通过索引指向数据，提供了更多的灵活性，但查询时可能需要额外的步骤。在选择使用哪种索引时，需要根据具体的应用场景和查询需求来决定。</p>
+</blockquote>
+<p>MySQL InnoDB的聚簇索引和非聚簇索引就像图书馆的两种找书的方式。
+1.聚簇索引：图书馆在书架上(聚簇索引)摆放各种编号(主键名称)的书本(数据库中每一行的数据)。当你需要从图书馆找某一本书时，只需要知道书籍的编号(主键值)，就能够快速找到他。它的缺点是，如果需要换某一本书的编号(更新主键)，就需要移动整本书到新的位置，甚至重新整理书架(数据页)。这也是推荐使用<code>select *</code>的原因，因为如果需要查找索引列的数据，直接用二级索引就可以找到数据。例如通过姓名（二级索引）查询id(主键索引)，直接用二级索引就可以拿到对应的id.但是如果用<code>select *</code>,数据库就会回表查询其他的数据（性别，年龄等等）。
+2.非聚簇索引：就像图书馆单独设置编号卡片箱，每张卡片(非聚簇索引)上包含了书籍名称(索引列的值)和书籍在书架上的编号位置(主键值或者ROWID)。当你想要找某本书的时候，可以根据卡片里面对应的编号进行查找。坏处是每次都需要两步走，查找起来没那么方便。
+总结：聚簇索引是包含数据的，所以查找起来方便，但是更新操作开销大。非聚簇索引不包含数据，只包含索引列的值和其指向的数据索引，需要两步走才能查到数据。</p>
+<h2 id="7-mysql-中的回表是什么">7. MySQL 中的回表是什么？<a hidden class="anchor" aria-hidden="true" href="#7-mysql-中的回表是什么">#</a></h2>
+<ol>
+<li>回表：用二级索引中的主键取聚簇索引中查找数据行的过程</li>
+<li>为什么需要回表：使用非聚簇索引的二级索引查询时，只能查到索引列的值和其主键值，无法获取其他数据</li>
+<li>回表的缺点：回表会带来随机I/O, 频繁回表会导致效率非常低。所以不推荐使用 <code>select *</code></li>
+<li>回表的其他场景：当查询的部分列没有包含在索引中时，即便使用了索引，也需要会去获取缺失的列数据，称为覆盖索引缺失。</li>
+<li>覆盖索引缺失发送场景：<code>select</code> 语句当中包含了非索引列; 索引的类型为<code>Hash</code>和<code>full-text</code>索引 （不存储列的值），不支持覆盖索引。</li>
+<li>如何减少回表：MySQL5.6之后，引入了提高查询效率的优化技术，默认开启。允许MySQL用索引查找数据时，将部分查询条件下推到索引引擎层来过滤，减少了需要读取的数据行。</li>
+</ol>
+<h2 id="8-mysql索引的最左前缀匹配原则是什么">8. MySQL索引的最左前缀匹配原则是什么?<a hidden class="anchor" aria-hidden="true" href="#8-mysql索引的最左前缀匹配原则是什么">#</a></h2>
+<p><img alt="MySQL索引最左前后缀匹配原则" loading="lazy" src="https://oss.swimmingliu.cn/74f6527e-ef5d-11ef-8fbf-c858c0c1deba"></p>
+<ol>
+<li>最左前缀匹配原则的定义：使用联合索引的时候，查询的条件必须从索引的最左侧开始匹配。如果联合索引包含多个列，查询条件必须包含第一个列，然后是第二个列，以此类推。</li>
+<li>最左前缀匹配原则的原理：联合索引在B+树中的排列方式遵循从左到右的原则，例如联合索引(a, b, c)，在查询时，首先按照a的值进行排序，如果a的值相同，再查b的值，以此类推。</li>
+<li>常见场景：<code>=</code> 、<code>&gt;=</code> 、<code>&lt;=</code> 、 <code>BETWEEN</code> 、<code>like (xx%)</code> 都包含等值的情况，可以定位到某个数，然后进行范围扫描，不会出现停止匹配的现象。但是 <code>&gt;</code> 和 <code>&lt;</code> 则不行。</li>
+<li>部分不符合最左前缀匹配原则也能使用索引的原因：MySQL8当中引入了 Skip Can Range Access Method, 将缺失的左边的值查出来，如果左边缺失的列数据量少，则拼凑左边的索引，让SQL符合最左前缀匹配原则。</li>
+</ol>
+<h2 id="9-mysql的覆盖索引是什么">9. MySQL的覆盖索引是什么？<a hidden class="anchor" aria-hidden="true" href="#9-mysql的覆盖索引是什么">#</a></h2>
+<ol>
+<li>覆盖索引定义：查询的所有字段都是二级索引，从而使查询可以直接访问二级索引二不需要访问实习的表数据(主键索引)。</li>
+<li>覆盖索引优点：减少I/O操作 ; 提高查询速度 (索引比表数据更加紧凑); 减少内存占用 (读取的索引页面而不是表数据页面)</li>
+</ol>
+<h2 id="10-mysql的索引下推-icp-是什么">10. MySQL的索引下推 (ICP) 是什么?<a hidden class="anchor" aria-hidden="true" href="#10-mysql的索引下推-icp-是什么">#</a></h2>
+<ol>
+<li>
+<p>索引下推(ICP)定义: 减少回表查询，提高查询效率的行为。允许MySQL使用索引查找数据的时候，将部分查询条件下推到存储引擎层进行过滤，从而减少需要从表中读取的数据行，减少I/O。</p>
+</li>
+<li>
+<p>应用场景：比如当前表建了一个联合索引(a, b, c)，使用<code>where</code>条件的时候，由于b用得是 <code>like '%xxx%'</code> 需要回表查询 (<code>like 'xx%'</code> 不需要)。即先查询<code>a = '1' </code>的数据， 然后回表查询，最后进行<code>where</code>条件的过滤。如果使用索引下推之后 (MySQL 5.6)，在查询晚<code>a = '1'</code>的数据之后，可以先由存储引擎层进行<code>where</code>条件过滤，然后再回表查询， 减少回表查询的次数。</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-SQL" data-lang="SQL"><span class="line"><span class="cl"><span class="k">SELECT</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="k">FROM</span><span class="w"> </span><span class="n">people</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="k">WHERE</span><span class="w"> </span><span class="n">a</span><span class="o">=</span><span class="s1">&#39;1&#39;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="k">AND</span><span class="w"> </span><span class="n">b</span><span class="w"> </span><span class="k">LIKE</span><span class="w"> </span><span class="s1">&#39;%123%&#39;</span><span class="w">
+</span></span></span></code></pre></div><blockquote>
+<p>如联合索引index_name_age，假设数据库中有数据（张三，18）、（张三，28）、（张三，48）、（张三，8)</p>
+<p>【没有索引下推】查询name=&lsquo;张三&rsquo;和age&gt;30的数据时，会先匹配有四条数据name=&lsquo;张三&rsquo;匹配成功，回表四次查询出带有name=&lsquo;张三&rsquo;的四条数据，然后再根据age&gt;30对这四条数据进行范围查找</p>
+<p>【使用索引下推】查询name=&lsquo;张三&rsquo;和age&gt;30的数据时，会先匹配有四条数据name=&lsquo;张三&rsquo;匹配成功，然后age&gt;30的数据，过滤完成后，再用主键索引去进行一次回表操作</p>
+</blockquote>
+</li>
+</ol>
+<h2 id="11-mysql建索引需要注意哪些事项">11. MySQL建索引需要注意哪些事项？<a hidden class="anchor" aria-hidden="true" href="#11-mysql建索引需要注意哪些事项">#</a></h2>
+<p><strong>【索引适合场景】</strong></p>
+<ol>
+<li>频繁使用<code>where</code> 、<code>order by</code> 、<code>group by</code>、<code>distinct</code> 的字段 (加快操作速度)</li>
+<li>关联字段 (如果没有索引，连接的过程中，每个只都会进行一次全表扫描)</li>
+</ol>
+<p><strong>【不适合场景】</strong></p>
+<ol>
+<li>字段频繁更新 (更新除了修改数据外，还需要维护索引信息 =&gt; 调整B+树会降低性能)</li>
+<li>字段值重复率高（区分度低，建立索引更加消耗资源）</li>
+<li>参与列计算的字段 (索引会失效)</li>
+<li>长字段 (<code>text</code>、 <code>longtext</code>) ：长字段占据的内存大，提升性能不明显。</li>
+</ol>
+<p>【注】<strong>索引不是越多越好</strong>，因为每次修改都需要维护索引数据，消耗资源</p>
+<h2 id="12-mysql中使用索引一定有效吗如何排查索引效果">12. MySQL中使用索引一定有效吗？如何排查索引效果？<a hidden class="anchor" aria-hidden="true" href="#12-mysql中使用索引一定有效吗如何排查索引效果">#</a></h2>
+<p>【索引失效的情况】</p>
+<ul>
+<li>联合索引不符合最左匹配原则</li>
+<li>对索引列使用了运算(<code>where id + 3 = 8</code>)、函数 (<code>lower()</code>、<code>count()</code>)、<code>like '%xx%' </code> 等操作</li>
+<li>对索引列和非索引列使用 <code>or</code> 操作 (<code>where name = &quot;swimmingliu&quot; or age = 34</code>)</li>
+<li>索引列类型不匹配导致的强制转换 (<code>where name = 1</code> ==&gt; <code>where CAST(name AS signed int) = 1</code>)</li>
+</ul>
+<p>【如何查看失效】</p>
+<p>利用<code>explain</code>命令 (前面最好加上<code>analyse table xxx</code>)</p>
+<p><code>EXPLAIN</code> 的 <code>type</code> 表示查询的访问类型，影响查询的效率。常见的值：</p>
+<ol>
+<li><strong>ref</strong>: 使用索引，查找匹配某个单一列的值（比如通过外键查找）。比 <code>range</code> 更高效。</li>
+<li><strong>range</strong>: 使用索引扫描某个范围内的值，适用于 <code>BETWEEN</code>、<code>&gt; &lt;</code> 等条件。</li>
+<li><strong>index</strong>: 全索引扫描，扫描整个索引结构，不读表数据，通常效率比全表扫描好。</li>
+<li><strong>all</strong>: 全表扫描，没有使用索引</li>
+</ol>
+<p>总结：<code>ref</code> &gt; <code>range</code> &gt; <code>index</code> &gt; <code>all</code>。</p>
+<h2 id="13-mysql的索引数是否越多越好why">13. MySQL的索引数是否越多越好？why?<a hidden class="anchor" aria-hidden="true" href="#13-mysql的索引数是否越多越好why">#</a></h2>
+<p>索引不是越多越好，因为对索引字段进行更新操作，需要调整B+树的结构，会导致数据库增加开销。</p>
+<p>【注】阿里巴巴规范上表示索引一般不超过16个</p>
+<p>**【时间开销】**进行增删改操作的时候，索引也必须更新。索引越多，需要修改的地方就越多，时间开销大。B+树可能会出现页分裂、合并等操作，时间开销更大。</p>
+<p><strong>【空间开销】</strong> 建立二级索引，都需要新建一个B+树，每个数据页面都是16KB。如果数据大，索引又多，占用的空间不小。</p>
+<h2 id="14-为什么-mysql-选择使用-b-树作为索引结构">14. 为什么 MySQL 选择使用 B+ 树作为索引结构？<a hidden class="anchor" aria-hidden="true" href="#14-为什么-mysql-选择使用-b-树作为索引结构">#</a></h2>
+<p><strong>【B+树的优势】</strong></p>
+<ul>
+<li><strong>高效的查找性能</strong>：B+树是一种自平衡树，每个叶子结点到根节点的路径长度相同。增删改查的事件复杂度都是O(logn)，且具有一定的冗余节点，删除节点的时候，树的结构变化较小。</li>
+<li><strong>I/O次数相对较少</strong>：首先，B+树不会像红黑树一样，随着数据的增多树变得越来越高，它是多叉树。计算机访问数据时，往往具有局部性原理。当读取一个节点时，B树和B+树会将多个相关的数据加载到内存中，后续直接从内存反问，减少了磁盘的I/O。另外，相较于B树来说， B+树所有的数据都存放在叶子节点，而不像B树会在非叶子节点存储数据。B+树的非叶子节点仅存储索引值/主键和页面指针。</li>
+<li><strong>对范围查询友好</strong>：B+树的叶子节点之间通过链表链接。当使用<code>between</code>语句时，会从根节点找到满足条件的起始记录。然后从起始记录，沿着叶子结点的链表进行顺序遍历。</li>
+</ul>
+<p>【<strong>B+树存在的部分缺点</strong>】</p>
+<p>当插入和删除节点，会触发分裂和合并操作，保持树的平衡，有一定的开销。</p>
+<p>【<strong>跳表</strong>】</p>
+<p>跳表其实就是一个多级链表，为了让链表更高效的查询。在不同的部分插入高级索引，让其能够缩小查找范围。有一种二分的思想在里面。其中，Redis的有序集合(sorted set)底层的结构就是跳表结构。</p>
+<p><img alt="img" loading="lazy" src="https://oss.swimmingliu.cn/7538abf4-ef5d-11ef-8932-c858c0c1deba"></p>
+<p><strong>【为什么MySQL不用跳表而用B+树】</strong></p>
+<ul>
+<li><strong>跳表的I/O效率低</strong>：B+树通常只有3~4层，可以存储海量的数据。B+树的节点大小设计适配磁盘页的大小，磁盘页能够顺序存储大量数据。一次磁盘I/O操作就能读取节点的数据，减少I/O。跳表是多级索引的结构，虽然可以加速查找，但是其查找的过程当中会涉及到多次随机的I/O。</li>
+<li><strong>范围查询</strong>： B+树的叶子节点是有序链表，在采用<code>between</code>时，能够找从叶子结点按照链表顺序遍历即可。跳表虽然支持范围查询，但是实现起来很复杂， 而且其多层的索引结构，范围查询时不能像B+树那样直接高效。</li>
+<li><strong>跳表维护成本高</strong>：B+树在增删改的时候，又高效的算法平衡树结构，确保性能稳定。而跳表在新增和删除操作的时候，涉及多层链表的调整，开销较大，容易出现性能波动。</li>
+<li><strong>跳表内存占用大</strong>：B+树的节点紧凑，非叶子节点只存储索引项和页面指针。而跳表除了每个节点存储数据以外，还需要额外的开销存储多层索引。相同数据量下，跳表的开销比B+树大得多。</li>
+</ul>
+<h2 id="15-mysql-三层-b-树能存多少数据">15. MySQL 三层 B+ 树能存多少数据？<a hidden class="anchor" aria-hidden="true" href="#15-mysql-三层-b-树能存多少数据">#</a></h2>
+<table>
+  <thead>
+      <tr>
+          <th>算法名称</th>
+          <th>数据页大小</th>
+          <th>叶子节点存储的数据记录大小 (假设)</th>
+          <th>节点的索引值(主键大小)</th>
+          <th>节点的页面指针大小</th>
+      </tr>
+  </thead>
+  <tbody>
+      <tr>
+          <td>B+树</td>
+          <td>16KB</td>
+          <td>1KB</td>
+          <td>8B （<code>bigint</code>）</td>
+          <td>6B</td>
+      </tr>
+  </tbody>
+</table>
+<p>【三层B+树存储数据计算】</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-shell" data-lang="shell"><span class="line"><span class="cl"><span class="nv">nodesCount</span> <span class="o">=</span> 16KB * <span class="m">1024</span> / <span class="o">(</span><span class="m">6</span> + 8<span class="o">)</span> <span class="o">=</span> <span class="m">1170</span> // 每个节点可以存多少个子节点
+</span></span><span class="line"><span class="cl"><span class="nv">recordCount</span> <span class="o">=</span> 16KB / <span class="nv">1KB</span> <span class="o">=</span> <span class="m">16</span> // 每个节点可以存多少条数据记录
+</span></span><span class="line"><span class="cl"><span class="nv">dataCount</span> <span class="o">=</span> nodesCount * nodesCount * <span class="nv">recordCount</span> <span class="o">=</span> <span class="m">1170</span> * <span class="m">1170</span> * <span class="nv">16</span> <span class="o">=</span> 21,902,400 
+</span></span><span class="line"><span class="cl">所以如果一条数据为1KB大小，B+树大约能存2000w条数据
+</span></span></code></pre></div><p>【拓展】</p>
+<p>MySQL的InnoDB引擎中，B+树m每个节点的数据页大小可以通过调整<code>innodb_page_size</code>来修改 (一般为 4KB / 8KB / 16KB)</p>
 
 
   </div>
@@ -532,7 +686,7 @@ binlog （归档日志）：是 Server 层生成的日志，主要用于数据�
   <a class="prev" href="https://swimmingliu.cn/posts/job/java-basic-interview-questions/">
     <span class="title">« Prev</span>
     <br>
-    <span>Java基础题面试</span>
+    <span>Java基础题面试笔记</span>
   </a>
   <a class="next" href="https://swimmingliu.cn/posts/job/java-interview-questions-notes/">
     <span class="title">Next »</span>

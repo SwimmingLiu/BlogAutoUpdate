@@ -1,0 +1,703 @@
+<!DOCTYPE html>
+<html lang="en" dir="auto">
+
+<head><meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta name="robots" content="index, follow">
+<title>Redis面试题笔记 | SwimmingLiu&#39;s Blog</title>
+<meta name="keywords" content="Java, Redis">
+<meta name="description" content="1. Redis主从复制的原理
+【主从复制的原理】
+
+同步：从节点向主节点发送psync命令进行同步，从节点保存主节点返回的 runid 和  offset
+全量复制：如果是第一次连接或者连接失败且repl_backlog_buffer 缓存区不包含slave_repl_offset， 则生成主节点的数据快照(RDB文件)发给从节点
+增量复制：全量复制完毕后，主从节点之间会保持长连接。如果连接没有断开或者slave_repl_offset仍然在repl_backlog_buffer中，则将后续的写操作传递给从节点，让数据保持一致。
+
+【全量复制细节】
+全量复制的过程是基于TCP长连接的，主要流程如下
+
+从节点发送psync ? -1表示需要建立连接进行同步，主节点返回主节点ID runid 和 复制进度offset (第一次同步用 -1 表示)。从节点接受之后，保存主节点的信息。
+主节点执行bgsave命令生成数据快照RDB文件，然后将RDB文件发送给从节点。从节点接受文件后，清除现有的所有数据，然后加载RDB文件
+如果在制作数据快照RDB文件的过程当中，主节点接收到了新的写操作，主节点会将其记录在repl buffer 里面。然后将repl buffer当中的写操作发给从节点，让其数据保持一致。
+
+
+【增量复制细节】
+如果主从节点意外断开连接，为了保持数据的一致性，必须重新同步数据。如果使用全量复制来保持一致性的话，开销太大，所以采用增量复制。
+增量复制的具体流程如下：
+
+连接恢复后，从节点会发送psync {runid} {offset}， 其中主节点ID runid 和 复制进度offset用于标识是哪一个服务器主机和复制进度。
+主节点收到psync 命令之后，会用conitnue响应告知从节点，采用增量复制同步数据
+最后，主节点根据offset查找对应的进度，将短线期间未同步的写命令，发送给从节点。同时，主节点将所有的写命令写入repl_backlog_buffer， 用于后续判断是采用增量复制还是全量复制。
+
+【注意】从节点 psync 携带的 offset 为 slave_repl_offset。如果 repl_backlog_buffer包含slave_repl_offset 对应的部分，则采用增量复制，否则采用全量复制。repl_backlog_buffer的默认缓冲区大小为1M
+
+【为什么要主从复制】
+
+备份数据：主从复制实现了数据的热备份，是持久化之外的数据冗余方式
+故障恢复：当主节点宕机之后，可以采用从节点提供服务。
+负载均衡:  主从复制实现了读写分离，只有主节点支持读写操作，从节点只有都操作。在读多写少的场景下，可以提高Redis服务器的并发量。
+
+
+2. Redis集群的实现原理是什么?
+【Redis集群基本知识】
+
+定义: Redis集群由多个实例组成，每个实例存储部分数据 (每个实例之间的数据不重复) 。
+
+【注】集群和主从节点不是一个东西，集群的某一个实例当中可能包含一个主节点 &#43; 多个从节点
+
+为什么用
+
+
+  
+      
+          问题
+          解决方案
+      
+  
+  
+      
+          容量不足
+          数据分片，将数据分散不存到不同的主节点
+      
+      
+          高并发写入
+          数据分片，将写入请求分摊到多个主节点
+      
+      
+          主机宕机问题
+          自动切换主从节点，避免影响服务， 不需要手动修改客户端配置
+      
+  
+
+
+节点通信协议：Redis集群采用Gossip协议, 支持分布式信息传播、延迟低、效率高。采用去中心化思想，任意实例(主节点)都可以作为请求入口，节点间相互通信。
+分片原理： 采用哈希槽(Hash Slot)机制来分配数据，整个空间可以划分为16384 (16 * 1024)个槽。 每个Redis负责一定范围的哈希槽,数据的key经过哈希函数计算之后对16384取余可定位到对应的节点。
+
+">
+<meta name="author" content="SwimmingLiu">
+<link rel="canonical" href="https://swimmingliu.cn/posts/job/redis-interview-questions/">
+<link crossorigin="anonymous" href="/assets/css/stylesheet.6ecbb0040febd20e47edd88a662c19f1ea945bf7427774b86594271d18f88faf.css" integrity="sha256-bsuwBA/r0g5H7diKZiwZ8eqUW/dCd3S4ZZQnHRj4j68=" rel="preload stylesheet" as="style">
+<link rel="icon" href="https://swimmingliu.cn/images/swimmingliu_icon.png">
+<link rel="icon" type="image/png" sizes="16x16" href="https://swimmingliu.cn/images/swimmingliu_icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="https://swimmingliu.cn/images/swimmingliu_icon.png">
+<link rel="apple-touch-icon" href="https://swimmingliu.cn/images/swimmingliu_icon.png">
+<link rel="mask-icon" href="https://swimmingliu.cn/images/swimmingliu_icon.png">
+<meta name="theme-color" content="#2e2e33">
+<meta name="msapplication-TileColor" content="#2e2e33">
+<link rel="alternate" hreflang="en" href="https://swimmingliu.cn/posts/job/redis-interview-questions/">
+<noscript>
+    <style>
+        #theme-toggle,
+        .top-link {
+            display: none;
+        }
+
+    </style>
+    <style>
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --theme: rgb(29, 30, 32);
+                --entry: rgb(46, 46, 51);
+                --primary: rgb(218, 218, 219);
+                --secondary: rgb(155, 156, 157);
+                --tertiary: rgb(65, 66, 68);
+                --content: rgb(196, 196, 197);
+                --code-block-bg: rgb(46, 46, 51);
+                --code-bg: rgb(55, 56, 62);
+                --border: rgb(51, 51, 51);
+            }
+
+            .list {
+                background: var(--theme);
+            }
+
+            .list:not(.dark)::-webkit-scrollbar-track {
+                background: 0 0;
+            }
+
+            .list:not(.dark)::-webkit-scrollbar-thumb {
+                border-color: var(--theme);
+            }
+        }
+
+    </style>
+</noscript>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css" integrity="sha384-n8MVd4RsNIU0tAv4ct0nTaAbDJwPJzDEaqSD1odI+WdtXRGWt2kTvGFasHpSy3SV" crossorigin="anonymous">
+
+
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js" integrity="sha384-XjKyOOlGwcjNTAIQHIpgOno0Hl1YQqzUOEleOLALmuqehneUG+vnGctmUb0ZY0l8" crossorigin="anonymous"></script>
+
+
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js" integrity="sha384-+VBxd3r6XgURycqtZ117nYw44OOcIax56Z4dCRWbxyPt0Koah1uHoK0o4+/RRE05" crossorigin="anonymous"
+    onload="renderMathInElement(document.body);"></script>
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        renderMathInElement(document.body, {
+            
+            
+            delimiters: [
+                { left: '$$', right: '$$', display: true },
+                { left: '$', right: '$', display: false },
+                { left: '\\(', right: '\\)', display: false },
+                { left: '\\[', right: '\\]', display: true }
+            ],
+            
+            throwOnError: false
+        });
+    });
+</script>
+
+<meta property="og:url" content="https://swimmingliu.cn/posts/job/redis-interview-questions/">
+  <meta property="og:site_name" content="SwimmingLiu&#39;s Blog">
+  <meta property="og:title" content="Redis面试题笔记">
+  <meta property="og:description" content="1. Redis主从复制的原理 【主从复制的原理】
+同步：从节点向主节点发送psync命令进行同步，从节点保存主节点返回的 runid 和 offset 全量复制：如果是第一次连接或者连接失败且repl_backlog_buffer 缓存区不包含slave_repl_offset， 则生成主节点的数据快照(RDB文件)发给从节点 增量复制：全量复制完毕后，主从节点之间会保持长连接。如果连接没有断开或者slave_repl_offset仍然在repl_backlog_buffer中，则将后续的写操作传递给从节点，让数据保持一致。 【全量复制细节】
+全量复制的过程是基于TCP长连接的，主要流程如下
+从节点发送psync ? -1表示需要建立连接进行同步，主节点返回主节点ID runid 和 复制进度offset (第一次同步用 -1 表示)。从节点接受之后，保存主节点的信息。 主节点执行bgsave命令生成数据快照RDB文件，然后将RDB文件发送给从节点。从节点接受文件后，清除现有的所有数据，然后加载RDB文件 如果在制作数据快照RDB文件的过程当中，主节点接收到了新的写操作，主节点会将其记录在repl buffer 里面。然后将repl buffer当中的写操作发给从节点，让其数据保持一致。 【增量复制细节】
+如果主从节点意外断开连接，为了保持数据的一致性，必须重新同步数据。如果使用全量复制来保持一致性的话，开销太大，所以采用增量复制。
+增量复制的具体流程如下：
+连接恢复后，从节点会发送psync {runid} {offset}， 其中主节点ID runid 和 复制进度offset用于标识是哪一个服务器主机和复制进度。 主节点收到psync 命令之后，会用conitnue响应告知从节点，采用增量复制同步数据 最后，主节点根据offset查找对应的进度，将短线期间未同步的写命令，发送给从节点。同时，主节点将所有的写命令写入repl_backlog_buffer， 用于后续判断是采用增量复制还是全量复制。 【注意】从节点 psync 携带的 offset 为 slave_repl_offset。如果 repl_backlog_buffer包含slave_repl_offset 对应的部分，则采用增量复制，否则采用全量复制。repl_backlog_buffer的默认缓冲区大小为1M
+【为什么要主从复制】
+备份数据：主从复制实现了数据的热备份，是持久化之外的数据冗余方式 故障恢复：当主节点宕机之后，可以采用从节点提供服务。 负载均衡: 主从复制实现了读写分离，只有主节点支持读写操作，从节点只有都操作。在读多写少的场景下，可以提高Redis服务器的并发量。 2. Redis集群的实现原理是什么? 【Redis集群基本知识】
+定义: Redis集群由多个实例组成，每个实例存储部分数据 (每个实例之间的数据不重复) 。 【注】集群和主从节点不是一个东西，集群的某一个实例当中可能包含一个主节点 &#43; 多个从节点
+为什么用 问题 解决方案 容量不足 数据分片，将数据分散不存到不同的主节点 高并发写入 数据分片，将写入请求分摊到多个主节点 主机宕机问题 自动切换主从节点，避免影响服务， 不需要手动修改客户端配置 节点通信协议：Redis集群采用Gossip协议, 支持分布式信息传播、延迟低、效率高。采用去中心化思想，任意实例(主节点)都可以作为请求入口，节点间相互通信。 分片原理： 采用哈希槽(Hash Slot)机制来分配数据，整个空间可以划分为16384 (16 * 1024)个槽。 每个Redis负责一定范围的哈希槽,数据的key经过哈希函数计算之后对16384取余可定位到对应的节点。 ">
+  <meta property="og:locale" content="en">
+  <meta property="og:type" content="article">
+    <meta property="article:section" content="posts">
+    <meta property="article:published_time" content="2025-02-20T21:21:45+08:00">
+    <meta property="article:modified_time" content="2025-02-20T21:21:45+08:00">
+    <meta property="article:tag" content="Java">
+    <meta property="article:tag" content="Redis">
+      <meta property="og:image" content="https://swimmingliu.cn/papermod-cover.png">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://swimmingliu.cn/papermod-cover.png">
+<meta name="twitter:title" content="Redis面试题笔记">
+<meta name="twitter:description" content="1. Redis主从复制的原理
+【主从复制的原理】
+
+同步：从节点向主节点发送psync命令进行同步，从节点保存主节点返回的 runid 和  offset
+全量复制：如果是第一次连接或者连接失败且repl_backlog_buffer 缓存区不包含slave_repl_offset， 则生成主节点的数据快照(RDB文件)发给从节点
+增量复制：全量复制完毕后，主从节点之间会保持长连接。如果连接没有断开或者slave_repl_offset仍然在repl_backlog_buffer中，则将后续的写操作传递给从节点，让数据保持一致。
+
+【全量复制细节】
+全量复制的过程是基于TCP长连接的，主要流程如下
+
+从节点发送psync ? -1表示需要建立连接进行同步，主节点返回主节点ID runid 和 复制进度offset (第一次同步用 -1 表示)。从节点接受之后，保存主节点的信息。
+主节点执行bgsave命令生成数据快照RDB文件，然后将RDB文件发送给从节点。从节点接受文件后，清除现有的所有数据，然后加载RDB文件
+如果在制作数据快照RDB文件的过程当中，主节点接收到了新的写操作，主节点会将其记录在repl buffer 里面。然后将repl buffer当中的写操作发给从节点，让其数据保持一致。
+
+
+【增量复制细节】
+如果主从节点意外断开连接，为了保持数据的一致性，必须重新同步数据。如果使用全量复制来保持一致性的话，开销太大，所以采用增量复制。
+增量复制的具体流程如下：
+
+连接恢复后，从节点会发送psync {runid} {offset}， 其中主节点ID runid 和 复制进度offset用于标识是哪一个服务器主机和复制进度。
+主节点收到psync 命令之后，会用conitnue响应告知从节点，采用增量复制同步数据
+最后，主节点根据offset查找对应的进度，将短线期间未同步的写命令，发送给从节点。同时，主节点将所有的写命令写入repl_backlog_buffer， 用于后续判断是采用增量复制还是全量复制。
+
+【注意】从节点 psync 携带的 offset 为 slave_repl_offset。如果 repl_backlog_buffer包含slave_repl_offset 对应的部分，则采用增量复制，否则采用全量复制。repl_backlog_buffer的默认缓冲区大小为1M
+
+【为什么要主从复制】
+
+备份数据：主从复制实现了数据的热备份，是持久化之外的数据冗余方式
+故障恢复：当主节点宕机之后，可以采用从节点提供服务。
+负载均衡:  主从复制实现了读写分离，只有主节点支持读写操作，从节点只有都操作。在读多写少的场景下，可以提高Redis服务器的并发量。
+
+
+2. Redis集群的实现原理是什么?
+【Redis集群基本知识】
+
+定义: Redis集群由多个实例组成，每个实例存储部分数据 (每个实例之间的数据不重复) 。
+
+【注】集群和主从节点不是一个东西，集群的某一个实例当中可能包含一个主节点 &#43; 多个从节点
+
+为什么用
+
+
+  
+      
+          问题
+          解决方案
+      
+  
+  
+      
+          容量不足
+          数据分片，将数据分散不存到不同的主节点
+      
+      
+          高并发写入
+          数据分片，将写入请求分摊到多个主节点
+      
+      
+          主机宕机问题
+          自动切换主从节点，避免影响服务， 不需要手动修改客户端配置
+      
+  
+
+
+节点通信协议：Redis集群采用Gossip协议, 支持分布式信息传播、延迟低、效率高。采用去中心化思想，任意实例(主节点)都可以作为请求入口，节点间相互通信。
+分片原理： 采用哈希槽(Hash Slot)机制来分配数据，整个空间可以划分为16384 (16 * 1024)个槽。 每个Redis负责一定范围的哈希槽,数据的key经过哈希函数计算之后对16384取余可定位到对应的节点。
+
+">
+
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position":  1 ,
+      "name": "📚 Posts",
+      "item": "https://swimmingliu.cn/posts/"
+    }, 
+    {
+      "@type": "ListItem",
+      "position":  2 ,
+      "name": "💻 Job",
+      "item": "https://swimmingliu.cn/posts/job/"
+    }, 
+    {
+      "@type": "ListItem",
+      "position":  3 ,
+      "name": "Redis面试题笔记",
+      "item": "https://swimmingliu.cn/posts/job/redis-interview-questions/"
+    }
+  ]
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "Redis面试题笔记",
+  "name": "Redis面试题笔记",
+  "description": "1. Redis主从复制的原理 【主从复制的原理】\n同步：从节点向主节点发送psync命令进行同步，从节点保存主节点返回的 runid 和 offset 全量复制：如果是第一次连接或者连接失败且repl_backlog_buffer 缓存区不包含slave_repl_offset， 则生成主节点的数据快照(RDB文件)发给从节点 增量复制：全量复制完毕后，主从节点之间会保持长连接。如果连接没有断开或者slave_repl_offset仍然在repl_backlog_buffer中，则将后续的写操作传递给从节点，让数据保持一致。 【全量复制细节】\n全量复制的过程是基于TCP长连接的，主要流程如下\n从节点发送psync ? -1表示需要建立连接进行同步，主节点返回主节点ID runid 和 复制进度offset (第一次同步用 -1 表示)。从节点接受之后，保存主节点的信息。 主节点执行bgsave命令生成数据快照RDB文件，然后将RDB文件发送给从节点。从节点接受文件后，清除现有的所有数据，然后加载RDB文件 如果在制作数据快照RDB文件的过程当中，主节点接收到了新的写操作，主节点会将其记录在repl buffer 里面。然后将repl buffer当中的写操作发给从节点，让其数据保持一致。 【增量复制细节】\n如果主从节点意外断开连接，为了保持数据的一致性，必须重新同步数据。如果使用全量复制来保持一致性的话，开销太大，所以采用增量复制。\n增量复制的具体流程如下：\n连接恢复后，从节点会发送psync {runid} {offset}， 其中主节点ID runid 和 复制进度offset用于标识是哪一个服务器主机和复制进度。 主节点收到psync 命令之后，会用conitnue响应告知从节点，采用增量复制同步数据 最后，主节点根据offset查找对应的进度，将短线期间未同步的写命令，发送给从节点。同时，主节点将所有的写命令写入repl_backlog_buffer， 用于后续判断是采用增量复制还是全量复制。 【注意】从节点 psync 携带的 offset 为 slave_repl_offset。如果 repl_backlog_buffer包含slave_repl_offset 对应的部分，则采用增量复制，否则采用全量复制。repl_backlog_buffer的默认缓冲区大小为1M\n【为什么要主从复制】\n备份数据：主从复制实现了数据的热备份，是持久化之外的数据冗余方式 故障恢复：当主节点宕机之后，可以采用从节点提供服务。 负载均衡: 主从复制实现了读写分离，只有主节点支持读写操作，从节点只有都操作。在读多写少的场景下，可以提高Redis服务器的并发量。 2. Redis集群的实现原理是什么? 【Redis集群基本知识】\n定义: Redis集群由多个实例组成，每个实例存储部分数据 (每个实例之间的数据不重复) 。 【注】集群和主从节点不是一个东西，集群的某一个实例当中可能包含一个主节点 + 多个从节点\n为什么用 问题 解决方案 容量不足 数据分片，将数据分散不存到不同的主节点 高并发写入 数据分片，将写入请求分摊到多个主节点 主机宕机问题 自动切换主从节点，避免影响服务， 不需要手动修改客户端配置 节点通信协议：Redis集群采用Gossip协议, 支持分布式信息传播、延迟低、效率高。采用去中心化思想，任意实例(主节点)都可以作为请求入口，节点间相互通信。 分片原理： 采用哈希槽(Hash Slot)机制来分配数据，整个空间可以划分为16384 (16 * 1024)个槽。 每个Redis负责一定范围的哈希槽,数据的key经过哈希函数计算之后对16384取余可定位到对应的节点。 ",
+  "keywords": [
+    "Java", "Redis"
+  ],
+  "articleBody": "1. Redis主从复制的原理 【主从复制的原理】\n同步：从节点向主节点发送psync命令进行同步，从节点保存主节点返回的 runid 和 offset 全量复制：如果是第一次连接或者连接失败且repl_backlog_buffer 缓存区不包含slave_repl_offset， 则生成主节点的数据快照(RDB文件)发给从节点 增量复制：全量复制完毕后，主从节点之间会保持长连接。如果连接没有断开或者slave_repl_offset仍然在repl_backlog_buffer中，则将后续的写操作传递给从节点，让数据保持一致。 【全量复制细节】\n全量复制的过程是基于TCP长连接的，主要流程如下\n从节点发送psync ? -1表示需要建立连接进行同步，主节点返回主节点ID runid 和 复制进度offset (第一次同步用 -1 表示)。从节点接受之后，保存主节点的信息。 主节点执行bgsave命令生成数据快照RDB文件，然后将RDB文件发送给从节点。从节点接受文件后，清除现有的所有数据，然后加载RDB文件 如果在制作数据快照RDB文件的过程当中，主节点接收到了新的写操作，主节点会将其记录在repl buffer 里面。然后将repl buffer当中的写操作发给从节点，让其数据保持一致。 【增量复制细节】\n如果主从节点意外断开连接，为了保持数据的一致性，必须重新同步数据。如果使用全量复制来保持一致性的话，开销太大，所以采用增量复制。\n增量复制的具体流程如下：\n连接恢复后，从节点会发送psync {runid} {offset}， 其中主节点ID runid 和 复制进度offset用于标识是哪一个服务器主机和复制进度。 主节点收到psync 命令之后，会用conitnue响应告知从节点，采用增量复制同步数据 最后，主节点根据offset查找对应的进度，将短线期间未同步的写命令，发送给从节点。同时，主节点将所有的写命令写入repl_backlog_buffer， 用于后续判断是采用增量复制还是全量复制。 【注意】从节点 psync 携带的 offset 为 slave_repl_offset。如果 repl_backlog_buffer包含slave_repl_offset 对应的部分，则采用增量复制，否则采用全量复制。repl_backlog_buffer的默认缓冲区大小为1M\n【为什么要主从复制】\n备份数据：主从复制实现了数据的热备份，是持久化之外的数据冗余方式 故障恢复：当主节点宕机之后，可以采用从节点提供服务。 负载均衡: 主从复制实现了读写分离，只有主节点支持读写操作，从节点只有都操作。在读多写少的场景下，可以提高Redis服务器的并发量。 2. Redis集群的实现原理是什么? 【Redis集群基本知识】\n定义: Redis集群由多个实例组成，每个实例存储部分数据 (每个实例之间的数据不重复) 。 【注】集群和主从节点不是一个东西，集群的某一个实例当中可能包含一个主节点 + 多个从节点\n为什么用 问题 解决方案 容量不足 数据分片，将数据分散不存到不同的主节点 高并发写入 数据分片，将写入请求分摊到多个主节点 主机宕机问题 自动切换主从节点，避免影响服务， 不需要手动修改客户端配置 节点通信协议：Redis集群采用Gossip协议, 支持分布式信息传播、延迟低、效率高。采用去中心化思想，任意实例(主节点)都可以作为请求入口，节点间相互通信。 分片原理： 采用哈希槽(Hash Slot)机制来分配数据，整个空间可以划分为16384 (16 * 1024)个槽。 每个Redis负责一定范围的哈希槽,数据的key经过哈希函数计算之后对16384取余可定位到对应的节点。 【集群节点之间的交互协议】\n为什么用Gossip协议 分布式信息传播：每个节点定期向其他节点传播状态信息，确保所有节点对集群的状态有一致视图 (采用ping 发送 和 pong 接受，就像检查心跳一样 ) 低延迟、高效率：轻量级通信方式，传递信息很快 去中心化：没有中心节点，任意实例(主节点)都可以作为请求入口，节点间相互通信。 Gossip协议工作原理 状态报告和信息更新：特定时间间隔内，向随机的其他节点报告自身情况 （主从关系、槽位分布）。其他节点接收到之后，会相应的更新对应的节点状态信息 节点检测：通过周期性交换状态信息，可以检测到其他节点的存活状态。预定时间内未响应，则标记为故障节点。 容错处理：如果某个节点故障之后，集群中的其他节点可以重新分配槽位，保持系统的可用性 【哈希槽的相关机制】\n假定集群中有三个节点，Node1 (0 - 5460)、Node2(5461-10922)、Node3(10923-16383)\n集群使用哈希槽的流程如下：\n计算哈希槽 使用CRC16哈希算法计算user:0001的CRC16的值 将CRC16的值对16384进行取余 (哈希槽 = CRC16 % 16383) 假如CRC16为12345，哈希槽 = 12345 % 16383 = 12345 确定目标节点 ：查询到12345为Node3的存储的键，向该节点发送请求 当前非对应节点 ：假设当前连接的节点为Node1，Node1将返回MOVED错误到客户端，并让客户端根据MOVED携带的Node3的信息(ip和端口)重新进行连接，最后从新发送GET user:0001请求，获得结果。 3. Redis的哨兵机制（Sentinel）是什么？ 【哨兵作用】\n监控：哨兵不断监控主从节点的运行状态,定时发送ping进行检测 故障转移: 当主节点发生故障时, 哨兵会先踢出所有失效的节点, 然后选择一个有效的从节点作为新的主节点, 并通知客户端更新主节点的地址 通知: 哨兵可以发送服务各个节点的状态通知，方便观察Redis实例的状态变化。（比如主节点g了，已经更换为新的主节点） 【哨兵机制的主观下线和客观下线】\n主观下线：哨兵在监控的过程中，每隔1s会发送 ping 命令给所有的节点。如果哨兵超过down-after-milliseconds 所配置的时间，没有收到 pong 的响应，就会认为节点主观下线。\n客观下线：某个哨兵发现节点主线下线后，不能确认节点是否真的下线了（可能是网络不稳定），就询问其他的哨兵是否主观下线了。等待其他哨兵的确认，进行投票，如果超过半数+1 (总哨兵数/2 + 1)，就认定为客观下线。\n【注】客观下线只对主节点适用，因为从节点也没必要这样子判断，g了就g了呗。\n【哨兵leader如何选举】\n哨兵leader是采用分布式算法raft选出来的。具体流程如下：\n候选人：当哨兵判断为主观下线，则可以当选候选人 投票：每个哨兵都可以投票，但是只能投一票。候选者会优先投给自己。 选举：选取投票结果半数以上的候选人作为leader (哨兵一般设置为奇数，防止平票) 【主节点如何选举】\n哨兵判断主节点客观下线之后，会踢出所有下线的节点，然后从有效的从节点选新的主节点。选取依据如下：\n优先级：按照从节点的优先级 slave-priority，优先级的值越小越高。 主从复制offset值：如果优先级相同，则判断主从复制的offset值哪一个大，表明其同步的数据越多，优先级就越高。 从节点ID：如果上述条件均相同，则选取ID较小的从节点作为主节点。 ",
+  "wordCount" : "160",
+  "inLanguage": "en",
+  "image": "https://swimmingliu.cn/papermod-cover.png","datePublished": "2025-02-20T21:21:45+08:00",
+  "dateModified": "2025-02-20T21:21:45+08:00",
+  "author":[{
+    "@type": "Person",
+    "name": "SwimmingLiu"
+  }],
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": "https://swimmingliu.cn/posts/job/redis-interview-questions/"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "SwimmingLiu's Blog",
+    "logo": {
+      "@type": "ImageObject",
+      "url": "https://swimmingliu.cn/images/swimmingliu_icon.png"
+    }
+  }
+}
+</script>
+</head>
+
+<body class="" id="top">
+<script>
+    if (localStorage.getItem("pref-theme") === "dark") {
+        document.body.classList.add('dark');
+    } else if (localStorage.getItem("pref-theme") === "light") {
+        document.body.classList.remove('dark')
+    } else if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+        document.body.classList.add('dark');
+    }
+
+</script>
+
+<header class="header">
+    <nav class="nav">
+        <div class="logo">
+            <a href="https://swimmingliu.cn/" accesskey="h" title="𝓢𝔀𝓲𝓶𝓶𝓲𝓷𝓰𝓛𝓲𝓾&#39;𝓼 𝓑𝓵𝓸𝓰 (Alt + H)">
+                <img src="https://swimmingliu.cn/images/swimmingliu_icon.png" alt="" aria-label="logo"
+                    height="30">𝓢𝔀𝓲𝓶𝓶𝓲𝓷𝓰𝓛𝓲𝓾&#39;𝓼 𝓑𝓵𝓸𝓰</a>
+            <div class="logo-switches">
+                <button id="theme-toggle" accesskey="t" title="(Alt + T)">
+                    <svg id="moon" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                    </svg>
+                    <svg id="sun" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="5"></circle>
+                        <line x1="12" y1="1" x2="12" y2="3"></line>
+                        <line x1="12" y1="21" x2="12" y2="23"></line>
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                        <line x1="1" y1="12" x2="3" y2="12"></line>
+                        <line x1="21" y1="12" x2="23" y2="12"></line>
+                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                    </svg>
+                </button>
+            </div>
+        </div>
+        <ul id="menu">
+            <li>
+                <a href="https://swimmingliu.cn/index.html" title="🏡 Home">
+                    <span>🏡 Home</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://swimmingliu.cn/search/" title="🔍 Search">
+                    <span>🔍 Search</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://swimmingliu.cn/posts/" title="🗒️ Posts">
+                    <span>🗒️ Posts</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://swimmingliu.cn/archives/" title="📃 Archive">
+                    <span>📃 Archive</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://swimmingliu.cn/tags/" title="📑 Tags">
+                    <span>📑 Tags</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://bento.me/swimmingliu" title="👨🏻‍🎓 About Me">
+                    <span>👨🏻‍🎓 About Me</span>&nbsp;
+                    <svg fill="none" shape-rendering="geometricPrecision" stroke="currentColor" stroke-linecap="round"
+                        stroke-linejoin="round" stroke-width="2.5" viewBox="0 0 24 24" height="12" width="12">
+                        <path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"></path>
+                        <path d="M15 3h6v6"></path>
+                        <path d="M10 14L21 3"></path>
+                    </svg>
+                </a>
+            </li>
+            <li>
+                <a href="https://www.emojisearch.app/" title="Emoji">
+                    <span>Emoji</span>&nbsp;
+                    <svg fill="none" shape-rendering="geometricPrecision" stroke="currentColor" stroke-linecap="round"
+                        stroke-linejoin="round" stroke-width="2.5" viewBox="0 0 24 24" height="12" width="12">
+                        <path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"></path>
+                        <path d="M15 3h6v6"></path>
+                        <path d="M10 14L21 3"></path>
+                    </svg>
+                </a>
+            </li>
+        </ul>
+    </nav>
+</header>
+<main class="main">
+
+<article class="post-single">
+  <header class="post-header">
+    <div class="breadcrumbs"><a href="https://swimmingliu.cn/">Home</a>&nbsp;»&nbsp;<a href="https://swimmingliu.cn/posts/">📚 Posts</a>&nbsp;»&nbsp;<a href="https://swimmingliu.cn/posts/job/">💻 Job</a></div>
+    <h1 class="post-title entry-hint-parent">
+      Redis面试题笔记
+    </h1>
+    <div class="post-meta"><span title='2025-02-20 21:21:45 +0800 CST'>February 20, 2025</span>&nbsp;·&nbsp;1 min&nbsp;·&nbsp;SwimmingLiu
+
+</div>
+  </header> <div class="toc">
+    <details >
+        <summary accesskey="c" title="(Alt + C)">
+            <span class="details">Table of Contents</span>
+        </summary>
+
+        <div class="inner"><ul>
+                <li>
+                    <a href="#1-redis%e4%b8%bb%e4%bb%8e%e5%a4%8d%e5%88%b6%e7%9a%84%e5%8e%9f%e7%90%86" aria-label="1. Redis主从复制的原理">1. Redis主从复制的原理</a></li>
+                <li>
+                    <a href="#2-redis%e9%9b%86%e7%be%a4%e7%9a%84%e5%ae%9e%e7%8e%b0%e5%8e%9f%e7%90%86%e6%98%af%e4%bb%80%e4%b9%88" aria-label="2. Redis集群的实现原理是什么?">2. Redis集群的实现原理是什么?</a></li>
+                <li>
+                    <a href="#3-redis%e7%9a%84%e5%93%a8%e5%85%b5%e6%9c%ba%e5%88%b6sentinel%e6%98%af%e4%bb%80%e4%b9%88" aria-label="3. Redis的哨兵机制（Sentinel）是什么？">3. Redis的哨兵机制（Sentinel）是什么？</a>
+                </li>
+            </ul>
+        </div>
+    </details>
+</div>
+  <div class="post-content"><h2 id="1-redis主从复制的原理">1. Redis主从复制的原理<a hidden class="anchor" aria-hidden="true" href="#1-redis主从复制的原理">#</a></h2>
+<p>【<strong>主从复制的原理</strong>】</p>
+<ol>
+<li>同步：从节点向主节点发送<code>psync</code>命令进行同步，从节点保存主节点返回的 <code>runid</code> 和 <code> offset</code></li>
+<li>全量复制：如果是第一次连接或者连接失败且<code>repl_backlog_buffer</code> 缓存区不包含<code>slave_repl_offset</code>， 则生成主节点的数据快照(RDB文件)发给从节点</li>
+<li>增量复制：全量复制完毕后，主从节点之间会保持长连接。如果连接没有断开或者<code>slave_repl_offset</code>仍然在<code>repl_backlog_buffer</code>中，则将后续的写操作传递给从节点，让数据保持一致。</li>
+</ol>
+<p><strong>【全量复制细节】</strong></p>
+<p>全量复制的过程是基于TCP长连接的，主要流程如下</p>
+<ol>
+<li>从节点发送<code>psync ? -1</code>表示需要建立连接进行同步，主节点返回主节点ID <code>runid</code> 和 复制进度<code>offset</code> (第一次同步用 -1 表示)。从节点接受之后，保存主节点的信息。</li>
+<li>主节点执行<code>bgsave</code>命令生成数据快照RDB文件，然后将RDB文件发送给从节点。从节点接受文件后，清除现有的所有数据，然后加载RDB文件</li>
+<li>如果在制作数据快照RDB文件的过程当中，主节点接收到了新的写操作，主节点会将其记录在<code>repl buffer</code> 里面。然后将<code>repl buffer</code>当中的写操作发给从节点，让其数据保持一致。</li>
+</ol>
+<p><img alt="Redis主从全量复制" loading="lazy" src="https://oss.swimmingliu.cn/ac630d4c-ef8d-11ef-a882-c858c0c1deba"></p>
+<p><strong>【增量复制细节】</strong></p>
+<p>如果主从节点意外断开连接，为了保持数据的一致性，必须重新同步数据。如果使用全量复制来保持一致性的话，开销太大，所以采用增量复制。</p>
+<p>增量复制的具体流程如下：</p>
+<ol>
+<li>连接恢复后，从节点会发送<code>psync {runid} {offset}</code>， 其中主节点ID <code>runid</code> 和 复制进度<code>offset</code>用于标识是哪一个服务器主机和复制进度。</li>
+<li>主节点收到<code>psync</code> 命令之后，会用<code>conitnue</code>响应告知从节点，采用增量复制同步数据</li>
+<li>最后，主节点根据<code>offset</code>查找对应的进度，将短线期间未同步的写命令，发送给从节点。同时，主节点将所有的写命令写入<code>repl_backlog_buffer</code>， 用于后续判断是采用增量复制还是全量复制。</li>
+</ol>
+<p>【注意】从节点 <code>psync</code> 携带的 <code>offset</code> 为 <code>slave_repl_offset</code>。如果 <code>repl_backlog_buffer</code>包含<code>slave_repl_offset</code> 对应的部分，则采用增量复制，否则采用全量复制。<code>repl_backlog_buffer</code>的默认缓冲区大小为<code>1M</code></p>
+<p><img alt="Redis主从增量复制" loading="lazy" src="https://oss.swimmingliu.cn/ac9f21a3-ef8d-11ef-9016-c858c0c1deba"></p>
+<p>【<strong>为什么要主从复制</strong>】</p>
+<ul>
+<li><strong>备份数据</strong>：主从复制实现了数据的热备份，是持久化之外的数据冗余方式</li>
+<li><strong>故障恢复</strong>：当主节点宕机之后，可以采用从节点提供服务。</li>
+<li><strong>负载均衡</strong>:  主从复制实现了读写分离，只有主节点支持读写操作，从节点只有都操作。在读多写少的场景下，可以提高Redis服务器的并发量。</li>
+</ul>
+<p><img alt="Redis主从读写分离" loading="lazy" src="https://oss.swimmingliu.cn/acad0d12-ef8d-11ef-b17f-c858c0c1deba"></p>
+<h2 id="2-redis集群的实现原理是什么">2. Redis集群的实现原理是什么?<a hidden class="anchor" aria-hidden="true" href="#2-redis集群的实现原理是什么">#</a></h2>
+<p>【<strong>Redis集群基本知识</strong>】</p>
+<ul>
+<li><strong>定义</strong>: Redis集群由多个实例组成，每个实例存储部分数据 (每个实例之间的数据不重复) 。</li>
+</ul>
+<p>【注】集群和主从节点不是一个东西，集群的某一个实例当中可能包含一个主节点 + 多个从节点</p>
+<ul>
+<li><strong>为什么用</strong></li>
+</ul>
+<table>
+  <thead>
+      <tr>
+          <th>问题</th>
+          <th>解决方案</th>
+      </tr>
+  </thead>
+  <tbody>
+      <tr>
+          <td><strong>容量不足</strong></td>
+          <td>数据分片，将数据分散不存到不同的主节点</td>
+      </tr>
+      <tr>
+          <td><strong>高并发写入</strong></td>
+          <td>数据分片，将写入请求分摊到多个主节点</td>
+      </tr>
+      <tr>
+          <td><strong>主机宕机问题</strong></td>
+          <td>自动切换主从节点，避免影响服务， 不需要手动修改客户端配置</td>
+      </tr>
+  </tbody>
+</table>
+<ul>
+<li><strong>节点通信协议</strong>：Redis集群采用Gossip协议, 支持分布式信息传播、延迟低、效率高。采用去中心化思想，任意实例(主节点)都可以作为请求入口，节点间相互通信。</li>
+<li><strong>分片原理</strong>： 采用哈希槽(Hash Slot)机制来分配数据，整个空间可以划分为<strong>16384</strong> (16 * 1024)个槽。 每个Redis负责一定范围的哈希槽,数据的key经过哈希函数计算之后对<strong>16384</strong>取余可定位到对应的节点。</li>
+</ul>
+<p><img alt="Redis集群架构图" loading="lazy" src="https://oss.swimmingliu.cn/acc54635-ef8d-11ef-971e-c858c0c1deba"></p>
+<p>【<strong>集群节点之间的交互协议</strong>】</p>
+<ul>
+<li><strong>为什么用Gossip协议</strong></li>
+</ul>
+<ol>
+<li>分布式信息传播：每个节点定期向其他节点传播状态信息，确保所有节点对集群的状态有一致视图 (采用<code>ping</code> 发送 和 <code>pong</code> 接受，就像检查心跳一样 )</li>
+<li>低延迟、高效率：轻量级通信方式，传递信息很快</li>
+<li>去中心化：没有中心节点，任意实例(主节点)都可以作为请求入口，节点间相互通信。</li>
+</ol>
+<ul>
+<li><strong>Gossip协议工作原理</strong></li>
+</ul>
+<ol>
+<li>状态报告和信息更新：特定时间间隔内，向随机的其他节点报告自身情况 （主从关系、槽位分布）。其他节点接收到之后，会相应的更新对应的节点状态信息</li>
+<li>节点检测：通过周期性交换状态信息，可以检测到其他节点的存活状态。预定时间内未响应，则标记为故障节点。</li>
+<li>容错处理：如果某个节点故障之后，集群中的其他节点可以重新分配槽位，保持系统的可用性</li>
+</ol>
+<p>【<strong>哈希槽的相关机制</strong>】</p>
+<p>假定集群中有三个节点，Node1 (0 - 5460)、Node2(5461-10922)、Node3(10923-16383)</p>
+<p>集群使用哈希槽的流程如下：</p>
+<ul>
+<li><strong>计算哈希槽</strong></li>
+</ul>
+<ol>
+<li>使用CRC16哈希算法计算<code>user:0001</code>的CRC16的值</li>
+<li>将CRC16的值对16384进行取余 (哈希槽 = CRC16 % 16383)</li>
+<li>假如CRC16为12345，哈希槽 = 12345 % 16383 = 12345</li>
+</ol>
+<ul>
+<li><strong>确定目标节点</strong> ：查询到12345为Node3的存储的键，向该节点发送请求</li>
+<li><strong>当前非对应节点</strong> ：假设当前连接的节点为Node1，Node1将返回<code>MOVED</code>错误到客户端，并让客户端根据<code>MOVED</code>携带的Node3的信息(<code>ip</code>和端口)重新进行连接，最后从新发送<code>GET user:0001</code>请求，获得结果。</li>
+</ul>
+<h2 id="3-redis的哨兵机制sentinel是什么">3. Redis的哨兵机制（Sentinel）是什么？<a hidden class="anchor" aria-hidden="true" href="#3-redis的哨兵机制sentinel是什么">#</a></h2>
+<p><strong>【哨兵作用】</strong></p>
+<ul>
+<li>监控：哨兵不断监控主从节点的运行状态,定时发送ping进行检测</li>
+<li>故障转移: 当主节点发生故障时, 哨兵会先踢出所有失效的节点, 然后选择一个有效的从节点作为新的主节点, 并通知客户端更新主节点的地址</li>
+<li>通知: 哨兵可以发送服务各个节点的状态通知，方便观察Redis实例的状态变化。（比如主节点g了，已经更换为新的主节点）</li>
+</ul>
+<p><strong>【哨兵机制的主观下线和客观下线】</strong></p>
+<ul>
+<li>
+<p><strong>主观下线</strong>：哨兵在监控的过程中，每隔1s会发送 <code>ping</code> 命令给所有的节点。如果哨兵超过<code>down-after-milliseconds</code> 所配置的时间，没有收到 <code>pong</code> 的响应，就会认为节点主观下线。</p>
+</li>
+<li>
+<p><strong>客观下线</strong>：某个哨兵发现节点主线下线后，不能确认节点是否真的下线了（可能是网络不稳定），就询问其他的哨兵是否主观下线了。等待其他哨兵的确认，进行投票，如果超过半数+1 (总哨兵数/2 + 1)，就认定为客观下线。</p>
+</li>
+</ul>
+<p>【注】客观下线只对主节点适用，因为从节点也没必要这样子判断，g了就g了呗。</p>
+<p><strong>【哨兵leader如何选举】</strong></p>
+<p>哨兵leader是采用分布式算法raft选出来的。具体流程如下：</p>
+<ol>
+<li>候选人：当哨兵判断为主观下线，则可以当选候选人</li>
+<li>投票：每个哨兵都可以投票，但是只能投一票。候选者会优先投给自己。</li>
+<li>选举：选取投票结果半数以上的候选人作为leader (哨兵一般设置为奇数，防止平票)</li>
+</ol>
+<p><strong>【主节点如何选举】</strong></p>
+<p>哨兵判断主节点客观下线之后，会踢出所有下线的节点，然后从有效的从节点选新的主节点。选取依据如下：</p>
+<ol>
+<li>优先级：按照从节点的优先级 <code>slave-priority</code>，优先级的值越小越高。</li>
+<li>主从复制offset值：如果优先级相同，则判断主从复制的offset值哪一个大，表明其同步的数据越多，优先级就越高。</li>
+<li>从节点ID：如果上述条件均相同，则选取ID较小的从节点作为主节点。</li>
+</ol>
+
+
+  </div>
+
+
+
+  <footer class="post-footer">
+    <ul class="post-tags">
+      <li><a href="https://swimmingliu.cn/tags/java/">Java</a></li>
+      <li><a href="https://swimmingliu.cn/tags/redis/">Redis</a></li>
+    </ul>
+<nav class="paginav">
+  <a class="next" href="https://swimmingliu.cn/posts/job/java-set-interview-questions/">
+    <span class="title">Next »</span>
+    <br>
+    <span>Java集合面试题笔记</span>
+  </a>
+</nav>
+
+  </footer>
+</article>
+    </main>
+    
+<footer class="footer">
+        <span>&copy; 2023-2025 <a href="https://swimmingliu.cn/">SwimmingLiu&#39;s Blog</a></span> · 
+
+    <span>
+        Powered by
+        <a href="https://gohugo.io/" rel="noopener noreferrer" target="_blank">Hugo</a> &
+        <a href="https://github.com/adityatelange/hugo-PaperMod/" rel="noopener" target="_blank">PaperMod</a>
+    </span>
+    <span>
+        <a href="https://beian.miit.gov.cn/">浙ICP备2024056260号</a>
+    </span>
+</footer>
+<a href="#top" aria-label="go to top" title="Go to Top (Alt + G)" class="top-link" id="top-link" accesskey="g">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 6" fill="currentColor">
+        <path d="M12 6H0l6-6z" />
+    </svg>
+</a>
+
+<script>
+    let menu = document.getElementById('menu')
+    if (menu) {
+        menu.scrollLeft = localStorage.getItem("menu-scroll-position");
+        menu.onscroll = function () {
+            localStorage.setItem("menu-scroll-position", menu.scrollLeft);
+        }
+    }
+
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener("click", function (e) {
+            e.preventDefault();
+            var id = this.getAttribute("href").substr(1);
+            if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView({
+                    behavior: "smooth"
+                });
+            } else {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView();
+            }
+            if (id === "top") {
+                history.replaceState(null, null, " ");
+            } else {
+                history.pushState(null, null, `#${id}`);
+            }
+        });
+    });
+
+</script>
+<script>
+    var mybutton = document.getElementById("top-link");
+    window.onscroll = function () {
+        if (document.body.scrollTop > 800 || document.documentElement.scrollTop > 800) {
+            mybutton.style.visibility = "visible";
+            mybutton.style.opacity = "1";
+        } else {
+            mybutton.style.visibility = "hidden";
+            mybutton.style.opacity = "0";
+        }
+    };
+
+</script>
+<script>
+    document.getElementById("theme-toggle").addEventListener("click", () => {
+        if (document.body.className.includes("dark")) {
+            document.body.classList.remove('dark');
+            localStorage.setItem("pref-theme", 'light');
+        } else {
+            document.body.classList.add('dark');
+            localStorage.setItem("pref-theme", 'dark');
+        }
+    })
+
+</script>
+<script>
+    document.querySelectorAll('pre > code').forEach((codeblock) => {
+        const container = codeblock.parentNode.parentNode;
+
+        const copybutton = document.createElement('button');
+        copybutton.classList.add('copy-code');
+        copybutton.innerHTML = 'copy';
+
+        function copyingDone() {
+            copybutton.innerHTML = 'copied!';
+            setTimeout(() => {
+                copybutton.innerHTML = 'copy';
+            }, 2000);
+        }
+
+        copybutton.addEventListener('click', (cb) => {
+            if ('clipboard' in navigator) {
+                navigator.clipboard.writeText(codeblock.textContent);
+                copyingDone();
+                return;
+            }
+
+            const range = document.createRange();
+            range.selectNodeContents(codeblock);
+            const selection = window.getSelection();
+            selection.removeAllRanges();
+            selection.addRange(range);
+            try {
+                document.execCommand('copy');
+                copyingDone();
+            } catch (e) { };
+            selection.removeRange(range);
+        });
+
+        if (container.classList.contains("highlight")) {
+            container.appendChild(copybutton);
+        } else if (container.parentNode.firstChild == container) {
+            
+        } else if (codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.nodeName == "TABLE") {
+            
+            codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.appendChild(copybutton);
+        } else {
+            
+            codeblock.parentNode.appendChild(copybutton);
+        }
+    });
+</script>
+</body>
+
+</html>

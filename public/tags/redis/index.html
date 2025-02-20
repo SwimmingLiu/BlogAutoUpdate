@@ -5,11 +5,11 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 <meta name="robots" content="index, follow">
-<title>💻 Job | SwimmingLiu&#39;s Blog</title>
+<title>Redis | SwimmingLiu&#39;s Blog</title>
 <meta name="keywords" content="">
-<meta name="description" content="💻 Job - SwimmingLiu&#39;s Blog">
+<meta name="description" content="">
 <meta name="author" content="👨🏻‍🎓 SwimmingLiu">
-<link rel="canonical" href="https://swimmingliu.cn/posts/job/">
+<link rel="canonical" href="https://swimmingliu.cn/tags/redis/">
 <link crossorigin="anonymous" href="/assets/css/stylesheet.6ecbb0040febd20e47edd88a662c19f1ea945bf7427774b86594271d18f88faf.css" integrity="sha256-bsuwBA/r0g5H7diKZiwZ8eqUW/dCd3S4ZZQnHRj4j68=" rel="preload stylesheet" as="style">
 <link rel="icon" href="https://swimmingliu.cn/images/swimmingliu_icon.png">
 <link rel="icon" type="image/png" sizes="16x16" href="https://swimmingliu.cn/images/swimmingliu_icon.png">
@@ -18,8 +18,8 @@
 <link rel="mask-icon" href="https://swimmingliu.cn/images/swimmingliu_icon.png">
 <meta name="theme-color" content="#2e2e33">
 <meta name="msapplication-TileColor" content="#2e2e33">
-<link rel="alternate" type="application/rss+xml" href="https://swimmingliu.cn/posts/job/index.xml">
-<link rel="alternate" hreflang="en" href="https://swimmingliu.cn/posts/job/">
+<link rel="alternate" type="application/rss+xml" href="https://swimmingliu.cn/tags/redis/index.xml">
+<link rel="alternate" hreflang="en" href="https://swimmingliu.cn/tags/redis/">
 <noscript>
     <style>
         #theme-toggle,
@@ -57,38 +57,17 @@
 
     </style>
 </noscript>
-<meta property="og:url" content="https://swimmingliu.cn/posts/job/">
+<meta property="og:url" content="https://swimmingliu.cn/tags/redis/">
   <meta property="og:site_name" content="SwimmingLiu&#39;s Blog">
-  <meta property="og:title" content="💻 Job">
+  <meta property="og:title" content="Redis">
   <meta property="og:locale" content="en">
   <meta property="og:type" content="website">
       <meta property="og:image" content="https://swimmingliu.cn/papermod-cover.png">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:image" content="https://swimmingliu.cn/papermod-cover.png">
-<meta name="twitter:title" content="💻 Job">
+<meta name="twitter:title" content="Redis">
 <meta name="twitter:description" content="">
 
-
-<script type="application/ld+json">
-{
-  "@context": "https://schema.org",
-  "@type": "BreadcrumbList",
-  "itemListElement": [
-    {
-      "@type": "ListItem",
-      "position":  1 ,
-      "name": "📚 Posts",
-      "item": "https://swimmingliu.cn/posts/"
-    }, 
-    {
-      "@type": "ListItem",
-      "position":  2 ,
-      "name": "💻 Job",
-      "item": "https://swimmingliu.cn/posts/job/"
-    }
-  ]
-}
-</script>
 </head>
 
 <body class="list" id="top">
@@ -184,10 +163,10 @@
     </nav>
 </header>
 <main class="main"> 
-<header class="page-header"><div class="breadcrumbs"><a href="https://swimmingliu.cn/">Home</a>&nbsp;»&nbsp;<a href="https://swimmingliu.cn/posts/">📚 Posts</a></div>
+<header class="page-header"><div class="breadcrumbs"><a href="https://swimmingliu.cn/">Home</a>&nbsp;»&nbsp;<a href="https://swimmingliu.cn/tags/">Tags</a></div>
   <h1>
-    💻 Job
-    <a href="/posts/job/index.xml" title="RSS" aria-label="RSS">
+    Redis
+    <a href="/tags/redis/index.xml" title="RSS" aria-label="RSS">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
         stroke-linecap="round" stroke-linejoin="round" height="23">
         <path d="M4 11a9 9 0 0 1 9 9" />
@@ -198,7 +177,7 @@
   </h1>
 </header>
 
-<article class="post-entry"> 
+<article class="post-entry tag-entry"> 
   <header class="entry-header">
     <h2 class="entry-hint-parent">Redis面试题笔记
     </h2>
@@ -218,92 +197,6 @@
   </div>
   <footer class="entry-footer"><span title='2025-02-20 21:21:45 +0800 CST'>February 20, 2025</span>&nbsp;·&nbsp;1 min&nbsp;·&nbsp;SwimmingLiu</footer>
   <a class="entry-link" aria-label="post link to Redis面试题笔记" href="https://swimmingliu.cn/posts/job/redis-interview-questions/"></a>
-</article>
-
-<article class="post-entry"> 
-  <header class="entry-header">
-    <h2 class="entry-hint-parent">Java集合面试题笔记
-    </h2>
-  </header>
-  <div class="entry-content">
-    <p>1. 说说 Java 中 HashMap 的原理？ 【HashMap定义】
-结构：数组 &#43; 链表 &#43; 红黑树 (JDK 1.8 之后)
-默认值：初始容量为16 (数组长度)，负载因子为 0.75。当存储的元素为 16 * 0.75 = 12个时，会触发Resize() 扩容操作，容量 x 2 并重新分配位置。但是扩容是有一定开销的，频繁扩容会影响性能。另外，TREEIFY_THRESHOLD 转换为红黑树的默认链表长度阈值为 8, UNTREEIFY_THRESHOLD 从红黑树转换为链表的阈值为 6。 两个阈值采用不同值的原因是防止刚转换为红黑树，又变成链表，反复横跳，消耗资源。
-数组下标位置计算方法：首先使用key的hashCode()方法计算下标位置，然后通过 indexFor() (JDK 1.7 以前) 计算下标值。 JDK 1.7后，为了提高计算效率采用 (len - 1) &amp; hash 来确定下标值。
-【注】数组的长度len 是2的幂次方时，(len - 1) &amp; hash 等价于 hash % len。 这也是为什么数组长度必须是2的幂次方。
-【HashMap线程不安全】
-为了保证HashMap的读写效率高，它的操作是非同步的，也就是说读写操作没有锁保护。所以多线程场景下是线程不安全的。
-【HashMap不同版本区别】
-JDK 1.7: 数组 &#43; 链表，链表部分采用头插法，多线程会导致出现环形链表。扩容会计算每个元素hash值，并分配到新的位置，开销大。 JDK 1.8：数组 &#43; 链表 &#43; 红黑树，采用高低位置来分配位置，即判断(e.hash &amp; oldCap) == 0， 减少了计算hash的次数 【HashMap的PUT方法】
-...</p>
-  </div>
-  <footer class="entry-footer"><span title='2025-02-20 21:20:50 +0800 CST'>February 20, 2025</span>&nbsp;·&nbsp;4 min&nbsp;·&nbsp;SwimmingLiu</footer>
-  <a class="entry-link" aria-label="post link to Java集合面试题笔记" href="https://swimmingliu.cn/posts/job/java-set-interview-questions/"></a>
-</article>
-
-<article class="post-entry"> 
-  <header class="entry-header">
-    <h2 class="entry-hint-parent">Java基础题面试笔记
-    </h2>
-  </header>
-  <div class="entry-content">
-    <p>1. 序列化和反序列化 1.序列化和反序列化：把对象转换为字节流，用于存储和传输；读取字节流数据，重新创建对象。 2.序列化不包括静态对象：序列化和反序列化的本质是调用对象的writeObject和readObject方法,来实现将对象写入输出流和读取输入流。但是，静态变量不属于对象，所以调用这两个方法就没法儿让静态变量参与。
-2. 什么是不可变类？ 1.不可变类：初始化之后，就不能修改的类。 2.修饰方法：final 和 private 修饰所有类和变量 3.不可修改：不暴露set方法，只能通过重新创建对象替代修改功能(String的replace方法) 4.优缺点： 优点：线程安全，缓存友好 缺点：频繁拼接和修改会浪费资源
-3. Exception和Error区别? 1.Exception和Error定义区别：Exception是可处理程序异常，Error是系统级不可回复错误 2.try-catch建议： 1.范围能小则小 2.Exception最好要写清楚具体是哪一个Exception(IOException) 3.null值等能用if判断的，不要用try-catch,因为异常比条件语句低效 4.finally不要直接return和处理返回值
-4. Java 中的 hashCode 和 equals 方法之间有什么关系？ 1、equals() 和 hashCode() 的关系
-如果两个对象euqals() 为 true， 则其 hashCode()一定相同 如果两个对象hashCode() 相同，其equals()结果不一定为true 2、为什么重写equals()之后，一定要重写hashCode()
-当重写equals() 之后，通常是重新定义了两个对象相等的逻辑。如果不重写hashCode()方法， 则在散列集合（HashMap 和 HashSet）中，可能无法正确存储和检索，因为两个相同的对象可能有不同的hash值。
-例如，下方Person类重写了equals() 方法，但是没有重新hashCode()
-public class Person { private String name; private int age; @Override public boolean equals(Object obj) { if (this == obj) return true; if (obj == null || getClass() != obj.getClass()) return false; Person person = (Person) obj; return age == person.age &amp;&amp; Objects.equals(name, person.name); } } 创建相同的对象，并添加到HashSet中
-...</p>
-  </div>
-  <footer class="entry-footer"><span title='2025-02-19 15:18:58 +0800 CST'>February 19, 2025</span>&nbsp;·&nbsp;1 min&nbsp;·&nbsp;SwimmingLiu</footer>
-  <a class="entry-link" aria-label="post link to Java基础题面试笔记" href="https://swimmingliu.cn/posts/job/java-basic-interview-questions/"></a>
-</article>
-
-<article class="post-entry"> 
-  <header class="entry-header">
-    <h2 class="entry-hint-parent">MySQL面试题笔记
-    </h2>
-  </header>
-  <div class="entry-content">
-    <p>1.MySQL 中的数据排序是怎么实现的？ 1.排序方法：索引排序和文件排序 (filesort) 2.索引排序：如果order by xxx的字段为索引字段，则利用索引进行排序。效率最高，索引默认有序。 3.文件排序 (filesort)：内存排序(单路排序和双路排序)和磁盘排序，具体取决于排序数据的大小。其中，内存排序使用单路排序或双路排序，取决于max_length_for_sort_data(默认为4096个字节) 4.双路排序：取row_id(如果有主键，则为主键)和select a,b,c order by xxx的xxx字段放入sort_buffer(排序缓存)中，将排序后的row_id回表查询a,b,c 5.单路排序: 直接把要查的所有字段放入sort_buffer里，排序后直接得到结果集合 6.磁盘排序（归并排序）:将数据分为多份文件，单独对文件进行排序，然后合并成一个有序的大文件
-2. MySQL 的 Change Buffer 是什么？它有什么作用？ 1.ChangeBuffer定义：Change Buffer是InnoDB缓冲当中的一块缓存区，用于暂存二级索引的修改，避免二级索引页修改产生的随机IO 2.ChangeBuffer注意事项：只能用于二级索引，不能用于其他任何索引，包括主键索引和唯一索引都不行。 3.如果ChangeBuffer挂了，更改操作未执行，是否会出现脏数据？ 首先，ChangeBuffer也会保存在磁盘空间里面，redo log会记录Change Buffer当中的修改操作，确保数据一致性。
-知识拓展1：一级索引和二级索引区别
-一级索引（聚簇索引）：数据表的主键索引，数据和索引存储在同一B&#43;树的叶子节点中。每个表只能有一个一级索引。
-二级索引（非聚簇索引）：除主键外的其他索引，叶子节点存储索引列的值和对应的主键值。通过二级索引查询时，需要先通过二级索引获取主键值，再通过主键值查询数据，这个过程称为“回表”。
-知识拓展2: MySQL中有哪些常见索引？都有什么区别？
-在MySQL中，索引是提高查询效率的关键工具。常见的索引类型包括主键索引、唯一索引、普通索引、全文索引和空间索引。
-1. 主键索引（Primary Key Index）
-定义：主键索引是一种特殊的唯一索引，用于唯一标识表中的每一行数据。每个表只能有一个主键索引，且主键列的值不能为空。 特点：主键索引的叶子节点存储完整的数据行，因此查询效率高。在InnoDB存储引擎中，主键索引是聚簇索引，数据存储与索引结构合并。 2. 唯一索引（Unique Index）
-定义：唯一索引确保索引列的每个值都是唯一的，但允许有空值。与主键索引类似，不同之处在于唯一索引允许列值为NULL。 特点：唯一索引的叶子节点存储索引列的值和对应的主键值。在InnoDB中，唯一索引是非聚簇索引，数据存储与索引结构分开。 3. 普通索引（Index）
-定义：普通索引是最基本的索引类型，没有任何限制。索引列的值可以重复，也可以为NULL。 特点：普通索引的叶子节点存储索引列的值和对应的主键值。在InnoDB中，普通索引是非聚簇索引，数据存储与索引结构分开。 4. 全文索引（Fulltext Index）
-定义：全文索引用于对文本数据进行全文搜索，适用于MyISAM存储引擎。它允许对文本字段进行复杂的搜索，如查找包含特定单词的记录。 特点：全文索引的叶子节点存储文档的词项信息。在MyISAM中，全文索引是非聚簇索引，数据存储与索引结构分开。 5. 空间索引（Spatial Index）
-定义：空间索引用于对地理空间数据进行索引，支持空间数据类型的快速查询。它适用于存储地理位置、地图等空间数据的表。 特点：空间索引的叶子节点存储空间数据的索引信息。在MyISAM中，空间索引是非聚簇索引，数据存储与索引结构分开。 总结：
-主键索引：用于唯一标识每一行数据，值不能为空。 唯一索引：确保索引列的值唯一，但允许有空值。 普通索引：最基本的索引类型，允许重复和空值。 全文索引：用于对文本数据进行全文搜索，适用于MyISAM存储引擎。 空间索引：用于对地理空间数据进行索引，支持空间数据类型的快速查询。 3. 详细描述一条 SQL 语句在 MySQL 中的执行过程。 1.连接器判断用户是否成功建立连接，数据库连接的权限校验 2.分析器分析SQL语法和词法是否有误 3.优化器生成SQL的执行计划，确定使用的索引和调整where的执行顺序（包括连表顺序） 4.执行器判断当前用户是否有权限查询该表，然后执行该SQL语句
-...</p>
-  </div>
-  <footer class="entry-footer"><span title='2025-02-19 15:16:42 +0800 CST'>February 19, 2025</span>&nbsp;·&nbsp;2 min&nbsp;·&nbsp;SwimmingLiu</footer>
-  <a class="entry-link" aria-label="post link to MySQL面试题笔记" href="https://swimmingliu.cn/posts/job/mysql-interview-questions/"></a>
-</article>
-
-<article class="post-entry"> 
-  <header class="entry-header">
-    <h2 class="entry-hint-parent">Java面试题-随手记
-    </h2>
-  </header>
-  <div class="entry-content">
-    <p>== 和 equals 区别 == 基本类型(int, long, float, char, boolean) 值比较， 引用类型(String，List) 进行地址比较
-equals 默认就是 == ，但是部分引用类型(String，List)重写了该方法，进行值比较
-get 和 post 区别 特性 GET POST 目的 获取资源，查询数据 提交数据，创建或更新资源 请求数据方式 参数通过 URL 查询字符串传递 数据通过请求体传递 数据暴露 数据暴露在 URL 中，较不安全 数据存储在请求体中，相对安全 数据大小限制 URL 长度有限制（约 2048 个字符） 没有数据大小限制 适用场景 获取数据，查询，展示资源 提交表单，上传文件，修改资源，发送敏感数据等 SpringMVC中@ReponseBody、@PathVariable、@RequestParameters在什么情况下使用? @ReponseBody 用于接受请求体数据，一般用于POST请求
-@PathVariable 用于接受路径参数，一般用户接受 id
-@RequestParameters 用于接受请求参数，一般用于GET请求
-JVM堆的结构、GC介绍和作用 JVM堆结构的参考文章 、 GC垃圾回收过程
-区域 主要用途 特点 新生代（Young Generation） 存储新创建的对象，快速垃圾回收 包含 Eden 区和两个 Survivor 区，采用复制算法进行回收 老年代（Old Generation） 存储长期存活的对象 回收频率较低，垃圾回收较耗时 永久代（Permanent Generation) (jdk 1.7） 存储类的元数据、方法字节码等 在 jdk 1.8 被 Metaspace 替代 元空间（jdk 1.8） 存储类的元数据 不再属于堆，使用本地内存，大小由系统限制 GC 是垃圾回收器， 作用是自动内存管理和避免内存泄漏
-...</p>
-  </div>
-  <footer class="entry-footer"><span title='2024-12-27 17:27:35 +0800 CST'>December 27, 2024</span>&nbsp;·&nbsp;3 min&nbsp;·&nbsp;SwimmingLiu</footer>
-  <a class="entry-link" aria-label="post link to Java面试题-随手记" href="https://swimmingliu.cn/posts/job/java-interview-questions-notes/"></a>
 </article>
     </main>
     

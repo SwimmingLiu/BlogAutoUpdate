@@ -274,7 +274,7 @@ MySQL InnoDB的聚簇索引和非聚簇索引就像图书馆的两种找书的�
 【三层B+树存储数据计算】
 
 ``` shell
-nodesCount = 16KB * 1024 / (6 + 8) = 1170 // 每个节点可以存多少个子节点
+nodesCount = 16 * 1024 / (6 + 8) = 1170 // 每个节点可以存多少个子节点
 recordCount = 16KB / 1KB = 16 // 每个节点可以存多少条数据记录
 dataCount = nodesCount * nodesCount * recordCount = 1170 * 1170 * 16 = 21,902,400 
 所以如果一条数据为1KB大小，B+树大约能存2000w条数据

@@ -11,8 +11,111 @@
     </image>
     <generator>Hugo -- 0.136.0</generator>
     <language>en</language>
-    <lastBuildDate>Wed, 19 Feb 2025 15:18:58 +0800</lastBuildDate>
+    <lastBuildDate>Thu, 20 Feb 2025 21:21:45 +0800</lastBuildDate>
     <atom:link href="https://swimmingliu.cn/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Redis面试题笔记</title>
+      <link>https://swimmingliu.cn/posts/job/redis-interview-questions/</link>
+      <pubDate>Thu, 20 Feb 2025 21:21:45 +0800</pubDate>
+      <guid>https://swimmingliu.cn/posts/job/redis-interview-questions/</guid>
+      <description>&lt;h2 id=&#34;1-redis主从复制的原理&#34;&gt;1. Redis主从复制的原理&lt;/h2&gt;
+&lt;p&gt;【&lt;strong&gt;主从复制的原理&lt;/strong&gt;】&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;同步：从节点向主节点发送&lt;code&gt;psync&lt;/code&gt;命令进行同步，从节点保存主节点返回的 &lt;code&gt;runid&lt;/code&gt; 和 &lt;code&gt; offset&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;全量复制：如果是第一次连接或者连接失败且&lt;code&gt;repl_backlog_buffer&lt;/code&gt; 缓存区不包含&lt;code&gt;slave_repl_offset&lt;/code&gt;， 则生成主节点的数据快照(RDB文件)发给从节点&lt;/li&gt;
+&lt;li&gt;增量复制：全量复制完毕后，主从节点之间会保持长连接。如果连接没有断开或者&lt;code&gt;slave_repl_offset&lt;/code&gt;仍然在&lt;code&gt;repl_backlog_buffer&lt;/code&gt;中，则将后续的写操作传递给从节点，让数据保持一致。&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;&lt;strong&gt;【全量复制细节】&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;全量复制的过程是基于TCP长连接的，主要流程如下&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;从节点发送&lt;code&gt;psync ? -1&lt;/code&gt;表示需要建立连接进行同步，主节点返回主节点ID &lt;code&gt;runid&lt;/code&gt; 和 复制进度&lt;code&gt;offset&lt;/code&gt; (第一次同步用 -1 表示)。从节点接受之后，保存主节点的信息。&lt;/li&gt;
+&lt;li&gt;主节点执行&lt;code&gt;bgsave&lt;/code&gt;命令生成数据快照RDB文件，然后将RDB文件发送给从节点。从节点接受文件后，清除现有的所有数据，然后加载RDB文件&lt;/li&gt;
+&lt;li&gt;如果在制作数据快照RDB文件的过程当中，主节点接收到了新的写操作，主节点会将其记录在&lt;code&gt;repl buffer&lt;/code&gt; 里面。然后将&lt;code&gt;repl buffer&lt;/code&gt;当中的写操作发给从节点，让其数据保持一致。&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;&lt;img alt=&#34;Redis主从全量复制&#34; loading=&#34;lazy&#34; src=&#34;https://oss.swimmingliu.cn/ac630d4c-ef8d-11ef-a882-c858c0c1deba&#34;&gt;&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;【增量复制细节】&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;如果主从节点意外断开连接，为了保持数据的一致性，必须重新同步数据。如果使用全量复制来保持一致性的话，开销太大，所以采用增量复制。&lt;/p&gt;
+&lt;p&gt;增量复制的具体流程如下：&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;连接恢复后，从节点会发送&lt;code&gt;psync {runid} {offset}&lt;/code&gt;， 其中主节点ID &lt;code&gt;runid&lt;/code&gt; 和 复制进度&lt;code&gt;offset&lt;/code&gt;用于标识是哪一个服务器主机和复制进度。&lt;/li&gt;
+&lt;li&gt;主节点收到&lt;code&gt;psync&lt;/code&gt; 命令之后，会用&lt;code&gt;conitnue&lt;/code&gt;响应告知从节点，采用增量复制同步数据&lt;/li&gt;
+&lt;li&gt;最后，主节点根据&lt;code&gt;offset&lt;/code&gt;查找对应的进度，将短线期间未同步的写命令，发送给从节点。同时，主节点将所有的写命令写入&lt;code&gt;repl_backlog_buffer&lt;/code&gt;， 用于后续判断是采用增量复制还是全量复制。&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;【注意】从节点 &lt;code&gt;psync&lt;/code&gt; 携带的 &lt;code&gt;offset&lt;/code&gt; 为 &lt;code&gt;slave_repl_offset&lt;/code&gt;。如果 &lt;code&gt;repl_backlog_buffer&lt;/code&gt;包含&lt;code&gt;slave_repl_offset&lt;/code&gt; 对应的部分，则采用增量复制，否则采用全量复制。&lt;code&gt;repl_backlog_buffer&lt;/code&gt;的默认缓冲区大小为&lt;code&gt;1M&lt;/code&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img alt=&#34;Redis主从增量复制&#34; loading=&#34;lazy&#34; src=&#34;https://oss.swimmingliu.cn/ac9f21a3-ef8d-11ef-9016-c858c0c1deba&#34;&gt;&lt;/p&gt;
+&lt;p&gt;【&lt;strong&gt;为什么要主从复制&lt;/strong&gt;】&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;备份数据&lt;/strong&gt;：主从复制实现了数据的热备份，是持久化之外的数据冗余方式&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;故障恢复&lt;/strong&gt;：当主节点宕机之后，可以采用从节点提供服务。&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;负载均衡&lt;/strong&gt;:  主从复制实现了读写分离，只有主节点支持读写操作，从节点只有都操作。在读多写少的场景下，可以提高Redis服务器的并发量。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;img alt=&#34;Redis主从读写分离&#34; loading=&#34;lazy&#34; src=&#34;https://oss.swimmingliu.cn/acad0d12-ef8d-11ef-b17f-c858c0c1deba&#34;&gt;&lt;/p&gt;
+&lt;h2 id=&#34;2-redis集群的实现原理是什么&#34;&gt;2. Redis集群的实现原理是什么?&lt;/h2&gt;
+&lt;p&gt;【&lt;strong&gt;Redis集群基本知识&lt;/strong&gt;】&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;定义&lt;/strong&gt;: Redis集群由多个实例组成，每个实例存储部分数据 (每个实例之间的数据不重复) 。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;【注】集群和主从节点不是一个东西，集群的某一个实例当中可能包含一个主节点 + 多个从节点&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;为什么用&lt;/strong&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;table&gt;
+  &lt;thead&gt;
+      &lt;tr&gt;
+          &lt;th&gt;问题&lt;/th&gt;
+          &lt;th&gt;解决方案&lt;/th&gt;
+      &lt;/tr&gt;
+  &lt;/thead&gt;
+  &lt;tbody&gt;
+      &lt;tr&gt;
+          &lt;td&gt;&lt;strong&gt;容量不足&lt;/strong&gt;&lt;/td&gt;
+          &lt;td&gt;数据分片，将数据分散不存到不同的主节点&lt;/td&gt;
+      &lt;/tr&gt;
+      &lt;tr&gt;
+          &lt;td&gt;&lt;strong&gt;高并发写入&lt;/strong&gt;&lt;/td&gt;
+          &lt;td&gt;数据分片，将写入请求分摊到多个主节点&lt;/td&gt;
+      &lt;/tr&gt;
+      &lt;tr&gt;
+          &lt;td&gt;&lt;strong&gt;主机宕机问题&lt;/strong&gt;&lt;/td&gt;
+          &lt;td&gt;自动切换主从节点，避免影响服务， 不需要手动修改客户端配置&lt;/td&gt;
+      &lt;/tr&gt;
+  &lt;/tbody&gt;
+&lt;/table&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;节点通信协议&lt;/strong&gt;：Redis集群采用Gossip协议, 支持分布式信息传播、延迟低、效率高。采用去中心化思想，任意实例(主节点)都可以作为请求入口，节点间相互通信。&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;分片原理&lt;/strong&gt;： 采用哈希槽(Hash Slot)机制来分配数据，整个空间可以划分为&lt;strong&gt;16384&lt;/strong&gt; (16 * 1024)个槽。 每个Redis负责一定范围的哈希槽,数据的key经过哈希函数计算之后对&lt;strong&gt;16384&lt;/strong&gt;取余可定位到对应的节点。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;img alt=&#34;Redis集群架构图&#34; loading=&#34;lazy&#34; src=&#34;https://oss.swimmingliu.cn/acc54635-ef8d-11ef-971e-c858c0c1deba&#34;&gt;&lt;/p&gt;</description>
+    </item>
+    <item>
+      <title>Java集合面试题笔记</title>
+      <link>https://swimmingliu.cn/posts/job/java-set-interview-questions/</link>
+      <pubDate>Thu, 20 Feb 2025 21:20:50 +0800</pubDate>
+      <guid>https://swimmingliu.cn/posts/job/java-set-interview-questions/</guid>
+      <description>&lt;h2 id=&#34;1-说说-java-中-hashmap-的原理&#34;&gt;1. 说说 Java 中 HashMap 的原理？&lt;/h2&gt;
+&lt;p&gt;&lt;strong&gt;【HashMap定义】&lt;/strong&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;结构：数组 + 链表 + 红黑树 (&lt;code&gt;JDK 1.8&lt;/code&gt; 之后)&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;默认值：初始容量为16 (数组长度)，负载因子为 0.75。当存储的元素为 16 * 0.75 = 12个时，会触发&lt;code&gt;Resize()&lt;/code&gt; 扩容操作，容量 x 2 并重新分配位置。但是扩容是有一定开销的，频繁扩容会影响性能。另外，&lt;code&gt;TREEIFY_THRESHOLD&lt;/code&gt; 转换为红黑树的默认链表长度阈值为 8, &lt;code&gt;UNTREEIFY_THRESHOLD&lt;/code&gt; 从红黑树转换为链表的阈值为 6。 两个阈值采用不同值的原因是防止刚转换为红黑树，又变成链表，反复横跳，消耗资源。&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;数组下标位置计算方法：首先使用key的&lt;code&gt;hashCode()&lt;/code&gt;方法计算下标位置，然后通过  &lt;code&gt;indexFor()&lt;/code&gt; (&lt;code&gt;JDK 1.7&lt;/code&gt; 以前) 计算下标值。 &lt;code&gt;JDK 1.7&lt;/code&gt;后，为了提高计算效率采用 &lt;code&gt;(len - 1) &amp;amp; hash&lt;/code&gt; 来确定下标值。&lt;/p&gt;
+&lt;p&gt;【注】数组的长度&lt;code&gt;len&lt;/code&gt; 是2的幂次方时，&lt;code&gt;(len - 1) &amp;amp; hash&lt;/code&gt; 等价于 &lt;code&gt;hash % len&lt;/code&gt;。 这也是为什么数组长度必须是2的幂次方。&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;img alt=&#34;HashMap底层结构&#34; loading=&#34;lazy&#34; src=&#34;https://oss.swimmingliu.cn/65f25922-ef8d-11ef-827a-c858c0c1deba&#34;&gt;&lt;/p&gt;
+&lt;p&gt;【&lt;strong&gt;HashMap线程不安全&lt;/strong&gt;】&lt;/p&gt;
+&lt;p&gt;为了保证HashMap的读写效率高，它的操作是非同步的，也就是说读写操作没有锁保护。所以多线程场景下是线程不安全的。&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;【HashMap不同版本区别】&lt;/strong&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;JDK 1.7: 数组 + 链表，链表部分采用头插法，多线程会导致出现环形链表。扩容会计算每个元素hash值，并分配到新的位置，开销大。&lt;/li&gt;
+&lt;li&gt;JDK 1.8：数组 + 链表 + 红黑树，采用高低位置来分配位置，即判断&lt;code&gt;(e.hash &amp;amp; oldCap) == 0&lt;/code&gt;， 减少了计算hash的次数&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;strong&gt;【HashMap的PUT方法】&lt;/strong&gt;&lt;/p&gt;</description>
+    </item>
     <item>
       <title>Java基础题面试笔记</title>
       <link>https://swimmingliu.cn/posts/job/java-basic-interview-questions/</link>

@@ -200,6 +200,27 @@
 
 <article class="post-entry"> 
   <header class="entry-header">
+    <h2 class="entry-hint-parent">个人简历常问问题
+    </h2>
+  </header>
+  <div class="entry-content">
+    <p>个人简历详情查看 -&gt; 个人简历页
+1. 异步秒杀机制的异步是如何实现的? 【正常秒杀的顺序】
+查询优惠券 -&gt; 判断秒杀库存 -&gt; 查询订单 -&gt; 校验是否一人一单 -&gt; 扣减库存 -&gt; 创建订单
+【异步秒杀】
+为了实现用户异步下单，其实就是把是否能够下单的判断逻辑和下单的操作拆分开。
+采用Redis来判断是否有足够的库存和校验一人一单 如果满足条件，把用户、订单id、商品id保存到阻塞队列，直接给用户返回秒杀成功。 如果不满足条件，直接返回秒杀失败。 后台线程会去执行queue里边的消息 这样就可以实现异步的秒杀下单了，那么如果实现判断秒杀库存和校验一人一单呢？
+【秒杀库存 &#43; 一人一单】
+用户下单之后，判断redis当中的库存key的value是否大于0 value &gt; 0 -&gt; 第2步 value &lt;= 0 -&gt; 直接返回库存不足 （返回1） 如果库存充足，判断redis当中的秒杀商品key的 set 集合是否已包含userid 包含userid， 说明用户已经下单了，直接返回当前用户已下单 (返回2) 不包含 userid -&gt; 第3步 如果用户没有下单，将用户的 userid 存入 set 里面 (返回0) 【注意】 整个操作是原子性的，这样就确保了不会出现超卖现象和一人多单现象
+-- 1.参数列表 -- 1.1.秒杀商品id local voucherId = ARGV[1] -- 1.2.用户id local userId = ARGV[2] -- 1.3.订单id local orderId = ARGV[3] -- 2.数据key -- 2.1.库存key local stockKey = &#39;seckill:stock:&#39; .. voucherId -- 2.2.秒杀商品订单key local orderKey = &#39;seckill:order:&#39; .. voucherId -- 3.脚本业务 -- 3.1.判断库存是否充足 get stockKey if(tonumber(redis.call(&#39;get&#39;, stockKey)) &lt;= 0) then -- 3.2.库存不足，返回1 return 1 end -- 3.2.判断用户是否下单 SISMEMBER orderKey userId if(redis.call(&#39;sismember&#39;, orderKey, userId) == 1) then -- 3.3.存在，说明是重复下单，返回2 return 2 end return 0 【阻塞队列实现下单】
+...</p>
+  </div>
+  <footer class="entry-footer"><span title='2025-02-27 10:52:54 +0800 CST'>February 27, 2025</span>&nbsp;·&nbsp;1 min&nbsp;·&nbsp;SwimmingLiu</footer>
+  <a class="entry-link" aria-label="post link to 个人简历常问问题" href="https://swimmingliu.cn/posts/job/personal-interview-hot-question/"></a>
+</article>
+
+<article class="post-entry"> 
+  <header class="entry-header">
     <h2 class="entry-hint-parent">Redis面试题笔记
     </h2>
   </header>
@@ -216,7 +237,7 @@
 定义: Redis集群由多个实例组成，每个实例存储部分数据 (每个实例之间的数据不重复) 。 【注】集群和主从节点不是一个东西，集群的某一个实例当中可能包含一个主节点 &#43; 多个从节点
 为什么用 问题 解决方案 容量不足 数据分片，将数据分散不存到不同的主节点 高并发写入 数据分片，将写入请求分摊到多个主节点 主机宕机问题 自动切换主从节点，避免影响服务， 不需要手动修改客户端配置 节点通信协议：Redis集群采用Gossip协议, 支持分布式信息传播、延迟低、效率高。采用去中心化思想，任意实例(主节点)都可以作为请求入口，节点间相互通信。 分片原理： 采用哈希槽(Hash Slot)机制来分配数据，整个空间可以划分为16384 (16 * 1024)个槽。 每个Redis负责一定范围的哈希槽,数据的key经过哈希函数计算之后对16384取余可定位到对应的节点。 ...</p>
   </div>
-  <footer class="entry-footer"><span title='2025-02-20 21:21:45 +0800 CST'>February 20, 2025</span>&nbsp;·&nbsp;2 min&nbsp;·&nbsp;SwimmingLiu</footer>
+  <footer class="entry-footer"><span title='2025-02-20 21:21:45 +0800 CST'>February 20, 2025</span>&nbsp;·&nbsp;3 min&nbsp;·&nbsp;SwimmingLiu</footer>
   <a class="entry-link" aria-label="post link to Redis面试题笔记" href="https://swimmingliu.cn/posts/job/redis-interview-questions/"></a>
 </article>
 
@@ -283,7 +304,7 @@ public class Person { private String name; private int age; @Override public boo
 主键索引：用于唯一标识每一行数据，值不能为空。 唯一索引：确保索引列的值唯一，但允许有空值。 普通索引：最基本的索引类型，允许重复和空值。 全文索引：用于对文本数据进行全文搜索，适用于MyISAM存储引擎。 空间索引：用于对地理空间数据进行索引，支持空间数据类型的快速查询。 3. 详细描述一条 SQL 语句在 MySQL 中的执行过程。 1.连接器判断用户是否成功建立连接，数据库连接的权限校验 2.分析器分析SQL语法和词法是否有误 3.优化器生成SQL的执行计划，确定使用的索引和调整where的执行顺序（包括连表顺序） 4.执行器判断当前用户是否有权限查询该表，然后执行该SQL语句
 ...</p>
   </div>
-  <footer class="entry-footer"><span title='2025-02-19 15:16:42 +0800 CST'>February 19, 2025</span>&nbsp;·&nbsp;3 min&nbsp;·&nbsp;SwimmingLiu</footer>
+  <footer class="entry-footer"><span title='2025-02-19 15:16:42 +0800 CST'>February 19, 2025</span>&nbsp;·&nbsp;8 min&nbsp;·&nbsp;SwimmingLiu</footer>
   <a class="entry-link" aria-label="post link to MySQL面试题笔记" href="https://swimmingliu.cn/posts/job/mysql-interview-questions/"></a>
 </article>
 

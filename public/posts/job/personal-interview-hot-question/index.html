@@ -1,0 +1,638 @@
+<!DOCTYPE html>
+<html lang="en" dir="auto">
+
+<head><meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta name="robots" content="index, follow">
+<title>个人简历常问问题 | SwimmingLiu&#39;s Blog</title>
+<meta name="keywords" content="Java, 后端面试">
+<meta name="description" content="个人简历详情查看 -&gt; 个人简历页
+1. 异步秒杀机制的异步是如何实现的?
+【正常秒杀的顺序】
+查询优惠券 -&gt; 判断秒杀库存 -&gt; 查询订单 -&gt; 校验是否一人一单 -&gt; 扣减库存 -&gt; 创建订单
+【异步秒杀】
+为了实现用户异步下单，其实就是把是否能够下单的判断逻辑和下单的操作拆分开。
+
+采用Redis来判断是否有足够的库存和校验一人一单
+
+如果满足条件，把用户、订单id、商品id保存到阻塞队列，直接给用户返回秒杀成功。
+如果不满足条件，直接返回秒杀失败。
+
+
+后台线程会去执行queue里边的消息
+
+这样就可以实现异步的秒杀下单了，那么如果实现判断秒杀库存和校验一人一单呢？
+
+【秒杀库存 &#43; 一人一单】
+
+用户下单之后，判断redis当中的库存key的value是否大于0
+
+value &gt; 0 -&gt; 第2步
+value &lt;= 0 -&gt; 直接返回库存不足 （返回1）
+
+
+如果库存充足，判断redis当中的秒杀商品key的 set 集合是否已包含userid
+
+包含userid， 说明用户已经下单了，直接返回当前用户已下单 (返回2)
+不包含 userid -&gt; 第3步
+
+
+如果用户没有下单，将用户的 userid 存入 set 里面 (返回0)
+
+【注意】 整个操作是原子性的，这样就确保了不会出现超卖现象和一人多单现象
+-- 1.参数列表
+-- 1.1.秒杀商品id
+local voucherId = ARGV[1]
+-- 1.2.用户id
+local userId = ARGV[2]
+-- 1.3.订单id
+local orderId = ARGV[3]
+-- 2.数据key
+-- 2.1.库存key
+local stockKey = &#39;seckill:stock:&#39; .. voucherId
+-- 2.2.秒杀商品订单key
+local orderKey = &#39;seckill:order:&#39; .. voucherId
+-- 3.脚本业务
+-- 3.1.判断库存是否充足 get stockKey
+if(tonumber(redis.call(&#39;get&#39;, stockKey)) &lt;= 0) then
+    -- 3.2.库存不足，返回1
+    return 1
+end
+-- 3.2.判断用户是否下单 SISMEMBER orderKey userId
+if(redis.call(&#39;sismember&#39;, orderKey, userId) == 1) then
+    -- 3.3.存在，说明是重复下单，返回2
+    return 2
+end
+return 0
+【阻塞队列实现下单】">
+<meta name="author" content="SwimmingLiu">
+<link rel="canonical" href="https://swimmingliu.cn/posts/job/personal-interview-hot-question/">
+<link crossorigin="anonymous" href="/assets/css/stylesheet.6ecbb0040febd20e47edd88a662c19f1ea945bf7427774b86594271d18f88faf.css" integrity="sha256-bsuwBA/r0g5H7diKZiwZ8eqUW/dCd3S4ZZQnHRj4j68=" rel="preload stylesheet" as="style">
+<link rel="icon" href="https://swimmingliu.cn/images/swimmingliu_icon.png">
+<link rel="icon" type="image/png" sizes="16x16" href="https://swimmingliu.cn/images/swimmingliu_icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="https://swimmingliu.cn/images/swimmingliu_icon.png">
+<link rel="apple-touch-icon" href="https://swimmingliu.cn/images/swimmingliu_icon.png">
+<link rel="mask-icon" href="https://swimmingliu.cn/images/swimmingliu_icon.png">
+<meta name="theme-color" content="#2e2e33">
+<meta name="msapplication-TileColor" content="#2e2e33">
+<link rel="alternate" hreflang="en" href="https://swimmingliu.cn/posts/job/personal-interview-hot-question/">
+<noscript>
+    <style>
+        #theme-toggle,
+        .top-link {
+            display: none;
+        }
+
+    </style>
+    <style>
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --theme: rgb(29, 30, 32);
+                --entry: rgb(46, 46, 51);
+                --primary: rgb(218, 218, 219);
+                --secondary: rgb(155, 156, 157);
+                --tertiary: rgb(65, 66, 68);
+                --content: rgb(196, 196, 197);
+                --code-block-bg: rgb(46, 46, 51);
+                --code-bg: rgb(55, 56, 62);
+                --border: rgb(51, 51, 51);
+            }
+
+            .list {
+                background: var(--theme);
+            }
+
+            .list:not(.dark)::-webkit-scrollbar-track {
+                background: 0 0;
+            }
+
+            .list:not(.dark)::-webkit-scrollbar-thumb {
+                border-color: var(--theme);
+            }
+        }
+
+    </style>
+</noscript>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css" integrity="sha384-n8MVd4RsNIU0tAv4ct0nTaAbDJwPJzDEaqSD1odI+WdtXRGWt2kTvGFasHpSy3SV" crossorigin="anonymous">
+
+
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js" integrity="sha384-XjKyOOlGwcjNTAIQHIpgOno0Hl1YQqzUOEleOLALmuqehneUG+vnGctmUb0ZY0l8" crossorigin="anonymous"></script>
+
+
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js" integrity="sha384-+VBxd3r6XgURycqtZ117nYw44OOcIax56Z4dCRWbxyPt0Koah1uHoK0o4+/RRE05" crossorigin="anonymous"
+    onload="renderMathInElement(document.body);"></script>
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        renderMathInElement(document.body, {
+            
+            
+            delimiters: [
+                { left: '$$', right: '$$', display: true },
+                { left: '$', right: '$', display: false },
+                { left: '\\(', right: '\\)', display: false },
+                { left: '\\[', right: '\\]', display: true }
+            ],
+            
+            throwOnError: false
+        });
+    });
+</script>
+
+<meta property="og:url" content="https://swimmingliu.cn/posts/job/personal-interview-hot-question/">
+  <meta property="og:site_name" content="SwimmingLiu&#39;s Blog">
+  <meta property="og:title" content="个人简历常问问题">
+  <meta property="og:description" content="个人简历详情查看 -&gt; 个人简历页
+1. 异步秒杀机制的异步是如何实现的? 【正常秒杀的顺序】
+查询优惠券 -&gt; 判断秒杀库存 -&gt; 查询订单 -&gt; 校验是否一人一单 -&gt; 扣减库存 -&gt; 创建订单
+【异步秒杀】
+为了实现用户异步下单，其实就是把是否能够下单的判断逻辑和下单的操作拆分开。
+采用Redis来判断是否有足够的库存和校验一人一单 如果满足条件，把用户、订单id、商品id保存到阻塞队列，直接给用户返回秒杀成功。 如果不满足条件，直接返回秒杀失败。 后台线程会去执行queue里边的消息 这样就可以实现异步的秒杀下单了，那么如果实现判断秒杀库存和校验一人一单呢？
+【秒杀库存 &#43; 一人一单】
+用户下单之后，判断redis当中的库存key的value是否大于0 value &gt; 0 -&gt; 第2步 value &lt;= 0 -&gt; 直接返回库存不足 （返回1） 如果库存充足，判断redis当中的秒杀商品key的 set 集合是否已包含userid 包含userid， 说明用户已经下单了，直接返回当前用户已下单 (返回2) 不包含 userid -&gt; 第3步 如果用户没有下单，将用户的 userid 存入 set 里面 (返回0) 【注意】 整个操作是原子性的，这样就确保了不会出现超卖现象和一人多单现象
+-- 1.参数列表 -- 1.1.秒杀商品id local voucherId = ARGV[1] -- 1.2.用户id local userId = ARGV[2] -- 1.3.订单id local orderId = ARGV[3] -- 2.数据key -- 2.1.库存key local stockKey = &#39;seckill:stock:&#39; .. voucherId -- 2.2.秒杀商品订单key local orderKey = &#39;seckill:order:&#39; .. voucherId -- 3.脚本业务 -- 3.1.判断库存是否充足 get stockKey if(tonumber(redis.call(&#39;get&#39;, stockKey)) &lt;= 0) then -- 3.2.库存不足，返回1 return 1 end -- 3.2.判断用户是否下单 SISMEMBER orderKey userId if(redis.call(&#39;sismember&#39;, orderKey, userId) == 1) then -- 3.3.存在，说明是重复下单，返回2 return 2 end return 0 【阻塞队列实现下单】">
+  <meta property="og:locale" content="en">
+  <meta property="og:type" content="article">
+    <meta property="article:section" content="posts">
+    <meta property="article:published_time" content="2025-02-27T10:52:54+08:00">
+    <meta property="article:modified_time" content="2025-02-27T10:52:54+08:00">
+    <meta property="article:tag" content="Java">
+    <meta property="article:tag" content="后端面试">
+      <meta property="og:image" content="https://swimmingliu.cn/papermod-cover.png">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://swimmingliu.cn/papermod-cover.png">
+<meta name="twitter:title" content="个人简历常问问题">
+<meta name="twitter:description" content="个人简历详情查看 -&gt; 个人简历页
+1. 异步秒杀机制的异步是如何实现的?
+【正常秒杀的顺序】
+查询优惠券 -&gt; 判断秒杀库存 -&gt; 查询订单 -&gt; 校验是否一人一单 -&gt; 扣减库存 -&gt; 创建订单
+【异步秒杀】
+为了实现用户异步下单，其实就是把是否能够下单的判断逻辑和下单的操作拆分开。
+
+采用Redis来判断是否有足够的库存和校验一人一单
+
+如果满足条件，把用户、订单id、商品id保存到阻塞队列，直接给用户返回秒杀成功。
+如果不满足条件，直接返回秒杀失败。
+
+
+后台线程会去执行queue里边的消息
+
+这样就可以实现异步的秒杀下单了，那么如果实现判断秒杀库存和校验一人一单呢？
+
+【秒杀库存 &#43; 一人一单】
+
+用户下单之后，判断redis当中的库存key的value是否大于0
+
+value &gt; 0 -&gt; 第2步
+value &lt;= 0 -&gt; 直接返回库存不足 （返回1）
+
+
+如果库存充足，判断redis当中的秒杀商品key的 set 集合是否已包含userid
+
+包含userid， 说明用户已经下单了，直接返回当前用户已下单 (返回2)
+不包含 userid -&gt; 第3步
+
+
+如果用户没有下单，将用户的 userid 存入 set 里面 (返回0)
+
+【注意】 整个操作是原子性的，这样就确保了不会出现超卖现象和一人多单现象
+-- 1.参数列表
+-- 1.1.秒杀商品id
+local voucherId = ARGV[1]
+-- 1.2.用户id
+local userId = ARGV[2]
+-- 1.3.订单id
+local orderId = ARGV[3]
+-- 2.数据key
+-- 2.1.库存key
+local stockKey = &#39;seckill:stock:&#39; .. voucherId
+-- 2.2.秒杀商品订单key
+local orderKey = &#39;seckill:order:&#39; .. voucherId
+-- 3.脚本业务
+-- 3.1.判断库存是否充足 get stockKey
+if(tonumber(redis.call(&#39;get&#39;, stockKey)) &lt;= 0) then
+    -- 3.2.库存不足，返回1
+    return 1
+end
+-- 3.2.判断用户是否下单 SISMEMBER orderKey userId
+if(redis.call(&#39;sismember&#39;, orderKey, userId) == 1) then
+    -- 3.3.存在，说明是重复下单，返回2
+    return 2
+end
+return 0
+【阻塞队列实现下单】">
+
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position":  1 ,
+      "name": "📚 Posts",
+      "item": "https://swimmingliu.cn/posts/"
+    }, 
+    {
+      "@type": "ListItem",
+      "position":  2 ,
+      "name": "💻 Job",
+      "item": "https://swimmingliu.cn/posts/job/"
+    }, 
+    {
+      "@type": "ListItem",
+      "position":  3 ,
+      "name": "个人简历常问问题",
+      "item": "https://swimmingliu.cn/posts/job/personal-interview-hot-question/"
+    }
+  ]
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "个人简历常问问题",
+  "name": "个人简历常问问题",
+  "description": "个人简历详情查看 -\u0026gt; 个人简历页\n1. 异步秒杀机制的异步是如何实现的? 【正常秒杀的顺序】\n查询优惠券 -\u0026gt; 判断秒杀库存 -\u0026gt; 查询订单 -\u0026gt; 校验是否一人一单 -\u0026gt; 扣减库存 -\u0026gt; 创建订单\n【异步秒杀】\n为了实现用户异步下单，其实就是把是否能够下单的判断逻辑和下单的操作拆分开。\n采用Redis来判断是否有足够的库存和校验一人一单 如果满足条件，把用户、订单id、商品id保存到阻塞队列，直接给用户返回秒杀成功。 如果不满足条件，直接返回秒杀失败。 后台线程会去执行queue里边的消息 这样就可以实现异步的秒杀下单了，那么如果实现判断秒杀库存和校验一人一单呢？\n【秒杀库存 + 一人一单】\n用户下单之后，判断redis当中的库存key的value是否大于0 value \u0026gt; 0 -\u0026gt; 第2步 value \u0026lt;= 0 -\u0026gt; 直接返回库存不足 （返回1） 如果库存充足，判断redis当中的秒杀商品key的 set 集合是否已包含userid 包含userid， 说明用户已经下单了，直接返回当前用户已下单 (返回2) 不包含 userid -\u0026gt; 第3步 如果用户没有下单，将用户的 userid 存入 set 里面 (返回0) 【注意】 整个操作是原子性的，这样就确保了不会出现超卖现象和一人多单现象\n-- 1.参数列表 -- 1.1.秒杀商品id local voucherId = ARGV[1] -- 1.2.用户id local userId = ARGV[2] -- 1.3.订单id local orderId = ARGV[3] -- 2.数据key -- 2.1.库存key local stockKey = \u0026#39;seckill:stock:\u0026#39; .. voucherId -- 2.2.秒杀商品订单key local orderKey = \u0026#39;seckill:order:\u0026#39; .. voucherId -- 3.脚本业务 -- 3.1.判断库存是否充足 get stockKey if(tonumber(redis.call(\u0026#39;get\u0026#39;, stockKey)) \u0026lt;= 0) then -- 3.2.库存不足，返回1 return 1 end -- 3.2.判断用户是否下单 SISMEMBER orderKey userId if(redis.call(\u0026#39;sismember\u0026#39;, orderKey, userId) == 1) then -- 3.3.存在，说明是重复下单，返回2 return 2 end return 0 【阻塞队列实现下单】\n",
+  "keywords": [
+    "Java", "后端面试"
+  ],
+  "articleBody": "个人简历详情查看 -\u003e 个人简历页\n1. 异步秒杀机制的异步是如何实现的? 【正常秒杀的顺序】\n查询优惠券 -\u003e 判断秒杀库存 -\u003e 查询订单 -\u003e 校验是否一人一单 -\u003e 扣减库存 -\u003e 创建订单\n【异步秒杀】\n为了实现用户异步下单，其实就是把是否能够下单的判断逻辑和下单的操作拆分开。\n采用Redis来判断是否有足够的库存和校验一人一单 如果满足条件，把用户、订单id、商品id保存到阻塞队列，直接给用户返回秒杀成功。 如果不满足条件，直接返回秒杀失败。 后台线程会去执行queue里边的消息 这样就可以实现异步的秒杀下单了，那么如果实现判断秒杀库存和校验一人一单呢？\n【秒杀库存 + 一人一单】\n用户下单之后，判断redis当中的库存key的value是否大于0 value \u003e 0 -\u003e 第2步 value \u003c= 0 -\u003e 直接返回库存不足 （返回1） 如果库存充足，判断redis当中的秒杀商品key的 set 集合是否已包含userid 包含userid， 说明用户已经下单了，直接返回当前用户已下单 (返回2) 不包含 userid -\u003e 第3步 如果用户没有下单，将用户的 userid 存入 set 里面 (返回0) 【注意】 整个操作是原子性的，这样就确保了不会出现超卖现象和一人多单现象\n-- 1.参数列表 -- 1.1.秒杀商品id local voucherId = ARGV[1] -- 1.2.用户id local userId = ARGV[2] -- 1.3.订单id local orderId = ARGV[3] -- 2.数据key -- 2.1.库存key local stockKey = 'seckill:stock:' .. voucherId -- 2.2.秒杀商品订单key local orderKey = 'seckill:order:' .. voucherId -- 3.脚本业务 -- 3.1.判断库存是否充足 get stockKey if(tonumber(redis.call('get', stockKey)) \u003c= 0) then -- 3.2.库存不足，返回1 return 1 end -- 3.2.判断用户是否下单 SISMEMBER orderKey userId if(redis.call('sismember', orderKey, userId) == 1) then -- 3.3.存在，说明是重复下单，返回2 return 2 end return 0 【阻塞队列实现下单】\n初始化一个SingleThreadExecutor 线程池，用于完成后续的下单操作 判断上面lua脚本执行后的返回值 如果返回值为0， 说明用户满足下单的资格 -\u003e 第2步 如果返回值不为0， 说明用户下单失败，返回异常信息 将userid、优惠商品id、订单id等信息都存入阻塞队列(ArrayBlockingQueue)里面，返回订单id 线程池会异步获取阻塞队列里面的订单信息，然后创建订单。 2. 如果用MySQL数据库，如何解决超卖现象 超卖现象的产生是因为多线程并发的时候，出现了库存扣为负数的现象。\n假如A线程查询时，库存为1 。随后，B线程查询库存也为1 A线程完成下单之后, 库存减为0。此时，B线程又完成下单，库存扣减为-1。 【MySQL如何解决超卖问题】\n一般超卖问题都是采用乐观锁进行解决，也就是CAS 自旋。其实，就是判断读取前和第二次读取的，是否出现了数据不一致的情况。如果数据不一致，说明被其他人修改过，就放弃当前的操作。如果没有，就正常修改。\n【乐观锁】\n乐观锁会有一个版本号，每次操作数据会对版本号+1。再提交回数据是，会去校验是否比之前的版本是否大于1。如果超过1， 则说明当前的数据被修改过。\n乐观锁有一个变种是CAS，利用CAS进行无锁化机制加锁，var5 是操作前读取的内存值，while 中的var1+var2 是预估值，如果预估值 == 内存值，则代表中间没有被人修改过，此时就将新值去替换 内存值\nint var5; do { var5 = this.getIntVolatile(var1, var2); } while(!this.compareAndSwapInt(var1, var2, var5, var5 + var4)); return var5; 【MySQL如何解决一人一单】\n就是判断当前用于在数据库里面是否有订单, 可以用count() 去统计一下该用户秒杀订单的数量。如果大于0，则说明他已经买过商品了，就不能重复下单了。\n",
+  "wordCount" : "182",
+  "inLanguage": "en",
+  "image": "https://swimmingliu.cn/papermod-cover.png","datePublished": "2025-02-27T10:52:54+08:00",
+  "dateModified": "2025-02-27T10:52:54+08:00",
+  "author":[{
+    "@type": "Person",
+    "name": "SwimmingLiu"
+  }],
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": "https://swimmingliu.cn/posts/job/personal-interview-hot-question/"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "SwimmingLiu's Blog",
+    "logo": {
+      "@type": "ImageObject",
+      "url": "https://swimmingliu.cn/images/swimmingliu_icon.png"
+    }
+  }
+}
+</script>
+</head>
+
+<body class="" id="top">
+<script>
+    if (localStorage.getItem("pref-theme") === "dark") {
+        document.body.classList.add('dark');
+    } else if (localStorage.getItem("pref-theme") === "light") {
+        document.body.classList.remove('dark')
+    } else if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+        document.body.classList.add('dark');
+    }
+
+</script>
+
+<header class="header">
+    <nav class="nav">
+        <div class="logo">
+            <a href="https://swimmingliu.cn/" accesskey="h" title="𝓢𝔀𝓲𝓶𝓶𝓲𝓷𝓰𝓛𝓲𝓾&#39;𝓼 𝓑𝓵𝓸𝓰 (Alt + H)">
+                <img src="https://swimmingliu.cn/images/swimmingliu_icon.png" alt="" aria-label="logo"
+                    height="30">𝓢𝔀𝓲𝓶𝓶𝓲𝓷𝓰𝓛𝓲𝓾&#39;𝓼 𝓑𝓵𝓸𝓰</a>
+            <div class="logo-switches">
+                <button id="theme-toggle" accesskey="t" title="(Alt + T)">
+                    <svg id="moon" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                    </svg>
+                    <svg id="sun" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="5"></circle>
+                        <line x1="12" y1="1" x2="12" y2="3"></line>
+                        <line x1="12" y1="21" x2="12" y2="23"></line>
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                        <line x1="1" y1="12" x2="3" y2="12"></line>
+                        <line x1="21" y1="12" x2="23" y2="12"></line>
+                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                    </svg>
+                </button>
+            </div>
+        </div>
+        <ul id="menu">
+            <li>
+                <a href="https://swimmingliu.cn/index.html" title="🏡 Home">
+                    <span>🏡 Home</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://swimmingliu.cn/search/" title="🔍 Search">
+                    <span>🔍 Search</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://swimmingliu.cn/posts/" title="🗒️ Posts">
+                    <span>🗒️ Posts</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://swimmingliu.cn/archives/" title="📃 Archive">
+                    <span>📃 Archive</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://swimmingliu.cn/tags/" title="📑 Tags">
+                    <span>📑 Tags</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://bento.me/swimmingliu" title="👨🏻‍🎓 About Me">
+                    <span>👨🏻‍🎓 About Me</span>&nbsp;
+                    <svg fill="none" shape-rendering="geometricPrecision" stroke="currentColor" stroke-linecap="round"
+                        stroke-linejoin="round" stroke-width="2.5" viewBox="0 0 24 24" height="12" width="12">
+                        <path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"></path>
+                        <path d="M15 3h6v6"></path>
+                        <path d="M10 14L21 3"></path>
+                    </svg>
+                </a>
+            </li>
+            <li>
+                <a href="https://www.emojisearch.app/" title="Emoji">
+                    <span>Emoji</span>&nbsp;
+                    <svg fill="none" shape-rendering="geometricPrecision" stroke="currentColor" stroke-linecap="round"
+                        stroke-linejoin="round" stroke-width="2.5" viewBox="0 0 24 24" height="12" width="12">
+                        <path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"></path>
+                        <path d="M15 3h6v6"></path>
+                        <path d="M10 14L21 3"></path>
+                    </svg>
+                </a>
+            </li>
+        </ul>
+    </nav>
+</header>
+<main class="main">
+
+<article class="post-single">
+  <header class="post-header">
+    <div class="breadcrumbs"><a href="https://swimmingliu.cn/">Home</a>&nbsp;»&nbsp;<a href="https://swimmingliu.cn/posts/">📚 Posts</a>&nbsp;»&nbsp;<a href="https://swimmingliu.cn/posts/job/">💻 Job</a></div>
+    <h1 class="post-title entry-hint-parent">
+      个人简历常问问题
+    </h1>
+    <div class="post-meta"><span title='2025-02-27 10:52:54 +0800 CST'>February 27, 2025</span>&nbsp;·&nbsp;1 min&nbsp;·&nbsp;SwimmingLiu
+
+</div>
+  </header> <div class="toc">
+    <details >
+        <summary accesskey="c" title="(Alt + C)">
+            <span class="details">Table of Contents</span>
+        </summary>
+
+        <div class="inner"><ul>
+                <li>
+                    <a href="#1-%e5%bc%82%e6%ad%a5%e7%a7%92%e6%9d%80%e6%9c%ba%e5%88%b6%e7%9a%84%e5%bc%82%e6%ad%a5%e6%98%af%e5%a6%82%e4%bd%95%e5%ae%9e%e7%8e%b0%e7%9a%84" aria-label="1. 异步秒杀机制的异步是如何实现的?">1. 异步秒杀机制的异步是如何实现的?</a></li>
+                <li>
+                    <a href="#2-%e5%a6%82%e6%9e%9c%e7%94%a8mysql%e6%95%b0%e6%8d%ae%e5%ba%93%e5%a6%82%e4%bd%95%e8%a7%a3%e5%86%b3%e8%b6%85%e5%8d%96%e7%8e%b0%e8%b1%a1" aria-label="2. 如果用MySQL数据库，如何解决超卖现象">2. 如果用MySQL数据库，如何解决超卖现象</a>
+                </li>
+            </ul>
+        </div>
+    </details>
+</div>
+  <div class="post-content"><p>个人简历详情查看 -&gt; <a href="https://rxresu.me/dashboard/resumes">个人简历页</a></p>
+<h2 id="1-异步秒杀机制的异步是如何实现的">1. 异步秒杀机制的异步是如何实现的?<a hidden class="anchor" aria-hidden="true" href="#1-异步秒杀机制的异步是如何实现的">#</a></h2>
+<p><strong>【正常秒杀的顺序】</strong></p>
+<p>查询优惠券 -&gt; 判断秒杀库存 -&gt; 查询订单 -&gt; 校验是否一人一单 -&gt; 扣减库存 -&gt; 创建订单</p>
+<p><strong>【异步秒杀】</strong></p>
+<p>为了实现用户异步下单，其实就是把是否能够下单的判断逻辑和下单的操作拆分开。</p>
+<ol>
+<li>采用Redis来判断是否有足够的库存和校验一人一单
+<ul>
+<li>如果满足条件，把用户、订单id、商品id保存到阻塞队列，直接给用户返回秒杀成功。</li>
+<li>如果不满足条件，直接返回秒杀失败。</li>
+</ul>
+</li>
+<li>后台线程会去执行queue里边的消息</li>
+</ol>
+<p>这样就可以实现异步的秒杀下单了，那么如果实现判断秒杀库存和校验一人一单呢？</p>
+<p><img alt="1653561657295" loading="lazy" src="https://oss.swimmingliu.cn/8f260a35-f4b5-11ef-a915-c858c0c1deba"></p>
+<p><strong>【秒杀库存 + 一人一单】</strong></p>
+<ol>
+<li>用户下单之后，判断redis当中的库存key的value是否大于<code>0</code>
+<ul>
+<li><code>value &gt; 0</code> -&gt; 第2步</li>
+<li><code>value &lt;= 0</code> -&gt; 直接返回库存不足 （返回<code>1</code>）</li>
+</ul>
+</li>
+<li>如果库存充足，判断redis当中的秒杀商品key的 <code>set</code> 集合是否已包含<code>userid</code>
+<ul>
+<li>包含<code>userid</code>， 说明用户已经下单了，直接返回当前用户已下单 (返回<code>2</code>)</li>
+<li>不包含 <code>userid</code> -&gt; 第3步</li>
+</ul>
+</li>
+<li>如果用户没有下单，将用户的 <code>userid</code> 存入 <code>set</code> 里面 (返回<code>0</code>)</li>
+</ol>
+<p><strong>【注意】</strong> 整个操作是原子性的，这样就确保了不会出现<strong>超卖现象和一人多单现象</strong></p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-lua" data-lang="lua"><span class="line"><span class="cl"><span class="c1">-- 1.参数列表</span>
+</span></span><span class="line"><span class="cl"><span class="c1">-- 1.1.秒杀商品id</span>
+</span></span><span class="line"><span class="cl"><span class="kd">local</span> <span class="n">voucherId</span> <span class="o">=</span> <span class="n">ARGV</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+</span></span><span class="line"><span class="cl"><span class="c1">-- 1.2.用户id</span>
+</span></span><span class="line"><span class="cl"><span class="kd">local</span> <span class="n">userId</span> <span class="o">=</span> <span class="n">ARGV</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span>
+</span></span><span class="line"><span class="cl"><span class="c1">-- 1.3.订单id</span>
+</span></span><span class="line"><span class="cl"><span class="kd">local</span> <span class="n">orderId</span> <span class="o">=</span> <span class="n">ARGV</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span>
+</span></span><span class="line"><span class="cl"><span class="c1">-- 2.数据key</span>
+</span></span><span class="line"><span class="cl"><span class="c1">-- 2.1.库存key</span>
+</span></span><span class="line"><span class="cl"><span class="kd">local</span> <span class="n">stockKey</span> <span class="o">=</span> <span class="s1">&#39;seckill:stock:&#39;</span> <span class="o">..</span> <span class="n">voucherId</span>
+</span></span><span class="line"><span class="cl"><span class="c1">-- 2.2.秒杀商品订单key</span>
+</span></span><span class="line"><span class="cl"><span class="kd">local</span> <span class="n">orderKey</span> <span class="o">=</span> <span class="s1">&#39;seckill:order:&#39;</span> <span class="o">..</span> <span class="n">voucherId</span>
+</span></span><span class="line"><span class="cl"><span class="c1">-- 3.脚本业务</span>
+</span></span><span class="line"><span class="cl"><span class="c1">-- 3.1.判断库存是否充足 get stockKey</span>
+</span></span><span class="line"><span class="cl"><span class="kr">if</span><span class="p">(</span><span class="n">tonumber</span><span class="p">(</span><span class="n">redis.call</span><span class="p">(</span><span class="s1">&#39;get&#39;</span><span class="p">,</span> <span class="n">stockKey</span><span class="p">))</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="p">)</span> <span class="kr">then</span>
+</span></span><span class="line"><span class="cl">    <span class="c1">-- 3.2.库存不足，返回1</span>
+</span></span><span class="line"><span class="cl">    <span class="kr">return</span> <span class="mi">1</span>
+</span></span><span class="line"><span class="cl"><span class="kr">end</span>
+</span></span><span class="line"><span class="cl"><span class="c1">-- 3.2.判断用户是否下单 SISMEMBER orderKey userId</span>
+</span></span><span class="line"><span class="cl"><span class="kr">if</span><span class="p">(</span><span class="n">redis.call</span><span class="p">(</span><span class="s1">&#39;sismember&#39;</span><span class="p">,</span> <span class="n">orderKey</span><span class="p">,</span> <span class="n">userId</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">)</span> <span class="kr">then</span>
+</span></span><span class="line"><span class="cl">    <span class="c1">-- 3.3.存在，说明是重复下单，返回2</span>
+</span></span><span class="line"><span class="cl">    <span class="kr">return</span> <span class="mi">2</span>
+</span></span><span class="line"><span class="cl"><span class="kr">end</span>
+</span></span><span class="line"><span class="cl"><span class="kr">return</span> <span class="mi">0</span>
+</span></span></code></pre></div><p><strong>【阻塞队列实现下单】</strong></p>
+<ol>
+<li>初始化一个<code>SingleThreadExecutor</code> 线程池，用于完成后续的下单操作</li>
+<li>判断上面<code>lua</code>脚本执行后的返回值
+<ul>
+<li>如果返回值为<code>0</code>， 说明用户满足下单的资格 -&gt; 第2步</li>
+<li>如果返回值不为<code>0</code>， 说明用户下单失败，返回异常信息</li>
+</ul>
+</li>
+<li>将<code>userid</code>、优惠商品id、订单id等信息都存入阻塞队列(<code>ArrayBlockingQueue</code>)里面，返回订单id</li>
+<li>线程池会异步获取阻塞队列里面的订单信息，然后创建订单。</li>
+</ol>
+<h2 id="2-如果用mysql数据库如何解决超卖现象">2. 如果用MySQL数据库，如何解决超卖现象<a hidden class="anchor" aria-hidden="true" href="#2-如果用mysql数据库如何解决超卖现象">#</a></h2>
+<p>超卖现象的产生是因为多线程并发的时候，出现了库存扣为负数的现象。</p>
+<ol>
+<li>假如A线程查询时，库存为<code>1</code> 。随后，B线程查询库存也为<code>1</code></li>
+<li>A线程完成下单之后, 库存减为<code>0</code>。此时，B线程又完成下单，库存扣减为<code>-1</code>。</li>
+</ol>
+<p><strong>【MySQL如何解决超卖问题】</strong></p>
+<p>一般超卖问题都是采用乐观锁进行解决，也就是<code>CAS</code> 自旋。其实，就是判断读取前和第二次读取的，是否出现了数据不一致的情况。如果数据不一致，说明被其他人修改过，就放弃当前的操作。如果没有，就正常修改。</p>
+<p><strong>【乐观锁】</strong></p>
+<p>乐观锁会有一个版本号，每次操作数据会对版本号+1。再提交回数据是，会去校验是否比之前的版本是否大于<code>1</code>。如果超过<code>1</code>， 则说明当前的数据被修改过。</p>
+<p>乐观锁有一个变种是<code>CAS</code>，利用<code>CAS</code>进行无锁化机制加锁，<code>var5</code> 是操作前读取的内存值，<code>while</code> 中的<code>var1+var2</code> 是预估值，如果预估值 == 内存值，则代表中间没有被人修改过，此时就将新值去替换 内存值</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="kt">int</span><span class="w"> </span><span class="n">var5</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="k">do</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="n">var5</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">this</span><span class="p">.</span><span class="na">getIntVolatile</span><span class="p">(</span><span class="n">var1</span><span class="p">,</span><span class="w"> </span><span class="n">var2</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="p">}</span><span class="w"> </span><span class="k">while</span><span class="p">(</span><span class="o">!</span><span class="k">this</span><span class="p">.</span><span class="na">compareAndSwapInt</span><span class="p">(</span><span class="n">var1</span><span class="p">,</span><span class="w"> </span><span class="n">var2</span><span class="p">,</span><span class="w"> </span><span class="n">var5</span><span class="p">,</span><span class="w"> </span><span class="n">var5</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">var4</span><span class="p">));</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="k">return</span><span class="w"> </span><span class="n">var5</span><span class="p">;</span><span class="w">
+</span></span></span></code></pre></div><p><strong>【MySQL如何解决一人一单】</strong></p>
+<p>就是判断当前用于在数据库里面是否有订单, 可以用<code>count()</code> 去统计一下该用户秒杀订单的数量。如果大于<code>0</code>，则说明他已经买过商品了，就不能重复下单了。</p>
+
+
+  </div>
+
+
+
+  <footer class="post-footer">
+    <ul class="post-tags">
+      <li><a href="https://swimmingliu.cn/tags/java/">Java</a></li>
+      <li><a href="https://swimmingliu.cn/tags/%E5%90%8E%E7%AB%AF%E9%9D%A2%E8%AF%95/">后端面试</a></li>
+    </ul>
+<nav class="paginav">
+  <a class="next" href="https://swimmingliu.cn/posts/job/redis-interview-questions/">
+    <span class="title">Next »</span>
+    <br>
+    <span>Redis面试题笔记</span>
+  </a>
+</nav>
+
+  </footer>
+</article>
+    </main>
+    
+<footer class="footer">
+        <span>&copy; 2023-2025 <a href="https://swimmingliu.cn/">SwimmingLiu&#39;s Blog</a></span> · 
+
+    <span>
+        Powered by
+        <a href="https://gohugo.io/" rel="noopener noreferrer" target="_blank">Hugo</a> &
+        <a href="https://github.com/adityatelange/hugo-PaperMod/" rel="noopener" target="_blank">PaperMod</a>
+    </span>
+    <span>
+        <a href="https://beian.miit.gov.cn/">浙ICP备2024056260号</a>
+    </span>
+</footer>
+<a href="#top" aria-label="go to top" title="Go to Top (Alt + G)" class="top-link" id="top-link" accesskey="g">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 6" fill="currentColor">
+        <path d="M12 6H0l6-6z" />
+    </svg>
+</a>
+
+<script>
+    let menu = document.getElementById('menu')
+    if (menu) {
+        menu.scrollLeft = localStorage.getItem("menu-scroll-position");
+        menu.onscroll = function () {
+            localStorage.setItem("menu-scroll-position", menu.scrollLeft);
+        }
+    }
+
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener("click", function (e) {
+            e.preventDefault();
+            var id = this.getAttribute("href").substr(1);
+            if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView({
+                    behavior: "smooth"
+                });
+            } else {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView();
+            }
+            if (id === "top") {
+                history.replaceState(null, null, " ");
+            } else {
+                history.pushState(null, null, `#${id}`);
+            }
+        });
+    });
+
+</script>
+<script>
+    var mybutton = document.getElementById("top-link");
+    window.onscroll = function () {
+        if (document.body.scrollTop > 800 || document.documentElement.scrollTop > 800) {
+            mybutton.style.visibility = "visible";
+            mybutton.style.opacity = "1";
+        } else {
+            mybutton.style.visibility = "hidden";
+            mybutton.style.opacity = "0";
+        }
+    };
+
+</script>
+<script>
+    document.getElementById("theme-toggle").addEventListener("click", () => {
+        if (document.body.className.includes("dark")) {
+            document.body.classList.remove('dark');
+            localStorage.setItem("pref-theme", 'light');
+        } else {
+            document.body.classList.add('dark');
+            localStorage.setItem("pref-theme", 'dark');
+        }
+    })
+
+</script>
+<script>
+    document.querySelectorAll('pre > code').forEach((codeblock) => {
+        const container = codeblock.parentNode.parentNode;
+
+        const copybutton = document.createElement('button');
+        copybutton.classList.add('copy-code');
+        copybutton.innerHTML = 'copy';
+
+        function copyingDone() {
+            copybutton.innerHTML = 'copied!';
+            setTimeout(() => {
+                copybutton.innerHTML = 'copy';
+            }, 2000);
+        }
+
+        copybutton.addEventListener('click', (cb) => {
+            if ('clipboard' in navigator) {
+                navigator.clipboard.writeText(codeblock.textContent);
+                copyingDone();
+                return;
+            }
+
+            const range = document.createRange();
+            range.selectNodeContents(codeblock);
+            const selection = window.getSelection();
+            selection.removeAllRanges();
+            selection.addRange(range);
+            try {
+                document.execCommand('copy');
+                copyingDone();
+            } catch (e) { };
+            selection.removeRange(range);
+        });
+
+        if (container.classList.contains("highlight")) {
+            container.appendChild(copybutton);
+        } else if (container.parentNode.firstChild == container) {
+            
+        } else if (codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.nodeName == "TABLE") {
+            
+            codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.appendChild(copybutton);
+        } else {
+            
+            codeblock.parentNode.appendChild(copybutton);
+        }
+    });
+</script>
+</body>
+
+</html>

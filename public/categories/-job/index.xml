@@ -11,8 +11,55 @@
     </image>
     <generator>Hugo -- 0.136.0</generator>
     <language>en</language>
-    <lastBuildDate>Thu, 27 Feb 2025 10:52:54 +0800</lastBuildDate>
+    <lastBuildDate>Sat, 01 Mar 2025 09:49:44 +0800</lastBuildDate>
     <atom:link href="https://swimmingliu.cn/categories/-job/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>操作系统面试题笔记</title>
+      <link>https://swimmingliu.cn/posts/job/operation-system-interview-questions/</link>
+      <pubDate>Sat, 01 Mar 2025 09:49:44 +0800</pubDate>
+      <guid>https://swimmingliu.cn/posts/job/operation-system-interview-questions/</guid>
+      <description>&lt;h2 id=&#34;1-说说你知道的几种-io-模型&#34;&gt;1. 说说你知道的几种 I/O 模型&lt;/h2&gt;
+&lt;p&gt;&lt;strong&gt;【常见的五大I/O模型】&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;常见的五大I/O模式分别为: 同步阻塞I/O (Blocking I/O) &lt;code&gt;BIO&lt;/code&gt;、非阻塞I/O (Non-blocking I/O) &lt;code&gt;NIO&lt;/code&gt;、I/O多路复用、信号量驱动I/O、异步I/O &lt;code&gt;AIO&lt;/code&gt;&lt;/p&gt;
+&lt;p&gt;我们假如要烧水喝，看不同模型是怎么烧的水喝&lt;/p&gt;
+&lt;table&gt;
+  &lt;thead&gt;
+      &lt;tr&gt;
+          &lt;th&gt;&lt;strong&gt;I/O 模型&lt;/strong&gt;&lt;/th&gt;
+          &lt;th&gt;特性&lt;/th&gt;
+          &lt;th&gt;烧水案例&lt;/th&gt;
+      &lt;/tr&gt;
+  &lt;/thead&gt;
+  &lt;tbody&gt;
+      &lt;tr&gt;
+          &lt;td&gt;&lt;strong&gt;同步阻塞I/O &lt;code&gt;BIO&lt;/code&gt;&lt;/strong&gt;&lt;/td&gt;
+          &lt;td&gt;数据从网卡到内核，再从内核到用户空间，都是阻塞操作。&lt;/td&gt;
+          &lt;td&gt;自己动手烧水，一直盯着，等水烧开了，倒在杯子里喝。&lt;/td&gt;
+      &lt;/tr&gt;
+      &lt;tr&gt;
+          &lt;td&gt;&lt;strong&gt;非阻塞I/O &lt;code&gt;NIO&lt;/code&gt;&lt;/strong&gt;&lt;/td&gt;
+          &lt;td&gt;数据从网卡到内核不阻塞，&lt;code&gt;read&lt;/code&gt;不到数据直接返回，但是从内核到用户空间会阻塞 (用户轮询&lt;code&gt;read&lt;/code&gt;)&lt;/td&gt;
+          &lt;td&gt;自己动手烧水，隔两分钟看一下，水烧开没有。等水烧开了，倒在杯子里喝。&lt;/td&gt;
+      &lt;/tr&gt;
+      &lt;tr&gt;
+          &lt;td&gt;&lt;strong&gt;I/O多路复用&lt;/strong&gt;&lt;/td&gt;
+          &lt;td&gt;只有一个线程查看多个连接是否有数据准备就绪 (看从网卡能不能&lt;code&gt;read&lt;/code&gt;到数据到内核)&lt;/td&gt;
+          &lt;td&gt;找专门烧水的领居帮忙，他把水烧好了之后，会喊你来拿。但是你要自己倒在杯子里喝。&lt;/td&gt;
+      &lt;/tr&gt;
+      &lt;tr&gt;
+          &lt;td&gt;&lt;strong&gt;信号驱动I/O&lt;/strong&gt;&lt;/td&gt;
+          &lt;td&gt;数据从网卡到内核之后会自动通知用户程序，然后让他&lt;code&gt;read&lt;/code&gt;读取数据&lt;/td&gt;
+          &lt;td&gt;去烧水房烧水，全自动的，有个通知灯。水烧完了之后会按你家的门铃，但是有客人来了，也会按门铃&lt;/td&gt;
+      &lt;/tr&gt;
+      &lt;tr&gt;
+          &lt;td&gt;&lt;strong&gt;异步I/O &lt;code&gt;AIO&lt;/code&gt;&lt;/strong&gt;&lt;/td&gt;
+          &lt;td&gt;全程不阻塞，拷贝到用户空间之后直接回调。&lt;/td&gt;
+          &lt;td&gt;和多路复用类似，但是烧完水之后不用自己倒水，他帮你倒好了，还吹凉了，你过来喝就行。&lt;/td&gt;
+      &lt;/tr&gt;
+  &lt;/tbody&gt;
+&lt;/table&gt;
+&lt;p&gt;&lt;img alt=&#34;IO五种模型&#34; loading=&#34;lazy&#34; src=&#34;https://oss.swimmingliu.cn/3bbe065d-f63f-11ef-a797-c858c0c1deba&#34;&gt;&lt;/p&gt;</description>
+    </item>
     <item>
       <title>个人简历常问问题</title>
       <link>https://swimmingliu.cn/posts/job/personal-interview-hot-question/</link>

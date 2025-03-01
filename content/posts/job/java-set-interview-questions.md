@@ -271,3 +271,39 @@ do {
 ```
 
 ![HashMap原理之Resize操作](https://oss.swimmingliu.cn/6659dd7d-ef8d-11ef-9aac-c858c0c1deba)
+
+
+## 2.ConcurrentHashMap了解吗? / Java 中 ConcurrentHashMap 1.7 和 1.8 之间有哪些区别？
+
+首先，提到 `ConcurrentHashMap` 我们要分成`JDK 1.7` 和 `JDK 1.8` 两个版本来看：
+
+1. `JDK 1.7`: 在1.7中， `ConcurrentHashMap` 采用分段锁。就是分成不同的`segment`，默认有16个。每个`segment` 中都包含多个的 `HashEntry` (可以理解成一个`HashMap`)。 锁的方式源于`Segment`,这个类实际集成了`ReentrantLock`
+
+   ![ConcurrentHashMapJava7](https://oss.swimmingliu.cn/2de6bbd4-f63f-11ef-a1c4-c858c0c1deba)
+
+2. `JDK 1.8`：在1.8中，`ConcurrnetHashMap`的数据结构和`HashMap`一样，它做了更小范围的锁控制。它的数组的每个位置上都有一把锁。如果需要扩容，会使用`CAS` 自旋操作保证线程安全，避免锁整个数组。如果是在链表/红黑树插入某个`node`，只需要用`synchronize`进行上锁。
+
+   ![ConcurrentHashMapJava8](https://oss.swimmingliu.cn/2e193b43-f63f-11ef-bdde-c858c0c1deba)
+
+**【JDK1.7和1.8扩容区别】**
+
+1. `JDK 1.7`：当某个`Segment`内的`HashMap` 达到扩容阈值的时候，单独为该`Segment`进行扩容。
+
+2. `JDK 1.8`：大致可以分为三个特点全局扩容、基于`CAS`扩容、渐进式扩容
+
+   - **全局扩容**：`1.8` 因为取消了 `1.7` 里面的`Segment`， 本身是数组+链表+红黑树的结构。所以是一个全局的数组，当任意位置的元素超过阈值时，整个数组都会被扩容。
+
+   - **基于`CAS`的扩容**： 采用和 `HashMap` 相似的扩容机制，采用 `CAS`操作确保线程安全，同时避免锁住整个数组。
+   - **渐进式扩容**：扩容不是一次性将所有数据重新分配，而是多个线程共同参与，逐步迁移就数据到新数组当中，降低扩容新能。(假如当前数组长度为32，那么可以A线程负责`0~15`，B线程负责`16~31`)
+
+## 3. 为什么 Java 的 ConcurrentHashMap 不支持 key 或 value 为 null？
+
+`ConcurrentMap`不支持`key`或`value`为 `null` 是为了避免歧义和简化代码实现方式
+
+因为多线程环境下，`get(key)`方法如果返回 `null` ，不知道其表示的是`key`不存在还是`value`本来就是 `null`。为了避免这个歧义，代码就需要频繁的判断null是代表`key`不存在还是`value`本来就是`null`，增加复杂度。
+
+**【为什么HashMap支持 `key `或 `value `为null】**
+
+因为HashMap设计的初衷就是单线程模式使用的，本身就是线程不安全的。在 HashMap 的实现中，`null` 键被特殊处理。当 `key` 为 `null` 时，HashMap 不会调用 `hashCode()` 方法，而是直接将 `null` 键存储在表的第一个桶（`table[0]`）中。这样可以避免 `NullPointerException` 。
+
+**【注意】** 像`HashTable`、`ConcurrentSkipListMap`、`CopyOnWriteArrayList`这些并发集合，都是线程安全的，都不支持`key`或`value`为 `null`

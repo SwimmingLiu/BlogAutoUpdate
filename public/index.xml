@@ -151,7 +151,7 @@
 &lt;ol&gt;
 &lt;li&gt;连接恢复后，从节点会发送&lt;code&gt;psync {runid} {offset}&lt;/code&gt;， 其中主节点ID &lt;code&gt;runid&lt;/code&gt; 和 复制进度&lt;code&gt;offset&lt;/code&gt;用于标识是哪一个服务器主机和复制进度。&lt;/li&gt;
 &lt;li&gt;主节点收到&lt;code&gt;psync&lt;/code&gt; 命令之后，会用&lt;code&gt;conitnue&lt;/code&gt;响应告知从节点，采用增量复制同步数据&lt;/li&gt;
-&lt;li&gt;最后，主节点根据&lt;code&gt;offset&lt;/code&gt;查找对应的进度，将短线期间未同步的写命令，发送给从节点。同时，主节点将所有的写命令写入&lt;code&gt;repl_backlog_buffer&lt;/code&gt;， 用于后续判断是采用增量复制还是全量复制。&lt;/li&gt;
+&lt;li&gt;最后，主节点根据&lt;code&gt;offset&lt;/code&gt;查找对应的进度，将断线期间未同步的写命令，发送给从节点。同时，主节点将所有的写命令写入&lt;code&gt;repl_backlog_buffer&lt;/code&gt;， 用于后续判断是采用增量复制还是全量复制。&lt;/li&gt;
 &lt;/ol&gt;
 &lt;p&gt;【注意】从节点 &lt;code&gt;psync&lt;/code&gt; 携带的 &lt;code&gt;offset&lt;/code&gt; 为 &lt;code&gt;slave_repl_offset&lt;/code&gt;。如果 &lt;code&gt;repl_backlog_buffer&lt;/code&gt;包含&lt;code&gt;slave_repl_offset&lt;/code&gt; 对应的部分，则采用增量复制，否则采用全量复制。&lt;code&gt;repl_backlog_buffer&lt;/code&gt;的默认缓冲区大小为&lt;code&gt;1M&lt;/code&gt;&lt;/p&gt;
 &lt;p&gt;&lt;img alt=&#34;Redis主从增量复制&#34; loading=&#34;lazy&#34; src=&#34;https://oss.swimmingliu.cn/ac9f21a3-ef8d-11ef-9016-c858c0c1deba&#34;&gt;&lt;/p&gt;
@@ -159,7 +159,7 @@
 &lt;ul&gt;
 &lt;li&gt;&lt;strong&gt;备份数据&lt;/strong&gt;：主从复制实现了数据的热备份，是持久化之外的数据冗余方式&lt;/li&gt;
 &lt;li&gt;&lt;strong&gt;故障恢复&lt;/strong&gt;：当主节点宕机之后，可以采用从节点提供服务。&lt;/li&gt;
-&lt;li&gt;&lt;strong&gt;负载均衡&lt;/strong&gt;:  主从复制实现了读写分离，只有主节点支持读写操作，从节点只有都操作。在读多写少的场景下，可以提高Redis服务器的并发量。&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;负载均衡&lt;/strong&gt;:  主从复制实现了读写分离，只有主节点支持读写操作，从节点只有读操作。在读多写少的场景下，可以提高Redis服务器的并发量。&lt;/li&gt;
 &lt;/ul&gt;
 &lt;p&gt;&lt;img alt=&#34;Redis主从读写分离&#34; loading=&#34;lazy&#34; src=&#34;https://oss.swimmingliu.cn/acad0d12-ef8d-11ef-b17f-c858c0c1deba&#34;&gt;&lt;/p&gt;
 &lt;h2 id=&#34;2-redis集群的实现原理是什么&#34;&gt;2. Redis集群的实现原理是什么?&lt;/h2&gt;
@@ -281,12 +281,12 @@
       <pubDate>Wed, 19 Feb 2025 15:16:42 +0800</pubDate>
       <guid>https://swimmingliu.cn/posts/job/mysql-interview-questions/</guid>
       <description>&lt;h2 id=&#34;1mysql-中的数据排序是怎么实现的&#34;&gt;1.MySQL 中的数据排序是怎么实现的？&lt;/h2&gt;
-&lt;p&gt;1.排序方法：索引排序和文件排序 (filesort)
-2.索引排序：如果&lt;code&gt;order by xxx&lt;/code&gt;的字段为索引字段，则利用索引进行排序。效率最高，索引默认有序。
-3.文件排序 (filesort)：内存排序(单路排序和双路排序)和磁盘排序，具体取决于排序数据的大小。其中，内存排序使用单路排序或双路排序，取决于&lt;code&gt;max_length_for_sort_data&lt;/code&gt;(默认为4096个字节)
-4.双路排序：取&lt;code&gt;row_id&lt;/code&gt;(如果有主键，则为主键)和&lt;code&gt;select a,b,c order by xxx&lt;/code&gt;的&lt;code&gt;xxx&lt;/code&gt;字段放入&lt;code&gt;sort_buffer&lt;/code&gt;(排序缓存)中，将排序后的&lt;code&gt;row_id&lt;/code&gt;回表查询&lt;code&gt;a,b,c&lt;/code&gt;
-5.单路排序: 直接把要查的所有字段放入&lt;code&gt;sort_buffer&lt;/code&gt;里，排序后直接得到结果集合
-6.磁盘排序（归并排序）:将数据分为多份文件，单独对文件进行排序，然后合并成一个有序的大文件&lt;/p&gt;
+&lt;p&gt;1.&lt;strong&gt;排序方法&lt;/strong&gt;：索引排序和文件排序 (filesort)&lt;/p&gt;
+&lt;p&gt;2.&lt;strong&gt;索引排序&lt;/strong&gt;：如果&lt;code&gt;order by xxx&lt;/code&gt;的字段为索引字段，则利用索引进行排序。效率最高，索引默认有序。&lt;/p&gt;
+&lt;p&gt;3.&lt;strong&gt;文件排序 (filesort)&lt;/strong&gt;：内存排序(单路排序和双路排序)和磁盘排序，具体取决于排序数据的大小。其中，内存排序使用单路排序或双路排序，取决于&lt;code&gt;max_length_for_sort_data&lt;/code&gt;(默认为4096个字节)&lt;/p&gt;
+&lt;p&gt;4.&lt;strong&gt;双路排序&lt;/strong&gt;：取&lt;code&gt;row_id&lt;/code&gt;(如果有主键，则为主键)和&lt;code&gt;select a,b,c order by xxx&lt;/code&gt;的&lt;code&gt;xxx&lt;/code&gt;字段放入&lt;code&gt;sort_buffer&lt;/code&gt;(排序缓存)中，将排序后的&lt;code&gt;row_id&lt;/code&gt;回表查询&lt;code&gt;a,b,c&lt;/code&gt;&lt;/p&gt;
+&lt;p&gt;5.&lt;strong&gt;单路排序&lt;/strong&gt;: 直接把要查的所有字段放入&lt;code&gt;sort_buffer&lt;/code&gt;里，排序后直接得到结果集合&lt;/p&gt;
+&lt;p&gt;6.&lt;strong&gt;磁盘排序&lt;/strong&gt;（归并排序）:将数据分为多份文件，单独对文件进行排序，然后合并成一个有序的大文件&lt;/p&gt;
 &lt;h2 id=&#34;2-mysql-的-change-buffer-是什么它有什么作用&#34;&gt;2. MySQL 的 Change Buffer 是什么？它有什么作用？&lt;/h2&gt;
 &lt;p&gt;1.ChangeBuffer定义：Change Buffer是InnoDB缓冲当中的一块缓存区，用于暂存二级索引的修改，避免二级索引页修改产生的随机IO
 2.ChangeBuffer注意事项：只能用于二级索引，不能用于其他任何索引，包括主键索引和唯一索引都不行。
@@ -335,10 +335,14 @@
 &lt;/ul&gt;
 &lt;/blockquote&gt;
 &lt;h2 id=&#34;3-详细描述一条-sql-语句在-mysql-中的执行过程&#34;&gt;3. 详细描述一条 SQL 语句在 MySQL 中的执行过程。&lt;/h2&gt;
-&lt;p&gt;1.连接器判断用户是否成功建立连接，数据库连接的权限校验
-2.分析器分析SQL语法和词法是否有误
-3.优化器生成SQL的执行计划，确定使用的索引和调整where的执行顺序（包括连表顺序）
-4.执行器判断当前用户是否有权限查询该表，然后执行该SQL语句&lt;/p&gt;</description>
+&lt;ol&gt;
+&lt;li&gt;连接器判断用户是否成功建立连接，数据库连接的权限校验&lt;/li&gt;
+&lt;li&gt;连接器会查询缓存，&lt;code&gt;key&lt;/code&gt; 是 SQL 语句，&lt;code&gt;value&lt;/code&gt; 是查询结果。如果命中，直接返回查询结果。(MySQL 8.0之后，就移除这个功能了)。&lt;/li&gt;
+&lt;li&gt;分析器分析SQL语法和词法是否有误&lt;/li&gt;
+&lt;li&gt;优化器生成SQL的执行计划，确定使用的索引和调整where的执行顺序（包括连表顺序）&lt;/li&gt;
+&lt;li&gt;执行器判断当前用户是否有权限查询该表，然后执行该SQL语句&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;&lt;img alt=&#34;MySQL架构图&#34; loading=&#34;lazy&#34; src=&#34;https://oss.swimmingliu.cn/7457976c-ef5d-11ef-b738-c858c0c1deba&#34;&gt;&lt;/p&gt;</description>
     </item>
     <item>
       <title>Java面试题-随手记</title>

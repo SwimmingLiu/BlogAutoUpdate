@@ -35,6 +35,7 @@ cover:
     relative: false
 ---
 
+
 ## 1. 说说 Java 中 HashMap 的原理？
 
 **【HashMap定义】**
@@ -272,7 +273,6 @@ do {
 
 ![HashMap原理之Resize操作](https://oss.swimmingliu.cn/6659dd7d-ef8d-11ef-9aac-c858c0c1deba)
 
-
 ## 2.ConcurrentHashMap了解吗? / Java 中 ConcurrentHashMap 1.7 和 1.8 之间有哪些区别？
 
 首先，提到 `ConcurrentHashMap` 我们要分成`JDK 1.7` 和 `JDK 1.8` 两个版本来看：
@@ -300,10 +300,60 @@ do {
 
 `ConcurrentMap`不支持`key`或`value`为 `null` 是为了避免歧义和简化代码实现方式
 
-因为多线程环境下，`get(key)`方法如果返回 `null` ，不知道其表示的是`key`不存在还是`value`本来就是 `null`。为了避免这个歧义，代码就需要频繁的判断null是代表`key`不存在还是`value`本来就是`null`，增加复杂度。
+因为多线程环境下，`get(key) ` 方法如果返回 `null` ，不知道其表示的是`key`不存在还是`value`本来就是 `null`。为了避免这个歧义，代码就需要频繁的判断null是代表`key`不存在还是 `value` 本来就是 `null`，增加复杂度。
 
 **【为什么HashMap支持 `key `或 `value `为null】**
 
 因为HashMap设计的初衷就是单线程模式使用的，本身就是线程不安全的。在 HashMap 的实现中，`null` 键被特殊处理。当 `key` 为 `null` 时，HashMap 不会调用 `hashCode()` 方法，而是直接将 `null` 键存储在表的第一个桶（`table[0]`）中。这样可以避免 `NullPointerException` 。
 
 **【注意】** 像`HashTable`、`ConcurrentSkipListMap`、`CopyOnWriteArrayList`这些并发集合，都是线程安全的，都不支持`key`或`value`为 `null`
+
+## 4 . Java 中 ConcurrentHashMap 的 get 方法是否需要加锁？
+
+`ConcurrentHashMap` 的 `get` 方法不需要加锁。因为`get` 方式是读取操作，不需要对资源做任何处理，所以每次只需要保证读取到最新的数据即可，所以不需要加锁。
+
+另外,`ConcurrentHashMap` 中 `get` 方法对于数组中的节点，是通过`Unsafe` 方法 `getObjectVolatile()` 来保证可见性的。对于链表或者红黑树节点，是采用`volatile` 关键字去修饰 `val` 和 `next` 节点的，也可以保证可见性。
+
+## 5. Java 中有哪些集合类？请简单介绍
+
+Java中的集合类都是在`java.util`。 主要可以分为单列类型 `Collection` 和 双列 `Map` 两类来看。 其中单列 `Collection` 里面包括 (`List`、`Set`、`Queue`），具体如下图。
+
+![Java集合结构](https://oss.swimmingliu.cn/7f077950-f8f8-11ef-ad9c-c858c0c1deba)
+
+**【两个基本接口】**
+
+1. **`Collection` 单列集合接口**：一个由单个元素组成的序列，这些元素要符合一条或多条规则。其中，`List` 是有序的，`Set` 是去重的， `Queue` 是符合队列规则的。
+2. **`Map` 双列集合接口**： 一组键值对，可以用 `key` 来检索 `value`。 上面的 `ArrayList` 是采用索引来查找一个值。`Map` 可以采用另外一个对象来查找某个对象。
+
+**【List 系列】** `List` 接口的实现类用于存储有序的、允许重复的元素。必须按照元素插入顺序来保存他们。
+
+1. `ArrayList`：擅长随机访问元素，但是在 `List` 的中间插入或者删除元素比较慢。适合读操作多的场景。
+2. `LinkedList`：提供理想的顺序访问性能，在 `List` 的中间插入和删除元素的成本都比较低。 `LinkedList` 随机访问性能相对较差， 适合频繁插入和删除的场景。
+3. `Vector`：基于动态数据实现，线程安全 (方法加锁)， 效率比较低，已经很少用了。
+
+**【Set 系列】** `Set` 接口的实现类用于存储不重复的元素。继承于`Collection`
+
+1. `HashSet`：无序，采用哈希表存储，查找和插入性能高。
+2. `LinkedHashSet`：有序，采用哈希表 + 链表(存储插入顺序)
+3. `TreeSet`：排序 (或自定义排序)，采用红黑树实现，查找、插入、删除操作性能高。
+
+**【Queue 队列/优先系列】** `Queue` 接口的实现类用于处理先进先出的队列数据结构。
+
+1. `priorityQueue`： 基于堆实现，用于优先级队列。元素按自然顺序或自定义顺序排列。不是FIFO的顺序，优先处理优先级搞的元素
+2. `LinkedList`： 也实现了`Queue` 接口，支持双端队列结构。
+3. `Stack`： 双端队列
+
+**【Map 系列】** 键唯一，值可重复
+
+1. `HashMap`： 无序，数组 + 链表 + 红黑树， `key` 和 `value` 都可以为 `null`
+2. `LinkedHashMap`：有序，数组 + 链表 + 红黑树，额外链表记录插入顺序
+3. `TreeMap`：红黑树实现，对`key`进行自然排序(或者自定义排序)
+4. `HashTable`: 数组 + 链表 + 红黑树，有`sychronized` 锁， 不允许`key` 和 `value` 为 `null` ，线程安全。
+
+## 6.  Java 中的 CopyOnWriteArrayList 是什么？
+
+`CopyOnWriteArrayList` 是一种线程安全的`ArrayList`， 其主要的原理就和名字一样，在写的时候复制，写时复制。
+
+`CopyOnWirteArrayList` 的读操作不需要上锁，但是写操作会锁。而且进行写操作的时候，会复制一份原数组出来，然后在新的数组上进行写操作，读操作还是在老数组的基础上，适合读多写少的场景。到那时复制数组有一定的性能消耗，而且会消耗内存。
+
+![CopyOnWirteArrayList写时复制操作](https://oss.swimmingliu.cn/7f4ec4b7-f8f8-11ef-9bfd-c858c0c1deba)

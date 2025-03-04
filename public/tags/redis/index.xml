@@ -39,7 +39,7 @@
 &lt;ol&gt;
 &lt;li&gt;连接恢复后，从节点会发送&lt;code&gt;psync {runid} {offset}&lt;/code&gt;， 其中主节点ID &lt;code&gt;runid&lt;/code&gt; 和 复制进度&lt;code&gt;offset&lt;/code&gt;用于标识是哪一个服务器主机和复制进度。&lt;/li&gt;
 &lt;li&gt;主节点收到&lt;code&gt;psync&lt;/code&gt; 命令之后，会用&lt;code&gt;conitnue&lt;/code&gt;响应告知从节点，采用增量复制同步数据&lt;/li&gt;
-&lt;li&gt;最后，主节点根据&lt;code&gt;offset&lt;/code&gt;查找对应的进度，将短线期间未同步的写命令，发送给从节点。同时，主节点将所有的写命令写入&lt;code&gt;repl_backlog_buffer&lt;/code&gt;， 用于后续判断是采用增量复制还是全量复制。&lt;/li&gt;
+&lt;li&gt;最后，主节点根据&lt;code&gt;offset&lt;/code&gt;查找对应的进度，将断线期间未同步的写命令，发送给从节点。同时，主节点将所有的写命令写入&lt;code&gt;repl_backlog_buffer&lt;/code&gt;， 用于后续判断是采用增量复制还是全量复制。&lt;/li&gt;
 &lt;/ol&gt;
 &lt;p&gt;【注意】从节点 &lt;code&gt;psync&lt;/code&gt; 携带的 &lt;code&gt;offset&lt;/code&gt; 为 &lt;code&gt;slave_repl_offset&lt;/code&gt;。如果 &lt;code&gt;repl_backlog_buffer&lt;/code&gt;包含&lt;code&gt;slave_repl_offset&lt;/code&gt; 对应的部分，则采用增量复制，否则采用全量复制。&lt;code&gt;repl_backlog_buffer&lt;/code&gt;的默认缓冲区大小为&lt;code&gt;1M&lt;/code&gt;&lt;/p&gt;
 &lt;p&gt;&lt;img alt=&#34;Redis主从增量复制&#34; loading=&#34;lazy&#34; src=&#34;https://oss.swimmingliu.cn/ac9f21a3-ef8d-11ef-9016-c858c0c1deba&#34;&gt;&lt;/p&gt;
@@ -47,7 +47,7 @@
 &lt;ul&gt;
 &lt;li&gt;&lt;strong&gt;备份数据&lt;/strong&gt;：主从复制实现了数据的热备份，是持久化之外的数据冗余方式&lt;/li&gt;
 &lt;li&gt;&lt;strong&gt;故障恢复&lt;/strong&gt;：当主节点宕机之后，可以采用从节点提供服务。&lt;/li&gt;
-&lt;li&gt;&lt;strong&gt;负载均衡&lt;/strong&gt;:  主从复制实现了读写分离，只有主节点支持读写操作，从节点只有都操作。在读多写少的场景下，可以提高Redis服务器的并发量。&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;负载均衡&lt;/strong&gt;:  主从复制实现了读写分离，只有主节点支持读写操作，从节点只有读操作。在读多写少的场景下，可以提高Redis服务器的并发量。&lt;/li&gt;
 &lt;/ul&gt;
 &lt;p&gt;&lt;img alt=&#34;Redis主从读写分离&#34; loading=&#34;lazy&#34; src=&#34;https://oss.swimmingliu.cn/acad0d12-ef8d-11ef-b17f-c858c0c1deba&#34;&gt;&lt;/p&gt;
 &lt;h2 id=&#34;2-redis集群的实现原理是什么&#34;&gt;2. Redis集群的实现原理是什么?&lt;/h2&gt;

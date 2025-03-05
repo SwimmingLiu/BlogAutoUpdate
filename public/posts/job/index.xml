@@ -11,8 +11,53 @@
     </image>
     <generator>Hugo -- 0.136.0</generator>
     <language>en</language>
-    <lastBuildDate>Sat, 01 Mar 2025 09:49:44 +0800</lastBuildDate>
+    <lastBuildDate>Wed, 05 Mar 2025 21:45:49 +0800</lastBuildDate>
     <atom:link href="https://swimmingliu.cn/posts/job/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>(JUC) Java并发面试题笔记</title>
+      <link>https://swimmingliu.cn/posts/job/java-juc-interview-questions/</link>
+      <pubDate>Wed, 05 Mar 2025 21:45:49 +0800</pubDate>
+      <guid>https://swimmingliu.cn/posts/job/java-juc-interview-questions/</guid>
+      <description>&lt;h2 id=&#34;1-什么是-java-内存模型jmm&#34;&gt;1. 什么是 Java 内存模型（JMM）？&lt;/h2&gt;
+&lt;p&gt;&lt;code&gt;JMM&lt;/code&gt; 是 Java内存模型 ， 它是Java虚拟机 &lt;code&gt;JVM&lt;/code&gt; 定义的一种规范，用于描述多线程程序中的变量，像实例字段、静态字段和数组元素，他们如何在内存中存储和传递的规则。也就是规定线程啥时候从住内存里面读数据，啥时候把数据写回到住内存。&lt;code&gt;JMM&lt;/code&gt; 的核心目标是确保多线程环境下的&lt;strong&gt;可见性&lt;/strong&gt;、&lt;strong&gt;有序性&lt;/strong&gt;和&lt;strong&gt;原子性&lt;/strong&gt;, 避免硬件和编译器优化带来的不一致问题。&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;【可见性、有序性、原子性定义】&lt;/strong&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;可见性&lt;/strong&gt;：确保一个线程对共享变量的修改，能够及时被另外一个线程看到。 &lt;code&gt;volatile&lt;/code&gt;就是用来保证可见性的，强制线程每次读写的时候，直接从主内存当中获取最新值。&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;有序性&lt;/strong&gt;：指线程执行操作的顺序。JMM允许某些指令重排序之后再提高性能，但会保证线程内的操作顺序不会被破坏。通过&lt;code&gt;happens-before&lt;/code&gt; (线程A发生在线程B之前)的关系来保证跨线程的有序性。&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;原子性&lt;/strong&gt;：操作不可分割，线程不会在执行的过程当中被打断。例如, &lt;code&gt;synchronize&lt;/code&gt; 关键字能确保方法或代码块的原子性&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;strong&gt;【JMM作用】&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;因为不同的操作系统都有一套独立的内存模型，但是Java为了满足跨平台的特性，它需要定义一套内存模型屏蔽个操作系统之间的差异。我们可以利用JMM当中定义好的从Java源码到CPU指令的执行规范，也就是使用&lt;code&gt;synchronized&lt;/code&gt; 、&lt;code&gt;volatile&lt;/code&gt; 等关键字，还有&lt;code&gt;happens-before&lt;/code&gt;原则，就可以写出并发安全的代码了。
+比如说，线程A和线程B同时操作 &lt;code&gt;变量-1&lt;/code&gt;，假如最开始&lt;code&gt;变量-1&lt;/code&gt; 是 &lt;code&gt;0&lt;/code&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;首先，线程A和线程B都读取了&lt;code&gt;变量-1&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;然后，线程B对取到的&lt;code&gt;变量-1&lt;/code&gt;自增为&lt;code&gt;1&lt;/code&gt;，并写回主内存&lt;/li&gt;
+&lt;li&gt;此时，线程A对读取到的&lt;code&gt;变量-1&lt;/code&gt;也自增&lt;code&gt;1&lt;/code&gt;，并写回主内存。这就会导致线程B的操作失效了，出现并发安全问题。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;如果有JMM，我们就可以在线程A要修改数据之前,让它采用CAS乐观锁的方式进行修改。再次去读主内存当中的值，然后修改之后，再判断一下主内存的值是否发生变化。如果没有发生变化，就写回主内存。如果发生变化，就要进行自旋。&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;【注意】&lt;/strong&gt; 工作内存是每个线程独立的内存空间，其他线程都是看不到的。主内存是Java堆内存的一部分，所有的实例变量、静态变量和数组元素都存储在主内存当中。&lt;/p&gt;
+&lt;p&gt;&lt;img alt=&#34;JMM架构图&#34; loading=&#34;lazy&#34; src=&#34;https://oss.swimmingliu.cn/49ddf552-f9c8-11ef-99c5-c858c0c1deba&#34;&gt;&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;【内存间交互操作类型 (8种原子操作)】&lt;/strong&gt;&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;&lt;strong&gt;lock 上锁&lt;/strong&gt;：把一个变量表示为一条线程独占的状态&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;unlock 解锁&lt;/strong&gt;： 把一个变量从独占状态中释放出来，释放后的变量才能被其他线程锁定&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;read 读取&lt;/strong&gt;： 从主内存当中读取一个变量到工作内存中&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;load 载入&lt;/strong&gt;：把&lt;code&gt;read&lt;/code&gt;操作从主内存中得到的变量值放入工作内存的变量副本当中&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;use 使用&lt;/strong&gt;：把工作内存当中的一个变量值传递给执行引擎&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;assign 赋值&lt;/strong&gt;：把一个从执行引擎接收到的值赋给工作内存中的变量&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;store 存储&lt;/strong&gt;：把工作内存中的一个变量的值传送给主内存中&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;write 写入&lt;/strong&gt;：把store操作从工作内存中得到的变量值放入主内存的变量中&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;&lt;strong&gt;【volatile 特殊规则】&lt;/strong&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;可见性&lt;/strong&gt;：对于 &lt;code&gt;volatile&lt;/code&gt; 修饰的变量的写操作会立即刷新到内存中，任何线程对这个&lt;code&gt;volatile&lt;/code&gt; 变量的读操作都能立即看到最新的值。&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;禁止指令重排序&lt;/strong&gt;： 在对 &lt;code&gt;volatile&lt;/code&gt; 变量进行读/写操作的时候，会插入内存屏障，禁止指令重排序。也就是该变量的写操作不能与之前的读/写操作重排序，它的都操作不能与之后的读/写操作重排序。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;strong&gt;【Happens-Before 原则】&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;见下一个问题&lt;/p&gt;
+&lt;h2 id=&#34;2-什么是java的-happens-before-规则&#34;&gt;2. 什么是Java的 happens-before 规则?&lt;/h2&gt;
+&lt;p&gt;&lt;code&gt;happens-before&lt;/code&gt; 原则就是 &lt;code&gt;JMM&lt;/code&gt; 当中定义操作间顺序的规则，确保操作的有序性和可见性。&lt;/p&gt;</description>
+    </item>
     <item>
       <title>操作系统面试题笔记</title>
       <link>https://swimmingliu.cn/posts/job/operation-system-interview-questions/</link>

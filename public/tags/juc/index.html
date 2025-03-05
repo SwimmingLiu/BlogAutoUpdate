@@ -5,11 +5,11 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 <meta name="robots" content="index, follow">
-<title>Redis | SwimmingLiu&#39;s Blog</title>
+<title>JUC | SwimmingLiu&#39;s Blog</title>
 <meta name="keywords" content="">
 <meta name="description" content="">
 <meta name="author" content="👨🏻‍🎓 SwimmingLiu">
-<link rel="canonical" href="https://swimmingliu.cn/tags/redis/">
+<link rel="canonical" href="https://swimmingliu.cn/tags/juc/">
 <link crossorigin="anonymous" href="/assets/css/stylesheet.6ecbb0040febd20e47edd88a662c19f1ea945bf7427774b86594271d18f88faf.css" integrity="sha256-bsuwBA/r0g5H7diKZiwZ8eqUW/dCd3S4ZZQnHRj4j68=" rel="preload stylesheet" as="style">
 <link rel="icon" href="https://swimmingliu.cn/images/swimmingliu_icon.png">
 <link rel="icon" type="image/png" sizes="16x16" href="https://swimmingliu.cn/images/swimmingliu_icon.png">
@@ -18,8 +18,8 @@
 <link rel="mask-icon" href="https://swimmingliu.cn/images/swimmingliu_icon.png">
 <meta name="theme-color" content="#2e2e33">
 <meta name="msapplication-TileColor" content="#2e2e33">
-<link rel="alternate" type="application/rss+xml" href="https://swimmingliu.cn/tags/redis/index.xml">
-<link rel="alternate" hreflang="en" href="https://swimmingliu.cn/tags/redis/">
+<link rel="alternate" type="application/rss+xml" href="https://swimmingliu.cn/tags/juc/index.xml">
+<link rel="alternate" hreflang="en" href="https://swimmingliu.cn/tags/juc/">
 <noscript>
     <style>
         #theme-toggle,
@@ -57,15 +57,15 @@
 
     </style>
 </noscript>
-<meta property="og:url" content="https://swimmingliu.cn/tags/redis/">
+<meta property="og:url" content="https://swimmingliu.cn/tags/juc/">
   <meta property="og:site_name" content="SwimmingLiu&#39;s Blog">
-  <meta property="og:title" content="Redis">
+  <meta property="og:title" content="JUC">
   <meta property="og:locale" content="en">
   <meta property="og:type" content="website">
       <meta property="og:image" content="https://swimmingliu.cn/papermod-cover.png">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:image" content="https://swimmingliu.cn/papermod-cover.png">
-<meta name="twitter:title" content="Redis">
+<meta name="twitter:title" content="JUC">
 <meta name="twitter:description" content="">
 
 </head>
@@ -165,8 +165,8 @@
 <main class="main"> 
 <header class="page-header"><div class="breadcrumbs"><a href="https://swimmingliu.cn/">Home</a>&nbsp;»&nbsp;<a href="https://swimmingliu.cn/tags/">Tags</a></div>
   <h1>
-    Redis
-    <a href="/tags/redis/index.xml" title="RSS" aria-label="RSS">
+    JUC
+    <a href="/tags/juc/index.xml" title="RSS" aria-label="RSS">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
         stroke-linecap="round" stroke-linejoin="round" height="23">
         <path d="M4 11a9 9 0 0 1 9 9" />
@@ -179,24 +179,25 @@
 
 <article class="post-entry tag-entry"> 
   <header class="entry-header">
-    <h2 class="entry-hint-parent">Redis面试题笔记
+    <h2 class="entry-hint-parent">(JUC) Java并发面试题笔记
     </h2>
   </header>
   <div class="entry-content">
-    <p>1. Redis主从复制的原理 【主从复制的原理】
-同步：从节点向主节点发送psync命令进行同步，从节点保存主节点返回的 runid 和 offset 全量复制：如果是第一次连接或者连接失败且repl_backlog_buffer 缓存区不包含slave_repl_offset， 则生成主节点的数据快照(RDB文件)发给从节点 增量复制：全量复制完毕后，主从节点之间会保持长连接。如果连接没有断开或者slave_repl_offset仍然在repl_backlog_buffer中，则将后续的写操作传递给从节点，让数据保持一致。 【全量复制细节】
-全量复制的过程是基于TCP长连接的，主要流程如下
-从节点发送psync ? -1表示需要建立连接进行同步，主节点返回主节点ID runid 和 复制进度offset (第一次同步用 -1 表示)。从节点接受之后，保存主节点的信息。 主节点执行bgsave命令生成数据快照RDB文件，然后将RDB文件发送给从节点。从节点接受文件后，清除现有的所有数据，然后加载RDB文件 如果在制作数据快照RDB文件的过程当中，主节点接收到了新的写操作，主节点会将其记录在repl buffer 里面。然后将repl buffer当中的写操作发给从节点，让其数据保持一致。 【增量复制细节】
-如果主从节点意外断开连接，为了保持数据的一致性，必须重新同步数据。如果使用全量复制来保持一致性的话，开销太大，所以采用增量复制。
-增量复制的具体流程如下：
-连接恢复后，从节点会发送psync {runid} {offset}， 其中主节点ID runid 和 复制进度offset用于标识是哪一个服务器主机和复制进度。 主节点收到psync 命令之后，会用conitnue响应告知从节点，采用增量复制同步数据 最后，主节点根据offset查找对应的进度，将断线期间未同步的写命令，发送给从节点。同时，主节点将所有的写命令写入repl_backlog_buffer， 用于后续判断是采用增量复制还是全量复制。 【注意】从节点 psync 携带的 offset 为 slave_repl_offset。如果 repl_backlog_buffer包含slave_repl_offset 对应的部分，则采用增量复制，否则采用全量复制。repl_backlog_buffer的默认缓冲区大小为1M
-【为什么要主从复制】
-备份数据：主从复制实现了数据的热备份，是持久化之外的数据冗余方式 故障恢复：当主节点宕机之后，可以采用从节点提供服务。 负载均衡: 主从复制实现了读写分离，只有主节点支持读写操作，从节点只有读操作。在读多写少的场景下，可以提高Redis服务器的并发量。 2. Redis集群的实现原理是什么? 【Redis集群基本知识】
-定义: Redis集群由多个实例组成，每个实例存储部分数据 (每个实例之间的数据不重复) 。 【注】集群和主从节点不是一个东西，集群的某一个实例当中可能包含一个主节点 &#43; 多个从节点
-为什么用 问题 解决方案 容量不足 数据分片，将数据分散不存到不同的主节点 高并发写入 数据分片，将写入请求分摊到多个主节点 主机宕机问题 自动切换主从节点，避免影响服务， 不需要手动修改客户端配置 节点通信协议：Redis集群采用Gossip协议, 支持分布式信息传播、延迟低、效率高。采用去中心化思想，任意实例(主节点)都可以作为请求入口，节点间相互通信。 分片原理： 采用哈希槽(Hash Slot)机制来分配数据，整个空间可以划分为16384 (16 * 1024)个槽。 每个Redis负责一定范围的哈希槽,数据的key经过哈希函数计算之后对16384取余可定位到对应的节点。 ...</p>
+    <p>1. 什么是 Java 内存模型（JMM）？ JMM 是 Java内存模型 ， 它是Java虚拟机 JVM 定义的一种规范，用于描述多线程程序中的变量，像实例字段、静态字段和数组元素，他们如何在内存中存储和传递的规则。也就是规定线程啥时候从住内存里面读数据，啥时候把数据写回到住内存。JMM 的核心目标是确保多线程环境下的可见性、有序性和原子性, 避免硬件和编译器优化带来的不一致问题。
+【可见性、有序性、原子性定义】
+可见性：确保一个线程对共享变量的修改，能够及时被另外一个线程看到。 volatile就是用来保证可见性的，强制线程每次读写的时候，直接从主内存当中获取最新值。 有序性：指线程执行操作的顺序。JMM允许某些指令重排序之后再提高性能，但会保证线程内的操作顺序不会被破坏。通过happens-before (线程A发生在线程B之前)的关系来保证跨线程的有序性。 原子性：操作不可分割，线程不会在执行的过程当中被打断。例如, synchronize 关键字能确保方法或代码块的原子性 【JMM作用】
+因为不同的操作系统都有一套独立的内存模型，但是Java为了满足跨平台的特性，它需要定义一套内存模型屏蔽个操作系统之间的差异。我们可以利用JMM当中定义好的从Java源码到CPU指令的执行规范，也就是使用synchronized 、volatile 等关键字，还有happens-before原则，就可以写出并发安全的代码了。 比如说，线程A和线程B同时操作 变量-1，假如最开始变量-1 是 0
+首先，线程A和线程B都读取了变量-1 然后，线程B对取到的变量-1自增为1，并写回主内存 此时，线程A对读取到的变量-1也自增1，并写回主内存。这就会导致线程B的操作失效了，出现并发安全问题。 如果有JMM，我们就可以在线程A要修改数据之前,让它采用CAS乐观锁的方式进行修改。再次去读主内存当中的值，然后修改之后，再判断一下主内存的值是否发生变化。如果没有发生变化，就写回主内存。如果发生变化，就要进行自旋。
+【注意】 工作内存是每个线程独立的内存空间，其他线程都是看不到的。主内存是Java堆内存的一部分，所有的实例变量、静态变量和数组元素都存储在主内存当中。
+【内存间交互操作类型 (8种原子操作)】
+lock 上锁：把一个变量表示为一条线程独占的状态 unlock 解锁： 把一个变量从独占状态中释放出来，释放后的变量才能被其他线程锁定 read 读取： 从主内存当中读取一个变量到工作内存中 load 载入：把read操作从主内存中得到的变量值放入工作内存的变量副本当中 use 使用：把工作内存当中的一个变量值传递给执行引擎 assign 赋值：把一个从执行引擎接收到的值赋给工作内存中的变量 store 存储：把工作内存中的一个变量的值传送给主内存中 write 写入：把store操作从工作内存中得到的变量值放入主内存的变量中 【volatile 特殊规则】
+可见性：对于 volatile 修饰的变量的写操作会立即刷新到内存中，任何线程对这个volatile 变量的读操作都能立即看到最新的值。 禁止指令重排序： 在对 volatile 变量进行读/写操作的时候，会插入内存屏障，禁止指令重排序。也就是该变量的写操作不能与之前的读/写操作重排序，它的都操作不能与之后的读/写操作重排序。 【Happens-Before 原则】
+见下一个问题
+2. 什么是Java的 happens-before 规则? happens-before 原则就是 JMM 当中定义操作间顺序的规则，确保操作的有序性和可见性。
+...</p>
   </div>
-  <footer class="entry-footer"><span title='2025-02-20 21:21:45 +0800 CST'>February 20, 2025</span>&nbsp;·&nbsp;9 min&nbsp;·&nbsp;SwimmingLiu</footer>
-  <a class="entry-link" aria-label="post link to Redis面试题笔记" href="https://swimmingliu.cn/posts/job/redis-interview-questions/"></a>
+  <footer class="entry-footer"><span title='2025-03-05 21:45:49 +0800 CST'>March 5, 2025</span>&nbsp;·&nbsp;1 min&nbsp;·&nbsp;SwimmingLiu</footer>
+  <a class="entry-link" aria-label="post link to (JUC) Java并发面试题笔记" href="https://swimmingliu.cn/posts/job/java-juc-interview-questions/"></a>
 </article>
     </main>
     

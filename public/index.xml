@@ -11,14 +11,59 @@
     </image>
     <generator>Hugo -- 0.136.0</generator>
     <language>en</language>
-    <lastBuildDate>Wed, 05 Mar 2025 21:45:49 +0800</lastBuildDate>
+    <lastBuildDate>Fri, 07 Mar 2025 21:44:36 +0800</lastBuildDate>
     <atom:link href="https://swimmingliu.cn/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>设计模式面试题笔记</title>
+      <link>https://swimmingliu.cn/posts/job/desgin-mode-interview-questions/</link>
+      <pubDate>Fri, 07 Mar 2025 21:44:36 +0800</pubDate>
+      <guid>https://swimmingliu.cn/posts/job/desgin-mode-interview-questions/</guid>
+      <description>&lt;h2 id=&#34;1-单例模式有哪几种实现如何保证线程安全&#34;&gt;1. 单例模式有哪几种实现？如何保证线程安全？&lt;/h2&gt;
+&lt;p&gt;首先，单例模式和工厂模式都是一种设计模式。单例模式当中，一个类只允许创建一个对象(或者说实例)， 那这个类就是单例类。单例类是不可以被继承的，也没有了多态的特性。&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;【单例类的实现方式】&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;常规单例模式有五种写法，但是编写代码的过程当中，要注意以下几点：&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;构造器需要私有化&lt;/li&gt;
+&lt;li&gt;暴露一个公共获取单例对象的接口 （&lt;code&gt;obj.getInstance()&lt;/code&gt;）&lt;/li&gt;
+&lt;li&gt;是否支持懒加载 &lt;code&gt;延迟加载&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;是否线程安全&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;五种写法为：&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;strong&gt;饿汉式&lt;/strong&gt;： 类加载的时候，就一起把 &lt;code&gt;instance&lt;/code&gt; 静态实例创建好了，所以创建的过程市线程安全的。&lt;/p&gt;
+&lt;p&gt;饿汉式的单例模式虽然不支持懒加载，有点浪费资源。但其实不会占用太多资源，并且如果一个实例初始化的过程比较复杂，就应该放在启动的时候来处理，避免运行时卡顿或发生问题， 满足&lt;code&gt;fail-fast&lt;/code&gt; 失败快速解决的设计原则&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-java&#34; data-lang=&#34;java&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;kd&#34;&gt;public&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;kd&#34;&gt;class&lt;/span&gt; &lt;span class=&#34;nc&#34;&gt;EagerSingleton&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;p&#34;&gt;{&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;  
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;w&#34;&gt;    &lt;/span&gt;&lt;span class=&#34;kd&#34;&gt;private&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;kd&#34;&gt;static&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;Singleton&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;instance&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;new&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;Singleton&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;();&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;  
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;w&#34;&gt;    &lt;/span&gt;&lt;span class=&#34;kd&#34;&gt;private&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;nf&#34;&gt;Singleton&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(){}&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;  
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;w&#34;&gt;    &lt;/span&gt;&lt;span class=&#34;kd&#34;&gt;public&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;kd&#34;&gt;static&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;Singleton&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;nf&#34;&gt;getInstance&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;()&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;p&#34;&gt;{&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;  
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;w&#34;&gt;    	&lt;/span&gt;&lt;span class=&#34;k&#34;&gt;return&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;instance&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;;&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;  
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;w&#34;&gt;    &lt;/span&gt;&lt;span class=&#34;p&#34;&gt;}&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;  
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;w&#34;&gt;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;}&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;strong&gt;懒汉式&lt;/strong&gt;：相较于饿汉式的方式，修改成延迟加载的模式。注意&lt;code&gt;getInstance()&lt;/code&gt;方法没有上锁的话，在大量线程并发请求的时候，可能创建多个实例。&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-java&#34; data-lang=&#34;java&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;kd&#34;&gt;public&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;kd&#34;&gt;class&lt;/span&gt; &lt;span class=&#34;nc&#34;&gt;Singleton&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;p&#34;&gt;{&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;  
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;w&#34;&gt;    &lt;/span&gt;&lt;span class=&#34;kd&#34;&gt;private&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;kd&#34;&gt;static&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;Singleton&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;instance&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;;&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;  
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;w&#34;&gt;    &lt;/span&gt;&lt;span class=&#34;kd&#34;&gt;private&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;nf&#34;&gt;Singleton&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(){}&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;  
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;w&#34;&gt;    &lt;/span&gt;&lt;span class=&#34;kd&#34;&gt;public&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;kd&#34;&gt;synchronized&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;kd&#34;&gt;static&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;Singleton&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;nf&#34;&gt;getInstance&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;()&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;p&#34;&gt;{&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;  
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;w&#34;&gt;        &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;if&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;instance&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;o&#34;&gt;==&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;kc&#34;&gt;null&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;p&#34;&gt;{&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;  
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;w&#34;&gt;            &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;instance&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;new&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;Singleton&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;();&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;  
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;w&#34;&gt;        &lt;/span&gt;&lt;span class=&#34;p&#34;&gt;}&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;  
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;w&#34;&gt;        &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;return&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;instance&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;;&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;  
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;w&#34;&gt;    &lt;/span&gt;&lt;span class=&#34;p&#34;&gt;}&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;  
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;w&#34;&gt;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;}&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;strong&gt;双重检查锁&lt;/strong&gt;：饿汉式锁不支持延迟加载，然后懒汉式锁的粒度比较大，不支持高并发。双重检查锁可以实现既延迟加载，又支持高并发。其实就是在判断了没有实例之后，再进行上锁，创建实例。 但是实例必须用&lt;code&gt;volatile&lt;/code&gt; 修饰，不然&lt;code&gt;new&lt;/code&gt; 操作创建对象时，容易出现重排序的问题。&lt;/p&gt;</description>
+    </item>
     <item>
       <title>(JUC) Java并发面试题笔记</title>
       <link>https://swimmingliu.cn/posts/job/java-juc-interview-questions/</link>
       <pubDate>Wed, 05 Mar 2025 21:45:49 +0800</pubDate>
       <guid>https://swimmingliu.cn/posts/job/java-juc-interview-questions/</guid>
-      <description>&lt;h2 id=&#34;1-什么是-java-内存模型jmm&#34;&gt;1. 什么是 Java 内存模型（JMM）？&lt;/h2&gt;
+      <description>&lt;h1 id=&#34;juc-java并发面试题笔记&#34;&gt;(JUC) Java并发面试题笔记&lt;/h1&gt;
+&lt;h2 id=&#34;1-什么是-java-内存模型jmm&#34;&gt;1. 什么是 Java 内存模型（JMM）？&lt;/h2&gt;
 &lt;p&gt;&lt;code&gt;JMM&lt;/code&gt; 是 Java内存模型 ， 它是Java虚拟机 &lt;code&gt;JVM&lt;/code&gt; 定义的一种规范，用于描述多线程程序中的变量，像实例字段、静态字段和数组元素，他们如何在内存中存储和传递的规则。也就是规定线程啥时候从住内存里面读数据，啥时候把数据写回到住内存。&lt;code&gt;JMM&lt;/code&gt; 的核心目标是确保多线程环境下的&lt;strong&gt;可见性&lt;/strong&gt;、&lt;strong&gt;有序性&lt;/strong&gt;和&lt;strong&gt;原子性&lt;/strong&gt;, 避免硬件和编译器优化带来的不一致问题。&lt;/p&gt;
 &lt;p&gt;&lt;strong&gt;【可见性、有序性、原子性定义】&lt;/strong&gt;&lt;/p&gt;
 &lt;ul&gt;
@@ -53,10 +98,7 @@
 &lt;li&gt;&lt;strong&gt;可见性&lt;/strong&gt;：对于 &lt;code&gt;volatile&lt;/code&gt; 修饰的变量的写操作会立即刷新到内存中，任何线程对这个&lt;code&gt;volatile&lt;/code&gt; 变量的读操作都能立即看到最新的值。&lt;/li&gt;
 &lt;li&gt;&lt;strong&gt;禁止指令重排序&lt;/strong&gt;： 在对 &lt;code&gt;volatile&lt;/code&gt; 变量进行读/写操作的时候，会插入内存屏障，禁止指令重排序。也就是该变量的写操作不能与之前的读/写操作重排序，它的都操作不能与之后的读/写操作重排序。&lt;/li&gt;
 &lt;/ul&gt;
-&lt;p&gt;&lt;strong&gt;【Happens-Before 原则】&lt;/strong&gt;&lt;/p&gt;
-&lt;p&gt;见下一个问题&lt;/p&gt;
-&lt;h2 id=&#34;2-什么是java的-happens-before-规则&#34;&gt;2. 什么是Java的 happens-before 规则?&lt;/h2&gt;
-&lt;p&gt;&lt;code&gt;happens-before&lt;/code&gt; 原则就是 &lt;code&gt;JMM&lt;/code&gt; 当中定义操作间顺序的规则，确保操作的有序性和可见性。&lt;/p&gt;</description>
+&lt;p&gt;&lt;strong&gt;【Happens-Before 原则】&lt;/strong&gt;&lt;/p&gt;</description>
     </item>
     <item>
       <title>操作系统面试题笔记</title>

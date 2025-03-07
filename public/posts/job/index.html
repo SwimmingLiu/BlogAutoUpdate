@@ -200,11 +200,31 @@
 
 <article class="post-entry"> 
   <header class="entry-header">
+    <h2 class="entry-hint-parent">设计模式面试题笔记
+    </h2>
+  </header>
+  <div class="entry-content">
+    <p>1. 单例模式有哪几种实现？如何保证线程安全？ 首先，单例模式和工厂模式都是一种设计模式。单例模式当中，一个类只允许创建一个对象(或者说实例)， 那这个类就是单例类。单例类是不可以被继承的，也没有了多态的特性。
+【单例类的实现方式】
+常规单例模式有五种写法，但是编写代码的过程当中，要注意以下几点：
+构造器需要私有化 暴露一个公共获取单例对象的接口 （obj.getInstance()） 是否支持懒加载 延迟加载 是否线程安全 五种写法为：
+饿汉式： 类加载的时候，就一起把 instance 静态实例创建好了，所以创建的过程市线程安全的。
+饿汉式的单例模式虽然不支持懒加载，有点浪费资源。但其实不会占用太多资源，并且如果一个实例初始化的过程比较复杂，就应该放在启动的时候来处理，避免运行时卡顿或发生问题， 满足fail-fast 失败快速解决的设计原则
+public class EagerSingleton { private static Singleton instance = new Singleton(); private Singleton (){} public static Singleton getInstance() { return instance; } } 懒汉式：相较于饿汉式的方式，修改成延迟加载的模式。注意getInstance()方法没有上锁的话，在大量线程并发请求的时候，可能创建多个实例。
+public class Singleton { private static Singleton instance; private Singleton (){} public synchronized static Singleton getInstance() { if (instance == null) { instance = new Singleton(); } return instance; } } 双重检查锁：饿汉式锁不支持延迟加载，然后懒汉式锁的粒度比较大，不支持高并发。双重检查锁可以实现既延迟加载，又支持高并发。其实就是在判断了没有实例之后，再进行上锁，创建实例。 但是实例必须用volatile 修饰，不然new 操作创建对象时，容易出现重排序的问题。
+...</p>
+  </div>
+  <footer class="entry-footer"><span title='2025-03-07 21:44:36 +0800 CST'>March 7, 2025</span>&nbsp;·&nbsp;5 min&nbsp;·&nbsp;SwimmingLiu</footer>
+  <a class="entry-link" aria-label="post link to 设计模式面试题笔记" href="https://swimmingliu.cn/posts/job/desgin-mode-interview-questions/"></a>
+</article>
+
+<article class="post-entry"> 
+  <header class="entry-header">
     <h2 class="entry-hint-parent">(JUC) Java并发面试题笔记
     </h2>
   </header>
   <div class="entry-content">
-    <p>1. 什么是 Java 内存模型（JMM）？ JMM 是 Java内存模型 ， 它是Java虚拟机 JVM 定义的一种规范，用于描述多线程程序中的变量，像实例字段、静态字段和数组元素，他们如何在内存中存储和传递的规则。也就是规定线程啥时候从住内存里面读数据，啥时候把数据写回到住内存。JMM 的核心目标是确保多线程环境下的可见性、有序性和原子性, 避免硬件和编译器优化带来的不一致问题。
+    <p>(JUC) Java并发面试题笔记 1. 什么是 Java 内存模型（JMM）？ JMM 是 Java内存模型 ， 它是Java虚拟机 JVM 定义的一种规范，用于描述多线程程序中的变量，像实例字段、静态字段和数组元素，他们如何在内存中存储和传递的规则。也就是规定线程啥时候从住内存里面读数据，啥时候把数据写回到住内存。JMM 的核心目标是确保多线程环境下的可见性、有序性和原子性, 避免硬件和编译器优化带来的不一致问题。
 【可见性、有序性、原子性定义】
 可见性：确保一个线程对共享变量的修改，能够及时被另外一个线程看到。 volatile就是用来保证可见性的，强制线程每次读写的时候，直接从主内存当中获取最新值。 有序性：指线程执行操作的顺序。JMM允许某些指令重排序之后再提高性能，但会保证线程内的操作顺序不会被破坏。通过happens-before (线程A发生在线程B之前)的关系来保证跨线程的有序性。 原子性：操作不可分割，线程不会在执行的过程当中被打断。例如, synchronize 关键字能确保方法或代码块的原子性 【JMM作用】
 因为不同的操作系统都有一套独立的内存模型，但是Java为了满足跨平台的特性，它需要定义一套内存模型屏蔽个操作系统之间的差异。我们可以利用JMM当中定义好的从Java源码到CPU指令的执行规范，也就是使用synchronized 、volatile 等关键字，还有happens-before原则，就可以写出并发安全的代码了。 比如说，线程A和线程B同时操作 变量-1，假如最开始变量-1 是 0
@@ -213,11 +233,9 @@
 【内存间交互操作类型 (8种原子操作)】
 lock 上锁：把一个变量表示为一条线程独占的状态 unlock 解锁： 把一个变量从独占状态中释放出来，释放后的变量才能被其他线程锁定 read 读取： 从主内存当中读取一个变量到工作内存中 load 载入：把read操作从主内存中得到的变量值放入工作内存的变量副本当中 use 使用：把工作内存当中的一个变量值传递给执行引擎 assign 赋值：把一个从执行引擎接收到的值赋给工作内存中的变量 store 存储：把工作内存中的一个变量的值传送给主内存中 write 写入：把store操作从工作内存中得到的变量值放入主内存的变量中 【volatile 特殊规则】
 可见性：对于 volatile 修饰的变量的写操作会立即刷新到内存中，任何线程对这个volatile 变量的读操作都能立即看到最新的值。 禁止指令重排序： 在对 volatile 变量进行读/写操作的时候，会插入内存屏障，禁止指令重排序。也就是该变量的写操作不能与之前的读/写操作重排序，它的都操作不能与之后的读/写操作重排序。 【Happens-Before 原则】
-见下一个问题
-2. 什么是Java的 happens-before 规则? happens-before 原则就是 JMM 当中定义操作间顺序的规则，确保操作的有序性和可见性。
 ...</p>
   </div>
-  <footer class="entry-footer"><span title='2025-03-05 21:45:49 +0800 CST'>March 5, 2025</span>&nbsp;·&nbsp;1 min&nbsp;·&nbsp;SwimmingLiu</footer>
+  <footer class="entry-footer"><span title='2025-03-05 21:45:49 +0800 CST'>March 5, 2025</span>&nbsp;·&nbsp;5 min&nbsp;·&nbsp;SwimmingLiu</footer>
   <a class="entry-link" aria-label="post link to (JUC) Java并发面试题笔记" href="https://swimmingliu.cn/posts/job/java-juc-interview-questions/"></a>
 </article>
 

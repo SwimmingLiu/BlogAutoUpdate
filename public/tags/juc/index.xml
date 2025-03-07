@@ -18,7 +18,8 @@
       <link>https://swimmingliu.cn/posts/job/java-juc-interview-questions/</link>
       <pubDate>Wed, 05 Mar 2025 21:45:49 +0800</pubDate>
       <guid>https://swimmingliu.cn/posts/job/java-juc-interview-questions/</guid>
-      <description>&lt;h2 id=&#34;1-什么是-java-内存模型jmm&#34;&gt;1. 什么是 Java 内存模型（JMM）？&lt;/h2&gt;
+      <description>&lt;h1 id=&#34;juc-java并发面试题笔记&#34;&gt;(JUC) Java并发面试题笔记&lt;/h1&gt;
+&lt;h2 id=&#34;1-什么是-java-内存模型jmm&#34;&gt;1. 什么是 Java 内存模型（JMM）？&lt;/h2&gt;
 &lt;p&gt;&lt;code&gt;JMM&lt;/code&gt; 是 Java内存模型 ， 它是Java虚拟机 &lt;code&gt;JVM&lt;/code&gt; 定义的一种规范，用于描述多线程程序中的变量，像实例字段、静态字段和数组元素，他们如何在内存中存储和传递的规则。也就是规定线程啥时候从住内存里面读数据，啥时候把数据写回到住内存。&lt;code&gt;JMM&lt;/code&gt; 的核心目标是确保多线程环境下的&lt;strong&gt;可见性&lt;/strong&gt;、&lt;strong&gt;有序性&lt;/strong&gt;和&lt;strong&gt;原子性&lt;/strong&gt;, 避免硬件和编译器优化带来的不一致问题。&lt;/p&gt;
 &lt;p&gt;&lt;strong&gt;【可见性、有序性、原子性定义】&lt;/strong&gt;&lt;/p&gt;
 &lt;ul&gt;
@@ -53,10 +54,7 @@
 &lt;li&gt;&lt;strong&gt;可见性&lt;/strong&gt;：对于 &lt;code&gt;volatile&lt;/code&gt; 修饰的变量的写操作会立即刷新到内存中，任何线程对这个&lt;code&gt;volatile&lt;/code&gt; 变量的读操作都能立即看到最新的值。&lt;/li&gt;
 &lt;li&gt;&lt;strong&gt;禁止指令重排序&lt;/strong&gt;： 在对 &lt;code&gt;volatile&lt;/code&gt; 变量进行读/写操作的时候，会插入内存屏障，禁止指令重排序。也就是该变量的写操作不能与之前的读/写操作重排序，它的都操作不能与之后的读/写操作重排序。&lt;/li&gt;
 &lt;/ul&gt;
-&lt;p&gt;&lt;strong&gt;【Happens-Before 原则】&lt;/strong&gt;&lt;/p&gt;
-&lt;p&gt;见下一个问题&lt;/p&gt;
-&lt;h2 id=&#34;2-什么是java的-happens-before-规则&#34;&gt;2. 什么是Java的 happens-before 规则?&lt;/h2&gt;
-&lt;p&gt;&lt;code&gt;happens-before&lt;/code&gt; 原则就是 &lt;code&gt;JMM&lt;/code&gt; 当中定义操作间顺序的规则，确保操作的有序性和可见性。&lt;/p&gt;</description>
+&lt;p&gt;&lt;strong&gt;【Happens-Before 原则】&lt;/strong&gt;&lt;/p&gt;</description>
     </item>
   </channel>
 </rss>

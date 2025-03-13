@@ -1,0 +1,1224 @@
+<!DOCTYPE html>
+<html lang="en" dir="auto">
+
+<head><meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta name="robots" content="index, follow">
+<title>计算机网络面试题笔记 | SwimmingLiu&#39;s Blog</title>
+<meta name="keywords" content="Java, CN">
+<meta name="description" content="1. TCP 和 UDP 有什么区别？
+TCP 是一种可靠的、面向连接、基于字节流传输的传输协议，能够保证数据的顺序，但是其延迟比较大。一般适用于需要数据完整性和顺序的场景，比如文件传输、邮件、Web 网站。
+UDP 是一种不可靠的、无连接、基于数据报传输的传输协议，不能保证数据的顺序，但是延迟比较小。一般适用于需要高性能要求和快速传输数据的应用，比如实时通讯、语音、视频、游戏等。
+【注意】TCP 和 UDP 都属于传输层
+
+  
+      
+          特性
+          TCP
+          UDP
+      
+  
+  
+      
+          连接方式
+          面向连接 (三次握手)
+          无连接
+      
+      
+          可靠性和顺序保证
+          可靠，保证数据按顺序送达
+          不可靠，不能保证数据的顺序，而不能保证安全送达
+      
+      
+          流量控制/拥塞控制
+          提供流量控制和拥塞控制
+          没有流量控制和拥塞控制
+      
+      
+          头部大小
+          头部较大 (20 ~ 80 字节)
+          较小 (只有 8 字节)
+      
+      
+          性能
+          较低，延迟大
+          较高，延迟小
+      
+      
+          是否支持广播
+          不支持广播
+          支持广播
+      
+      
+          数据传输模式
+          通过字节流传输
+          通过数据报传输
+      
+      
+          适用场景
+          文件传输、Web、邮件等需要可靠性的传输
+          实时通讯、语音、视频、游戏等高性能要求应用
+      
+      
+          基于两者的协议
+          1. HTTP协议：超文本和多媒体内容的协议2. HTTPS协议：基于HTTP协议上加了一层SSL / TSL 外壳，保证了数据传输的安全性3. FTP协议： 文件传输协议，用来传文件到服务器的4. SMTP协议：简单邮件协议，用于发送邮件的协议 (POP3 协议： 负责邮件接受的协议)
+          1. HTTP 3.0 协议: 基于 UDP 的QUIC 协议2. DHCP 协议： 动态主机配置协议，动态配置 IP 地址3. DNS ：域名解析系统，将域名转变为机器刻度的 IP 地址
+      
+  
+
+【ISO 和 TCP/IP 模型】">
+<meta name="author" content="SwimmingLiu">
+<link rel="canonical" href="https://swimmingliu.cn/posts/job/computer-networks-interview-questions/">
+<link crossorigin="anonymous" href="/assets/css/stylesheet.6ecbb0040febd20e47edd88a662c19f1ea945bf7427774b86594271d18f88faf.css" integrity="sha256-bsuwBA/r0g5H7diKZiwZ8eqUW/dCd3S4ZZQnHRj4j68=" rel="preload stylesheet" as="style">
+<link rel="icon" href="https://swimmingliu.cn/images/swimmingliu_icon.png">
+<link rel="icon" type="image/png" sizes="16x16" href="https://swimmingliu.cn/images/swimmingliu_icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="https://swimmingliu.cn/images/swimmingliu_icon.png">
+<link rel="apple-touch-icon" href="https://swimmingliu.cn/images/swimmingliu_icon.png">
+<link rel="mask-icon" href="https://swimmingliu.cn/images/swimmingliu_icon.png">
+<meta name="theme-color" content="#2e2e33">
+<meta name="msapplication-TileColor" content="#2e2e33">
+<link rel="alternate" hreflang="en" href="https://swimmingliu.cn/posts/job/computer-networks-interview-questions/">
+<noscript>
+    <style>
+        #theme-toggle,
+        .top-link {
+            display: none;
+        }
+
+    </style>
+    <style>
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --theme: rgb(29, 30, 32);
+                --entry: rgb(46, 46, 51);
+                --primary: rgb(218, 218, 219);
+                --secondary: rgb(155, 156, 157);
+                --tertiary: rgb(65, 66, 68);
+                --content: rgb(196, 196, 197);
+                --code-block-bg: rgb(46, 46, 51);
+                --code-bg: rgb(55, 56, 62);
+                --border: rgb(51, 51, 51);
+            }
+
+            .list {
+                background: var(--theme);
+            }
+
+            .list:not(.dark)::-webkit-scrollbar-track {
+                background: 0 0;
+            }
+
+            .list:not(.dark)::-webkit-scrollbar-thumb {
+                border-color: var(--theme);
+            }
+        }
+
+    </style>
+</noscript>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css" integrity="sha384-n8MVd4RsNIU0tAv4ct0nTaAbDJwPJzDEaqSD1odI+WdtXRGWt2kTvGFasHpSy3SV" crossorigin="anonymous">
+
+
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js" integrity="sha384-XjKyOOlGwcjNTAIQHIpgOno0Hl1YQqzUOEleOLALmuqehneUG+vnGctmUb0ZY0l8" crossorigin="anonymous"></script>
+
+
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js" integrity="sha384-+VBxd3r6XgURycqtZ117nYw44OOcIax56Z4dCRWbxyPt0Koah1uHoK0o4+/RRE05" crossorigin="anonymous"
+    onload="renderMathInElement(document.body);"></script>
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        renderMathInElement(document.body, {
+            
+            
+            delimiters: [
+                { left: '$$', right: '$$', display: true },
+                { left: '$', right: '$', display: false },
+                { left: '\\(', right: '\\)', display: false },
+                { left: '\\[', right: '\\]', display: true }
+            ],
+            
+            throwOnError: false
+        });
+    });
+</script>
+
+<meta property="og:url" content="https://swimmingliu.cn/posts/job/computer-networks-interview-questions/">
+  <meta property="og:site_name" content="SwimmingLiu&#39;s Blog">
+  <meta property="og:title" content="计算机网络面试题笔记">
+  <meta property="og:description" content="1. TCP 和 UDP 有什么区别？ TCP 是一种可靠的、面向连接、基于字节流传输的传输协议，能够保证数据的顺序，但是其延迟比较大。一般适用于需要数据完整性和顺序的场景，比如文件传输、邮件、Web 网站。 UDP 是一种不可靠的、无连接、基于数据报传输的传输协议，不能保证数据的顺序，但是延迟比较小。一般适用于需要高性能要求和快速传输数据的应用，比如实时通讯、语音、视频、游戏等。
+【注意】TCP 和 UDP 都属于传输层
+特性 TCP UDP 连接方式 面向连接 (三次握手) 无连接 可靠性和顺序保证 可靠，保证数据按顺序送达 不可靠，不能保证数据的顺序，而不能保证安全送达 流量控制/拥塞控制 提供流量控制和拥塞控制 没有流量控制和拥塞控制 头部大小 头部较大 (20 ~ 80 字节) 较小 (只有 8 字节) 性能 较低，延迟大 较高，延迟小 是否支持广播 不支持广播 支持广播 数据传输模式 通过字节流传输 通过数据报传输 适用场景 文件传输、Web、邮件等需要可靠性的传输 实时通讯、语音、视频、游戏等高性能要求应用 基于两者的协议 1. HTTP协议：超文本和多媒体内容的协议
+2. HTTPS协议：基于HTTP协议上加了一层SSL / TSL 外壳，保证了数据传输的安全性
+3. FTP协议： 文件传输协议，用来传文件到服务器的
+4. SMTP协议：简单邮件协议，用于发送邮件的协议 (POP3 协议： 负责邮件接受的协议) 1. HTTP 3.0 协议: 基于 UDP 的QUIC 协议
+2. DHCP 协议： 动态主机配置协议，动态配置 IP 地址
+3. DNS ：域名解析系统，将域名转变为机器刻度的 IP 地址 【ISO 和 TCP/IP 模型】">
+  <meta property="og:locale" content="en">
+  <meta property="og:type" content="article">
+    <meta property="article:section" content="posts">
+    <meta property="article:published_time" content="2025-03-13T21:49:44+08:00">
+    <meta property="article:modified_time" content="2025-03-13T21:49:44+08:00">
+    <meta property="article:tag" content="Java">
+    <meta property="article:tag" content="CN">
+      <meta property="og:image" content="https://swimmingliu.cn/papermod-cover.png">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://swimmingliu.cn/papermod-cover.png">
+<meta name="twitter:title" content="计算机网络面试题笔记">
+<meta name="twitter:description" content="1. TCP 和 UDP 有什么区别？
+TCP 是一种可靠的、面向连接、基于字节流传输的传输协议，能够保证数据的顺序，但是其延迟比较大。一般适用于需要数据完整性和顺序的场景，比如文件传输、邮件、Web 网站。
+UDP 是一种不可靠的、无连接、基于数据报传输的传输协议，不能保证数据的顺序，但是延迟比较小。一般适用于需要高性能要求和快速传输数据的应用，比如实时通讯、语音、视频、游戏等。
+【注意】TCP 和 UDP 都属于传输层
+
+  
+      
+          特性
+          TCP
+          UDP
+      
+  
+  
+      
+          连接方式
+          面向连接 (三次握手)
+          无连接
+      
+      
+          可靠性和顺序保证
+          可靠，保证数据按顺序送达
+          不可靠，不能保证数据的顺序，而不能保证安全送达
+      
+      
+          流量控制/拥塞控制
+          提供流量控制和拥塞控制
+          没有流量控制和拥塞控制
+      
+      
+          头部大小
+          头部较大 (20 ~ 80 字节)
+          较小 (只有 8 字节)
+      
+      
+          性能
+          较低，延迟大
+          较高，延迟小
+      
+      
+          是否支持广播
+          不支持广播
+          支持广播
+      
+      
+          数据传输模式
+          通过字节流传输
+          通过数据报传输
+      
+      
+          适用场景
+          文件传输、Web、邮件等需要可靠性的传输
+          实时通讯、语音、视频、游戏等高性能要求应用
+      
+      
+          基于两者的协议
+          1. HTTP协议：超文本和多媒体内容的协议2. HTTPS协议：基于HTTP协议上加了一层SSL / TSL 外壳，保证了数据传输的安全性3. FTP协议： 文件传输协议，用来传文件到服务器的4. SMTP协议：简单邮件协议，用于发送邮件的协议 (POP3 协议： 负责邮件接受的协议)
+          1. HTTP 3.0 协议: 基于 UDP 的QUIC 协议2. DHCP 协议： 动态主机配置协议，动态配置 IP 地址3. DNS ：域名解析系统，将域名转变为机器刻度的 IP 地址
+      
+  
+
+【ISO 和 TCP/IP 模型】">
+
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position":  1 ,
+      "name": "📚 Posts",
+      "item": "https://swimmingliu.cn/posts/"
+    }, 
+    {
+      "@type": "ListItem",
+      "position":  2 ,
+      "name": "💻 Job",
+      "item": "https://swimmingliu.cn/posts/job/"
+    }, 
+    {
+      "@type": "ListItem",
+      "position":  3 ,
+      "name": "计算机网络面试题笔记",
+      "item": "https://swimmingliu.cn/posts/job/computer-networks-interview-questions/"
+    }
+  ]
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "计算机网络面试题笔记",
+  "name": "计算机网络面试题笔记",
+  "description": "1. TCP 和 UDP 有什么区别？ TCP 是一种可靠的、面向连接、基于字节流传输的传输协议，能够保证数据的顺序，但是其延迟比较大。一般适用于需要数据完整性和顺序的场景，比如文件传输、邮件、Web 网站。 UDP 是一种不可靠的、无连接、基于数据报传输的传输协议，不能保证数据的顺序，但是延迟比较小。一般适用于需要高性能要求和快速传输数据的应用，比如实时通讯、语音、视频、游戏等。\n【注意】TCP 和 UDP 都属于传输层\n特性 TCP UDP 连接方式 面向连接 (三次握手) 无连接 可靠性和顺序保证 可靠，保证数据按顺序送达 不可靠，不能保证数据的顺序，而不能保证安全送达 流量控制/拥塞控制 提供流量控制和拥塞控制 没有流量控制和拥塞控制 头部大小 头部较大 (20 ~ 80 字节) 较小 (只有 8 字节) 性能 较低，延迟大 较高，延迟小 是否支持广播 不支持广播 支持广播 数据传输模式 通过字节流传输 通过数据报传输 适用场景 文件传输、Web、邮件等需要可靠性的传输 实时通讯、语音、视频、游戏等高性能要求应用 基于两者的协议 1. HTTP协议：超文本和多媒体内容的协议\n2. HTTPS协议：基于HTTP协议上加了一层SSL / TSL 外壳，保证了数据传输的安全性\n3. FTP协议： 文件传输协议，用来传文件到服务器的\n4. SMTP协议：简单邮件协议，用于发送邮件的协议 (POP3 协议： 负责邮件接受的协议) 1. HTTP 3.0 协议: 基于 UDP 的QUIC 协议\n2. DHCP 协议： 动态主机配置协议，动态配置 IP 地址\n3. DNS ：域名解析系统，将域名转变为机器刻度的 IP 地址 【ISO 和 TCP/IP 模型】\n",
+  "keywords": [
+    "Java", "CN"
+  ],
+  "articleBody": "1. TCP 和 UDP 有什么区别？ TCP 是一种可靠的、面向连接、基于字节流传输的传输协议，能够保证数据的顺序，但是其延迟比较大。一般适用于需要数据完整性和顺序的场景，比如文件传输、邮件、Web 网站。 UDP 是一种不可靠的、无连接、基于数据报传输的传输协议，不能保证数据的顺序，但是延迟比较小。一般适用于需要高性能要求和快速传输数据的应用，比如实时通讯、语音、视频、游戏等。\n【注意】TCP 和 UDP 都属于传输层\n特性 TCP UDP 连接方式 面向连接 (三次握手) 无连接 可靠性和顺序保证 可靠，保证数据按顺序送达 不可靠，不能保证数据的顺序，而不能保证安全送达 流量控制/拥塞控制 提供流量控制和拥塞控制 没有流量控制和拥塞控制 头部大小 头部较大 (20 ~ 80 字节) 较小 (只有 8 字节) 性能 较低，延迟大 较高，延迟小 是否支持广播 不支持广播 支持广播 数据传输模式 通过字节流传输 通过数据报传输 适用场景 文件传输、Web、邮件等需要可靠性的传输 实时通讯、语音、视频、游戏等高性能要求应用 基于两者的协议 1. HTTP协议：超文本和多媒体内容的协议\n2. HTTPS协议：基于HTTP协议上加了一层SSL / TSL 外壳，保证了数据传输的安全性\n3. FTP协议： 文件传输协议，用来传文件到服务器的\n4. SMTP协议：简单邮件协议，用于发送邮件的协议 (POP3 协议： 负责邮件接受的协议) 1. HTTP 3.0 协议: 基于 UDP 的QUIC 协议\n2. DHCP 协议： 动态主机配置协议，动态配置 IP 地址\n3. DNS ：域名解析系统，将域名转变为机器刻度的 IP 地址 【ISO 和 TCP/IP 模型】\n**ISO (7层) **： “物联网淑慧适用” : 物理层—数据链路层—网络层—传输层—会话层—表示层—应用层 TCP/IP (4层)：链路层—网络层—传输层—应用层 【TCP 详解】\nTCP包没有IP地址，网络层已经处理过了。但是有源端口和目标端口\n序列号 (Sequence Number)：在建立连接的时候，主机生成随机数作为初始值， 经过 SYN 包 (第一次握手)传给接收端主机。每发送一次数据，累加数据字节数大小，用来确保传输是按照顺序接受的。 确认应答号 (Acknowledgement Number) ：用来表示下一次希望受到的数据序列号，发送端受到确认应答后可认为此序列号前数据已经被正常接受，防止出现丢包的情况。 控制位 (TCP Flags): 下面的字段都是二进制来表示是否有效，0 和 1 分别表示无效和有效 ACK : 表示确认应答字段是否有效, TCP 规定除了第一次握手的 SYN 包以外，该位置必须为 1，也就是必须有效 **RST (Reset) **: 表示 TCP连接当中出现异常，是否需要强制断开连接，进行重置 SYN：表示是否用来建立连接 (第一次握手)， 并设置其序列号的字段的初始值 FIN：表示是否结束 TCP 连接，如果为1， 后面不会再传输数据，断开连接。 窗口大小 (Window / Advertise-Window)：用于实现滑动窗口，进行流量控制，确保发送方不会超出接收方的处理能力，防止缓冲区溢出。滑动窗口机制是用来允许发送方在未收到接收方确认的情况下，连续发送多个数据包，提高传输效率。实现方式是，接收方在报文当中通知其剩余的缓冲区大小，发送方根据该信息调整发送窗口，动态控制数据流量。 【TCP 面试题拓展】\n有一个IP的服务端监听了一个端口，它的TCP最大连接数目是多少？\n最大TCP连接数 = 客户端IP数 * 客户端的端口数 在 IPv4 当中，客户端的IP数目最多为 2^32, 客户端的端口数最多为 2^16，所以单机的TCP最大连接数为2^48。但是由于文件描述符和内存限制，一般没法儿达到理论上限。\n【UDP 的首部结构】\nUDP 对应用层传下来的保温，既不合并也不拆分，保留这些报文的边界, 只是加一个 UDP 头部。\n目标、源端口：表示 UDP 将数据发送到哪个进程 包长度：表示 UDP 首部和数据的总长度 校验和：用于确保 UDP 首部和数据在传输过程中未受损 【TCP 和 UDP 能否使用同一个端口】\nTCP 和 UDP 可以使用同一个端口，因为这两个传输协议是完全独立的软件模块。数据包通过 IP包头中的协议号字段判断是 TCP 还是 UDP，并转发给相应的模块处理。然后, TCP 或 UDP 模块根据端口号将报文转发给对应的应用程序。\n2. 说说TCP的三次握手过程 ? TCP 三次握手的过程如下：\n客户端发送 SYN 给服务端，建立连接 服务端收到 SYN 消息之后，回复一个 SYN-ACK 确认消息，表示接收到了客服端的连接请求 客服端收到SYN-ACK 消息之后，再发一个 ACK 确认消息，表示收到服务器的SYN-ACK 消息，成功建立连接。 【TCP 三次握手的实现细节】\n最开始的时候，客户端和服务端都处于 CLOSE 状态，表示双方没有建立连接。服务端主动监听某个端口，处于LISTEN 状态。\n【第一次握手】\n客户端随机初始化 client_isn 值，将其设置为TCP 头部的序列号字段。 将标志位的 SYN 设置为 1，表示该报文为 SYN 报文。 客服端将该报文发送给服务端，之后客户端处于 SYN-SENT 状态。表示向服务端发起 TCP 连接，该报文不包含应用层的任何数据，只用于建立连接。 【第二次握手】\n服务端收到客户端 SYN 报文知乎，随机初始化序号server_isn , 并把它填入 TCP 头部的序列号字段。 将确认应答好修改为 SYN 报文中的序列号 + 1，也就是client_isn + 1。并把SYN 和 ACK 的标记位都改为1，该报文为 SYN-ACK 报文 发送 SYN-ACK 报文给客户端，不包含任何应用层数据，只用于确认收到客户端的 SYN 报文，服务端进入 SYN-RCVD 状态 【第三次握手】\n客户端收到服务端的 SYN-ACK 报文，准备回应最后的应答报文 把报文的 TCP 头部的确认应答号修改为 SYN-ACK 报文的序列号 + 1，也就是server_isn + 1。 ACK 标志修改为 1, SYN 不做任何修改，依然为 0，该报文表示 ACK报文。 把报文发送给服务端，可以携带应用层的数据，之后客户端处于ESTABLISHED 状态，表示成功建立连接。 **【注意】**第三次握手是可以携带数据的，但是前两次握手都不能携带数据。并且就算第三次握手丢失，服务端依然可以根据数据包来得到第三次握手的信息 (用序列号进行判断，找client_isn + 1 的数据包)。如果第三次握手 ACK 确认包丢失了，但是收到了客服端发的携带数据的包，并且包含 ACK 标记， 服务端默认表示第三次握手有效，成功建立连接。然后处理该数据包并继续正常传输数据。\n【TCP 三次握手中每次握手的意义】\n客户端和服务端需要通过三次握手来确认双方的发送和接受都是正常的\n第一次握手：服务端确认客户端发送正常，自己接受正常。客户端无法确认。 第二次握手：客户端确认自己发送和接受正常，服务端接受正常。服务端确认自己接受正常，客服端发送正常。 第三次握手：客户端和服务端都确认自己和对方，彼此发送和接受都是正常的 【为什么是三次握手，不是两次或者四次呢？】\n避免浪费资源：如果只有两次握手，无法阻止历史连接。服务端在向客户端发送数据之前，没有阻止掉历史连接 (第一次 SYN 请求到达就会建立连接)，从而导致服务端建立了一个历史连接。如果客户端发送了 多个SYN 报文，就会不断重复建立连接，浪费资源。如果采用四次握手，就需要多一次不必要的操作，也会浪费资源。\n【为什么每次建立TCP连接的时候，初始化的序列号要求不一致？】\n防止历史报文被下一个相同的四元组连接接受 防止黑客伪造相同序列号的 TCP 报文被对方接受 【什么是半连接队列和全连接队列？】\nTCP 三次握手的过程当中， Linux内核会维护两个队列来管理连接。\n半连接队列 (SYN Queue)： 服务端收到客户端的 SYN 请求后，双方未完全建立连接，会将半连接状态的连接放入半连接队列 全连接队列 (Accept Queue)：服务端收到客户端对 ACK 响应的时候，意味着三次握手完成，服务端将该连接从半连接队列移动到全连接队列。 3. TCP 用来解决什么问题的？ TCP 协议主要是通过可靠传输、流量控制、拥塞控制和连接管理，解决数据在不可靠的IP网络上传输的问题。\n可靠性：TCP 确保数据包在网络传输的过程当中不丢失、不重复，并且按顺序到达。通过确认-重传机制和序列号，保证数据在IP网络上的可靠传输。 流量控制：TCP 通过滑动窗口机制调节发送方(客户端)的发送速率，防止接收方因为处理能力或者缓存有限，而导致数据流被淹没或者丢失。 拥塞控制：TCP 通过拥塞避免算法 (比如慢启动、拥塞避免、快速重传和快速恢复) 来防止网络过载，确保网络资源的公平使用和稳定性。 连接管理： TCP 是面向连接的协议，采用三次握手建立连接，四次挥手断开连接，来管理连接会话，确保通信的可靠性和状态的同步。 4. 说说 TCP 的四次挥手？ TCP 的四次挥手是用来安全关闭已经建立的连接的过程，它可以确保双方都能完成数据传输并且安全释放连接资源。四次挥手的过程如下所示：\n第一次挥手：客户端发 FIN (seq_num = x) 数据包到客户端，表示其申请关闭服务端的数据传送，随后进入FIN_WAIT_1 状态，等待服务端进行确认。 第二次挥手：服务端收到客户端的 FIN (seq_num = x) 数据包之后，发送 ACK (ack_num = x + 1, seq_num = y) 给客户端，表示确认收到 FIN 数据包，随后进入 CLOSE_WAIT 状态。客户端接收到 ACK 包之后，进入FIN_WAIT_2 状态。同时，服务端会将没有传送完的数据传给客户端。 第三次挥手：服务端发送 FIN (seq_num = w) 的数据包给客服端，请求关闭连接，进入 LAST-ACK 状态。 第四次挥手：客户端收到 FIN 数据包之后，发送 ACK (ack_num = w + 1)数据包，随后进入 TIME-WAIT 状态。服务端收到此数据包之后，进入 CLOSE 状态。如果客户端等待 2MSL 没有收到回复的话，证明服务端已经正常关闭，此时客户端也进入 CLOSE 状态。 【注意】\n四次挥手过程中，服务端 (被动关闭的一方) 在 CLOSE_WAIT 的状态下，仍然可以发送数据，直到它主动发送FIN 请求关闭连接。 客户端(主动关闭连接的一方) 发出 FIN 后，无法再传输数据，只能接受数据 只有客户端 (主动关闭的一方) 会进入TIME_WAIT 状态，用于等待潜在的重传 FIN 【为什么需要四次挥手】\n为了确保数据的完整性，服务器需要把没有发送完的数据全部传输完之后，再关闭连接。所以，服务端的 ACK 确认包 和 FIN 请求关闭包，一般都会分开发送，所以需要四次挥手。TCP 为全双工通信，可以双向传输数据。任意一方数据传输结束都可以发送连接释放通知，对方确认后进入半关闭状态。另一方无数据再发送的时候，也发连接释放通知，双方确认则完全关闭TCP连接 (客户端和服务端都需要一来一回，请求释放和确认一次)\n【什么情况下会出现三次挥手】\n如果服务端没有数据需要发送了，并且开启了 TCP 延迟确认机制 (默认开启)，第二次和第三次挥手就会合并传输 (ACK 和 FIN)，就会出现三次挥手。\n5. TCP 的粘包和拆包能说说吗？ 【定义】\n拆包 / 半包：客服端 (发送方) 要发送的包太大了，必须拆分成多个包进行发送。导致一条完整的消息要被拆分为多个部分，服务端 (接收方) 无法一次性接受完整的数据。 粘包：客户端 (发送方)要发送的包太小了，会将多个包放在数据缓存区，合并成一个包发送出去。服务端(接收方)在读取的时候，可能将多个消息拼接在一起。导致多条消息数据粘在一起，服务端 (接受方) 无法区分这些消息的边界。 【原因】\n拆包 / 半包：由于网络传输中的 MTU 最大传输单元限制或者发送缓冲区的大小的限制，一个大包必须被拆分为多个小包。 粘包：由于 TCP 是基于字节流传输的协议，不关心数据的边界。数据在发送方可能被一次性发送，接收方读取的时候可能会将多个消息拼接在一起。 【注意】 只有 TCP 协议才会出现粘包和拆包的现象，UDP 协议不会出现这种情况。因为 TCP 协议的包没有报文长度，而 UDP 的包有报文长度。 所以TCP 是流式的，数据之间没有界限，而 UDP 是有界限的。\n【解决方案】\n固定数据包的长度：客户端每次发送数据包的时候，统一数据包的长度。比如采用 1024 字节，如果数据不足，就采用空格进行填充。\n添加分隔符：客户端在每个数据包的末尾用固定的分隔符 （比如 \\r\\n 或 ;）。服务端收到数据包之后，根据分隔符进行合并或拆分头部与前包剩余的部分，获取完整数据包。\n固定消息头部和消息体：采用固定长度的头部记录整个消息的长度，读取到足够长度数据，才视为完整消息。\n禁用Nagle协议：为了减少网络中的小包数量，TCP 采用了 Nagle 算法，将小数据块缓冲起来，直到缓冲区满了或者收到接受方的确认之后，再发送数据包。该算法可能会导致粘包现象，所以在需要实时传输小数据包的场景，可以设置 TCP_NODELAY 禁用 Nagle 算法，减少粘包的可能性。\n6. 说说 TCP 阻塞控制步骤 ? 阻塞控制机制：就像高速公路上的交通管理，目的是防止数据流量过大导致网络“拥堵”。当网络开始“拥塞”时，TCP会自动减慢数据发送速度，以确保网络保持畅通。\n滑动窗口机制：这是一种流量控制方法，确保发送方不会发送超过接收方处理能力的数据量。可以类比为水管中的水流，滑动窗口就像一个阀门，调节水流量，防止水管溢出。\n【注意】 假设拥塞窗口 为 cwnd 和 流量控制的滑动窗口 为rwnd，当前窗口的右边界受这两个值共同影响，应该取它们之间的最小值。\n窗口大小 = min(cwnd, rwnd) 【阻塞控制步骤】 阻塞控制可以分为两种情况来看，分别是超时重传 (基于超时的拥塞控制) 和快速重传 (基于重复 ACK 的拥塞控制)\n超时重传：当客户端检测到数据包传输超时 (未收到 ACK 确认)，会认为网络出现严重阻塞。此时，TCP会采取最保守的策略：将拥塞窗口cwnd 重置为 1，并重新进入慢启动阶段， 同时将慢启动阈值ssthresh 设置未当前拥塞窗口的一半 快速重传：当客户端连续收到3个重复的 ACK (比如服务端检测到报文段失序的时候，会触发该机制)，表明网络中可能只发生了单个数据包丢失而非全局阻塞。此时，TCP会出发快速重传 (立即重传丢失的数据包) 和 快速恢复 (调整拥塞窗口 cwnd 为 慢启动阈值 + 3 ssthred + 3，避免完全退回到慢启动)。 TCP 协议的拥塞控制主要通过五个算法来实现：慢启动、拥塞避免、超时重传、快速重传和快速恢复。\n慢启动：发送方开始设置一个较小的拥塞窗口大小，在每收到一个新的报文段的 ACK 确认之后，每当成功发送跟拥塞窗口大小等量的数据后，拥塞窗口大小就会翻倍。拥塞窗口按照指数方式增长，直到拥塞窗口 cwnd 达到 慢启动门限 ssthresh 拥塞避免：当拥塞窗口大小 cwnd 达到 慢启动门限 ssthresh 之后，就进入拥塞避免阶段。每当成功发送跟拥塞窗口大小等量的数据之后，拥塞窗口大小就会增加一个报文段的大小，以线性的方式增长。 拥塞发生：随着发送速率慢慢加快，可能会出现网络阻塞现象，发生数据包丢失。此时，就需要重传数据。重传的机制有两种，超时重传和快速重传。 超时重传：当发生超时重传的时候，慢启动门限ssthresh会设置为拥塞窗口的一半，并且将拥塞窗口恢复为初始值。随后重新开始慢启动，发送速率就瞬间下降了。 快速重传和快速恢复：当客户端连续收到3个重复的 ACK (比如服务端检测到报文段失序的时候，会触发该机制)，就认为发送了丢包。此时，拥塞窗口会 cwnd 减少到原来的一半，然后慢启动门限 ssthresh 设置为减少后的拥塞窗口的大小 cwnd，然后进入快速恢复阶段。此时，会把拥塞控制窗口+3 (cwnd + 3)， 3 的意思是确认有 3 个数据包收到了。然后重传丢失的报文，如果收到重传丢失报文的ACK 之后，将拥塞窗口设置为慢启动门限，直接进入拥塞避免，继续增大发送速率。 7. 常见的 HTTP 状态码有哪些？ 常见的 HTTP 状态分为五大类，有三位数字，一般用第一位数字来区分类别。\n1xx 信息状态码 : 协议处理中的中间状态，还有后续操作 100 Continue：服务器接收到请求的初步部分，客户端需要继续请求 101 Switching Protocols：服务器同意切换协议，比如：从 HTTP 协议切换到 WebSocket 协议 2xx 成功状态码：服务器成功处理客户端请求 ⭐ 200 OK: 请求成功，服务器返回所请求的资源或数据 201 Created: 请求成功并创建新的资源，一般用于 POST 请求 202 Accepted：服务端收到请求，但是还未处理 ⭐ 204 Not Content：请求成功但是服务器不返回任何内容，常用于删除 ⭐ 206 Partial Content：请求成功但服务器返回部分资源，一般用于HTTP分块下载或者断点续传 3xx 重定向状态码：客户端用新的 URL 重新发送请求获取资源 ⭐ 301 Moved Permanently：永久重定向，资源已经移动到新的 URL，通知客户端用新的 URL 访问 ⭐ 302 Found：资源临时移动到新的 URL， 客户端应该继续使用原来的 URL。允许浏览器将 POST 请求转换为 GET 303 See Other：和 302 有相同的功能，但是 303 明确要求客户端采用 GET 方法获取资源 304 No Modified：缓存重定向，资源没有被修改。客户端可以继续使用缓存资源，减少带宽消耗 307 Temporary Redirect：临时重定向，和 302 的含义几乎差不多。但是 307 需要保证重定向时请求方法和主体不变。 4xx 客户端请求错误状态码：客户端发送的报文有误，服务器无法处理 ⭐ 400 Bad Request：客户端请求报文无效或者语法错误 401 Unauthorized: 请求需要身份验证，客户端未提供有效的凭证 ⭐ 403 Forbidden：服务器理解该请求，但是拒绝执行，一般是客户端没有权限访问 ⭐ 404 Not Found： 请求的资源在服务器上找不到，比如 URL 的一部分写错了 409 Conflict： 请求的资源和服务器的当前状态存在冲突 5xx 服务端错误状态码：客户端请求的报文正确，但是服务器处理的时候内部发送错误。 ⭐ 500 Internal Server Error：服务器内部错误，无法完成请求，而且不知道是什么错误 501 Not Implemented：还不支持客户端请求，类似于“即将开业，敬请期待”的意思 502 Bad Gateway：服务器作为网关或者代理，从上游服务器收到无效响应。比如调用其他网站的API 发生错误的时候 503 Service Unavailable：服务器暂时无法处理请求，一般是因为处理维护中，或者服务过载 8. HTTP 请求包含哪些内容，请求头和请求体有哪些类型？ 【请求报文】 请求报文主要包括四个部分，请求行，请求头，空行(分割请求头和请求体)，请求体。\n请求行：包含请求方法 (GET / POST) 、请求路径 /doc/test.html) 和 HTTP 版本 (HTTP/1.1) 请求头：包含各种键值对，客户端环境(User-Agent)、请求内容 和认证信息 (Token) 等等 空行：用于分割请求头和请求体 请求体：只在 POST 和 PUT 方法中存在，包含需要发送到服务器的信息 【响应报文】 响应报文主要包含四个部分，状态行，响应头，空行，响应体\n状态行：包含 HTTP 的版本 (HTTP/1.1)、状态码 (200) 和状态描述 (OK) 响应头：包含服务器返回的各种键值对，用于描述响应的元信息，常见的响应头如下 Content-Type：响应额呢绒的类型, 一般为 text/html / application/json Content-Length： 响应内容的字节长度 空行：用于风格响应头和响应体 响应体：包含服务器返回的实际内容，比如 HTML文档、图片、JSON数据等 【HTTP 常见请求方法】\nGET：获取指定的资源 POST: 传输实体数据，POST 一般用来传数据，GET 一般用来获取数据 PUT: 上传文件，由于自身没有验证机制，任何人都可以上传文件 DELETE: 删除文件，和 PUT 功能正好相反，同样没有验证机制 9. HTTP 中 GET 和 POST 的区别是什么？ 特性 GET POST 主要用途 获取服务端的资源 向服务器提交数据，一般用于创建或者修改 参数传递 参数都在 URL 中 参数都在请求体当中，URL 也可以放参数 安全性 参数可见，数据容易暴露在浏览器的历史记录、日志和缓存里面，不适合传递敏感信息，不安全 数据放在请求体中，相对安全，但是需要HTTPS才能保证数据加密传输 (不然会被抓包) 幂等性 只读操作，多次请求不会改变服务器状态 修改操作，多次请求可能会导致重复创建资源，或者执行多次相同操作 长度限制 请求参数在 URL 中，浏览器对 URL 有长度限制 请求参数放在请求体中，理论上来说没有任何限制。但一般服务器对请求体长度有配置限制，比如 Nginx 默认限制为 1MB 缓存机制 浏览器和CDN都会缓存 GET 请求的数据，用于减少服务器的负载，比如图片、静态页面等不会频繁改动的静态资源 一般不会缓存 POST 请求，因为它通常对服务器数据会产生影响 【注意】 幂等意味着相同的请求重复多次，服务器的状态只会改变一次，不会累计多次副作用，而非幂等请求每次调用可能引起状态的多次改变\n【GET 请求一定是幂等的吗？】\n不一定，因为如果有开发者不遵循规范去处理请求，采用 GET 方式来新增数据，这时候 GET 请求就不是幂等的了。曾经有个笑话，有人写了个博客，删除博客用的是 GET 请求，他觉得没人访问就连鉴权都没做。然后 Google 服务器爬虫爬了一遍，他所有博文就没了…\n10. HTTP 1.0、HTTP 1.1、HTTP 2.0、HTTP 3.0 区别？ 【区别】\n特性 HTTP 1.0 HTTP 1.1 HTTP 2.0 HTTP 3.0 连接方式 短连接 持久连接 持久连接 QUIC 连接 (基于UDP) 传输方式 文本 文本 二进制 二进制 多路复用 不支持 不支持 支持 支持 服务器推送 不支持 不支持 支持（主动推送资源） 支持（增强资源推送效率） 头部压缩 不支持 不支持 支持 (HPACK) 支持 (QPACK) 安全性 明文传输（需 HTTPS 加密） 明文传输（需 HTTPS 加密） 强制建议 HTTPS 默认集成 TLS 1.3， 支持HTTPS 是否解决队头阻塞问题 存在（单请求阻塞） 部分缓解（管道化请求，但响应仍需顺序接收） 基本解决（TCP 连接内多路复用） 彻底解决（QUIC 协议是基于UDP协议，没有阻塞队列） 典型改进 定义了基础 HTTP 协议 长连接、断点续传、Host 头域 二进制协议、头部压缩、多路复用 基于 UDP 的 QUIC 协议、零 RTT 连接、抗网络切换 适用场景 静态网页、简单文件下载 中小型网站、内部管理系统 (非高并发网站) 高并发网站(淘宝/微博)、动态加载的单页应用、视频流媒体 实时通信(视频会议/在线游戏)、移动端应用(5G/弱网环境)、物联网设备通信 【HTTP/1.0】\n无状态、短连接：每次请求都需要建立新的TCP连接，处理完之后立即关闭，导致开销比较大 队头阻塞：每个请求必须按照顺序依次处理，前面的请求还没完成，后面的请求只能等待，并发效率不高 【HTTP/1.1】\n持久连接：引入了连接复用（Keep-Alive)，只要任意一端没有明确提出断开连接，就保持TCP连接状态。减少TCP握手开销 管道传输：在一个TCP链接里面，客户端发送多个请求，只要一个请求发出了，不用等待响应，直接发送第二个请求。该策略可以减少整体的响应时间。 队头阻塞：当顺序发送的请求序列中的一个请求，可能因为某种原因被阻塞的时候，后面排队的所有请求也一同被阻塞了，会导致客户端一致请求不到数据。 HOST字段：可以在同一个IP地址上运行多个虚拟主机 断点续传：支持文件传输中断后，从断点出继续传输。 【HTTP/1.0 和 HTTP/1.1 缓存机制区别】\nHTTP/1.0 缓存机制：基于时间的缓存机制，用请求头中的 If-Modified-Since 和响应头中的 Last-Modified 字段实现\n响应头中的 Last-Modified ：表示响应资源的最后修改时间\n请求头中的 If-Modified-Since ：请求的时候修改为响应头的 Last-Modified 时间。当服务器受到该请求之后，会对比请求资源最后修改的时间Last-Modified。 如果从 If-Modified-Since 没有修改，直接响应 304 Not Modified 走缓存。如果已经被修改过，返回最新资源, 响应 200 OK。\nHTTP/1.1 缓存机制：基于唯一标识的缓存机制，用请求头中的 If-None-Match 字段和响应头中的 ETag 字段实现\n响应头中的 ETag：表示响应资源的唯一标识，可以看成是一个id 请求头中的 If-None-Match ：当资源过期的时候，浏览器发现响应头里面有 ETag，再次想服务器发起请求的时候，将If-None-Match 设为 Etag 的值。服务器受到请求后进行对比，资源没变化，返回304。资源有变化，返回信的资源，响应200 【HTTP/2.0】\n多路复用：支持一个TCP连接中，传输多个请求和响应，解决了 HTTP/1.x 中的串行问题\n二进制帧：使用二进制桢格式，头信息帧和数据帧分离，提高传输效率。其中桢数据(Data Frame)，会被头部压缩\n头部压缩 (HPACK): 通过静态表和动态表对HTTP头部进行压缩，减少带宽占用。客户端和服务端维护同一张头信息表，所有字段都会存储这个表，生成一个索引号，以后发送后借助索引号提升速度。\n服务器推送：服务器可以主动向客户端推送资源，减少请求延迟。HTTP/1.1 需要从服务器获取HTML文件，如果还需要获取 CSS渲染页面，需要再次发起获取 CSS文件的请求，就需要两次消息往返。HTTP/2.0 服务器可以主动向客户端发送HTML和CSS文件信息，双方建立 Stream。\n【注意】 客户端的 Stream 必须是奇数号、服务器建立的 Stream 必须是偶数号\n【HTTP/3.0】\nRTT: Round Trip Time 往返时间 RTO: Retransmission Timeout 超时重传时间 QUIC 协议：基于UDP协议，QUIC 通过自身实现可靠传输，减少了 RTT。参考材料：QUIC如何实现可靠传输\n多路复用：在一个 QUIC 协议上，可以同时传输多个请求和响应，并支持流优先级。QUIC 当中每个 stream 之间是相互独立的，假如单个 stream 丢失了，不会影响其他的stream，彻底解决了队头阻塞问题。但是，因为UDP是无序交付的，数据不一定按照发送时的顺序到达。\n更快的连接建立：模拟TCP的三次握手操作，但是握手过程只需要一个往返时间RTT ，用于确认双方的连接ID。QUIC 内部包含了 TLS/1.3 ，其帧携带了 TLS 记录, 所以不需要 TLS 握手。\n11. TCP/IP 四层模型是什么？ TCP/IP 四层模型是一个分层网络通信模型，这四层从底向上分别是：网络接口层 (物理层+数据链路层)、网络层、传输层、应用层 (会话层+表示层+应用层)\n网络接口层：负责数据桢的封装和物理传输 (比如以太网、WIFI、PPP拨号协议等) 网络层：负责数据包的路由和寻址 (比如 IP、ARP、NAT等协议) 传输层：负责端到端的通信 (比如TCP、UDP) 应用层：负责为用户提供应用服务 (比如 HTTP、域名服务器 DNS、邮件 SMTP和POP3、FTP、SSH、动态IP地址分配 DHCP) 【应用层】 提供两个终端设备上的应用程序之间信息交换的服务 (比如两个QQ发消息)，定义了信息交换的格式，消息会交给下一个传输层来传输\n【传输层】 负责将两台设备进程之间的通信提供通用的数据传输服务，应用进程利用该服务传送应用层的报文。\n【网络层】 分组交换网上的不同主机提供通信服务，选择合适的路由，让源主机传输层传下来的分组，可以通过网络层中的路由器找到目的主机。路由器寻址工作中，要找到目标地址的子网，找到后进而把数据包转发给对应的网络内。\n网络层常见的协议如下：\nIP ：用于对数据包进行路由和寻址 ARP：用于将IP地址和MAC地址进行相互转换 NAT：用于将内部IP和外部IP进行相互转换 ICMP：用于传输网络状态和错误消息的状态，一般用来网络诊断和故障排除 【网络接口层】 将网络层的IP数据报组装成帧，在相邻节点之间的链路传送。每一帧含数据和必要的控制信息 (比如同步、地址、差错控制等信息)。实现相邻计算机节点之间比特流的透明传送，尽可能屏蔽掉具体传输介质和物理设备的差异\n12. Cookie、Session、Token 之间有什么区别？ 特性 Cookie Session Token 用途 用于跟踪和保护用户状态信息的小型数据文件 用于保存用户状态的机制，每个会话都有一个唯一的Session ID 一串加密字符串，用于身份校验 存储位置 客户端 (浏览器) 服务器 客户端 (浏览器、移动设备) 是否有状态 没有 有状态 没有 适用场景 轻量级状态存储 (用户偏好、个性化设置) 用户身份认证、临时会话数据存储 分布式认证、移动端和单页应用 (SPA) 适用协议 HTTP/HTTPS HTTP/HTTPS HTTP、HTTPS、WebSocket 安全性 较低：容易被篡改或者伪造 较高：数据存储在服务端 较高：Token通常加密且支持签名和过期机制 【Cookies 详解】\n服务器通过 HTTP 响应头 (Set-Cookie) 返回Cookie给客户端 客户端保存 Cookie，后续所有同源的请求，都会携带该 Cookie 服务器根据 Cookie 的值 (比如 SessionID) 识别用户状态 【注意】 Cookie是HTTP协议簇的一部分，HTTP协议没有状态，每个请求都是独立的。所以Cookie是无状态协议下在客户端存储状态信息的补充机制\n【Session 详解】\n用户登录的时候提交包含用户名和密码的表单的HTTP请求报文，服务器验证该用户和密码 如果正确，则把用户信息存储到 Redis / ConcurrentHashMap 里面, key 为 Session ID， value 包含用户的信息 服务器返回的响应报文中，头部的 Set-Cookie 字段包含该Session ID，客户端收到响应报文后存储Cookie值 客户端后续请求同一服务器会包含Cookie值，服务器会提取当中的 Session ID，从Redis里面提取用户信息，继续业务操作。 【Cookie 和 Session 的关系】\nSession 的主要作用就是通过服务端记录用户的状态， Cookie就是在客户端保存对应的Session ID。典型的场景就是购物车，服务端给指定用户创建 Session 之后，就可以标识这个用户并且跟踪这个用户。\n【分布式 Session共享问题】\n假如在一个秒杀场景下, 每个用户只能进入一次秒杀页面。但是，用户在请求的过程当中，Nginx可能会将其负载均衡到不同的 Tomcat。比如第一次请求到 Tomcat A 记录 Session, 然后购买了商品。但是，第二次请求到 Tomcat B 就会出问题，因为 Tomcat B 认为用户第一次来而允许购买请求，造成重复购买。因为每台 Tomcat 当中，只能看到自己存储的Session\n【Token 详解】\n客户端用用户名和密码登录服务器 服务端验证身份之后生成Token并返回给客户端 客户端将Token存到本地浏览器 (一般存到Cookie里面) 客户端发起请求的时候携带Token，服务端收到请求后，先验证Token再返回数据 Token一般都采用 JWT 算法进行颁发令牌，其主要构成如下：\nHeader：描述JWT元数据，定义生成签名的算法和 Token 类型 Payload：用来存放实际需要传递的数据集 Signature：服务器利用Payload、Header 和密钥 (Secret)，采用Header指定的签名算法 (默认为HS256) 生成 【注意】 JWT一般存在 LocalStorage 本地存储当中，放在Cookie 会有跨站请求伪装CSRF 风险，一般请求服务端携带JWT的长火箭做法是使用 HTTP Header 中的 Authorization 字段\n13. 从网络角度来看，用户从输入网址到网页显示，期间发生了什么？ 用户在浏览器输入指定网页的URL，浏览器解析URL路径 浏览器通过DNS协议，获取域名对应的IP地址 (先找本地缓存，找不到就找配置的DNS服务器) 浏览器根据IP地址和端口号，向目标服务器发起一个TCP连接请求 （三次握手） 浏览器在TCP连接上，向服务器发送一个HTTP请求报文，封装成IP数据包，请求获取网页内容 操作系统在IP数据包的基础上加上MAC头部，加上发送方MAC地址和接受方目标MAC地址 (ARP协议) 数据包还是存储在内存中的二进制数据，网卡将二进制数据转为电信号，通过网线进行传输 交换机收到数据包之后，会根据数据包中的MAC头找到另外一个设备连接在交换机的哪个端口，然后传输。（如果找不到，就对所有的端口进行广播） 路由器收到数据包之后根据IP地址，在不同的网络节点之间转发，最后到达服务器。（如果超过TTL，还没找到服务器，则说明服务器不可达） 服务器收到HTTP请求报文之后进行处理，重复上面的过程，返回HTTP响应报文给浏览器 浏览器收到HTTP响应报文之后，解析HTML代码渲染网页结构和央视。同时根据HTML中的资源URL再次发起请求，获取资源内容 （比如一些图片资源），直到网页完全加载 浏览器再不需要和服务器进行通信的时候，主动关闭TCP连接或等待服务器关闭请求，进行四次挥手。 【URL 结构】\nSchema 协议类型：一般为HTTP/HTTPS协议，也可能是文件传输协议 FTP, 邮件协议 SMTP 域名 + 端口：域名是网址的通用名或者IP地址的可读版本，端口就在域名后面，用冒号隔开 资源路径：指明要访问哪一个网页/资源 参数：参数用键值对的形式 key = value，用 \u0026 进行隔开 锚点：锚点以#开头，是页面上的锚，用于定位，不发送给服务端 【域名解析】\n查询本地的Host文件/列表：浏览器回去查询本地是否有对应域名的记录， 如果有，直接提取对应的IP地址\n查询本地DNS缓存： 查询浏览器缓存/操作系统缓存/路由器缓存，如果存在记录，直接提取对应的IP地址\n查询DNS服务器： 如果缓存没有命中，浏览器会向配置的DNS服务器发送查询请求 (通常由运营商 ISP 提供)，DNS服务器会通过递归查询的方式解析域名\n根DNS服务器：返回顶级域名的服务器地址 (.com) 顶级域名(TLD)服务器：返回权威DNS服务器的地址 权威DNS服务器： 返回具体域名的具体IP地址 ",
+  "wordCount" : "1208",
+  "inLanguage": "en",
+  "image": "https://swimmingliu.cn/papermod-cover.png","datePublished": "2025-03-13T21:49:44+08:00",
+  "dateModified": "2025-03-13T21:49:44+08:00",
+  "author":[{
+    "@type": "Person",
+    "name": "SwimmingLiu"
+  }],
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": "https://swimmingliu.cn/posts/job/computer-networks-interview-questions/"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "SwimmingLiu's Blog",
+    "logo": {
+      "@type": "ImageObject",
+      "url": "https://swimmingliu.cn/images/swimmingliu_icon.png"
+    }
+  }
+}
+</script>
+</head>
+
+<body class="" id="top">
+<script>
+    if (localStorage.getItem("pref-theme") === "dark") {
+        document.body.classList.add('dark');
+    } else if (localStorage.getItem("pref-theme") === "light") {
+        document.body.classList.remove('dark')
+    } else if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+        document.body.classList.add('dark');
+    }
+
+</script>
+
+<header class="header">
+    <nav class="nav">
+        <div class="logo">
+            <a href="https://swimmingliu.cn/" accesskey="h" title="𝓢𝔀𝓲𝓶𝓶𝓲𝓷𝓰𝓛𝓲𝓾&#39;𝓼 𝓑𝓵𝓸𝓰 (Alt + H)">
+                <img src="https://swimmingliu.cn/images/swimmingliu_icon.png" alt="" aria-label="logo"
+                    height="30">𝓢𝔀𝓲𝓶𝓶𝓲𝓷𝓰𝓛𝓲𝓾&#39;𝓼 𝓑𝓵𝓸𝓰</a>
+            <div class="logo-switches">
+                <button id="theme-toggle" accesskey="t" title="(Alt + T)">
+                    <svg id="moon" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                    </svg>
+                    <svg id="sun" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="5"></circle>
+                        <line x1="12" y1="1" x2="12" y2="3"></line>
+                        <line x1="12" y1="21" x2="12" y2="23"></line>
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                        <line x1="1" y1="12" x2="3" y2="12"></line>
+                        <line x1="21" y1="12" x2="23" y2="12"></line>
+                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                    </svg>
+                </button>
+            </div>
+        </div>
+        <ul id="menu">
+            <li>
+                <a href="https://swimmingliu.cn/index.html" title="🏡 Home">
+                    <span>🏡 Home</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://swimmingliu.cn/search/" title="🔍 Search">
+                    <span>🔍 Search</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://swimmingliu.cn/posts/" title="🗒️ Posts">
+                    <span>🗒️ Posts</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://swimmingliu.cn/archives/" title="📃 Archive">
+                    <span>📃 Archive</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://swimmingliu.cn/tags/" title="📑 Tags">
+                    <span>📑 Tags</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://bento.me/swimmingliu" title="👨🏻‍🎓 About Me">
+                    <span>👨🏻‍🎓 About Me</span>&nbsp;
+                    <svg fill="none" shape-rendering="geometricPrecision" stroke="currentColor" stroke-linecap="round"
+                        stroke-linejoin="round" stroke-width="2.5" viewBox="0 0 24 24" height="12" width="12">
+                        <path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"></path>
+                        <path d="M15 3h6v6"></path>
+                        <path d="M10 14L21 3"></path>
+                    </svg>
+                </a>
+            </li>
+            <li>
+                <a href="https://www.emojisearch.app/" title="Emoji">
+                    <span>Emoji</span>&nbsp;
+                    <svg fill="none" shape-rendering="geometricPrecision" stroke="currentColor" stroke-linecap="round"
+                        stroke-linejoin="round" stroke-width="2.5" viewBox="0 0 24 24" height="12" width="12">
+                        <path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"></path>
+                        <path d="M15 3h6v6"></path>
+                        <path d="M10 14L21 3"></path>
+                    </svg>
+                </a>
+            </li>
+        </ul>
+    </nav>
+</header>
+<main class="main">
+
+<article class="post-single">
+  <header class="post-header">
+    <div class="breadcrumbs"><a href="https://swimmingliu.cn/">Home</a>&nbsp;»&nbsp;<a href="https://swimmingliu.cn/posts/">📚 Posts</a>&nbsp;»&nbsp;<a href="https://swimmingliu.cn/posts/job/">💻 Job</a></div>
+    <h1 class="post-title entry-hint-parent">
+      计算机网络面试题笔记
+    </h1>
+    <div class="post-meta"><span title='2025-03-13 21:49:44 +0800 CST'>March 13, 2025</span>&nbsp;·&nbsp;6 min&nbsp;·&nbsp;SwimmingLiu
+
+</div>
+  </header> <div class="toc">
+    <details >
+        <summary accesskey="c" title="(Alt + C)">
+            <span class="details">Table of Contents</span>
+        </summary>
+
+        <div class="inner"><ul>
+                <li>
+                    <a href="#1-tcp-%e5%92%8c-udp-%e6%9c%89%e4%bb%80%e4%b9%88%e5%8c%ba%e5%88%ab" aria-label="1. TCP 和 UDP 有什么区别？">1. TCP 和 UDP 有什么区别？</a></li>
+                <li>
+                    <a href="#2-%e8%af%b4%e8%af%b4tcp%e7%9a%84%e4%b8%89%e6%ac%a1%e6%8f%a1%e6%89%8b%e8%bf%87%e7%a8%8b-" aria-label="2. 说说TCP的三次握手过程 ?">2. 说说TCP的三次握手过程 ?</a></li>
+                <li>
+                    <a href="#3-tcp-%e7%94%a8%e6%9d%a5%e8%a7%a3%e5%86%b3%e4%bb%80%e4%b9%88%e9%97%ae%e9%a2%98%e7%9a%84" aria-label="3. TCP 用来解决什么问题的？">3. TCP 用来解决什么问题的？</a></li>
+                <li>
+                    <a href="#4-%e8%af%b4%e8%af%b4-tcp-%e7%9a%84%e5%9b%9b%e6%ac%a1%e6%8c%a5%e6%89%8b" aria-label="4. 说说 TCP 的四次挥手？">4. 说说 TCP 的四次挥手？</a></li>
+                <li>
+                    <a href="#5-tcp-%e7%9a%84%e7%b2%98%e5%8c%85%e5%92%8c%e6%8b%86%e5%8c%85%e8%83%bd%e8%af%b4%e8%af%b4%e5%90%97" aria-label="5. TCP 的粘包和拆包能说说吗？">5. TCP 的粘包和拆包能说说吗？</a></li>
+                <li>
+                    <a href="#6-%e8%af%b4%e8%af%b4-tcp-%e9%98%bb%e5%a1%9e%e6%8e%a7%e5%88%b6%e6%ad%a5%e9%aa%a4-" aria-label="6. 说说 TCP 阻塞控制步骤 ?">6. 说说 TCP 阻塞控制步骤 ?</a></li>
+                <li>
+                    <a href="#7-%e5%b8%b8%e8%a7%81%e7%9a%84-http-%e7%8a%b6%e6%80%81%e7%a0%81%e6%9c%89%e5%93%aa%e4%ba%9b" aria-label="7. 常见的 HTTP 状态码有哪些？">7. 常见的 HTTP 状态码有哪些？</a></li>
+                <li>
+                    <a href="#8-http-%e8%af%b7%e6%b1%82%e5%8c%85%e5%90%ab%e5%93%aa%e4%ba%9b%e5%86%85%e5%ae%b9%e8%af%b7%e6%b1%82%e5%a4%b4%e5%92%8c%e8%af%b7%e6%b1%82%e4%bd%93%e6%9c%89%e5%93%aa%e4%ba%9b%e7%b1%bb%e5%9e%8b" aria-label="8. HTTP 请求包含哪些内容，请求头和请求体有哪些类型？">8. HTTP 请求包含哪些内容，请求头和请求体有哪些类型？</a></li>
+                <li>
+                    <a href="#9-http-%e4%b8%ad-get-%e5%92%8c-post-%e7%9a%84%e5%8c%ba%e5%88%ab%e6%98%af%e4%bb%80%e4%b9%88" aria-label="9. HTTP 中 GET 和 POST 的区别是什么？">9. HTTP 中 GET 和 POST 的区别是什么？</a></li>
+                <li>
+                    <a href="#10-http-10http-11http-20http-30-%e5%8c%ba%e5%88%ab" aria-label="10. HTTP 1.0、HTTP 1.1、HTTP 2.0、HTTP 3.0 区别？">10. HTTP 1.0、HTTP 1.1、HTTP 2.0、HTTP 3.0 区别？</a></li>
+                <li>
+                    <a href="#11-tcpip-%e5%9b%9b%e5%b1%82%e6%a8%a1%e5%9e%8b%e6%98%af%e4%bb%80%e4%b9%88" aria-label="11. TCP/IP 四层模型是什么？">11. TCP/IP 四层模型是什么？</a></li>
+                <li>
+                    <a href="#12-cookiesessiontoken-%e4%b9%8b%e9%97%b4%e6%9c%89%e4%bb%80%e4%b9%88%e5%8c%ba%e5%88%ab" aria-label="12. Cookie、Session、Token 之间有什么区别？">12. Cookie、Session、Token 之间有什么区别？</a></li>
+                <li>
+                    <a href="#13-%e4%bb%8e%e7%bd%91%e7%bb%9c%e8%a7%92%e5%ba%a6%e6%9d%a5%e7%9c%8b%e7%94%a8%e6%88%b7%e4%bb%8e%e8%be%93%e5%85%a5%e7%bd%91%e5%9d%80%e5%88%b0%e7%bd%91%e9%a1%b5%e6%98%be%e7%a4%ba%e6%9c%9f%e9%97%b4%e5%8f%91%e7%94%9f%e4%ba%86%e4%bb%80%e4%b9%88" aria-label="13. 从网络角度来看，用户从输入网址到网页显示，期间发生了什么？">13. 从网络角度来看，用户从输入网址到网页显示，期间发生了什么？</a>
+                </li>
+            </ul>
+        </div>
+    </details>
+</div>
+  <div class="post-content"><h2 id="1-tcp-和-udp-有什么区别">1. TCP 和 UDP 有什么区别？<a hidden class="anchor" aria-hidden="true" href="#1-tcp-和-udp-有什么区别">#</a></h2>
+<p><code>TCP</code> 是一种可靠的、面向连接、基于字节流传输的传输协议，能够保证数据的顺序，但是其延迟比较大。一般适用于需要数据完整性和顺序的场景，比如文件传输、邮件、<code>Web</code> 网站。
+<code>UDP</code> 是一种不可靠的、无连接、基于数据报传输的传输协议，不能保证数据的顺序，但是延迟比较小。一般适用于需要高性能要求和快速传输数据的应用，比如实时通讯、语音、视频、游戏等。</p>
+<p>【注意】<code>TCP</code> 和 <code>UDP</code> 都属于传输层</p>
+<table>
+  <thead>
+      <tr>
+          <th>特性</th>
+          <th>TCP</th>
+          <th>UDP</th>
+      </tr>
+  </thead>
+  <tbody>
+      <tr>
+          <td><strong>连接方式</strong></td>
+          <td>面向连接 (三次握手)</td>
+          <td>无连接</td>
+      </tr>
+      <tr>
+          <td><strong>可靠性和顺序保证</strong></td>
+          <td>可靠，保证数据按顺序送达</td>
+          <td>不可靠，不能保证数据的顺序，而不能保证安全送达</td>
+      </tr>
+      <tr>
+          <td><strong>流量控制/拥塞控制</strong></td>
+          <td>提供流量控制和拥塞控制</td>
+          <td>没有流量控制和拥塞控制</td>
+      </tr>
+      <tr>
+          <td><strong>头部大小</strong></td>
+          <td>头部较大 (<code>20</code> ~ <code>80</code> 字节)</td>
+          <td>较小 (只有 <code>8</code> 字节)</td>
+      </tr>
+      <tr>
+          <td><strong>性能</strong></td>
+          <td>较低，延迟大</td>
+          <td>较高，延迟小</td>
+      </tr>
+      <tr>
+          <td><strong>是否支持广播</strong></td>
+          <td>不支持广播</td>
+          <td>支持广播</td>
+      </tr>
+      <tr>
+          <td><strong>数据传输模式</strong></td>
+          <td>通过字节流传输</td>
+          <td>通过数据报传输</td>
+      </tr>
+      <tr>
+          <td><strong>适用场景</strong></td>
+          <td>文件传输、Web、邮件等需要可靠性的传输</td>
+          <td>实时通讯、语音、视频、游戏等高性能要求应用</td>
+      </tr>
+      <tr>
+          <td><strong>基于两者的协议</strong></td>
+          <td>1. <strong>HTTP协议</strong>：超文本和多媒体内容的协议<br />2. <strong>HTTPS协议</strong>：基于HTTP协议上加了一层<code>SSL</code> / <code>TSL</code> 外壳，保证了数据传输的安全性<br />3. <strong>FTP协议</strong>： 文件传输协议，用来传文件到服务器的<br />4. <strong>SMTP协议</strong>：简单邮件协议，用于发送邮件的协议 (<code>POP3</code> 协议： 负责邮件接受的协议)</td>
+          <td>1. <strong>HTTP 3.0 协议</strong>: 基于 <code>UDP</code> 的<code>QUIC</code> 协议<br />2. <strong>DHCP 协议</strong>： 动态主机配置协议，动态配置 <code>IP</code> 地址<br />3. <strong>DNS</strong> ：域名解析系统，将域名转变为机器刻度的 <code>IP</code> 地址</td>
+      </tr>
+  </tbody>
+</table>
+<p><strong>【ISO 和 TCP/IP 模型】</strong></p>
+<ul>
+<li>**ISO (7层) **： “物联网淑慧适用” : 物理层—数据链路层—网络层—传输层—会话层—表示层—应用层</li>
+<li><strong>TCP/IP (4层)</strong>：链路层—网络层—传输层—应用层</li>
+</ul>
+<p><img alt="ISO和TCP_IP协议结构图" loading="lazy" src="https://oss.swimmingliu.cn/9fa1f967-0012-11f0-b03d-c858c0c1deba"></p>
+<p><strong>【TCP 详解】</strong></p>
+<blockquote>
+<p>TCP包没有IP地址，网络层已经处理过了。但是有源端口和目标端口</p>
+</blockquote>
+<ul>
+<li><strong>序列号 (Sequence Number)</strong>：在建立连接的时候，主机生成随机数作为初始值， 经过 <code>SYN</code> 包 (第一次握手)传给接收端主机。每发送一次数据，累加<strong>数据字节数</strong>大小，用来确保传输是按照顺序接受的。</li>
+<li><strong>确认应答号 (Acknowledgement Number)</strong> ：用来表示下一次希望受到的数据序列号，发送端受到确认应答后可认为此序列号前数据已经被正常接受，防止出现<strong>丢包</strong>的情况。</li>
+<li><strong>控制位 (TCP Flags)</strong>: 下面的字段都是二进制来表示是否有效，<code>0</code>  和 <code>1</code> 分别表示无效和有效
+<ul>
+<li><strong>ACK</strong> : 表示<strong>确认应答字段</strong>是否有效, <code>TCP</code> 规定除了第一次握手的 <code>SYN</code> 包以外，该位置必须为 <code>1</code>，也就是必须有效</li>
+<li>**RST (Reset) **: 表示 <code>TCP</code>连接当中出现异常，是否需要强制断开连接，进行重置</li>
+<li><strong>SYN</strong>：表示是否用来建立连接 (第一次握手)， 并设置其<strong>序列号</strong>的字段的初始值</li>
+<li><strong>FIN</strong>：表示是否结束 <code>TCP</code> 连接，如果为<code>1</code>， 后面不会再传输数据，断开连接。</li>
+</ul>
+</li>
+<li><strong>窗口大小 (Window / Advertise-Window)</strong>：用于实现滑动窗口，进行流量控制，确保发送方不会超出接收方的处理能力，防止缓冲区溢出。滑动窗口机制是用来允许发送方在未收到接收方确认的情况下，连续发送多个数据包，提高传输效率。实现方式是，接收方在报文当中通知其剩余的缓冲区大小，发送方根据该信息调整发送窗口，动态控制数据流量。</li>
+</ul>
+<p><img alt="TCP头部结构图" loading="lazy" src="https://oss.swimmingliu.cn/a081e157-0012-11f0-924e-c858c0c1deba"></p>
+<p><strong>【TCP 面试题拓展】</strong></p>
+<blockquote>
+<p>有一个IP的服务端监听了一个端口，它的TCP最大连接数目是多少？</p>
+</blockquote>
+<pre tabindex="0"><code class="language-math" data-lang="math">最大TCP连接数 = 客户端IP数 * 客户端的端口数
+</code></pre><p>在 <code>IPv4</code> 当中，客户端的IP数目最多为 <code>2^32</code>, 客户端的端口数最多为 <code>2^16</code>，所以单机的TCP最大连接数为<code>2^48</code>。但是由于文件描述符和内存限制，一般没法儿达到理论上限。</p>
+<p><strong>【UDP 的首部结构】</strong></p>
+<p><code>UDP</code> 对应用层传下来的保温，既不合并也不拆分，保留这些报文的边界, 只是加一个 <code>UDP</code> 头部。</p>
+<ul>
+<li><strong>目标、源端口</strong>：表示 <code>UDP</code> 将数据发送到哪个进程</li>
+<li><strong>包长度</strong>：表示 <code>UDP</code> 首部和数据的总长度</li>
+<li><strong>校验和</strong>：用于确保 <code>UDP</code> 首部和数据在传输过程中未受损</li>
+</ul>
+<p><img alt="UDP头部结构完整图" loading="lazy" src="https://oss.swimmingliu.cn/a1b7e38c-0012-11f0-b8f9-c858c0c1deba"></p>
+<p><strong>【TCP 和 UDP 能否使用同一个端口】</strong></p>
+<p><code>TCP</code> 和 <code>UDP</code> 可以使用同一个端口，因为这两个传输协议是完全独立的软件模块。数据包通过 IP包头中的协议号字段判断是 <code>TCP</code> 还是 <code>UDP</code>，并转发给相应的模块处理。然后, <code>TCP</code> 或 <code>UDP</code> 模块根据端口号将报文转发给对应的应用程序。</p>
+<p><img alt="TCP和UDP传输过程" loading="lazy" src="https://oss.swimmingliu.cn/a26a59c7-0012-11f0-b2af-c858c0c1deba"></p>
+<h2 id="2-说说tcp的三次握手过程-">2. 说说TCP的三次握手过程 ?<a hidden class="anchor" aria-hidden="true" href="#2-说说tcp的三次握手过程-">#</a></h2>
+<p>TCP 三次握手的过程如下：</p>
+<ol>
+<li>客户端发送 <code>SYN</code> 给服务端，建立连接</li>
+<li>服务端收到 <code>SYN</code> 消息之后，回复一个 <code>SYN-ACK</code> 确认消息，表示接收到了客服端的连接请求</li>
+<li>客服端收到<code>SYN-ACK</code> 消息之后，再发一个 <code>ACK</code> 确认消息，表示收到服务器的<code>SYN-ACK</code> 消息，成功建立连接。</li>
+</ol>
+<p><img alt="TCP三次握手过程" loading="lazy" src="https://oss.swimmingliu.cn/a2970acc-0012-11f0-ac76-c858c0c1deba"></p>
+<p><strong>【TCP 三次握手的实现细节】</strong></p>
+<p>最开始的时候，客户端和服务端都处于 <code>CLOSE</code> 状态，表示双方没有建立连接。服务端主动监听某个端口，处于<code>LISTEN</code> 状态。</p>
+<p><strong>【第一次握手】</strong></p>
+<ol>
+<li>客户端随机初始化 <code>client_isn</code> 值，将其设置为TCP 头部的序列号字段。</li>
+<li>将标志位的 <code>SYN</code> 设置为 <code>1</code>，表示该报文为 <code>SYN</code> 报文。</li>
+<li>客服端将该报文发送给服务端，之后客户端处于 <code>SYN-SENT</code> 状态。表示向服务端发起 <code>TCP</code> 连接，该报文不包含应用层的任何数据，只用于建立连接。</li>
+</ol>
+<p><img alt="TCP三次握手过程-第一次握手" loading="lazy" src="https://oss.swimmingliu.cn/a2b9e3e2-0012-11f0-9d83-c858c0c1deba"></p>
+<p><strong>【第二次握手】</strong></p>
+<ol>
+<li>服务端收到客户端 <code>SYN</code> 报文知乎，随机初始化序号<code>server_isn</code> , 并把它填入 <code>TCP</code> 头部的序列号字段。</li>
+<li>将确认应答好修改为 <code>SYN</code> 报文中的序列号 + 1，也就是<code>client_isn + 1</code>。并把<code>SYN</code> 和 <code>ACK</code> 的标记位都改为<code>1</code>，该报文为 <code>SYN-ACK</code> 报文</li>
+<li>发送 <code>SYN-ACK</code> 报文给客户端，不包含任何应用层数据，只用于确认收到客户端的 <code>SYN</code> 报文，服务端进入 <code>SYN-RCVD</code> 状态</li>
+</ol>
+<p><img alt="TCP三次握手过程-第二次握手" loading="lazy" src="https://oss.swimmingliu.cn/a2e9165b-0012-11f0-97d1-c858c0c1deba"></p>
+<p><strong>【第三次握手】</strong></p>
+<ol>
+<li>客户端收到服务端的 <code>SYN-ACK</code> 报文，准备回应最后的应答报文</li>
+<li>把报文的 <code>TCP</code> 头部的确认应答号修改为 <code>SYN-ACK</code> 报文的序列号 + 1，也就是<code>server_isn + 1</code>。 <code>ACK</code> 标志修改为 <code>1</code>, <code>SYN</code> 不做任何修改，依然为 <code>0</code>，该报文表示 <code>ACK</code>报文。</li>
+<li>把报文发送给服务端，可以携带应用层的数据，之后客户端处于<code>ESTABLISHED</code> 状态，表示成功建立连接。</li>
+</ol>
+<p><img alt="TCP三次握手过程-第三次握手" loading="lazy" src="https://oss.swimmingliu.cn/a31f43cd-0012-11f0-b338-c858c0c1deba"></p>
+<p>**【注意】**第三次握手是可以携带数据的，但是前两次握手都不能携带数据。并且就算第三次握手丢失，服务端依然可以根据数据包来得到第三次握手的信息 (用序列号进行判断，找<code>client_isn + 1</code> 的数据包)。如果第三次握手 <code>ACK</code> 确认包丢失了，但是收到了客服端发的携带数据的包，并且包含 <code>ACK</code> 标记， 服务端默认表示第三次握手有效，成功建立连接。然后处理该数据包并继续正常传输数据。</p>
+<p><strong>【TCP 三次握手中每次握手的意义】</strong></p>
+<p>客户端和服务端需要通过三次握手来确认双方的发送和接受都是正常的</p>
+<ol>
+<li><strong>第一次握手</strong>：服务端确认客户端发送正常，自己接受正常。客户端无法确认。</li>
+<li><strong>第二次握手</strong>：客户端确认自己发送和接受正常，服务端接受正常。服务端确认自己接受正常，客服端发送正常。</li>
+<li><strong>第三次握手</strong>：客户端和服务端都确认自己和对方，彼此发送和接受都是正常的</li>
+</ol>
+<p><strong>【为什么是三次握手，不是两次或者四次呢？】</strong></p>
+<p><strong>避免浪费资源</strong>：如果只有两次握手，无法阻止历史连接。服务端在向客户端发送数据之前，没有阻止掉历史连接 (第一次 <code>SYN</code> 请求到达就会建立连接)，从而导致服务端建立了一个历史连接。如果客户端发送了 多个<code>SYN</code> 报文，就会不断重复建立连接，浪费资源。如果采用四次握手，就需要多一次不必要的操作，也会浪费资源。</p>
+<p><img alt="TCP两次握手连接案例" loading="lazy" src="https://oss.swimmingliu.cn/a34fa1fa-0012-11f0-a938-c858c0c1deba"></p>
+<p><strong>【为什么每次建立TCP连接的时候，初始化的序列号要求不一致？】</strong></p>
+<ol>
+<li>防止历史报文被下一个相同的四元组连接接受</li>
+<li>防止黑客伪造相同序列号的 <code>TCP</code> 报文被对方接受</li>
+</ol>
+<p><strong>【什么是半连接队列和全连接队列？】</strong></p>
+<p>TCP 三次握手的过程当中， Linux内核会维护两个队列来管理连接。</p>
+<ul>
+<li><strong>半连接队列 (SYN Queue)</strong>： 服务端收到客户端的 <code>SYN</code> 请求后，双方未完全建立连接，会将半连接状态的连接放入半连接队列</li>
+<li><strong>全连接队列 (Accept Queue)</strong>：服务端收到客户端对 <code>ACK</code> 响应的时候，意味着三次握手完成，服务端将该连接从半连接队列移动到全连接队列。</li>
+</ul>
+<p><img alt="TCP三次握手中的半连接队列和全连接队列" loading="lazy" src="https://oss.swimmingliu.cn/a46eb81b-0012-11f0-b73b-c858c0c1deba"></p>
+<h2 id="3-tcp-用来解决什么问题的">3. TCP 用来解决什么问题的？<a hidden class="anchor" aria-hidden="true" href="#3-tcp-用来解决什么问题的">#</a></h2>
+<p>TCP 协议主要是通过可靠传输、流量控制、拥塞控制和连接管理，解决数据在不可靠的IP网络上传输的问题。</p>
+<ul>
+<li><strong>可靠性</strong>：TCP 确保数据包在网络传输的过程当中不丢失、不重复，并且按顺序到达。通过确认-重传机制和序列号，保证数据在IP网络上的可靠传输。</li>
+<li><strong>流量控制</strong>：TCP 通过滑动窗口机制调节发送方(客户端)的发送速率，防止接收方因为处理能力或者缓存有限，而导致数据流被淹没或者丢失。</li>
+<li><strong>拥塞控制</strong>：TCP 通过拥塞避免算法 (比如慢启动、拥塞避免、快速重传和快速恢复) 来防止网络过载，确保网络资源的公平使用和稳定性。</li>
+<li><strong>连接管理</strong>： TCP 是面向连接的协议，采用三次握手建立连接，四次挥手断开连接，来管理连接会话，确保通信的可靠性和状态的同步。</li>
+</ul>
+<h2 id="4-说说-tcp-的四次挥手">4. 说说 TCP 的四次挥手？<a hidden class="anchor" aria-hidden="true" href="#4-说说-tcp-的四次挥手">#</a></h2>
+<p>TCP 的四次挥手是用来安全关闭已经建立的连接的过程，它可以确保双方都能完成数据传输并且安全释放连接资源。四次挥手的过程如下所示：</p>
+<ol>
+<li><strong>第一次挥手</strong>：客户端发 <code>FIN (seq_num = x)</code> 数据包到客户端，表示其申请关闭服务端的数据传送，随后进入<code>FIN_WAIT_1</code> 状态，等待服务端进行确认。</li>
+<li><strong>第二次挥手</strong>：服务端收到客户端的 <code>FIN (seq_num = x)</code> 数据包之后，发送 <code>ACK (ack_num = x + 1, seq_num = y)</code> 给客户端，表示确认收到 <code>FIN</code> 数据包，随后进入 <code>CLOSE_WAIT</code> 状态。客户端接收到 <code>ACK</code> 包之后，进入<code>FIN_WAIT_2</code> 状态。同时，服务端会将没有传送完的数据传给客户端。</li>
+<li><strong>第三次挥手</strong>：服务端发送 <code>FIN (seq_num = w)</code> 的数据包给客服端，请求关闭连接，进入 <code>LAST-ACK</code> 状态。</li>
+<li><strong>第四次挥手</strong>：客户端收到 <code>FIN</code> 数据包之后，发送 <code>ACK (ack_num = w + 1)</code>数据包，随后进入 <code>TIME-WAIT</code> 状态。服务端收到此数据包之后，进入 <code>CLOSE</code> 状态。如果客户端等待 <code>2MSL</code> 没有收到回复的话，证明服务端已经正常关闭，此时客户端也进入 <code>CLOSE</code> 状态。</li>
+</ol>
+<p><strong>【注意】</strong></p>
+<ol>
+<li>四次挥手过程中，服务端 (被动关闭的一方) 在 <code>CLOSE_WAIT</code> 的状态下，仍然可以发送数据，直到它主动发送<code>FIN</code> 请求关闭连接。</li>
+<li>客户端(主动关闭连接的一方) 发出 <code>FIN</code> 后，无法再传输数据，只能接受数据</li>
+<li>只有客户端 (主动关闭的一方) 会进入<code>TIME_WAIT</code> 状态，用于等待潜在的重传 <code>FIN</code></li>
+</ol>
+<p><img alt="TCP四次挥手" loading="lazy" src="https://oss.swimmingliu.cn/a4af9cbd-0012-11f0-9fdc-c858c0c1deba"></p>
+<p><strong>【为什么需要四次挥手】</strong></p>
+<p>为了确保数据的完整性，服务器需要把没有发送完的数据全部传输完之后，再关闭连接。所以，服务端的 <code>ACK</code> 确认包 和 <code>FIN</code> 请求关闭包，一般都会分开发送，所以需要四次挥手。<code>TCP</code> 为全双工通信，可以双向传输数据。任意一方数据传输结束都可以发送连接释放通知，对方确认后进入半关闭状态。另一方无数据再发送的时候，也发连接释放通知，双方确认则完全关闭TCP连接 (客户端和服务端都需要一来一回，请求释放和确认一次)</p>
+<p><strong>【什么情况下会出现三次挥手】</strong></p>
+<p>如果服务端没有数据需要发送了，并且开启了 <code>TCP</code> 延迟确认机制 (默认开启)，第二次和第三次挥手就会合并传输 (<code>ACK</code> 和 <code>FIN</code>)，就会出现三次挥手。</p>
+<h2 id="5-tcp-的粘包和拆包能说说吗">5. TCP 的粘包和拆包能说说吗？<a hidden class="anchor" aria-hidden="true" href="#5-tcp-的粘包和拆包能说说吗">#</a></h2>
+<p><strong>【定义】</strong></p>
+<ul>
+<li><strong>拆包 / 半包</strong>：客服端 (发送方) 要发送的包太大了，必须拆分成多个包进行发送。导致一条完整的消息要被拆分为多个部分，服务端 (接收方) 无法一次性接受完整的数据。</li>
+<li><strong>粘包</strong>：客户端 (发送方)要发送的包太小了，会将多个包放在数据缓存区，合并成一个包发送出去。服务端(接收方)在读取的时候，可能将多个消息拼接在一起。导致多条消息数据粘在一起，服务端 (接受方) 无法区分这些消息的边界。</li>
+</ul>
+<p><strong>【原因】</strong></p>
+<ul>
+<li><strong>拆包 / 半包</strong>：由于网络传输中的 <code>MTU</code> 最大传输单元限制或者发送缓冲区的大小的限制，一个大包必须被拆分为多个小包。</li>
+<li><strong>粘包</strong>：由于 TCP 是基于字节流传输的协议，不关心数据的边界。数据在发送方可能被一次性发送，接收方读取的时候可能会将多个消息拼接在一起。</li>
+</ul>
+<p><strong>【注意】</strong> 只有 <code>TCP</code> 协议才会出现粘包和拆包的现象，<code>UDP</code> 协议不会出现这种情况。因为 <code>TCP</code> 协议的包没有报文长度，而 <code>UDP</code> 的包有报文长度。 所以TCP 是流式的，数据之间没有界限，而 <code>UDP</code> 是有界限的。</p>
+<p><img alt="TCP拆包和粘包" loading="lazy" src="https://oss.swimmingliu.cn/a52ab922-0012-11f0-9069-c858c0c1deba"></p>
+<p><strong>【解决方案】</strong></p>
+<ol>
+<li>
+<p><strong>固定数据包的长度</strong>：客户端每次发送数据包的时候，统一数据包的长度。比如采用 <code>1024</code> 字节，如果数据不足，就采用空格进行填充。</p>
+</li>
+<li>
+<p><strong>添加分隔符</strong>：客户端在每个数据包的末尾用固定的分隔符 （比如 <code>\r\n</code> 或 <code>;</code>）。服务端收到数据包之后，根据分隔符进行合并或拆分头部与前包剩余的部分，获取完整数据包。</p>
+</li>
+<li>
+<p><strong>固定消息头部和消息体</strong>：采用固定长度的头部记录整个消息的长度，读取到足够长度数据，才视为完整消息。</p>
+<p><img alt="TCP粘包拆包解决方案-固定消息头" loading="lazy" src="https://oss.swimmingliu.cn/a5c67ed3-0012-11f0-a426-c858c0c1deba"></p>
+</li>
+<li>
+<p><strong>禁用Nagle协议</strong>：为了减少网络中的小包数量，TCP 采用了 <code>Nagle</code> 算法，将小数据块缓冲起来，直到缓冲区满了或者收到接受方的确认之后，再发送数据包。该算法可能会导致粘包现象，所以在需要实时传输小数据包的场景，可以设置 <code>TCP_NODELAY</code> 禁用 <code>Nagle</code> 算法，减少粘包的可能性。</p>
+</li>
+</ol>
+<h2 id="6-说说-tcp-阻塞控制步骤-">6. 说说 TCP 阻塞控制步骤 ?<a hidden class="anchor" aria-hidden="true" href="#6-说说-tcp-阻塞控制步骤-">#</a></h2>
+<p><strong>阻塞控制机制</strong>：就像高速公路上的交通管理，目的是防止数据流量过大导致网络“拥堵”。当网络开始“拥塞”时，TCP会自动减慢数据发送速度，以确保网络保持畅通。</p>
+<p><strong>滑动窗口机制</strong>：这是一种流量控制方法，确保发送方不会发送超过接收方处理能力的数据量。可以类比为水管中的水流，滑动窗口就像一个阀门，调节水流量，防止水管溢出。</p>
+<p><strong>【注意】</strong> 假设拥塞窗口 为 <code>cwnd</code> 和 流量控制的滑动窗口 为<code>rwnd</code>，当前窗口的右边界受这两个值共同影响，应该取它们之间的最小值。</p>
+<pre tabindex="0"><code class="language-math" data-lang="math">窗口大小 = min(cwnd, rwnd)
+</code></pre><p><strong>【阻塞控制步骤】</strong> 阻塞控制可以分为两种情况来看，分别是超时重传 (基于超时的拥塞控制) 和快速重传 (基于重复 <code>ACK</code> 的拥塞控制)</p>
+<ul>
+<li><strong>超时重传</strong>：当客户端检测到数据包传输超时 (未收到 <code>ACK</code> 确认)，会认为网络出现严重阻塞。此时，TCP会采取最保守的策略：将拥塞窗口<code>cwnd</code> 重置为 <code>1</code>，并重新进入慢启动阶段， 同时将慢启动阈值<code>ssthresh</code> 设置未当前拥塞窗口的一半</li>
+<li><strong>快速重传</strong>：当客户端连续收到3个重复的 <code>ACK</code> (比如服务端检测到报文段失序的时候，会触发该机制)，表明网络中可能只发生了单个数据包丢失而非全局阻塞。此时，TCP会出发快速重传 (立即重传丢失的数据包) 和 快速恢复 (调整拥塞窗口 <code>cwnd</code> 为 慢启动阈值 + 3 <code>ssthred + 3</code>，避免完全退回到慢启动)。</li>
+</ul>
+<p><img alt="TCP阻塞控制" loading="lazy" src="https://oss.swimmingliu.cn/a62296f6-0012-11f0-87eb-c858c0c1deba"></p>
+<p>TCP 协议的拥塞控制主要通过五个算法来实现：慢启动、拥塞避免、超时重传、快速重传和快速恢复。</p>
+<ul>
+<li><strong>慢启动</strong>：发送方开始设置一个较小的拥塞窗口大小，在每收到一个新的报文段的 <code>ACK</code> 确认之后，每当成功发送跟拥塞窗口大小等量的数据后，拥塞窗口大小就会翻倍。拥塞窗口按照指数方式增长，直到拥塞窗口 <code>cwnd</code> 达到 慢启动门限 <code>ssthresh</code></li>
+<li><strong>拥塞避免</strong>：当拥塞窗口大小 <code>cwnd</code> 达到 慢启动门限 <code>ssthresh</code> 之后，就进入拥塞避免阶段。每当成功发送跟拥塞窗口大小等量的数据之后，拥塞窗口大小就会增加一个报文段的大小，以线性的方式增长。</li>
+<li><strong>拥塞发生</strong>：随着发送速率慢慢加快，可能会出现网络阻塞现象，发生数据包丢失。此时，就需要重传数据。重传的机制有两种，超时重传和快速重传。</li>
+<li><strong>超时重传</strong>：当发生超时重传的时候，慢启动门限<code>ssthresh</code>会设置为拥塞窗口的一半，并且将拥塞窗口恢复为初始值。随后重新开始慢启动，发送速率就瞬间下降了。</li>
+<li><strong>快速重传和快速恢复</strong>：当客户端连续收到3个重复的 <code>ACK</code> (比如服务端检测到报文段失序的时候，会触发该机制)，就认为发送了丢包。此时，拥塞窗口会 <code>cwnd</code> 减少到原来的一半，然后慢启动门限 <code>ssthresh</code> 设置为减少后的拥塞窗口的大小 <code>cwnd</code>，然后进入快速恢复阶段。此时，会把拥塞控制窗口+3 (<code>cwnd + 3</code>)， <code>3</code> 的意思是确认有 <code>3</code> 个数据包收到了。然后重传丢失的报文，如果收到重传丢失报文的<code>ACK</code> 之后，将拥塞窗口设置为慢启动门限，直接进入拥塞避免，继续增大发送速率。</li>
+</ul>
+<h2 id="7-常见的-http-状态码有哪些">7. 常见的 HTTP 状态码有哪些？<a hidden class="anchor" aria-hidden="true" href="#7-常见的-http-状态码有哪些">#</a></h2>
+<p>常见的 <code>HTTP</code> 状态分为五大类，有三位数字，一般用第一位数字来区分类别。</p>
+<ol>
+<li><strong><code>1xx</code> 信息状态码</strong> : 协议处理中的中间状态，还有后续操作
+<ul>
+<li><strong><code>100</code> Continue</strong>：服务器接收到请求的初步部分，客户端需要继续请求</li>
+<li><strong><code>101</code> Switching Protocols</strong>：服务器同意切换协议，比如：从 <code>HTTP</code> 协议切换到 <code>WebSocket</code> 协议</li>
+</ul>
+</li>
+<li><strong><code>2xx</code> 成功状态码</strong>：服务器成功处理客户端请求
+<ul>
+<li>⭐ <strong><code>200</code> OK</strong>: 请求成功，服务器返回所请求的资源或数据</li>
+<li><strong><code>201</code> Created</strong>: 请求成功并创建新的资源，一般用于 <code>POST</code> 请求</li>
+<li><strong><code>202</code> Accepted</strong>：服务端收到请求，但是还未处理</li>
+<li>⭐ <strong><code>204</code> Not Content</strong>：请求成功但是服务器不返回任何内容，常用于删除</li>
+<li>⭐ <strong><code>206</code> Partial Content</strong>：请求成功但服务器返回部分资源，一般用于HTTP分块下载或者断点续传</li>
+</ul>
+</li>
+<li><strong><code>3xx</code> 重定向状态码</strong>：客户端用新的 <code>URL</code> 重新发送请求获取资源
+<ul>
+<li>⭐ <strong><code>301</code> Moved Permanently</strong>：永久重定向，资源已经移动到新的 <code>URL</code>，通知客户端用新的 <code>URL</code> 访问</li>
+<li>⭐ <strong><code>302</code> Found</strong>：资源临时移动到新的 <code>URL</code>， 客户端应该继续使用原来的 <code>URL</code>。允许浏览器将 <code>POST</code> 请求转换为 <code>GET</code></li>
+<li><strong><code>303</code> See Other</strong>：和 <code>302</code> 有相同的功能，但是 <code>303</code> 明确要求客户端采用 <code>GET</code> 方法获取资源</li>
+<li><strong><code>304</code> No Modified</strong>：缓存重定向，资源没有被修改。客户端可以继续使用缓存资源，减少带宽消耗</li>
+<li><strong><code>307</code> Temporary Redirect</strong>：临时重定向，和 <code>302</code> 的含义几乎差不多。但是 <code>307</code> 需要保证重定向时请求方法和主体不变。</li>
+</ul>
+</li>
+<li><strong><code>4xx</code> 客户端请求错误状态码</strong>：客户端发送的报文有误，服务器无法处理
+<ul>
+<li>⭐ <strong><code>400</code> Bad Request</strong>：客户端请求报文无效或者语法错误</li>
+<li><strong><code>401</code> Unauthorized</strong>: 请求需要身份验证，客户端未提供有效的凭证</li>
+<li>⭐ <strong><code>403</code> Forbidden</strong>：服务器理解该请求，但是拒绝执行，一般是客户端没有权限访问</li>
+<li>⭐ <strong><code>404</code> Not Found</strong>： 请求的资源在服务器上找不到，比如 <code>URL</code> 的一部分写错了</li>
+<li><strong><code>409</code> Conflict</strong>： 请求的资源和服务器的当前状态存在冲突</li>
+</ul>
+</li>
+<li><strong><code>5xx</code> 服务端错误状态码</strong>：客户端请求的报文正确，但是服务器处理的时候内部发送错误。
+<ul>
+<li>⭐ <strong><code>500</code> Internal Server Error</strong>：服务器内部错误，无法完成请求，而且不知道是什么错误</li>
+<li><strong><code>501</code> Not Implemented</strong>：还不支持客户端请求，类似于“即将开业，敬请期待”的意思</li>
+<li><strong><code>502</code> Bad Gateway</strong>：服务器作为网关或者代理，从上游服务器收到无效响应。比如调用其他网站的<code>API</code> 发生错误的时候</li>
+<li><strong><code>503</code> Service Unavailable</strong>：服务器暂时无法处理请求，一般是因为处理维护中，或者服务过载</li>
+</ul>
+</li>
+</ol>
+<h2 id="8-http-请求包含哪些内容请求头和请求体有哪些类型">8. HTTP 请求包含哪些内容，请求头和请求体有哪些类型？<a hidden class="anchor" aria-hidden="true" href="#8-http-请求包含哪些内容请求头和请求体有哪些类型">#</a></h2>
+<p><strong>【请求报文】</strong> 请求报文主要包括四个部分，请求行，请求头，空行(分割请求头和请求体)，请求体。</p>
+<ul>
+<li><strong>请求行</strong>：包含请求方法 (<code>GET</code> / <code>POST</code>) 、请求路径 <code>/doc/test.html</code>) 和 <code>HTTP</code> 版本 (<code>HTTP/1.1</code>)</li>
+<li><strong>请求头</strong>：包含各种键值对，客户端环境(<code>User-Agent</code>)、请求内容 和认证信息 (<code>Token</code>) 等等</li>
+<li><strong>空行</strong>：用于分割请求头和请求体</li>
+<li><strong>请求体</strong>：只在 <code>POST</code> 和 <code>PUT</code> 方法中存在，包含需要发送到服务器的信息</li>
+</ul>
+<p><img alt="HTTP请求报文" loading="lazy" src="https://oss.swimmingliu.cn/a71a51a5-0012-11f0-bda5-c858c0c1deba"></p>
+<p><strong>【响应报文】</strong> 响应报文主要包含四个部分，状态行，响应头，空行，响应体</p>
+<ul>
+<li><strong>状态行</strong>：包含 <code>HTTP</code> 的版本 (<code>HTTP/1.1</code>)、状态码 (<code>200</code>) 和状态描述 (<code>OK</code>)</li>
+<li><strong>响应头</strong>：包含服务器返回的各种键值对，用于描述响应的元信息，常见的响应头如下
+<ul>
+<li><strong>Content-Type</strong>：响应额呢绒的类型, 一般为 <code>text/html</code> / <code>application/json</code></li>
+<li><strong>Content-Length</strong>： 响应内容的字节长度</li>
+</ul>
+</li>
+<li><strong>空行</strong>：用于风格响应头和响应体</li>
+<li><strong>响应体</strong>：包含服务器返回的实际内容，比如 HTML文档、图片、<code>JSON</code>数据等</li>
+</ul>
+<p><img alt="HTTP响应报文" loading="lazy" src="https://oss.swimmingliu.cn/a7d9898d-0012-11f0-8996-c858c0c1deba"></p>
+<p><strong>【HTTP 常见请求方法】</strong></p>
+<ul>
+<li><strong>GET</strong>：获取指定的资源</li>
+<li><strong>POST</strong>: 传输实体数据，<code>POST</code> 一般用来传数据，<code>GET</code> 一般用来获取数据</li>
+<li><strong>PUT</strong>: 上传文件，由于自身没有验证机制，任何人都可以上传文件</li>
+<li><strong>DELETE</strong>: 删除文件，和 <code>PUT</code> 功能正好相反，同样没有验证机制</li>
+</ul>
+<h2 id="9-http-中-get-和-post-的区别是什么">9. HTTP 中 GET 和 POST 的区别是什么？<a hidden class="anchor" aria-hidden="true" href="#9-http-中-get-和-post-的区别是什么">#</a></h2>
+<table>
+  <thead>
+      <tr>
+          <th>特性</th>
+          <th>GET</th>
+          <th>POST</th>
+      </tr>
+  </thead>
+  <tbody>
+      <tr>
+          <td><strong>主要用途</strong></td>
+          <td>获取服务端的资源</td>
+          <td>向服务器提交数据，一般用于创建或者修改</td>
+      </tr>
+      <tr>
+          <td><strong>参数传递</strong></td>
+          <td>参数都在 <code>URL</code> 中</td>
+          <td>参数都在请求体当中，<code>URL</code> 也可以放参数</td>
+      </tr>
+      <tr>
+          <td><strong>安全性</strong></td>
+          <td>参数可见，数据容易暴露在浏览器的历史记录、日志和缓存里面，不适合传递敏感信息，不安全</td>
+          <td>数据放在请求体中，相对安全，但是需要HTTPS才能保证数据加密传输 (不然会被抓包)</td>
+      </tr>
+      <tr>
+          <td><strong>幂等性</strong></td>
+          <td>只读操作，多次请求不会改变服务器状态</td>
+          <td>修改操作，多次请求可能会导致重复创建资源，或者执行多次相同操作</td>
+      </tr>
+      <tr>
+          <td><strong>长度限制</strong></td>
+          <td>请求参数在 <code>URL</code> 中，浏览器对 <code>URL</code> 有长度限制</td>
+          <td>请求参数放在请求体中，理论上来说没有任何限制。但一般服务器对请求体长度有配置限制，比如 <code>Nginx</code> 默认限制为 <code>1MB</code></td>
+      </tr>
+      <tr>
+          <td><strong>缓存机制</strong></td>
+          <td>浏览器和CDN都会缓存 <code>GET</code> 请求的数据，用于减少服务器的负载，比如图片、静态页面等不会频繁改动的静态资源</td>
+          <td>一般不会缓存 <code>POST</code> 请求，因为它通常对服务器数据会产生影响</td>
+      </tr>
+  </tbody>
+</table>
+<p><strong>【注意】</strong> 幂等意味着相同的请求重复多次，服务器的状态只会改变一次，不会累计多次副作用，而非幂等请求每次调用可能引起状态的多次改变</p>
+<p><strong>【GET 请求一定是幂等的吗？】</strong></p>
+<p>不一定，因为如果有开发者不遵循规范去处理请求，采用 <code>GET</code> 方式来新增数据，这时候 <code>GET</code> 请求就不是幂等的了。曾经有个笑话，有人写了个博客，删除博客用的是 <code>GET</code> 请求，他觉得没人访问就连鉴权都没做。然后 Google 服务器爬虫爬了一遍，他所有博文就没了&hellip;</p>
+<h2 id="10-http-10http-11http-20http-30-区别">10. HTTP 1.0、HTTP 1.1、HTTP 2.0、HTTP 3.0 区别？<a hidden class="anchor" aria-hidden="true" href="#10-http-10http-11http-20http-30-区别">#</a></h2>
+<p><strong>【区别】</strong></p>
+<table>
+  <thead>
+      <tr>
+          <th>特性</th>
+          <th>HTTP 1.0</th>
+          <th>HTTP 1.1</th>
+          <th>HTTP 2.0</th>
+          <th>HTTP 3.0</th>
+      </tr>
+  </thead>
+  <tbody>
+      <tr>
+          <td><strong>连接方式</strong></td>
+          <td>短连接</td>
+          <td>持久连接</td>
+          <td>持久连接</td>
+          <td>QUIC 连接 (基于UDP)</td>
+      </tr>
+      <tr>
+          <td><strong>传输方式</strong></td>
+          <td>文本</td>
+          <td>文本</td>
+          <td>二进制</td>
+          <td>二进制</td>
+      </tr>
+      <tr>
+          <td><strong>多路复用</strong></td>
+          <td>不支持</td>
+          <td>不支持</td>
+          <td>支持</td>
+          <td>支持</td>
+      </tr>
+      <tr>
+          <td><strong>服务器推送</strong></td>
+          <td>不支持</td>
+          <td>不支持</td>
+          <td>支持（主动推送资源）</td>
+          <td>支持（增强资源推送效率）</td>
+      </tr>
+      <tr>
+          <td><strong>头部压缩</strong></td>
+          <td>不支持</td>
+          <td>不支持</td>
+          <td>支持 (HPACK)</td>
+          <td>支持 (QPACK)</td>
+      </tr>
+      <tr>
+          <td><strong>安全性</strong></td>
+          <td>明文传输（需 HTTPS 加密）</td>
+          <td>明文传输（需 HTTPS 加密）</td>
+          <td>强制建议 HTTPS</td>
+          <td>默认集成 TLS 1.3， 支持HTTPS</td>
+      </tr>
+      <tr>
+          <td><strong>是否解决队头阻塞问题</strong></td>
+          <td>存在（单请求阻塞）</td>
+          <td>部分缓解（管道化请求，但响应仍需顺序接收）</td>
+          <td>基本解决（TCP 连接内多路复用）</td>
+          <td>彻底解决（QUIC 协议是基于UDP协议，没有阻塞队列）</td>
+      </tr>
+      <tr>
+          <td><strong>典型改进</strong></td>
+          <td>定义了基础 HTTP 协议</td>
+          <td>长连接、断点续传、Host 头域</td>
+          <td>二进制协议、头部压缩、多路复用</td>
+          <td>基于 UDP 的 QUIC 协议、零 RTT 连接、抗网络切换</td>
+      </tr>
+      <tr>
+          <td><strong>适用场景</strong></td>
+          <td>静态网页、简单文件下载</td>
+          <td>中小型网站、内部管理系统 (非高并发网站)</td>
+          <td>高并发网站(淘宝/微博)、动态加载的单页应用、视频流媒体</td>
+          <td>实时通信(视频会议/在线游戏)、移动端应用(5G/弱网环境)、物联网设备通信</td>
+      </tr>
+  </tbody>
+</table>
+<p><strong>【HTTP/1.0】</strong></p>
+<ul>
+<li><strong>无状态、短连接</strong>：每次请求都需要建立新的TCP连接，处理完之后立即关闭，导致开销比较大</li>
+<li><strong>队头阻塞</strong>：每个请求必须按照顺序依次处理，前面的请求还没完成，后面的请求只能等待，并发效率不高</li>
+</ul>
+<p><strong>【HTTP/1.1】</strong></p>
+<ul>
+<li><strong>持久连接</strong>：引入了连接复用（Keep-Alive)，只要任意一端没有明确提出断开连接，就保持TCP连接状态。减少TCP握手开销</li>
+<li><strong>管道传输</strong>：在一个TCP链接里面，客户端发送多个请求，只要一个请求发出了，不用等待响应，直接发送第二个请求。该策略可以减少整体的响应时间。</li>
+<li><strong>队头阻塞</strong>：当顺序发送的请求序列中的一个请求，可能因为某种原因被阻塞的时候，后面排队的所有请求也一同被阻塞了，会导致客户端一致请求不到数据。</li>
+<li><strong>HOST字段</strong>：可以在同一个IP地址上运行多个虚拟主机</li>
+<li><strong>断点续传</strong>：支持文件传输中断后，从断点出继续传输。</li>
+</ul>
+<p><strong>【HTTP/1.0 和 HTTP/1.1 缓存机制区别】</strong></p>
+<ul>
+<li>
+<p><strong>HTTP/1.0 缓存机制</strong>：基于时间的缓存机制，用请求头中的 <code>If-Modified-Since</code> 和响应头中的 <code>Last-Modified</code> 字段实现</p>
+<ul>
+<li>
+<p>响应头中的 <code>Last-Modified</code> ：表示响应资源的最后修改时间</p>
+</li>
+<li>
+<p>请求头中的 <code>If-Modified-Since</code> ：请求的时候修改为响应头的 <code>Last-Modified</code> 时间。当服务器受到该请求之后，会对比请求资源最后修改的时间<code>Last-Modified</code>。 如果从 <code>If-Modified-Since</code> 没有修改，直接响应 <code>304 Not Modified</code> 走缓存。如果已经被修改过，返回最新资源, 响应 <code>200 OK</code>。</p>
+</li>
+</ul>
+</li>
+<li>
+<p><strong>HTTP/1.1 缓存机制</strong>：基于唯一标识的缓存机制，用请求头中的 <code>If-None-Match</code> 字段和响应头中的 <code>ETag</code> 字段实现</p>
+<ul>
+<li>响应头中的 <code>ETag</code>：表示响应资源的唯一标识，可以看成是一个<code>id</code></li>
+<li>请求头中的 <code>If-None-Match</code> ：当资源过期的时候，浏览器发现响应头里面有 <code>ETag</code>，再次想服务器发起请求的时候，将<code>If-None-Match</code> 设为 <code>Etag</code> 的值。服务器受到请求后进行对比，资源没变化，返回<code>304</code>。资源有变化，返回信的资源，响应<code>200</code></li>
+</ul>
+</li>
+</ul>
+<p><img alt="HTTP-缓存机制" loading="lazy" src="https://oss.swimmingliu.cn/a80bbee6-0012-11f0-b14d-c858c0c1deba"></p>
+<p><strong>【HTTP/2.0】</strong></p>
+<ul>
+<li>
+<p><strong>多路复用</strong>：支持一个TCP连接中，传输多个请求和响应，解决了 <code>HTTP/1.x</code> 中的串行问题</p>
+</li>
+<li>
+<p><strong>二进制帧</strong>：使用二进制桢格式，头信息帧和数据帧分离，提高传输效率。其中桢数据(Data Frame)，会被头部压缩</p>
+<p><img alt="HTTP-二进制帧" loading="lazy" src="https://oss.swimmingliu.cn/a852fb3b-0012-11f0-8436-c858c0c1deba"></p>
+</li>
+<li>
+<p><strong>头部压缩 (HPACK)</strong>: 通过静态表和动态表对HTTP头部进行压缩，减少带宽占用。客户端和服务端维护同一张头信息表，所有字段都会存储这个表，生成一个索引号，以后发送后借助索引号提升速度。</p>
+<p><img alt="HTTP-头部压缩" loading="lazy" src="https://oss.swimmingliu.cn/a8955caf-0012-11f0-99ac-c858c0c1deba"></p>
+</li>
+<li>
+<p><strong>服务器推送</strong>：服务器可以主动向客户端推送资源，减少请求延迟。<code>HTTP/1.1</code> 需要从服务器获取HTML文件，如果还需要获取 CSS渲染页面，需要再次发起获取 CSS文件的请求，就需要两次消息往返。<code>HTTP/2.0</code> 服务器可以主动向客户端发送HTML和CSS文件信息，双方建立 <code>Stream</code>。</p>
+<p><strong>【注意】</strong> 客户端的 <code>Stream</code> 必须是奇数号、服务器建立的 <code>Stream</code> 必须是偶数号</p>
+<p><img alt="HTTP-服务器推送" loading="lazy" src="https://oss.swimmingliu.cn/a8cfc316-0012-11f0-9f80-c858c0c1deba"></p>
+</li>
+</ul>
+<p><strong>【HTTP/3.0】</strong></p>
+<blockquote>
+<ul>
+<li>RTT: Round Trip Time 往返时间</li>
+<li>RTO: Retransmission Timeout 超时重传时间</li>
+</ul>
+</blockquote>
+<ul>
+<li>
+<p><strong>QUIC 协议</strong>：基于UDP协议，QUIC 通过自身实现可靠传输，减少了 <code>RTT</code>。参考材料：<a href="https://xiaolincoding.com/network/3_tcp/quic.html">QUIC如何实现可靠传输</a></p>
+</li>
+<li>
+<p><strong>多路复用</strong>：在一个 <code>QUIC</code> 协议上，可以同时传输多个请求和响应，并支持流优先级。<code>QUIC</code> 当中每个 stream 之间是相互独立的，假如单个 <code>stream</code> 丢失了，不会影响其他的<code>stream</code>，彻底解决了队头阻塞问题。但是，因为UDP是无序交付的，数据不一定按照发送时的顺序到达。</p>
+<p><img alt="HTTP3-QUIC-多路复用" loading="lazy" src="https://oss.swimmingliu.cn/a905a6da-0012-11f0-a25c-c858c0c1deba"></p>
+</li>
+<li>
+<p><strong>更快的连接建立</strong>：模拟TCP的三次握手操作，但是握手过程只需要一个往返时间<code>RTT</code> ，用于确认双方的连接<code>ID</code>。<code>QUIC</code> 内部包含了 <code>TLS/1.3</code> ，其帧携带了 <code>TLS</code> 记录, 所以不需要 <code>TLS</code> 握手。</p>
+<p><img alt="HTTP-QUIC-更快的连接建立" loading="lazy" src="https://oss.swimmingliu.cn/a926c155-0012-11f0-876f-c858c0c1deba"></p>
+</li>
+</ul>
+<h2 id="11-tcpip-四层模型是什么">11. TCP/IP 四层模型是什么？<a hidden class="anchor" aria-hidden="true" href="#11-tcpip-四层模型是什么">#</a></h2>
+<p><code>TCP/IP</code> 四层模型是一个分层网络通信模型，这四层从底向上分别是：网络接口层 (物理层+数据链路层)、网络层、传输层、应用层 (会话层+表示层+应用层)</p>
+<ol>
+<li><strong>网络接口层</strong>：负责数据桢的封装和物理传输 (比如以太网、WIFI、PPP拨号协议等)</li>
+<li><strong>网络层</strong>：负责数据包的路由和寻址 (比如 IP、ARP、NAT等协议)</li>
+<li><strong>传输层</strong>：负责端到端的通信 (比如TCP、UDP)</li>
+<li><strong>应用层</strong>：负责为用户提供应用服务 (比如 HTTP、域名服务器 DNS、邮件 SMTP和POP3、FTP、SSH、动态IP地址分配 DHCP)</li>
+</ol>
+<p><img alt="TCPIP四层模型架构图" loading="lazy" src="https://oss.swimmingliu.cn/a9715755-0012-11f0-a718-c858c0c1deba"></p>
+<p><strong>【应用层】</strong> 提供两个终端设备上的应用程序之间信息交换的服务 (比如两个QQ发消息)，定义了信息交换的格式，消息会交给下一个传输层来传输</p>
+<p><strong>【传输层】</strong> 负责将两台设备进程之间的通信提供通用的数据传输服务，应用进程利用该服务传送应用层的报文。</p>
+<p><strong>【网络层】</strong> 分组交换网上的不同主机提供通信服务，选择合适的路由，让源主机传输层传下来的分组，可以通过网络层中的路由器找到目的主机。路由器寻址工作中，要找到目标地址的子网，找到后进而把数据包转发给对应的网络内。</p>
+<p>网络层常见的协议如下：</p>
+<ul>
+<li><strong>IP</strong> ：用于对数据包进行路由和寻址</li>
+<li><strong>ARP</strong>：用于将IP地址和MAC地址进行相互转换</li>
+<li><strong>NAT</strong>：用于将内部IP和外部IP进行相互转换</li>
+<li><strong>ICMP</strong>：用于传输网络状态和错误消息的状态，一般用来网络诊断和故障排除</li>
+</ul>
+<p><strong>【网络接口层】</strong> 将网络层的IP数据报组装成帧，在相邻节点之间的链路传送。每一帧含数据和必要的控制信息 (比如同步、地址、差错控制等信息)。实现相邻计算机节点之间比特流的透明传送，尽可能屏蔽掉具体传输介质和物理设备的差异</p>
+<p><img alt="TCPIP协议的传输过程图" loading="lazy" src="https://oss.swimmingliu.cn/a9a095f8-0012-11f0-988a-c858c0c1deba"></p>
+<h2 id="12-cookiesessiontoken-之间有什么区别">12. Cookie、Session、Token 之间有什么区别？<a hidden class="anchor" aria-hidden="true" href="#12-cookiesessiontoken-之间有什么区别">#</a></h2>
+<table>
+  <thead>
+      <tr>
+          <th>特性</th>
+          <th>Cookie</th>
+          <th>Session</th>
+          <th>Token</th>
+      </tr>
+  </thead>
+  <tbody>
+      <tr>
+          <td><strong>用途</strong></td>
+          <td>用于跟踪和保护用户状态信息的小型数据文件</td>
+          <td>用于保存用户状态的机制，每个会话都有一个唯一的<code>Session ID</code></td>
+          <td>一串加密字符串，用于身份校验</td>
+      </tr>
+      <tr>
+          <td><strong>存储位置</strong></td>
+          <td>客户端 (浏览器)</td>
+          <td>服务器</td>
+          <td>客户端 (浏览器、移动设备)</td>
+      </tr>
+      <tr>
+          <td><strong>是否有状态</strong></td>
+          <td>没有</td>
+          <td>有状态</td>
+          <td>没有</td>
+      </tr>
+      <tr>
+          <td><strong>适用场景</strong></td>
+          <td>轻量级状态存储 (用户偏好、个性化设置)</td>
+          <td>用户身份认证、临时会话数据存储</td>
+          <td>分布式认证、移动端和单页应用 (SPA)</td>
+      </tr>
+      <tr>
+          <td><strong>适用协议</strong></td>
+          <td>HTTP/HTTPS</td>
+          <td>HTTP/HTTPS</td>
+          <td>HTTP、HTTPS、WebSocket</td>
+      </tr>
+      <tr>
+          <td><strong>安全性</strong></td>
+          <td>较低：容易被篡改或者伪造</td>
+          <td>较高：数据存储在服务端</td>
+          <td>较高：Token通常加密且支持签名和过期机制</td>
+      </tr>
+  </tbody>
+</table>
+<p><strong>【Cookies 详解】</strong></p>
+<ol>
+<li>服务器通过 <code>HTTP</code> 响应头 (Set-Cookie) 返回Cookie给客户端</li>
+<li>客户端保存 <code>Cookie</code>，后续所有同源的请求，都会携带该 <code>Cookie</code></li>
+<li>服务器根据 <code>Cookie</code> 的值 (比如 <code>SessionID</code>) 识别用户状态</li>
+</ol>
+<p><strong>【注意】</strong> Cookie是HTTP协议簇的一部分，HTTP协议没有状态，每个请求都是独立的。所以Cookie是无状态协议下在客户端存储状态信息的补充机制</p>
+<p><img alt="Cookies工作流" loading="lazy" src="https://oss.swimmingliu.cn/aa11731e-0012-11f0-9be7-c858c0c1deba"></p>
+<p><strong>【Session 详解】</strong></p>
+<ol>
+<li>用户登录的时候提交包含用户名和密码的表单的HTTP请求报文，服务器验证该用户和密码</li>
+<li>如果正确，则把用户信息存储到 <code>Redis</code> / <code>ConcurrentHashMap</code> 里面,  <code>key</code> 为 <code>Session ID</code>， <code>value</code> 包含用户的信息</li>
+<li>服务器返回的响应报文中，头部的 <code>Set-Cookie</code> 字段包含该<code>Session ID</code>，客户端收到响应报文后存储Cookie值</li>
+<li>客户端后续请求同一服务器会包含Cookie值，服务器会提取当中的 <code>Session ID</code>，从Redis里面提取用户信息，继续业务操作。</li>
+</ol>
+<p><img alt="Session工作流" loading="lazy" src="https://oss.swimmingliu.cn/aa4b209d-0012-11f0-ad4a-c858c0c1deba"></p>
+<p><strong>【Cookie 和 Session 的关系】</strong></p>
+<p><code>Session</code> 的主要作用就是通过服务端记录用户的状态， Cookie就是在客户端保存对应的<code>Session ID</code>。典型的场景就是购物车，服务端给指定用户创建 <code>Session</code> 之后，就可以标识这个用户并且跟踪这个用户。</p>
+<p><strong>【分布式 Session共享问题】</strong></p>
+<p>假如在一个秒杀场景下, 每个用户只能进入一次秒杀页面。但是，用户在请求的过程当中，Nginx可能会将其负载均衡到不同的 <code>Tomcat</code>。比如第一次请求到 <code>Tomcat A</code> 记录 Session, 然后购买了商品。但是，第二次请求到 <code>Tomcat B</code> 就会出问题，因为 <code>Tomcat B</code> 认为用户第一次来而允许购买请求，造成重复购买。因为每台 <code>Tomcat</code> 当中，只能看到自己存储的Session</p>
+<p><strong>【Token 详解】</strong></p>
+<ol>
+<li>客户端用用户名和密码登录服务器</li>
+<li>服务端验证身份之后生成Token并返回给客户端</li>
+<li>客户端将Token存到本地浏览器 (一般存到Cookie里面)</li>
+<li>客户端发起请求的时候携带Token，服务端收到请求后，先验证Token再返回数据</li>
+</ol>
+<p><img alt="Token-Cookie对比" loading="lazy" src="https://oss.swimmingliu.cn/aa88da24-0012-11f0-862d-c858c0c1deba"></p>
+<p>Token一般都采用 <code>JWT</code> 算法进行颁发令牌，其主要构成如下：</p>
+<ul>
+<li>Header：描述JWT元数据，定义生成签名的算法和 <code>Token</code> 类型</li>
+<li>Payload：用来存放实际需要传递的数据集</li>
+<li>Signature：服务器利用Payload、Header 和密钥 (Secret)，采用Header指定的签名算法 (默认为<code>HS256</code>) 生成</li>
+</ul>
+<p>【注意】 JWT一般存在 <code>LocalStorage</code> 本地存储当中，放在<code>Cookie</code> 会有跨站请求伪装<code>CSRF</code> 风险，一般请求服务端携带JWT的长火箭做法是使用 HTTP Header 中的 <code>Authorization</code> 字段</p>
+<p><img alt="JWT算法结构" loading="lazy" src="https://oss.swimmingliu.cn/ab0d126b-0012-11f0-a1c3-c858c0c1deba"></p>
+<h2 id="13-从网络角度来看用户从输入网址到网页显示期间发生了什么">13. 从网络角度来看，用户从输入网址到网页显示，期间发生了什么？<a hidden class="anchor" aria-hidden="true" href="#13-从网络角度来看用户从输入网址到网页显示期间发生了什么">#</a></h2>
+<ol>
+<li>用户在浏览器输入指定网页的URL，浏览器解析URL路径</li>
+<li>浏览器通过DNS协议，获取域名对应的IP地址 (先找本地缓存，找不到就找配置的DNS服务器)</li>
+<li>浏览器根据IP地址和端口号，向目标服务器发起一个TCP连接请求 （三次握手）</li>
+<li>浏览器在TCP连接上，向服务器发送一个HTTP请求报文，封装成IP数据包，请求获取网页内容</li>
+<li>操作系统在IP数据包的基础上加上MAC头部，加上发送方MAC地址和接受方目标MAC地址 (ARP协议)</li>
+<li>数据包还是存储在内存中的二进制数据，网卡将二进制数据转为电信号，通过网线进行传输</li>
+<li>交换机收到数据包之后，会根据数据包中的MAC头找到另外一个设备连接在交换机的哪个端口，然后传输。（如果找不到，就对所有的端口进行广播）</li>
+<li>路由器收到数据包之后根据IP地址，在不同的网络节点之间转发，最后到达服务器。（如果超过TTL，还没找到服务器，则说明服务器不可达）</li>
+<li>服务器收到HTTP请求报文之后进行处理，重复上面的过程，返回HTTP响应报文给浏览器</li>
+<li>浏览器收到HTTP响应报文之后，解析HTML代码渲染网页结构和央视。同时根据HTML中的资源URL再次发起请求，获取资源内容 （比如一些图片资源），直到网页完全加载</li>
+<li>浏览器再不需要和服务器进行通信的时候，主动关闭TCP连接或等待服务器关闭请求，进行四次挥手。</li>
+</ol>
+<p><img alt="用户输入一个网址到网页显示的完整过程" loading="lazy" src="https://oss.swimmingliu.cn/ab367921-0012-11f0-ba7c-c858c0c1deba"></p>
+<p><strong>【URL 结构】</strong></p>
+<ul>
+<li><strong>Schema 协议类型</strong>：一般为HTTP/HTTPS协议，也可能是文件传输协议 <code>FTP</code>, 邮件协议 <code>SMTP</code></li>
+<li><strong>域名 + 端口</strong>：域名是网址的通用名或者IP地址的可读版本，端口就在域名后面，用冒号隔开</li>
+<li><strong>资源路径</strong>：指明要访问哪一个网页/资源</li>
+<li><strong>参数</strong>：参数用键值对的形式 <code>key = value</code>，用 <code>&amp;</code> 进行隔开</li>
+<li><strong>锚点</strong>：锚点以<code>#</code>开头，是页面上的锚，用于定位，不发送给服务端</li>
+</ul>
+<p><img alt="URL的构成" loading="lazy" src="https://oss.swimmingliu.cn/ab90fb13-0012-11f0-9c22-c858c0c1deba"></p>
+<p><strong>【域名解析】</strong></p>
+<ol>
+<li>
+<p><strong>查询本地的Host文件/列表</strong>：浏览器回去查询本地是否有对应域名的记录， 如果有，直接提取对应的IP地址</p>
+</li>
+<li>
+<p><strong>查询本地DNS缓存</strong>： 查询浏览器缓存/操作系统缓存/路由器缓存，如果存在记录，直接提取对应的IP地址</p>
+</li>
+<li>
+<p><strong>查询DNS服务器</strong>： 如果缓存没有命中，浏览器会向配置的DNS服务器发送查询请求 (通常由运营商 ISP 提供)，DNS服务器会通过递归查询的方式解析域名</p>
+<ul>
+<li><strong>根DNS服务器</strong>：返回顶级域名的服务器地址 (<code>.com</code>)</li>
+<li><strong>顶级域名(TLD)服务器</strong>：返回权威DNS服务器的地址</li>
+<li><strong>权威DNS服务器</strong>： 返回具体域名的具体IP地址</li>
+</ul>
+<p><img alt="DNS服务器查询过程" loading="lazy" src="https://oss.swimmingliu.cn/abb71996-0012-11f0-8698-c858c0c1deba"></p>
+</li>
+</ol>
+
+
+  </div>
+
+
+
+  <footer class="post-footer">
+    <ul class="post-tags">
+      <li><a href="https://swimmingliu.cn/tags/java/">Java</a></li>
+      <li><a href="https://swimmingliu.cn/tags/cn/">CN</a></li>
+    </ul>
+<nav class="paginav">
+  <a class="next" href="https://swimmingliu.cn/posts/job/desgin-mode-interview-questions/">
+    <span class="title">Next »</span>
+    <br>
+    <span>设计模式面试题笔记</span>
+  </a>
+</nav>
+
+  </footer>
+</article>
+    </main>
+    
+<footer class="footer">
+        <span>&copy; 2023-2025 <a href="https://swimmingliu.cn/">SwimmingLiu&#39;s Blog</a></span> · 
+
+    <span>
+        Powered by
+        <a href="https://gohugo.io/" rel="noopener noreferrer" target="_blank">Hugo</a> &
+        <a href="https://github.com/adityatelange/hugo-PaperMod/" rel="noopener" target="_blank">PaperMod</a>
+    </span>
+    <span>
+        <a href="https://beian.miit.gov.cn/">浙ICP备2024056260号</a>
+    </span>
+</footer>
+<a href="#top" aria-label="go to top" title="Go to Top (Alt + G)" class="top-link" id="top-link" accesskey="g">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 6" fill="currentColor">
+        <path d="M12 6H0l6-6z" />
+    </svg>
+</a>
+
+<script>
+    let menu = document.getElementById('menu')
+    if (menu) {
+        menu.scrollLeft = localStorage.getItem("menu-scroll-position");
+        menu.onscroll = function () {
+            localStorage.setItem("menu-scroll-position", menu.scrollLeft);
+        }
+    }
+
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener("click", function (e) {
+            e.preventDefault();
+            var id = this.getAttribute("href").substr(1);
+            if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView({
+                    behavior: "smooth"
+                });
+            } else {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView();
+            }
+            if (id === "top") {
+                history.replaceState(null, null, " ");
+            } else {
+                history.pushState(null, null, `#${id}`);
+            }
+        });
+    });
+
+</script>
+<script>
+    var mybutton = document.getElementById("top-link");
+    window.onscroll = function () {
+        if (document.body.scrollTop > 800 || document.documentElement.scrollTop > 800) {
+            mybutton.style.visibility = "visible";
+            mybutton.style.opacity = "1";
+        } else {
+            mybutton.style.visibility = "hidden";
+            mybutton.style.opacity = "0";
+        }
+    };
+
+</script>
+<script>
+    document.getElementById("theme-toggle").addEventListener("click", () => {
+        if (document.body.className.includes("dark")) {
+            document.body.classList.remove('dark');
+            localStorage.setItem("pref-theme", 'light');
+        } else {
+            document.body.classList.add('dark');
+            localStorage.setItem("pref-theme", 'dark');
+        }
+    })
+
+</script>
+<script>
+    document.querySelectorAll('pre > code').forEach((codeblock) => {
+        const container = codeblock.parentNode.parentNode;
+
+        const copybutton = document.createElement('button');
+        copybutton.classList.add('copy-code');
+        copybutton.innerHTML = 'copy';
+
+        function copyingDone() {
+            copybutton.innerHTML = 'copied!';
+            setTimeout(() => {
+                copybutton.innerHTML = 'copy';
+            }, 2000);
+        }
+
+        copybutton.addEventListener('click', (cb) => {
+            if ('clipboard' in navigator) {
+                navigator.clipboard.writeText(codeblock.textContent);
+                copyingDone();
+                return;
+            }
+
+            const range = document.createRange();
+            range.selectNodeContents(codeblock);
+            const selection = window.getSelection();
+            selection.removeAllRanges();
+            selection.addRange(range);
+            try {
+                document.execCommand('copy');
+                copyingDone();
+            } catch (e) { };
+            selection.removeRange(range);
+        });
+
+        if (container.classList.contains("highlight")) {
+            container.appendChild(copybutton);
+        } else if (container.parentNode.firstChild == container) {
+            
+        } else if (codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.nodeName == "TABLE") {
+            
+            codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.appendChild(copybutton);
+        } else {
+            
+            codeblock.parentNode.appendChild(copybutton);
+        }
+    });
+</script>
+</body>
+
+</html>

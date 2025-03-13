@@ -11,20 +11,27 @@
     </image>
     <generator>Hugo -- 0.136.0</generator>
     <language>en</language>
-    <lastBuildDate>Fri, 07 Mar 2025 21:44:36 +0800</lastBuildDate>
+    <lastBuildDate>Thu, 13 Mar 2025 21:49:44 +0800</lastBuildDate>
     <atom:link href="https://swimmingliu.cn/tags/index.xml" rel="self" type="application/rss+xml" />
     <item>
-      <title>Design Mode</title>
-      <link>https://swimmingliu.cn/tags/design-mode/</link>
-      <pubDate>Fri, 07 Mar 2025 21:44:36 +0800</pubDate>
-      <guid>https://swimmingliu.cn/tags/design-mode/</guid>
+      <title>CN</title>
+      <link>https://swimmingliu.cn/tags/cn/</link>
+      <pubDate>Thu, 13 Mar 2025 21:49:44 +0800</pubDate>
+      <guid>https://swimmingliu.cn/tags/cn/</guid>
       <description></description>
     </item>
     <item>
       <title>Java</title>
       <link>https://swimmingliu.cn/tags/java/</link>
-      <pubDate>Fri, 07 Mar 2025 21:44:36 +0800</pubDate>
+      <pubDate>Thu, 13 Mar 2025 21:49:44 +0800</pubDate>
       <guid>https://swimmingliu.cn/tags/java/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>Design Mode</title>
+      <link>https://swimmingliu.cn/tags/design-mode/</link>
+      <pubDate>Fri, 07 Mar 2025 21:44:36 +0800</pubDate>
+      <guid>https://swimmingliu.cn/tags/design-mode/</guid>
       <description></description>
     </item>
     <item>

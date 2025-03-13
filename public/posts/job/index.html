@@ -200,6 +200,26 @@
 
 <article class="post-entry"> 
   <header class="entry-header">
+    <h2 class="entry-hint-parent">计算机网络面试题笔记
+    </h2>
+  </header>
+  <div class="entry-content">
+    <p>1. TCP 和 UDP 有什么区别？ TCP 是一种可靠的、面向连接、基于字节流传输的传输协议，能够保证数据的顺序，但是其延迟比较大。一般适用于需要数据完整性和顺序的场景，比如文件传输、邮件、Web 网站。 UDP 是一种不可靠的、无连接、基于数据报传输的传输协议，不能保证数据的顺序，但是延迟比较小。一般适用于需要高性能要求和快速传输数据的应用，比如实时通讯、语音、视频、游戏等。
+【注意】TCP 和 UDP 都属于传输层
+特性 TCP UDP 连接方式 面向连接 (三次握手) 无连接 可靠性和顺序保证 可靠，保证数据按顺序送达 不可靠，不能保证数据的顺序，而不能保证安全送达 流量控制/拥塞控制 提供流量控制和拥塞控制 没有流量控制和拥塞控制 头部大小 头部较大 (20 ~ 80 字节) 较小 (只有 8 字节) 性能 较低，延迟大 较高，延迟小 是否支持广播 不支持广播 支持广播 数据传输模式 通过字节流传输 通过数据报传输 适用场景 文件传输、Web、邮件等需要可靠性的传输 实时通讯、语音、视频、游戏等高性能要求应用 基于两者的协议 1. HTTP协议：超文本和多媒体内容的协议
+2. HTTPS协议：基于HTTP协议上加了一层SSL / TSL 外壳，保证了数据传输的安全性
+3. FTP协议： 文件传输协议，用来传文件到服务器的
+4. SMTP协议：简单邮件协议，用于发送邮件的协议 (POP3 协议： 负责邮件接受的协议) 1. HTTP 3.0 协议: 基于 UDP 的QUIC 协议
+2. DHCP 协议： 动态主机配置协议，动态配置 IP 地址
+3. DNS ：域名解析系统，将域名转变为机器刻度的 IP 地址 【ISO 和 TCP/IP 模型】
+...</p>
+  </div>
+  <footer class="entry-footer"><span title='2025-03-13 21:49:44 +0800 CST'>March 13, 2025</span>&nbsp;·&nbsp;6 min&nbsp;·&nbsp;SwimmingLiu</footer>
+  <a class="entry-link" aria-label="post link to 计算机网络面试题笔记" href="https://swimmingliu.cn/posts/job/computer-networks-interview-questions/"></a>
+</article>
+
+<article class="post-entry"> 
+  <header class="entry-header">
     <h2 class="entry-hint-parent">设计模式面试题笔记
     </h2>
   </header>

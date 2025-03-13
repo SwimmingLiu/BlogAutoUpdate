@@ -11,8 +11,75 @@
     </image>
     <generator>Hugo -- 0.136.0</generator>
     <language>en</language>
-    <lastBuildDate>Fri, 07 Mar 2025 21:44:36 +0800</lastBuildDate>
+    <lastBuildDate>Thu, 13 Mar 2025 21:49:44 +0800</lastBuildDate>
     <atom:link href="https://swimmingliu.cn/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>计算机网络面试题笔记</title>
+      <link>https://swimmingliu.cn/posts/job/computer-networks-interview-questions/</link>
+      <pubDate>Thu, 13 Mar 2025 21:49:44 +0800</pubDate>
+      <guid>https://swimmingliu.cn/posts/job/computer-networks-interview-questions/</guid>
+      <description>&lt;h2 id=&#34;1-tcp-和-udp-有什么区别&#34;&gt;1. TCP 和 UDP 有什么区别？&lt;/h2&gt;
+&lt;p&gt;&lt;code&gt;TCP&lt;/code&gt; 是一种可靠的、面向连接、基于字节流传输的传输协议，能够保证数据的顺序，但是其延迟比较大。一般适用于需要数据完整性和顺序的场景，比如文件传输、邮件、&lt;code&gt;Web&lt;/code&gt; 网站。
+&lt;code&gt;UDP&lt;/code&gt; 是一种不可靠的、无连接、基于数据报传输的传输协议，不能保证数据的顺序，但是延迟比较小。一般适用于需要高性能要求和快速传输数据的应用，比如实时通讯、语音、视频、游戏等。&lt;/p&gt;
+&lt;p&gt;【注意】&lt;code&gt;TCP&lt;/code&gt; 和 &lt;code&gt;UDP&lt;/code&gt; 都属于传输层&lt;/p&gt;
+&lt;table&gt;
+  &lt;thead&gt;
+      &lt;tr&gt;
+          &lt;th&gt;特性&lt;/th&gt;
+          &lt;th&gt;TCP&lt;/th&gt;
+          &lt;th&gt;UDP&lt;/th&gt;
+      &lt;/tr&gt;
+  &lt;/thead&gt;
+  &lt;tbody&gt;
+      &lt;tr&gt;
+          &lt;td&gt;&lt;strong&gt;连接方式&lt;/strong&gt;&lt;/td&gt;
+          &lt;td&gt;面向连接 (三次握手)&lt;/td&gt;
+          &lt;td&gt;无连接&lt;/td&gt;
+      &lt;/tr&gt;
+      &lt;tr&gt;
+          &lt;td&gt;&lt;strong&gt;可靠性和顺序保证&lt;/strong&gt;&lt;/td&gt;
+          &lt;td&gt;可靠，保证数据按顺序送达&lt;/td&gt;
+          &lt;td&gt;不可靠，不能保证数据的顺序，而不能保证安全送达&lt;/td&gt;
+      &lt;/tr&gt;
+      &lt;tr&gt;
+          &lt;td&gt;&lt;strong&gt;流量控制/拥塞控制&lt;/strong&gt;&lt;/td&gt;
+          &lt;td&gt;提供流量控制和拥塞控制&lt;/td&gt;
+          &lt;td&gt;没有流量控制和拥塞控制&lt;/td&gt;
+      &lt;/tr&gt;
+      &lt;tr&gt;
+          &lt;td&gt;&lt;strong&gt;头部大小&lt;/strong&gt;&lt;/td&gt;
+          &lt;td&gt;头部较大 (&lt;code&gt;20&lt;/code&gt; ~ &lt;code&gt;80&lt;/code&gt; 字节)&lt;/td&gt;
+          &lt;td&gt;较小 (只有 &lt;code&gt;8&lt;/code&gt; 字节)&lt;/td&gt;
+      &lt;/tr&gt;
+      &lt;tr&gt;
+          &lt;td&gt;&lt;strong&gt;性能&lt;/strong&gt;&lt;/td&gt;
+          &lt;td&gt;较低，延迟大&lt;/td&gt;
+          &lt;td&gt;较高，延迟小&lt;/td&gt;
+      &lt;/tr&gt;
+      &lt;tr&gt;
+          &lt;td&gt;&lt;strong&gt;是否支持广播&lt;/strong&gt;&lt;/td&gt;
+          &lt;td&gt;不支持广播&lt;/td&gt;
+          &lt;td&gt;支持广播&lt;/td&gt;
+      &lt;/tr&gt;
+      &lt;tr&gt;
+          &lt;td&gt;&lt;strong&gt;数据传输模式&lt;/strong&gt;&lt;/td&gt;
+          &lt;td&gt;通过字节流传输&lt;/td&gt;
+          &lt;td&gt;通过数据报传输&lt;/td&gt;
+      &lt;/tr&gt;
+      &lt;tr&gt;
+          &lt;td&gt;&lt;strong&gt;适用场景&lt;/strong&gt;&lt;/td&gt;
+          &lt;td&gt;文件传输、Web、邮件等需要可靠性的传输&lt;/td&gt;
+          &lt;td&gt;实时通讯、语音、视频、游戏等高性能要求应用&lt;/td&gt;
+      &lt;/tr&gt;
+      &lt;tr&gt;
+          &lt;td&gt;&lt;strong&gt;基于两者的协议&lt;/strong&gt;&lt;/td&gt;
+          &lt;td&gt;1. &lt;strong&gt;HTTP协议&lt;/strong&gt;：超文本和多媒体内容的协议&lt;br /&gt;2. &lt;strong&gt;HTTPS协议&lt;/strong&gt;：基于HTTP协议上加了一层&lt;code&gt;SSL&lt;/code&gt; / &lt;code&gt;TSL&lt;/code&gt; 外壳，保证了数据传输的安全性&lt;br /&gt;3. &lt;strong&gt;FTP协议&lt;/strong&gt;： 文件传输协议，用来传文件到服务器的&lt;br /&gt;4. &lt;strong&gt;SMTP协议&lt;/strong&gt;：简单邮件协议，用于发送邮件的协议 (&lt;code&gt;POP3&lt;/code&gt; 协议： 负责邮件接受的协议)&lt;/td&gt;
+          &lt;td&gt;1. &lt;strong&gt;HTTP 3.0 协议&lt;/strong&gt;: 基于 &lt;code&gt;UDP&lt;/code&gt; 的&lt;code&gt;QUIC&lt;/code&gt; 协议&lt;br /&gt;2. &lt;strong&gt;DHCP 协议&lt;/strong&gt;： 动态主机配置协议，动态配置 &lt;code&gt;IP&lt;/code&gt; 地址&lt;br /&gt;3. &lt;strong&gt;DNS&lt;/strong&gt; ：域名解析系统，将域名转变为机器刻度的 &lt;code&gt;IP&lt;/code&gt; 地址&lt;/td&gt;
+      &lt;/tr&gt;
+  &lt;/tbody&gt;
+&lt;/table&gt;
+&lt;p&gt;&lt;strong&gt;【ISO 和 TCP/IP 模型】&lt;/strong&gt;&lt;/p&gt;</description>
+    </item>
     <item>
       <title>设计模式面试题笔记</title>
       <link>https://swimmingliu.cn/posts/job/desgin-mode-interview-questions/</link>

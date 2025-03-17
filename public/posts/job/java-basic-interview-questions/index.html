@@ -221,8 +221,8 @@ public boolean equals(Object obj) {
   "keywords": [
     "Java"
   ],
-  "articleBody": "1. 序列化和反序列化 1.序列化和反序列化：把对象转换为字节流，用于存储和传输；读取字节流数据，重新创建对象。 2.序列化不包括静态对象：序列化和反序列化的本质是调用对象的writeObject和readObject方法,来实现将对象写入输出流和读取输入流。但是，静态变量不属于对象，所以调用这两个方法就没法儿让静态变量参与。\n2. 什么是不可变类？ 1.不可变类：初始化之后，就不能修改的类。 2.修饰方法：final 和 private 修饰所有类和变量 3.不可修改：不暴露set方法，只能通过重新创建对象替代修改功能(String的replace方法) 4.优缺点： 优点：线程安全，缓存友好 缺点：频繁拼接和修改会浪费资源\n3. Exception和Error区别? 1.Exception和Error定义区别：Exception是可处理程序异常，Error是系统级不可回复错误 2.try-catch建议： 1.范围能小则小 2.Exception最好要写清楚具体是哪一个Exception(IOException) 3.null值等能用if判断的，不要用try-catch,因为异常比条件语句低效 4.finally不要直接return和处理返回值\n4. Java 中的 hashCode 和 equals 方法之间有什么关系？ 1、equals() 和 hashCode() 的关系\n如果两个对象euqals() 为 true， 则其 hashCode()一定相同 如果两个对象hashCode() 相同，其equals()结果不一定为true 2、为什么重写equals()之后，一定要重写hashCode()\n当重写equals() 之后，通常是重新定义了两个对象相等的逻辑。如果不重写hashCode()方法， 则在散列集合（HashMap 和 HashSet）中，可能无法正确存储和检索，因为两个相同的对象可能有不同的hash值。\n例如，下方Person类重写了equals() 方法，但是没有重新hashCode()\npublic class Person { private String name; private int age; @Override public boolean equals(Object obj) { if (this == obj) return true; if (obj == null || getClass() != obj.getClass()) return false; Person person = (Person) obj; return age == person.age \u0026\u0026 Objects.equals(name, person.name); } } 创建相同的对象，并添加到HashSet中\nPerson p1 = new Person(\"Alice\", 25); Person p2 = new Person(\"Alice\", 25); Set\u003cPerson\u003e set = new HashSet\u003c\u003e(); set.add(p1); set.add(p2); 由于hashCode() 没有重写，所有两个相同的对象可能有不同的散列码，导致集合当中有两个相同的元素\n如何重写hashCode()?\n只需要让其hash值，采用equals()当中相同的判断条件生成合理的散列值即可\n@Override public int hashCode() { return Objects.hash(name, age); } ",
-  "wordCount" : "128",
+  "articleBody": "1. 序列化和反序列化 1.序列化和反序列化：把对象转换为字节流，用于存储和传输；读取字节流数据，重新创建对象。 2.序列化不包括静态对象：序列化和反序列化的本质是调用对象的writeObject和readObject方法,来实现将对象写入输出流和读取输入流。但是，静态变量不属于对象，所以调用这两个方法就没法儿让静态变量参与。\n2. 什么是不可变类？ 1.不可变类：初始化之后，就不能修改的类。 2.修饰方法：final 和 private 修饰所有类和变量 3.不可修改：不暴露set方法，只能通过重新创建对象替代修改功能(String的replace方法) 4.优缺点： 优点：线程安全，缓存友好 缺点：频繁拼接和修改会浪费资源\n3. Exception和Error区别? 1.Exception和Error定义区别：Exception是可处理程序异常，Error是系统级不可回复错误 2.try-catch建议： 1.范围能小则小 2.Exception最好要写清楚具体是哪一个Exception(IOException) 3.null值等能用if判断的，不要用try-catch,因为异常比条件语句低效 4.finally不要直接return和处理返回值\n4. Java 中的 hashCode 和 equals 方法之间有什么关系？ 1、equals() 和 hashCode() 的关系\n如果两个对象euqals() 为 true， 则其 hashCode()一定相同 如果两个对象hashCode() 相同，其equals()结果不一定为true 2、为什么重写equals()之后，一定要重写hashCode()\n当重写equals() 之后，通常是重新定义了两个对象相等的逻辑。如果不重写hashCode()方法， 则在散列集合（HashMap 和 HashSet）中，可能无法正确存储和检索，因为两个相同的对象可能有不同的hash值。\n例如，下方Person类重写了equals() 方法，但是没有重新hashCode()\npublic class Person { private String name; private int age; @Override public boolean equals(Object obj) { if (this == obj) return true; if (obj == null || getClass() != obj.getClass()) return false; Person person = (Person) obj; return age == person.age \u0026\u0026 Objects.equals(name, person.name); } } 创建相同的对象，并添加到HashSet中\nPerson p1 = new Person(\"Alice\", 25); Person p2 = new Person(\"Alice\", 25); Set\u003cPerson\u003e set = new HashSet\u003c\u003e(); set.add(p1); set.add(p2); 由于hashCode() 没有重写，所有两个相同的对象可能有不同的散列码，导致集合当中有两个相同的元素\n如何重写hashCode()?\n只需要让其hash值，采用equals()当中相同的判断条件生成合理的散列值即可\n@Override public int hashCode() { return Objects.hash(name, age); } 5. 接口和抽象类有什么区别？ 特性 接口 抽象类 设计角度 自上而下，先定义好我们需要的方法，然后在具体的类当中，实现该接口的方法 自下而上，写了很多类之后，发现他们有共性，可以把代码复用。因此封装成一个抽象类，减少代码冗余 方法实现 所有方法默认是 public 和 abstract 修饰 (JDK 8 之后可以设置default方法或者静态方法)，接口类可以是空的 (Serializable 序列化接口) 可以包含abstract 抽象方法 (无实现) 和 具体方法(有实现)，至少包含一个抽象方法 构造函数和成员变量 接口不能包含构造函数，所有成员变量默认为 public static final 常量 抽象类可以包含构造函数，成员变量可以有不同的修饰符，不一定是常量 多继承 一个类只能实现多个接口 抽象类只能单继承 【注意】\n接口和抽象类是不可以被实例化的，只能用来实现或者继承。\nJDK 9 之后，接口可以定义私有方法，用于default 方法的内部逻辑复用\n// 支付接口 interface PaymentInterface { // 支付方法 void pay(double amount); // 通知支付状态 void notifyPaymentStatus(String status); // 私有方法，用于检查支付金额是否合法 private boolean isAmountValid(double amount) { return amount \u003e 0; } // default 方法，包含了对私有方法的调用 default void performPayment(double amount) { if (isAmountValid(amount)) { pay(amount); } else { System.out.println(\"Invalid payment amount\"); } } } 接口当中的 default 方法，实现对象可以直接调用，也可以进行重写。static 方法只能通过接口名调用\n6. JDK 动态代理和 CGLIB 动态代理有什么区别？ JDK 动态代理：基于反射机制和接口，要求所有代理类都必须实现某个接口 (目标对象至少实现一个接口) CGLIB：基于 ASM 字节码生成工具，通过继承的方式生成目标类的子类来实现代理，所以要注意 final 方法 （子类可以继承并使用父类的 final 方法，但不能重写（Override）该方法） 特性 JDK 动态代理 CGLIB 底层实现 接口 + 反射，通过反射调用目标对象的接口方法 生成子类的字节码 + 重写被代理类的方法 代理对象 必须实现接口 不需要实现接口 性能 创建代理开销小，方法调用开销大 方法调用开销小，创建代理开销大 (需要生成子类的字节码) 限制 不能代理没有接口的类 不能代理 final 类 和 final 方法 使用场景 需要实现接口的类 没有接口的类 Spring AOP 默认方式 AOP 默认采用JDK动态代理 目标类没有接口的时候，采用 CGLIB 【注意】在不同的jdk版本下，JDK 动态代理 和 CGLIB 的性能都不一样 (可参考 CGLIB与JDK动态代理的运行性能比较)\nJDK 1.6：运行次数少的情况下，JDK动态代理和CGLIB 基本没差，甚至JDK动态代理更快。当次数增加之后，CGLIB 会稍微快一些 JDK 1.7: 基本都是 JDK动态代理比较快，运行次数较少的情况下，JDK动态代理比CGLIB 快 30% 左右。当次数增加之后，JDK动态代理比CGLIB 快了接近一倍 JDK 1.8：和 JDK 1.7 表现基本一致 【JDK 动态代理详解】\nJDK 动态代理是通过反射机制，来实现代理接口中的方法的。通过 java.lang.reflect.Proxy 类 和 InvocationHandler 接口来实现代理， 代理对象只代理接口中的方法。当调用代理对象的方法的时候，代理类会拦截方法调用，然后通过 InvocationHandler.invoke() 方法执行额外的逻辑。 (AOP 切面编程的原理)\n例如，下面代码中，DataQuery 是接口， DatabaseDataQuery 实现该接口。JDK 动态代理要求被代理对象至少实现一个接口，以便代理类通过接口暴露代理行为。 通过 Proxy.newProxyInstance() 创建代理对象，需要三个参数：\n类加载器：Thread.currentThread().getContextClassLoader()， 用于加载代理类 接口列表：new Class[]{xxx.class}， 指定代理类应该实现的接口, 里面存放接口的 class 调用处理器 InvocationHandler：代理对象的实际逻辑是用实现这个InvocationHandler接口的类来晚来成的，比如CacheInvocationHandler 拦截代理方法，调用并添加额外逻辑。底层的实现逻辑其实就是反射机制。 // 接口 public interface DataQuery { String query(String queryKey); String queryAll(String queryKey); } // 目标实现类 public class DatabaseDataQuery implements DataQuery { @Override public String query(String queryKey) { // 他会使用数据源从数据库查询数据很慢 System.out.println(\"正在从数据库查询数据\"); return \"result\"; } @Override public String queryAll(String queryKey) { // 他会使用数据源从数据库查询数据很慢 System.out.println(\"正在从数据库查询数据\"); return \"all result\"; } } // 调用处理器：用于拦截方法 public class CacheInvocationHandler implements InvocationHandler { private HashMap\u003cString,String\u003e cache = new LinkedHashMap\u003c\u003e(256); private DataQuery databaseDataQuery; public CacheInvocationHandler(DatabaseDataQuery databaseDataQuery) { this.databaseDataQuery = databaseDataQuery; } public CacheInvocationHandler() { this.databaseDataQuery = new DatabaseDataQuery(); } @Override public Object invoke(Object proxy, Method method, Object[] args) throws Throwable { // 1、判断是哪一个方法 String result = null; if(\"query\".equals(method.getName())){ // 2、查询缓存，命中直接返回 result = cache.get(args[0].toString()); if(result != null){ System.out.println(\"数据从缓存重获取。\"); return result; } // 3、未命中，查数据库（需要代理实例） result = (String) method.invoke(databaseDataQuery, args); // 4、如果查询到了,进行呢缓存 cache.put(args[0].toString(),result); return result; } // 当其他的方法被调用，不希望被干预，直接调用原生的方法 return method.invoke(databaseDataQuery,args); } } // 测试类：如何使用JDK动态代理 public class Main { public static void main(String[] args) { // jdk提供的代理实现，主要是使用Proxy类来完成 // 1、classLoader：被代理类的类加载器，用于加载代理类 ClassLoader contextClassLoader = Thread.currentThread().getContextClassLoader(); // 2、代理类需要实现的接口数组 Class[] classes = new Class[]{DataQuery.class}; // 3、InvocationHandler CacheInvocationHandler cacheInvocationHandler = new CacheInvocationHandler(); DataQuery dataQuery = (DataQuery) Proxy.newProxyInstance(contextClassLoader, classes, cacheInvocationHandler); // 事实上调用query方法的使用，他是调用了invoke String result = dataQuery.query(\"key1\"); System.out.println(result); System.out.println(\"--------------------\"); result = dataQuery.query(\"key1\"); System.out.println(result); System.out.println(\"--------------------\"); result = dataQuery.query(\"key2\"); System.out.println(result); System.out.println(\"++++++++++++++++++++++++++++++++++++\"); // 事实上调用queryAll方法的使用，他是调用了invoke result = dataQuery.queryAll(\"key1\"); System.out.println(result); System.out.println(\"--------------------\"); result = dataQuery.queryAll(\"key1\"); System.out.println(result); System.out.println(\"--------------------\"); result = dataQuery.queryAll(\"key2\"); System.out.println(result); System.out.println(\"--------------------\"); } } 【CGLIB 动态代理详解】\nCGLIB (Code Generation Library) 代码生成库 是基于字节码操作的，它可以生成目标类的子类，并且重写目标类的方法来实现代理。通过继承方式拦截所有非 final 方法的调用。 CGLIB 使用的是 ASM 字节码生成框架，生成的是字节码级别的代理类。性能相对较好，但是生成代理类的开销比 JDK 动态代理 稍微大一些。\nMain 类当中，没有实现任何接口，这就是 CGLIB 的优势之一，不需要实现任何接口。 CGLIB 通过生成目标类的子类来实现代理。CGLIB 通过 Enhancer 类来创建代理对象，需要配置父类和拦截器。\n父类：enhancer.setSuperclass(DatabaseDataQuery.class) ，配置目标类作为父类 拦截器：enhancer.setCallback(new CacheMethodInterceptor()); ，配置拦截器，拦截所有非 final 方法的调用，和InvocationHandler 差不多，可以插入额外的逻辑。 // 拦截器：用于拦截方法 public class CacheMethodInterceptor implements MethodInterceptor { private HashMap\u003cString,String\u003e cache = new HashMap\u003c\u003e(); private DatabaseDataQuery databaseDataQuery; public CacheMethodInterceptor( ) { this.databaseDataQuery = new DatabaseDataQuery(); }; @Override public Object intercept(Object obj, Method method, Object[] args, MethodProxy proxy) throws Throwable { // 1、判断是哪一个方法 String result = null; if(\"query\".equals(method.getName())){ // 2、查询缓存，命中直接返回 result = cache.get(args[0].toString()); if(result != null){ System.out.println(\"数据从缓存重获取。\"); return result; } // 3、未命中，查数据库（需要代理实例） result = (String) method.invoke(databaseDataQuery, args); // 4、如果查询到了,进行呢缓存 cache.put(args[0].toString(),result); return result; } return method.invoke(databaseDataQuery,args); } } // 测试类：如何使用CGLIB进行动态代理 public class Main { public static void main(String[] args) { //cglib通过Enhancer实现 Enhancer enhancer = new Enhancer(); //设置父类 enhancer.setSuperclass(DatabaseDataQuery.class); //设置一个拦截器，用来拦截方法 enhancer.setCallback(new CacheMethodInterceptor()); //创建代理类，其实就是目标类的子类 DatabaseDataQuery databaseDataQuery = (DatabaseDataQuery) enhancer.create(); databaseDataQuery.query(\"Key1\"); databaseDataQuery.query(\"Key1\"); databaseDataQuery.query(\"Key2\"); } } 7. 你使用过 Java 的反射机制吗？如何应用反射？ 反射机制定义：Java 的反射机制是指在运行的时候，获取类的结构信息 (比如方法、字段、构建函数) ，然后获取操作对象的一种机制。反射机制可以在运行的时候，动态创建对象、调用方法、访问字段，不需要在编译的时候知道这些信息。反射的核心类包括 Class、Constuctor、Method、Filed\n反射机制作用：\n动态获取类信息：包括类名、包名、父类等，不需要在编译的时候知道类的信息 动态创建对象：可以通过 Class 类或者 Constructor 对象的 newInstance() 动态创建对象，不需要在编译的时候知道对象的类型 动态调用对象的方法：通过 Method 类的 invoke() 方法实现 访问和修改对象的字段值：通过 Filed.set() 直接修改对象的值，和通过SetAccessible(true) 绕过访问限制 反射机制的应用场景： 一般的业务编码用不到反射机制，但是在框架上会用到反射机制。因为写框架的时候，很多场景是很灵活的，不能确定目标对象的类型，只能通过反射动态获取对象信息。比如 Spring 使用反射机制来读取和解析配置文件，从而实现 DI 依赖注入和 AOP 切面编程等功能。\nDI 依赖注入的具体实现，假如对指定类加上 @Service 注解，下面是具体的实现过程：\nSpring 在容器启动初始化的时候, 将所有带有@Service、@Component等注解的类，放入容器当中，注册为Bean Spring 容器启动的时候，会将带有@Autowired 注解的类进行标记，然后使用反射机制将所有的字段、方法、构造器进行注入 反射的使用方法：\n获取 Class 对象\nClass\u003c?\u003e clazz = Class.forName(\"com.swimmingliu.MyClass\"); // 或者 Class\u003c?\u003e clazz = MyClass.class; // 或者 Class\u003c?\u003e clazz = obj.getClass(); 创建对象 ：一般都采用 Constructor 来构造对象\nObject obj = clazz.newInstance(); // 已过时 Constructor\u003c?\u003e constructor = clazz.getConstructor(); Object obj = constructor.newInstance(); 访问字段：可以让私有对象可见，而且能够设置它的值\nField field = clazz.getField(\"name\"); // 假设 private String name; field.setAccessible(true); // 允许访问 private 字段 Object value = field.get(obj); field.set(obj, newValue); 调用方法：\nMethod method = clazz.getMethod(\"myMethod\", String.class); Object result = method.invoke(obj, \"param\"); ",
+  "wordCount" : "795",
   "inLanguage": "en",
   "image": "https://swimmingliu.cn/papermod-cover.png","datePublished": "2025-02-19T15:18:58+08:00",
   "dateModified": "2025-02-19T15:18:58+08:00",
@@ -346,7 +346,7 @@ public boolean equals(Object obj) {
     <h1 class="post-title entry-hint-parent">
       Java基础题面试笔记
     </h1>
-    <div class="post-meta"><span title='2025-02-19 15:18:58 +0800 CST'>February 19, 2025</span>&nbsp;·&nbsp;1 min&nbsp;·&nbsp;SwimmingLiu
+    <div class="post-meta"><span title='2025-02-19 15:18:58 +0800 CST'>February 19, 2025</span>&nbsp;·&nbsp;4 min&nbsp;·&nbsp;SwimmingLiu
 
 </div>
   </header> <div class="toc">
@@ -363,7 +363,13 @@ public boolean equals(Object obj) {
                 <li>
                     <a href="#3-exception%e5%92%8cerror%e5%8c%ba%e5%88%ab" aria-label="3. Exception和Error区别?">3. Exception和Error区别?</a></li>
                 <li>
-                    <a href="#4-java-%e4%b8%ad%e7%9a%84-hashcode-%e5%92%8c-equals-%e6%96%b9%e6%b3%95%e4%b9%8b%e9%97%b4%e6%9c%89%e4%bb%80%e4%b9%88%e5%85%b3%e7%b3%bb" aria-label="4. Java 中的 hashCode 和 equals 方法之间有什么关系？">4. Java 中的 hashCode 和 equals 方法之间有什么关系？</a>
+                    <a href="#4-java-%e4%b8%ad%e7%9a%84-hashcode-%e5%92%8c-equals-%e6%96%b9%e6%b3%95%e4%b9%8b%e9%97%b4%e6%9c%89%e4%bb%80%e4%b9%88%e5%85%b3%e7%b3%bb" aria-label="4. Java 中的 hashCode 和 equals 方法之间有什么关系？">4. Java 中的 hashCode 和 equals 方法之间有什么关系？</a></li>
+                <li>
+                    <a href="#5-%e6%8e%a5%e5%8f%a3%e5%92%8c%e6%8a%bd%e8%b1%a1%e7%b1%bb%e6%9c%89%e4%bb%80%e4%b9%88%e5%8c%ba%e5%88%ab" aria-label="5. 接口和抽象类有什么区别？">5. 接口和抽象类有什么区别？</a></li>
+                <li>
+                    <a href="#6-jdk-%e5%8a%a8%e6%80%81%e4%bb%a3%e7%90%86%e5%92%8c-cglib-%e5%8a%a8%e6%80%81%e4%bb%a3%e7%90%86%e6%9c%89%e4%bb%80%e4%b9%88%e5%8c%ba%e5%88%ab" aria-label="6. JDK 动态代理和 CGLIB 动态代理有什么区别？">6. JDK 动态代理和 CGLIB 动态代理有什么区别？</a></li>
+                <li>
+                    <a href="#7-%e4%bd%a0%e4%bd%bf%e7%94%a8%e8%bf%87-java-%e7%9a%84%e5%8f%8d%e5%b0%84%e6%9c%ba%e5%88%b6%e5%90%97%e5%a6%82%e4%bd%95%e5%ba%94%e7%94%a8%e5%8f%8d%e5%b0%84" aria-label="7. 你使用过 Java 的反射机制吗？如何应用反射？">7. 你使用过 Java 的反射机制吗？如何应用反射？</a>
                 </li>
             </ul>
         </div>
@@ -423,6 +429,322 @@ public boolean equals(Object obj) {
 </span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="k">return</span><span class="w"> </span><span class="n">Objects</span><span class="p">.</span><span class="na">hash</span><span class="p">(</span><span class="n">name</span><span class="p">,</span><span class="w"> </span><span class="n">age</span><span class="p">);</span><span class="w">
 </span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="p">}</span><span class="w">
 </span></span></span></code></pre></div></blockquote>
+<h2 id="5-接口和抽象类有什么区别">5. 接口和抽象类有什么区别？<a hidden class="anchor" aria-hidden="true" href="#5-接口和抽象类有什么区别">#</a></h2>
+<table>
+  <thead>
+      <tr>
+          <th>特性</th>
+          <th>接口</th>
+          <th>抽象类</th>
+      </tr>
+  </thead>
+  <tbody>
+      <tr>
+          <td><strong>设计角度</strong></td>
+          <td>自上而下，先定义好我们需要的方法，然后在具体的类当中，实现该接口的方法</td>
+          <td>自下而上，写了很多类之后，发现他们有共性，可以把代码复用。因此封装成一个抽象类，减少代码冗余</td>
+      </tr>
+      <tr>
+          <td><strong>方法实现</strong></td>
+          <td>所有方法默认是 <code>public</code> 和 <code>abstract</code> 修饰 (<code>JDK 8</code> 之后可以设置<code>default</code>方法或者静态方法)，接口类可以是空的 (<code>Serializable</code> 序列化接口)</td>
+          <td>可以包含<code>abstract</code> 抽象方法 (无实现) 和 具体方法(有实现)，至少包含一个抽象方法</td>
+      </tr>
+      <tr>
+          <td><strong>构造函数和成员变量</strong></td>
+          <td>接口不能包含构造函数，所有成员变量默认为 <code>public static final</code> 常量</td>
+          <td>抽象类可以包含构造函数，成员变量可以有不同的修饰符，不一定是常量</td>
+      </tr>
+      <tr>
+          <td><strong>多继承</strong></td>
+          <td>一个类只能实现多个接口</td>
+          <td>抽象类只能单继承</td>
+      </tr>
+  </tbody>
+</table>
+<p><strong>【注意】</strong></p>
+<ol>
+<li>
+<p>接口和抽象类是不可以被实例化的，只能用来实现或者继承。</p>
+</li>
+<li>
+<p><code>JDK 9</code> 之后，接口可以定义私有方法，用于<code>default</code> 方法的内部逻辑复用</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="c1">// 支付接口</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="kd">interface</span> <span class="nc">PaymentInterface</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="c1">// 支付方法</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kt">void</span><span class="w"> </span><span class="nf">pay</span><span class="p">(</span><span class="kt">double</span><span class="w"> </span><span class="n">amount</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="c1">// 通知支付状态</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kt">void</span><span class="w"> </span><span class="nf">notifyPaymentStatus</span><span class="p">(</span><span class="n">String</span><span class="w"> </span><span class="n">status</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="c1">// 私有方法，用于检查支付金额是否合法</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kd">private</span><span class="w"> </span><span class="kt">boolean</span><span class="w"> </span><span class="nf">isAmountValid</span><span class="p">(</span><span class="kt">double</span><span class="w"> </span><span class="n">amount</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">amount</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="n">0</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="c1">// default 方法，包含了对私有方法的调用</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="k">default</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">performPayment</span><span class="p">(</span><span class="kt">double</span><span class="w"> </span><span class="n">amount</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">isAmountValid</span><span class="p">(</span><span class="n">amount</span><span class="p">))</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="n">pay</span><span class="p">(</span><span class="n">amount</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="p">}</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="n">System</span><span class="p">.</span><span class="na">out</span><span class="p">.</span><span class="na">println</span><span class="p">(</span><span class="s">&#34;Invalid payment amount&#34;</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="p">}</span><span class="w">
+</span></span></span></code></pre></div></li>
+<li>
+<p>接口当中的 <code>default</code> 方法，实现对象可以直接调用，也可以进行重写。<code>static</code> 方法只能通过接口名调用</p>
+</li>
+</ol>
+<h2 id="6-jdk-动态代理和-cglib-动态代理有什么区别">6. JDK 动态代理和 CGLIB 动态代理有什么区别？<a hidden class="anchor" aria-hidden="true" href="#6-jdk-动态代理和-cglib-动态代理有什么区别">#</a></h2>
+<ul>
+<li><strong>JDK 动态代理</strong>：基于反射机制和接口，要求所有代理类都必须实现某个接口 (目标对象至少实现一个接口)</li>
+<li><strong>CGLIB</strong>：基于 <code>ASM</code> 字节码生成工具，通过继承的方式生成目标类的子类来实现代理，所以要注意 <code>final</code> 方法 （子类可以继承并使用父类的 <code>final</code> 方法，但不能重写（Override）该方法）</li>
+</ul>
+<table>
+  <thead>
+      <tr>
+          <th>特性</th>
+          <th>JDK 动态代理</th>
+          <th>CGLIB</th>
+      </tr>
+  </thead>
+  <tbody>
+      <tr>
+          <td><strong>底层实现</strong></td>
+          <td>接口 + 反射，通过反射调用目标对象的接口方法</td>
+          <td>生成子类的字节码 + 重写被代理类的方法</td>
+      </tr>
+      <tr>
+          <td><strong>代理对象</strong></td>
+          <td>必须实现接口</td>
+          <td>不需要实现接口</td>
+      </tr>
+      <tr>
+          <td><strong>性能</strong></td>
+          <td>创建代理开销小，方法调用开销大</td>
+          <td>方法调用开销小，创建代理开销大 (需要生成子类的字节码)</td>
+      </tr>
+      <tr>
+          <td><strong>限制</strong></td>
+          <td>不能代理没有接口的类</td>
+          <td>不能代理 <code>final</code> 类 和 <code>final</code> 方法</td>
+      </tr>
+      <tr>
+          <td><strong>使用场景</strong></td>
+          <td>需要实现接口的类</td>
+          <td>没有接口的类</td>
+      </tr>
+      <tr>
+          <td>Spring AOP 默认方式</td>
+          <td>AOP 默认采用JDK动态代理</td>
+          <td>目标类没有接口的时候，采用 <code>CGLIB</code></td>
+      </tr>
+  </tbody>
+</table>
+<p>【注意】在不同的<code>jdk</code>版本下，<code>JDK</code> 动态代理 和 <code>CGLIB</code> 的性能都不一样 (可参考 <a href="https://www.cnblogs.com/haiq/p/4304615.html">CGLIB与JDK动态代理的运行性能比较</a>)</p>
+<blockquote>
+<ul>
+<li>JDK 1.6：运行次数少的情况下，<code>JDK</code>动态代理和<code>CGLIB</code> 基本没差，甚至<code>JDK</code>动态代理更快。当次数增加之后，<code>CGLIB</code> 会稍微快一些</li>
+<li>JDK 1.7: 基本都是 <code>JDK</code>动态代理比较快，运行次数较少的情况下，<code>JDK</code>动态代理比<code>CGLIB</code> 快 <code>30%</code> 左右。当次数增加之后，<code>JDK</code>动态代理比<code>CGLIB</code> 快了接近一倍</li>
+<li>JDK 1.8：和 <code>JDK 1.7</code> 表现基本一致</li>
+</ul>
+</blockquote>
+<p><strong>【JDK 动态代理详解】</strong></p>
+<p><code>JDK</code> 动态代理是通过反射机制，来实现代理接口中的方法的。通过 <code>java.lang.reflect.Proxy</code> 类 和 <code>InvocationHandler</code> 接口来实现代理， 代理对象只代理接口中的方法。当调用代理对象的方法的时候，代理类会拦截方法调用，然后通过 <code>InvocationHandler.invoke()</code> 方法执行额外的逻辑。 (<code>AOP</code> 切面编程的原理)</p>
+<p><img alt="JDK动态代理结构图" loading="lazy" src="https://oss.swimmingliu.cn/bd651ce8-0332-11f0-951a-c858c0c1debd"></p>
+<p>例如，下面代码中，<code>DataQuery</code> 是接口， <code>DatabaseDataQuery</code> 实现该接口。<code>JDK</code> 动态代理要求被代理对象至少实现一个接口，以便代理类通过接口暴露代理行为。
+通过 <code>Proxy.newProxyInstance()</code> 创建代理对象，需要三个参数：</p>
+<ul>
+<li><strong>类加载器</strong>：<code>Thread.currentThread().getContextClassLoader()</code>， 用于加载代理类</li>
+<li><strong>接口列表</strong>：<code>new Class[]{xxx.class}</code>， 指定代理类应该实现的接口, 里面存放接口的 <code>class</code></li>
+<li><strong>调用处理器</strong> <code>InvocationHandler</code>：代理对象的实际逻辑是用实现这个<code>InvocationHandler</code>接口的类来晚来成的，比如<code>CacheInvocationHandler</code> 拦截代理方法，调用并添加额外逻辑。底层的实现逻辑其实就是反射机制。</li>
+</ul>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="c1">// 接口</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="kd">public</span><span class="w"> </span><span class="kd">interface</span> <span class="nc">DataQuery</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="n">String</span><span class="w"> </span><span class="nf">query</span><span class="p">(</span><span class="n">String</span><span class="w"> </span><span class="n">queryKey</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="n">String</span><span class="w"> </span><span class="nf">queryAll</span><span class="p">(</span><span class="n">String</span><span class="w"> </span><span class="n">queryKey</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="c1">// 目标实现类</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="kd">public</span><span class="w"> </span><span class="kd">class</span> <span class="nc">DatabaseDataQuery</span><span class="w"> </span><span class="kd">implements</span><span class="w"> </span><span class="n">DataQuery</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nd">@Override</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="n">String</span><span class="w"> </span><span class="nf">query</span><span class="p">(</span><span class="n">String</span><span class="w"> </span><span class="n">queryKey</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="c1">// 他会使用数据源从数据库查询数据很慢</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">System</span><span class="p">.</span><span class="na">out</span><span class="p">.</span><span class="na">println</span><span class="p">(</span><span class="s">&#34;正在从数据库查询数据&#34;</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="s">&#34;result&#34;</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nd">@Override</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="n">String</span><span class="w"> </span><span class="nf">queryAll</span><span class="p">(</span><span class="n">String</span><span class="w"> </span><span class="n">queryKey</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="c1">// 他会使用数据源从数据库查询数据很慢</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">System</span><span class="p">.</span><span class="na">out</span><span class="p">.</span><span class="na">println</span><span class="p">(</span><span class="s">&#34;正在从数据库查询数据&#34;</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="s">&#34;all result&#34;</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="c1">// 调用处理器：用于拦截方法</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="kd">public</span><span class="w"> </span><span class="kd">class</span> <span class="nc">CacheInvocationHandler</span><span class="w"> </span><span class="kd">implements</span><span class="w"> </span><span class="n">InvocationHandler</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kd">private</span><span class="w"> </span><span class="n">HashMap</span><span class="o">&lt;</span><span class="n">String</span><span class="p">,</span><span class="n">String</span><span class="o">&gt;</span><span class="w"> </span><span class="n">cache</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">LinkedHashMap</span><span class="o">&lt;&gt;</span><span class="p">(</span><span class="n">256</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kd">private</span><span class="w"> </span><span class="n">DataQuery</span><span class="w"> </span><span class="n">databaseDataQuery</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="nf">CacheInvocationHandler</span><span class="p">(</span><span class="n">DatabaseDataQuery</span><span class="w"> </span><span class="n">databaseDataQuery</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="k">this</span><span class="p">.</span><span class="na">databaseDataQuery</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">databaseDataQuery</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="nf">CacheInvocationHandler</span><span class="p">()</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="k">this</span><span class="p">.</span><span class="na">databaseDataQuery</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">DatabaseDataQuery</span><span class="p">();</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nd">@Override</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="n">Object</span><span class="w"> </span><span class="nf">invoke</span><span class="p">(</span><span class="n">Object</span><span class="w"> </span><span class="n">proxy</span><span class="p">,</span><span class="w"> </span><span class="n">Method</span><span class="w"> </span><span class="n">method</span><span class="p">,</span><span class="w"> </span><span class="n">Object</span><span class="o">[]</span><span class="w"> </span><span class="n">args</span><span class="p">)</span><span class="w"> </span><span class="kd">throws</span><span class="w"> </span><span class="n">Throwable</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="c1">// 1、判断是哪一个方法</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">String</span><span class="w"> </span><span class="n">result</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">null</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="k">if</span><span class="p">(</span><span class="s">&#34;query&#34;</span><span class="p">.</span><span class="na">equals</span><span class="p">(</span><span class="n">method</span><span class="p">.</span><span class="na">getName</span><span class="p">())){</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="c1">// 2、查询缓存，命中直接返回</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="n">result</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">cache</span><span class="p">.</span><span class="na">get</span><span class="p">(</span><span class="n">args</span><span class="o">[</span><span class="n">0</span><span class="o">]</span><span class="p">.</span><span class="na">toString</span><span class="p">());</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="k">if</span><span class="p">(</span><span class="n">result</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="kc">null</span><span class="p">){</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">                </span><span class="n">System</span><span class="p">.</span><span class="na">out</span><span class="p">.</span><span class="na">println</span><span class="p">(</span><span class="s">&#34;数据从缓存重获取。&#34;</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">                </span><span class="k">return</span><span class="w"> </span><span class="n">result</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="c1">// 3、未命中，查数据库（需要代理实例）</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="n">result</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">(</span><span class="n">String</span><span class="p">)</span><span class="w"> </span><span class="n">method</span><span class="p">.</span><span class="na">invoke</span><span class="p">(</span><span class="n">databaseDataQuery</span><span class="p">,</span><span class="w"> </span><span class="n">args</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="c1">// 4、如果查询到了,进行呢缓存</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="n">cache</span><span class="p">.</span><span class="na">put</span><span class="p">(</span><span class="n">args</span><span class="o">[</span><span class="n">0</span><span class="o">]</span><span class="p">.</span><span class="na">toString</span><span class="p">(),</span><span class="n">result</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="k">return</span><span class="w"> </span><span class="n">result</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="c1">// 当其他的方法被调用，不希望被干预，直接调用原生的方法</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">method</span><span class="p">.</span><span class="na">invoke</span><span class="p">(</span><span class="n">databaseDataQuery</span><span class="p">,</span><span class="n">args</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="c1">// 测试类：如何使用JDK动态代理</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="kd">public</span><span class="w"> </span><span class="kd">class</span> <span class="nc">Main</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="kd">static</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">main</span><span class="p">(</span><span class="n">String</span><span class="o">[]</span><span class="w"> </span><span class="n">args</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="c1">// jdk提供的代理实现，主要是使用Proxy类来完成</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="c1">// 1、classLoader：被代理类的类加载器，用于加载代理类</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">ClassLoader</span><span class="w"> </span><span class="n">contextClassLoader</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Thread</span><span class="p">.</span><span class="na">currentThread</span><span class="p">().</span><span class="na">getContextClassLoader</span><span class="p">();</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="c1">// 2、代理类需要实现的接口数组</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">Class</span><span class="o">[]</span><span class="w"> </span><span class="n">classes</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">Class</span><span class="o">[]</span><span class="p">{</span><span class="n">DataQuery</span><span class="p">.</span><span class="na">class</span><span class="p">};</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="c1">// 3、InvocationHandler</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">CacheInvocationHandler</span><span class="w"> </span><span class="n">cacheInvocationHandler</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">CacheInvocationHandler</span><span class="p">();</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">DataQuery</span><span class="w"> </span><span class="n">dataQuery</span><span class="w">  </span><span class="o">=</span><span class="w"> </span><span class="p">(</span><span class="n">DataQuery</span><span class="p">)</span><span class="w"> </span><span class="n">Proxy</span><span class="p">.</span><span class="na">newProxyInstance</span><span class="p">(</span><span class="n">contextClassLoader</span><span class="p">,</span><span class="w"> </span><span class="n">classes</span><span class="p">,</span><span class="w"> </span><span class="n">cacheInvocationHandler</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="c1">// 事实上调用query方法的使用，他是调用了invoke</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">String</span><span class="w"> </span><span class="n">result</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">dataQuery</span><span class="p">.</span><span class="na">query</span><span class="p">(</span><span class="s">&#34;key1&#34;</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">System</span><span class="p">.</span><span class="na">out</span><span class="p">.</span><span class="na">println</span><span class="p">(</span><span class="n">result</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">System</span><span class="p">.</span><span class="na">out</span><span class="p">.</span><span class="na">println</span><span class="p">(</span><span class="s">&#34;--------------------&#34;</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">result</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">dataQuery</span><span class="p">.</span><span class="na">query</span><span class="p">(</span><span class="s">&#34;key1&#34;</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">System</span><span class="p">.</span><span class="na">out</span><span class="p">.</span><span class="na">println</span><span class="p">(</span><span class="n">result</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">System</span><span class="p">.</span><span class="na">out</span><span class="p">.</span><span class="na">println</span><span class="p">(</span><span class="s">&#34;--------------------&#34;</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">result</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">dataQuery</span><span class="p">.</span><span class="na">query</span><span class="p">(</span><span class="s">&#34;key2&#34;</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">System</span><span class="p">.</span><span class="na">out</span><span class="p">.</span><span class="na">println</span><span class="p">(</span><span class="n">result</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">System</span><span class="p">.</span><span class="na">out</span><span class="p">.</span><span class="na">println</span><span class="p">(</span><span class="s">&#34;++++++++++++++++++++++++++++++++++++&#34;</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="c1">// 事实上调用queryAll方法的使用，他是调用了invoke</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">result</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">dataQuery</span><span class="p">.</span><span class="na">queryAll</span><span class="p">(</span><span class="s">&#34;key1&#34;</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">System</span><span class="p">.</span><span class="na">out</span><span class="p">.</span><span class="na">println</span><span class="p">(</span><span class="n">result</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">System</span><span class="p">.</span><span class="na">out</span><span class="p">.</span><span class="na">println</span><span class="p">(</span><span class="s">&#34;--------------------&#34;</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">result</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">dataQuery</span><span class="p">.</span><span class="na">queryAll</span><span class="p">(</span><span class="s">&#34;key1&#34;</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">System</span><span class="p">.</span><span class="na">out</span><span class="p">.</span><span class="na">println</span><span class="p">(</span><span class="n">result</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">System</span><span class="p">.</span><span class="na">out</span><span class="p">.</span><span class="na">println</span><span class="p">(</span><span class="s">&#34;--------------------&#34;</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">result</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">dataQuery</span><span class="p">.</span><span class="na">queryAll</span><span class="p">(</span><span class="s">&#34;key2&#34;</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">System</span><span class="p">.</span><span class="na">out</span><span class="p">.</span><span class="na">println</span><span class="p">(</span><span class="n">result</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">System</span><span class="p">.</span><span class="na">out</span><span class="p">.</span><span class="na">println</span><span class="p">(</span><span class="s">&#34;--------------------&#34;</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="p">}</span><span class="w">
+</span></span></span></code></pre></div><p><strong>【CGLIB 动态代理详解】</strong></p>
+<p><code>CGLIB</code> (Code Generation Library) 代码生成库 是基于字节码操作的，它可以生成目标类的子类，并且重写目标类的方法来实现代理。通过继承方式拦截所有非 <code>final</code> 方法的调用。 <code>CGLIB</code> 使用的是 <code>ASM</code> 字节码生成框架，生成的是字节码级别的代理类。性能相对较好，但是生成代理类的开销比 <code>JDK</code> 动态代理 稍微大一些。</p>
+<p><img alt="CGLIB动态代理类结构图" loading="lazy" src="https://oss.swimmingliu.cn/bf8d4fef-0332-11f0-b046-c858c0c1debd"></p>
+<p><code>Main</code> 类当中，没有实现任何接口，这就是 <code>CGLIB</code> 的优势之一，不需要实现任何接口。 <code>CGLIB</code> 通过生成目标类的子类来实现代理。<code>CGLIB</code> 通过 <code>Enhancer</code> 类来创建代理对象，需要配置父类和拦截器。</p>
+<ul>
+<li><strong>父类</strong>：<code>enhancer.setSuperclass(DatabaseDataQuery.class)</code> ，配置目标类作为父类</li>
+<li><strong>拦截器</strong>：<code>enhancer.setCallback(new CacheMethodInterceptor());</code> ，配置拦截器，拦截所有非 <code>final</code> 方法的调用，和<code>InvocationHandler</code> 差不多，可以插入额外的逻辑。</li>
+</ul>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="c1">// 拦截器：用于拦截方法</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="kd">public</span><span class="w"> </span><span class="kd">class</span> <span class="nc">CacheMethodInterceptor</span><span class="w"> </span><span class="kd">implements</span><span class="w"> </span><span class="n">MethodInterceptor</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kd">private</span><span class="w"> </span><span class="n">HashMap</span><span class="o">&lt;</span><span class="n">String</span><span class="p">,</span><span class="n">String</span><span class="o">&gt;</span><span class="w"> </span><span class="n">cache</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">HashMap</span><span class="o">&lt;&gt;</span><span class="p">();</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kd">private</span><span class="w"> </span><span class="n">DatabaseDataQuery</span><span class="w"> </span><span class="n">databaseDataQuery</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="nf">CacheMethodInterceptor</span><span class="p">(</span><span class="w"> </span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="k">this</span><span class="p">.</span><span class="na">databaseDataQuery</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">DatabaseDataQuery</span><span class="p">();</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="p">};</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nd">@Override</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="n">Object</span><span class="w"> </span><span class="nf">intercept</span><span class="p">(</span><span class="n">Object</span><span class="w"> </span><span class="n">obj</span><span class="p">,</span><span class="w"> </span><span class="n">Method</span><span class="w"> </span><span class="n">method</span><span class="p">,</span><span class="w"> </span><span class="n">Object</span><span class="o">[]</span><span class="w"> </span><span class="n">args</span><span class="p">,</span><span class="w"> </span><span class="n">MethodProxy</span><span class="w"> </span><span class="n">proxy</span><span class="p">)</span><span class="w"> </span><span class="kd">throws</span><span class="w"> </span><span class="n">Throwable</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="c1">// 1、判断是哪一个方法</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">String</span><span class="w"> </span><span class="n">result</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">null</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="k">if</span><span class="p">(</span><span class="s">&#34;query&#34;</span><span class="p">.</span><span class="na">equals</span><span class="p">(</span><span class="n">method</span><span class="p">.</span><span class="na">getName</span><span class="p">())){</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="c1">// 2、查询缓存，命中直接返回</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="n">result</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">cache</span><span class="p">.</span><span class="na">get</span><span class="p">(</span><span class="n">args</span><span class="o">[</span><span class="n">0</span><span class="o">]</span><span class="p">.</span><span class="na">toString</span><span class="p">());</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="k">if</span><span class="p">(</span><span class="n">result</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="kc">null</span><span class="p">){</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">                </span><span class="n">System</span><span class="p">.</span><span class="na">out</span><span class="p">.</span><span class="na">println</span><span class="p">(</span><span class="s">&#34;数据从缓存重获取。&#34;</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">                </span><span class="k">return</span><span class="w"> </span><span class="n">result</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="c1">// 3、未命中，查数据库（需要代理实例）</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="n">result</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">(</span><span class="n">String</span><span class="p">)</span><span class="w"> </span><span class="n">method</span><span class="p">.</span><span class="na">invoke</span><span class="p">(</span><span class="n">databaseDataQuery</span><span class="p">,</span><span class="w"> </span><span class="n">args</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="c1">// 4、如果查询到了,进行呢缓存</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="n">cache</span><span class="p">.</span><span class="na">put</span><span class="p">(</span><span class="n">args</span><span class="o">[</span><span class="n">0</span><span class="o">]</span><span class="p">.</span><span class="na">toString</span><span class="p">(),</span><span class="n">result</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="k">return</span><span class="w"> </span><span class="n">result</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">method</span><span class="p">.</span><span class="na">invoke</span><span class="p">(</span><span class="n">databaseDataQuery</span><span class="p">,</span><span class="n">args</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="c1">// 测试类：如何使用CGLIB进行动态代理</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="kd">public</span><span class="w"> </span><span class="kd">class</span> <span class="nc">Main</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="kd">static</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">main</span><span class="p">(</span><span class="n">String</span><span class="o">[]</span><span class="w"> </span><span class="n">args</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="c1">//cglib通过Enhancer实现</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">Enhancer</span><span class="w"> </span><span class="n">enhancer</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">Enhancer</span><span class="p">();</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="c1">//设置父类</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">enhancer</span><span class="p">.</span><span class="na">setSuperclass</span><span class="p">(</span><span class="n">DatabaseDataQuery</span><span class="p">.</span><span class="na">class</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="c1">//设置一个拦截器，用来拦截方法</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">enhancer</span><span class="p">.</span><span class="na">setCallback</span><span class="p">(</span><span class="k">new</span><span class="w"> </span><span class="n">CacheMethodInterceptor</span><span class="p">());</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="c1">//创建代理类，其实就是目标类的子类</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">DatabaseDataQuery</span><span class="w"> </span><span class="n">databaseDataQuery</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">(</span><span class="n">DatabaseDataQuery</span><span class="p">)</span><span class="w"> </span><span class="n">enhancer</span><span class="p">.</span><span class="na">create</span><span class="p">();</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">databaseDataQuery</span><span class="p">.</span><span class="na">query</span><span class="p">(</span><span class="s">&#34;Key1&#34;</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">databaseDataQuery</span><span class="p">.</span><span class="na">query</span><span class="p">(</span><span class="s">&#34;Key1&#34;</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">databaseDataQuery</span><span class="p">.</span><span class="na">query</span><span class="p">(</span><span class="s">&#34;Key2&#34;</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="p">}</span><span class="w">
+</span></span></span></code></pre></div><h2 id="7-你使用过-java-的反射机制吗如何应用反射">7. 你使用过 Java 的反射机制吗？如何应用反射？<a hidden class="anchor" aria-hidden="true" href="#7-你使用过-java-的反射机制吗如何应用反射">#</a></h2>
+<ul>
+<li>
+<p><strong>反射机制定义</strong>：Java 的反射机制是指在运行的时候，获取类的结构信息 (比如方法、字段、构建函数) ，然后获取操作对象的一种机制。反射机制可以在运行的时候，动态创建对象、调用方法、访问字段，不需要在编译的时候知道这些信息。反射的核心类包括 <code>Class</code>、<code>Constuctor</code>、<code>Method</code>、<code>Filed</code></p>
+</li>
+<li>
+<p><strong>反射机制作用</strong>：</p>
+<ul>
+<li><strong>动态获取类信息</strong>：包括类名、包名、父类等，不需要在编译的时候知道类的信息</li>
+<li><strong>动态创建对象</strong>：可以通过 <code>Class</code> 类或者 <code>Constructor</code> 对象的 <code>newInstance()</code> 动态创建对象，不需要在编译的时候知道对象的类型</li>
+<li><strong>动态调用对象的方法</strong>：通过 <code>Method</code> 类的 <code>invoke()</code> 方法实现</li>
+<li><strong>访问和修改对象的字段值</strong>：通过 <code>Filed.set()</code> 直接修改对象的值，和通过<code>SetAccessible(true)</code> 绕过访问限制</li>
+</ul>
+</li>
+<li>
+<p><strong>反射机制的应用场景</strong>： 一般的业务编码用不到反射机制，但是在框架上会用到反射机制。因为写框架的时候，很多场景是很灵活的，不能确定目标对象的类型，只能通过反射动态获取对象信息。比如 <code>Spring</code> 使用反射机制来读取和解析配置文件，从而实现 <code>DI</code> 依赖注入和 <code>AOP</code> 切面编程等功能。</p>
+<p><code>DI</code> 依赖注入的具体实现，假如对指定类加上 <code>@Service</code> 注解，下面是具体的实现过程：</p>
+<ol>
+<li><code>Spring</code> 在容器启动初始化的时候, 将所有带有<code>@Service</code>、<code>@Component</code>等注解的类，放入容器当中，注册为<code>Bean</code></li>
+<li><code>Spring</code> 容器启动的时候，会将带有<code>@Autowired</code> 注解的类进行标记，然后使用反射机制将所有的字段、方法、构造器进行注入</li>
+</ol>
+</li>
+<li>
+<p><strong>反射的使用方法</strong>：</p>
+<ul>
+<li>
+<p><strong>获取 <code>Class</code> 对象</strong></p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="n">Class</span><span class="o">&lt;?&gt;</span><span class="w"> </span><span class="n">clazz</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Class</span><span class="p">.</span><span class="na">forName</span><span class="p">(</span><span class="s">&#34;com.swimmingliu.MyClass&#34;</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="c1">// 或者</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="n">Class</span><span class="o">&lt;?&gt;</span><span class="w"> </span><span class="n">clazz</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">MyClass</span><span class="p">.</span><span class="na">class</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="c1">// 或者</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="n">Class</span><span class="o">&lt;?&gt;</span><span class="w"> </span><span class="n">clazz</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">obj</span><span class="p">.</span><span class="na">getClass</span><span class="p">();</span><span class="w">
+</span></span></span></code></pre></div></li>
+<li>
+<p><strong>创建对象</strong> ：一般都采用 <code>Constructor</code> 来构造对象</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="n">Object</span><span class="w"> </span><span class="n">obj</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">clazz</span><span class="p">.</span><span class="na">newInstance</span><span class="p">();</span><span class="w"> </span><span class="c1">// 已过时</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="n">Constructor</span><span class="o">&lt;?&gt;</span><span class="w"> </span><span class="n">constructor</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">clazz</span><span class="p">.</span><span class="na">getConstructor</span><span class="p">();</span><span class="w"> 
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="n">Object</span><span class="w"> </span><span class="n">obj</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">constructor</span><span class="p">.</span><span class="na">newInstance</span><span class="p">();</span><span class="w">
+</span></span></span></code></pre></div></li>
+<li>
+<p><strong>访问字段</strong>：可以让私有对象可见，而且能够设置它的值</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="n">Field</span><span class="w"> </span><span class="n">field</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">clazz</span><span class="p">.</span><span class="na">getField</span><span class="p">(</span><span class="s">&#34;name&#34;</span><span class="p">);</span><span class="w"> </span><span class="c1">// 假设 private String name;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="n">field</span><span class="p">.</span><span class="na">setAccessible</span><span class="p">(</span><span class="kc">true</span><span class="p">);</span><span class="w"> </span><span class="c1">// 允许访问 private 字段</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="n">Object</span><span class="w"> </span><span class="n">value</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">field</span><span class="p">.</span><span class="na">get</span><span class="p">(</span><span class="n">obj</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="n">field</span><span class="p">.</span><span class="na">set</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span><span class="w"> </span><span class="n">newValue</span><span class="p">);</span><span class="w">
+</span></span></span></code></pre></div></li>
+<li>
+<p><strong>调用方法</strong>：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="n">Method</span><span class="w"> </span><span class="n">method</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">clazz</span><span class="p">.</span><span class="na">getMethod</span><span class="p">(</span><span class="s">&#34;myMethod&#34;</span><span class="p">,</span><span class="w"> </span><span class="n">String</span><span class="p">.</span><span class="na">class</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="n">Object</span><span class="w"> </span><span class="n">result</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">method</span><span class="p">.</span><span class="na">invoke</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span><span class="w"> </span><span class="s">&#34;param&#34;</span><span class="p">);</span><span class="w">
+</span></span></span></code></pre></div></li>
+</ul>
+</li>
+</ul>
 
 
   </div>

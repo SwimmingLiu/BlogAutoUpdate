@@ -268,9 +268,16 @@ lock 上锁：把一个变量表示为一条线程独占的状态 unlock 解锁�
     <p>1. 说说你知道的几种 I/O 模型 【常见的五大I/O模型】
 常见的五大I/O模式分别为: 同步阻塞I/O (Blocking I/O) BIO、非阻塞I/O (Non-blocking I/O) NIO、I/O多路复用、信号量驱动I/O、异步I/O AIO
 我们假如要烧水喝，看不同模型是怎么烧的水喝
-I/O 模型 特性 烧水案例 同步阻塞I/O BIO 数据从网卡到内核，再从内核到用户空间，都是阻塞操作。 自己动手烧水，一直盯着，等水烧开了，倒在杯子里喝。 非阻塞I/O NIO 数据从网卡到内核不阻塞，read不到数据直接返回，但是从内核到用户空间会阻塞 (用户轮询read) 自己动手烧水，隔两分钟看一下，水烧开没有。等水烧开了，倒在杯子里喝。 I/O多路复用 只有一个线程查看多个连接是否有数据准备就绪 (看从网卡能不能read到数据到内核) 找专门烧水的领居帮忙，他把水烧好了之后，会喊你来拿。但是你要自己倒在杯子里喝。 信号驱动I/O 数据从网卡到内核之后会自动通知用户程序，然后让他read读取数据 去烧水房烧水，全自动的，有个通知灯。水烧完了之后会按你家的门铃，但是有客人来了，也会按门铃 异步I/O AIO 全程不阻塞，拷贝到用户空间之后直接回调。 和多路复用类似，但是烧完水之后不用自己倒水，他帮你倒好了，还吹凉了，你过来喝就行。 </p>
+I/O 模型 特性 烧水案例 同步阻塞I/O BIO 数据从网卡到内核，再从内核到用户空间，都是阻塞操作。 自己动手烧水，一直盯着，等水烧开了，倒在杯子里喝。 非阻塞I/O NIO 数据从网卡到内核不阻塞，read不到数据直接返回，但是从内核到用户空间会阻塞 (用户轮询read) 自己动手烧水，隔两分钟看一下，水烧开没有。等水烧开了，倒在杯子里喝。 I/O多路复用 只有一个线程查看多个连接是否有数据准备就绪 (看从网卡能不能read到数据到内核) 找专门烧水的领居帮忙，他把水烧好了之后，会喊你来拿。但是你要自己倒在杯子里喝。 信号驱动I/O 数据从网卡到内核之后会自动通知用户程序，然后让他read读取数据 去烧水房烧水，全自动的，有个通知灯。水烧完了之后会按你家的门铃，但是有客人来了，也会按门铃 异步I/O AIO 全程不阻塞，拷贝到用户空间之后直接回调。 和多路复用类似，但是烧完水之后不用自己倒水，他帮你倒好了，还吹凉了，你过来喝就行。 【为什么会产生各种I/O】
+下图是两个不同主机上，应用程序传递数据的过程，借助该过程来理解 I/O 是如何产生的
+DMA（直接内存访问）是一种不经过CPU直接在网络适配器（网卡）和主机内存之间进行数据传输的机制，用于提升数据传输效率。
+【同步阻塞 I/O BIO】
+同步阻塞I/O BIO 的工作机制：应用程序被阻塞，直到数据复制到应用进程的缓冲区才返回。阻塞并意味着整个操作系统都被阻塞。其他程序还可以执行，不消耗CPU事件。同步阻塞 I/O BIO 中，应用程序发起 read 调用来读取数据之后，一直被阻塞，直到内核把数据copy到用户空间。该方案适合客户端连接数量不高的情况。下图的read 和 recvfrom 函数是一个意思。
+【非阻塞式 I/O NIO】
+非阻塞式 I/O NIO 的工作机制：应用程序执行read 系统调用之后，内核返回一个错误码。应用程序可以继续执行，但是需要不断的轮询 read 来获取 I/O是否完成，这种方式称之为 轮询 polling 。等到数据准备就绪，从内核空间copy到用户空间的时候，进程才被阻塞，直到内核copy完成。该方案比较低效，会不停的消耗CPU资源。
+...</p>
   </div>
-  <footer class="entry-footer"><span title='2025-03-01 09:49:44 +0800 CST'>March 1, 2025</span>&nbsp;·&nbsp;1 min&nbsp;·&nbsp;SwimmingLiu</footer>
+  <footer class="entry-footer"><span title='2025-03-01 09:49:44 +0800 CST'>March 1, 2025</span>&nbsp;·&nbsp;3 min&nbsp;·&nbsp;SwimmingLiu</footer>
   <a class="entry-link" aria-label="post link to 操作系统面试题笔记" href="https://swimmingliu.cn/posts/job/operation-system-interview-questions/"></a>
 </article>
 
@@ -354,7 +361,7 @@ JDK 1.7: 数组 &#43; 链表，链表部分采用头插法，多线程会导致�
 public class Person { private String name; private int age; @Override public boolean equals(Object obj) { if (this == obj) return true; if (obj == null || getClass() != obj.getClass()) return false; Person person = (Person) obj; return age == person.age &amp;&amp; Objects.equals(name, person.name); } } 创建相同的对象，并添加到HashSet中
 ...</p>
   </div>
-  <footer class="entry-footer"><span title='2025-02-19 15:18:58 +0800 CST'>February 19, 2025</span>&nbsp;·&nbsp;1 min&nbsp;·&nbsp;SwimmingLiu</footer>
+  <footer class="entry-footer"><span title='2025-02-19 15:18:58 +0800 CST'>February 19, 2025</span>&nbsp;·&nbsp;4 min&nbsp;·&nbsp;SwimmingLiu</footer>
   <a class="entry-link" aria-label="post link to Java基础题面试笔记" href="https://swimmingliu.cn/posts/job/java-basic-interview-questions/"></a>
 </article>
 

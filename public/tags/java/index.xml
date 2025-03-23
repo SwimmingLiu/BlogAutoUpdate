@@ -11,8 +11,48 @@
     </image>
     <generator>Hugo -- 0.136.0</generator>
     <language>en</language>
-    <lastBuildDate>Thu, 13 Mar 2025 21:49:44 +0800</lastBuildDate>
+    <lastBuildDate>Sat, 22 Mar 2025 21:45:41 +0800</lastBuildDate>
     <atom:link href="https://swimmingliu.cn/tags/java/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>JVM 面试题笔记</title>
+      <link>https://swimmingliu.cn/posts/job/java-jvm-interview-questions/</link>
+      <pubDate>Sat, 22 Mar 2025 21:45:41 +0800</pubDate>
+      <guid>https://swimmingliu.cn/posts/job/java-jvm-interview-questions/</guid>
+      <description>&lt;h1 id=&#34;jvm-面试题笔记&#34;&gt;JVM 面试题笔记&lt;/h1&gt;
+&lt;h2 id=&#34;1-jvm-的内存区域是如何划分的&#34;&gt;1. JVM 的内存区域是如何划分的？&lt;/h2&gt;
+&lt;p&gt;&lt;code&gt;JVM&lt;/code&gt; 内存当中，运行时数据的区域包含堆、方法区（元空间）、虚拟机栈、本地方法栈、程序计数器。另外，其他的内存区域属于本地内存，本地内存就包括直接内存，直接内存是非运行时数据区的一部分。
+其中，堆和方法区（元空间） 是线程共享的，虚拟机栈、本地方法栈、程序计数器都是线程私有的。&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;【注意】&lt;/strong&gt; &lt;code&gt;JVM&lt;/code&gt; 规范对于运行时数据区域的规定是很宽松的。就拿堆来说，堆可以是连续空间，也可以是不连续空间。堆的大小可以固定，也可以再运行时按照需求进行扩展。虚拟机实现者可以使用任何&lt;strong&gt;垃圾回收算法&lt;/strong&gt;管理堆，甚至完全不进行垃圾回收也是可以的。&lt;/p&gt;
+&lt;p&gt;&lt;img alt=&#34;JVM内存区域&#34; loading=&#34;lazy&#34; src=&#34;https://oss.swimmingliu.cn/6ebff0fa-07e8-11f0-86bd-c858c0c1debd&#34;&gt;&lt;/p&gt;
+&lt;p&gt;下面逐一介绍不同部分的功能和作用&lt;/p&gt;
+&lt;p&gt;首先是线程私有的部分，&lt;strong&gt;程序计数器&lt;/strong&gt;、&lt;strong&gt;虚拟机栈&lt;/strong&gt;、&lt;strong&gt;本地方法栈&lt;/strong&gt;。&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;【程序计数器】&lt;/strong&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;定义&lt;/strong&gt;：程序计数器就是记录当前所执行的字节码的行号。字节码解释器通过改变程序计数器的值，来选取下一条需要执行的字节码指令。它的生命周期随着线程的创建而创建，随着线程的结束而死亡。&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;作用&lt;/strong&gt;：分支、循环、跳转、异常处理、线程恢复这些功能都需要依赖程序计数器完成。比如线程切换上下文中，从 &lt;code&gt;A线程&lt;/code&gt; 先切换到 &lt;code&gt;B线程&lt;/code&gt;，然后从 &lt;code&gt;B线程&lt;/code&gt; 恢复到 &lt;code&gt;A线程&lt;/code&gt; 的过程当中，为了 &lt;code&gt;A线程&lt;/code&gt; 能够恢复到正确的执行位置，就需要读取 &lt;code&gt;A线程&lt;/code&gt; 程序计数器的值，来确认切换线程前执行的位置在哪里。&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;为什么是线程私有&lt;/strong&gt;：因为线程切换的过程当中，每个线程都需要一个程序计数器来记录自己的程序执行位置。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;strong&gt;【注意】&lt;/strong&gt; 程序计数器是唯一一个不会出现 &lt;code&gt;OOM&lt;/code&gt; 内存不足的内存区域，因为他就只是存储一个值。&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;【虚拟机栈】&lt;/strong&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;定义&lt;/strong&gt;：虚拟机栈按照先进后出的方案存储的是非本地方法的调用对应的&lt;strong&gt;栈帧&lt;/strong&gt;。每一次方法调用的时候会被压入栈中，方法结束的时候会被弹出栈中。栈帧中包含&lt;strong&gt;局部变量表&lt;/strong&gt;、&lt;strong&gt;操作次数栈&lt;/strong&gt;（存储操作数和临时计算结果）、&lt;strong&gt;动态链接&lt;/strong&gt;、&lt;strong&gt;方法的返回地址&lt;/strong&gt;。虚拟机的生命周期随着线程的创建而创建，随着线程的结束而死亡。&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;作用&lt;/strong&gt;：存储非本地方法的栈帧，支持方法的调用和返回。当栈深度超过虚拟机允许的最大深度，会抛出 &lt;code&gt;StackOverflowError&lt;/code&gt; 栈溢出异常。如果虚拟机栈无法动态扩展或申请到足够的内存，会抛出 &lt;code&gt;OutOfMemoryError&lt;/code&gt; 内存不足异常。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;img alt=&#34;JVM-虚拟机栈-完整结构&#34; loading=&#34;lazy&#34; src=&#34;https://oss.swimmingliu.cn/6f22fcdc-07e8-11f0-92ef-c858c0c1debd&#34;&gt;&lt;/p&gt;
+&lt;p&gt;栈帧中包含&lt;strong&gt;局部变量表&lt;/strong&gt;、&lt;strong&gt;操作次数栈&lt;/strong&gt;（存储操作数和临时变量）、&lt;strong&gt;动态链接&lt;/strong&gt;、&lt;strong&gt;方法的返回地址&lt;/strong&gt;。其中，局部变量表存放的是所有的局部变量，或者其出对应的地址（数组）。动态链接就是当前类常量池的引用。&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;局部变量表&lt;/strong&gt;：存放&lt;strong&gt;方法参数传入的形参值&lt;/strong&gt;，&lt;strong&gt;方法内的局部变量&lt;/strong&gt;、&lt;strong&gt;方法的 &lt;code&gt;this&lt;/code&gt; 引用&lt;/strong&gt;。内部结构主要存放了编译期可知的各种数据类型（&lt;code&gt;boolean&lt;/code&gt;、&lt;code&gt;byte&lt;/code&gt;、&lt;code&gt;char&lt;/code&gt;、&lt;code&gt;short&lt;/code&gt;、&lt;code&gt;int&lt;/code&gt;、&lt;code&gt;float&lt;/code&gt;、&lt;code&gt;long&lt;/code&gt;、&lt;code&gt;double&lt;/code&gt;）、对象引用（reference 类型，它不同于对象本身，可能是一个指向对象起始地址的引用指针）&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;操作数栈&lt;/strong&gt;：主要作为&lt;strong&gt;方法调用的中转站&lt;/strong&gt;使用，用于存放&lt;strong&gt;方法执行过程中&lt;/strong&gt;产生的&lt;strong&gt;中间计算结果&lt;/strong&gt;。另外，&lt;strong&gt;计算过程中产生的临时变量&lt;/strong&gt;也会放在操作数栈中。&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;动态链接&lt;/strong&gt;：主要作用是实现在&lt;strong&gt;当前方法中调用其他方法&lt;/strong&gt;。 &lt;code&gt;Class&lt;/code&gt; 文件的常量池里面保存有大量的符号引用，比如方法的符号引用。 当一个方法需要调用其他方法，需要将常量池中只想方法的符号引用转换为在内存地址当中的直接引用。动态链接的作用就是&lt;strong&gt;把常量池的符号引用转换为内存当中的直接引用&lt;/strong&gt;。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;strong&gt;【本地方法栈】&lt;/strong&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;定义&lt;/strong&gt;：本地方法栈和虚拟栈的结构是一样的。不同的是，本地方法栈是 &lt;code&gt;JVM&lt;/code&gt; 调用 &lt;code&gt;Native&lt;/code&gt; 方法的时候才会用到的，虚拟机栈是执行 &lt;code&gt;Java&lt;/code&gt; 自身的方法 (也就是字节码) 会用到的。&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;作用&lt;/strong&gt;：存储本地方法 (&lt;code&gt;Native&lt;/code&gt;) 栈帧，支持方法的调用和返回。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;strong&gt;【注意】&lt;/strong&gt; 在 &lt;code&gt;HotSpot&lt;/code&gt; 虚拟机当中，将本地方法栈和虚拟机栈合二为一了。&lt;/p&gt;
+&lt;p&gt;其次，我们将介绍线程共享的部分，&lt;strong&gt;堆&lt;/strong&gt; 和 &lt;strong&gt;方法区 （&lt;code&gt;JDK 1.8&lt;/code&gt;叫元空间）&lt;/strong&gt;&lt;/p&gt;</description>
+    </item>
     <item>
       <title>计算机网络面试题笔记</title>
       <link>https://swimmingliu.cn/posts/job/computer-networks-interview-questions/</link>

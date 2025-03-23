@@ -1,0 +1,680 @@
+<!DOCTYPE html>
+<html lang="en" dir="auto">
+
+<head><meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta name="robots" content="index, follow">
+<title>JVM 面试题笔记 | SwimmingLiu&#39;s Blog</title>
+<meta name="keywords" content="Java, JVM">
+<meta name="description" content="JVM 面试题笔记
+1. JVM 的内存区域是如何划分的？
+JVM 内存当中，运行时数据的区域包含堆、方法区（元空间）、虚拟机栈、本地方法栈、程序计数器。另外，其他的内存区域属于本地内存，本地内存就包括直接内存，直接内存是非运行时数据区的一部分。
+其中，堆和方法区（元空间） 是线程共享的，虚拟机栈、本地方法栈、程序计数器都是线程私有的。
+【注意】 JVM 规范对于运行时数据区域的规定是很宽松的。就拿堆来说，堆可以是连续空间，也可以是不连续空间。堆的大小可以固定，也可以再运行时按照需求进行扩展。虚拟机实现者可以使用任何垃圾回收算法管理堆，甚至完全不进行垃圾回收也是可以的。
+
+下面逐一介绍不同部分的功能和作用
+首先是线程私有的部分，程序计数器、虚拟机栈、本地方法栈。
+【程序计数器】
+
+定义：程序计数器就是记录当前所执行的字节码的行号。字节码解释器通过改变程序计数器的值，来选取下一条需要执行的字节码指令。它的生命周期随着线程的创建而创建，随着线程的结束而死亡。
+作用：分支、循环、跳转、异常处理、线程恢复这些功能都需要依赖程序计数器完成。比如线程切换上下文中，从 A线程 先切换到 B线程，然后从 B线程 恢复到 A线程 的过程当中，为了 A线程 能够恢复到正确的执行位置，就需要读取 A线程 程序计数器的值，来确认切换线程前执行的位置在哪里。
+为什么是线程私有：因为线程切换的过程当中，每个线程都需要一个程序计数器来记录自己的程序执行位置。
+
+【注意】 程序计数器是唯一一个不会出现 OOM 内存不足的内存区域，因为他就只是存储一个值。
+【虚拟机栈】
+
+定义：虚拟机栈按照先进后出的方案存储的是非本地方法的调用对应的栈帧。每一次方法调用的时候会被压入栈中，方法结束的时候会被弹出栈中。栈帧中包含局部变量表、操作次数栈（存储操作数和临时计算结果）、动态链接、方法的返回地址。虚拟机的生命周期随着线程的创建而创建，随着线程的结束而死亡。
+作用：存储非本地方法的栈帧，支持方法的调用和返回。当栈深度超过虚拟机允许的最大深度，会抛出 StackOverflowError 栈溢出异常。如果虚拟机栈无法动态扩展或申请到足够的内存，会抛出 OutOfMemoryError 内存不足异常。
+
+
+栈帧中包含局部变量表、操作次数栈（存储操作数和临时变量）、动态链接、方法的返回地址。其中，局部变量表存放的是所有的局部变量，或者其出对应的地址（数组）。动态链接就是当前类常量池的引用。
+
+局部变量表：存放方法参数传入的形参值，方法内的局部变量、方法的 this 引用。内部结构主要存放了编译期可知的各种数据类型（boolean、byte、char、short、int、float、long、double）、对象引用（reference 类型，它不同于对象本身，可能是一个指向对象起始地址的引用指针）
+操作数栈：主要作为方法调用的中转站使用，用于存放方法执行过程中产生的中间计算结果。另外，计算过程中产生的临时变量也会放在操作数栈中。
+动态链接：主要作用是实现在当前方法中调用其他方法。 Class 文件的常量池里面保存有大量的符号引用，比如方法的符号引用。 当一个方法需要调用其他方法，需要将常量池中只想方法的符号引用转换为在内存地址当中的直接引用。动态链接的作用就是把常量池的符号引用转换为内存当中的直接引用。
+
+【本地方法栈】
+
+定义：本地方法栈和虚拟栈的结构是一样的。不同的是，本地方法栈是 JVM 调用 Native 方法的时候才会用到的，虚拟机栈是执行 Java 自身的方法 (也就是字节码) 会用到的。
+作用：存储本地方法 (Native) 栈帧，支持方法的调用和返回。
+
+【注意】 在 HotSpot 虚拟机当中，将本地方法栈和虚拟机栈合二为一了。
+其次，我们将介绍线程共享的部分，堆 和 方法区 （JDK 1.8叫元空间）">
+<meta name="author" content="SwimmingLiu">
+<link rel="canonical" href="https://swimmingliu.cn/posts/job/java-jvm-interview-questions/">
+<link crossorigin="anonymous" href="/assets/css/stylesheet.6ecbb0040febd20e47edd88a662c19f1ea945bf7427774b86594271d18f88faf.css" integrity="sha256-bsuwBA/r0g5H7diKZiwZ8eqUW/dCd3S4ZZQnHRj4j68=" rel="preload stylesheet" as="style">
+<link rel="icon" href="https://swimmingliu.cn/images/swimmingliu_icon.png">
+<link rel="icon" type="image/png" sizes="16x16" href="https://swimmingliu.cn/images/swimmingliu_icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="https://swimmingliu.cn/images/swimmingliu_icon.png">
+<link rel="apple-touch-icon" href="https://swimmingliu.cn/images/swimmingliu_icon.png">
+<link rel="mask-icon" href="https://swimmingliu.cn/images/swimmingliu_icon.png">
+<meta name="theme-color" content="#2e2e33">
+<meta name="msapplication-TileColor" content="#2e2e33">
+<link rel="alternate" hreflang="en" href="https://swimmingliu.cn/posts/job/java-jvm-interview-questions/">
+<noscript>
+    <style>
+        #theme-toggle,
+        .top-link {
+            display: none;
+        }
+
+    </style>
+    <style>
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --theme: rgb(29, 30, 32);
+                --entry: rgb(46, 46, 51);
+                --primary: rgb(218, 218, 219);
+                --secondary: rgb(155, 156, 157);
+                --tertiary: rgb(65, 66, 68);
+                --content: rgb(196, 196, 197);
+                --code-block-bg: rgb(46, 46, 51);
+                --code-bg: rgb(55, 56, 62);
+                --border: rgb(51, 51, 51);
+            }
+
+            .list {
+                background: var(--theme);
+            }
+
+            .list:not(.dark)::-webkit-scrollbar-track {
+                background: 0 0;
+            }
+
+            .list:not(.dark)::-webkit-scrollbar-thumb {
+                border-color: var(--theme);
+            }
+        }
+
+    </style>
+</noscript>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css" integrity="sha384-n8MVd4RsNIU0tAv4ct0nTaAbDJwPJzDEaqSD1odI+WdtXRGWt2kTvGFasHpSy3SV" crossorigin="anonymous">
+
+
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js" integrity="sha384-XjKyOOlGwcjNTAIQHIpgOno0Hl1YQqzUOEleOLALmuqehneUG+vnGctmUb0ZY0l8" crossorigin="anonymous"></script>
+
+
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js" integrity="sha384-+VBxd3r6XgURycqtZ117nYw44OOcIax56Z4dCRWbxyPt0Koah1uHoK0o4+/RRE05" crossorigin="anonymous"
+    onload="renderMathInElement(document.body);"></script>
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        renderMathInElement(document.body, {
+            
+            
+            delimiters: [
+                { left: '$$', right: '$$', display: true },
+                { left: '$', right: '$', display: false },
+                { left: '\\(', right: '\\)', display: false },
+                { left: '\\[', right: '\\]', display: true }
+            ],
+            
+            throwOnError: false
+        });
+    });
+</script>
+
+<meta property="og:url" content="https://swimmingliu.cn/posts/job/java-jvm-interview-questions/">
+  <meta property="og:site_name" content="SwimmingLiu&#39;s Blog">
+  <meta property="og:title" content="JVM 面试题笔记">
+  <meta property="og:description" content="JVM 面试题笔记 1. JVM 的内存区域是如何划分的？ JVM 内存当中，运行时数据的区域包含堆、方法区（元空间）、虚拟机栈、本地方法栈、程序计数器。另外，其他的内存区域属于本地内存，本地内存就包括直接内存，直接内存是非运行时数据区的一部分。 其中，堆和方法区（元空间） 是线程共享的，虚拟机栈、本地方法栈、程序计数器都是线程私有的。
+【注意】 JVM 规范对于运行时数据区域的规定是很宽松的。就拿堆来说，堆可以是连续空间，也可以是不连续空间。堆的大小可以固定，也可以再运行时按照需求进行扩展。虚拟机实现者可以使用任何垃圾回收算法管理堆，甚至完全不进行垃圾回收也是可以的。
+下面逐一介绍不同部分的功能和作用
+首先是线程私有的部分，程序计数器、虚拟机栈、本地方法栈。
+【程序计数器】
+定义：程序计数器就是记录当前所执行的字节码的行号。字节码解释器通过改变程序计数器的值，来选取下一条需要执行的字节码指令。它的生命周期随着线程的创建而创建，随着线程的结束而死亡。 作用：分支、循环、跳转、异常处理、线程恢复这些功能都需要依赖程序计数器完成。比如线程切换上下文中，从 A线程 先切换到 B线程，然后从 B线程 恢复到 A线程 的过程当中，为了 A线程 能够恢复到正确的执行位置，就需要读取 A线程 程序计数器的值，来确认切换线程前执行的位置在哪里。 为什么是线程私有：因为线程切换的过程当中，每个线程都需要一个程序计数器来记录自己的程序执行位置。 【注意】 程序计数器是唯一一个不会出现 OOM 内存不足的内存区域，因为他就只是存储一个值。
+【虚拟机栈】
+定义：虚拟机栈按照先进后出的方案存储的是非本地方法的调用对应的栈帧。每一次方法调用的时候会被压入栈中，方法结束的时候会被弹出栈中。栈帧中包含局部变量表、操作次数栈（存储操作数和临时计算结果）、动态链接、方法的返回地址。虚拟机的生命周期随着线程的创建而创建，随着线程的结束而死亡。 作用：存储非本地方法的栈帧，支持方法的调用和返回。当栈深度超过虚拟机允许的最大深度，会抛出 StackOverflowError 栈溢出异常。如果虚拟机栈无法动态扩展或申请到足够的内存，会抛出 OutOfMemoryError 内存不足异常。 栈帧中包含局部变量表、操作次数栈（存储操作数和临时变量）、动态链接、方法的返回地址。其中，局部变量表存放的是所有的局部变量，或者其出对应的地址（数组）。动态链接就是当前类常量池的引用。
+局部变量表：存放方法参数传入的形参值，方法内的局部变量、方法的 this 引用。内部结构主要存放了编译期可知的各种数据类型（boolean、byte、char、short、int、float、long、double）、对象引用（reference 类型，它不同于对象本身，可能是一个指向对象起始地址的引用指针） 操作数栈：主要作为方法调用的中转站使用，用于存放方法执行过程中产生的中间计算结果。另外，计算过程中产生的临时变量也会放在操作数栈中。 动态链接：主要作用是实现在当前方法中调用其他方法。 Class 文件的常量池里面保存有大量的符号引用，比如方法的符号引用。 当一个方法需要调用其他方法，需要将常量池中只想方法的符号引用转换为在内存地址当中的直接引用。动态链接的作用就是把常量池的符号引用转换为内存当中的直接引用。 【本地方法栈】
+定义：本地方法栈和虚拟栈的结构是一样的。不同的是，本地方法栈是 JVM 调用 Native 方法的时候才会用到的，虚拟机栈是执行 Java 自身的方法 (也就是字节码) 会用到的。 作用：存储本地方法 (Native) 栈帧，支持方法的调用和返回。 【注意】 在 HotSpot 虚拟机当中，将本地方法栈和虚拟机栈合二为一了。
+其次，我们将介绍线程共享的部分，堆 和 方法区 （JDK 1.8叫元空间）">
+  <meta property="og:locale" content="en">
+  <meta property="og:type" content="article">
+    <meta property="article:section" content="posts">
+    <meta property="article:published_time" content="2025-03-22T21:45:41+08:00">
+    <meta property="article:modified_time" content="2025-03-22T21:45:41+08:00">
+    <meta property="article:tag" content="Java">
+    <meta property="article:tag" content="JVM">
+      <meta property="og:image" content="https://swimmingliu.cn/papermod-cover.png">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://swimmingliu.cn/papermod-cover.png">
+<meta name="twitter:title" content="JVM 面试题笔记">
+<meta name="twitter:description" content="JVM 面试题笔记
+1. JVM 的内存区域是如何划分的？
+JVM 内存当中，运行时数据的区域包含堆、方法区（元空间）、虚拟机栈、本地方法栈、程序计数器。另外，其他的内存区域属于本地内存，本地内存就包括直接内存，直接内存是非运行时数据区的一部分。
+其中，堆和方法区（元空间） 是线程共享的，虚拟机栈、本地方法栈、程序计数器都是线程私有的。
+【注意】 JVM 规范对于运行时数据区域的规定是很宽松的。就拿堆来说，堆可以是连续空间，也可以是不连续空间。堆的大小可以固定，也可以再运行时按照需求进行扩展。虚拟机实现者可以使用任何垃圾回收算法管理堆，甚至完全不进行垃圾回收也是可以的。
+
+下面逐一介绍不同部分的功能和作用
+首先是线程私有的部分，程序计数器、虚拟机栈、本地方法栈。
+【程序计数器】
+
+定义：程序计数器就是记录当前所执行的字节码的行号。字节码解释器通过改变程序计数器的值，来选取下一条需要执行的字节码指令。它的生命周期随着线程的创建而创建，随着线程的结束而死亡。
+作用：分支、循环、跳转、异常处理、线程恢复这些功能都需要依赖程序计数器完成。比如线程切换上下文中，从 A线程 先切换到 B线程，然后从 B线程 恢复到 A线程 的过程当中，为了 A线程 能够恢复到正确的执行位置，就需要读取 A线程 程序计数器的值，来确认切换线程前执行的位置在哪里。
+为什么是线程私有：因为线程切换的过程当中，每个线程都需要一个程序计数器来记录自己的程序执行位置。
+
+【注意】 程序计数器是唯一一个不会出现 OOM 内存不足的内存区域，因为他就只是存储一个值。
+【虚拟机栈】
+
+定义：虚拟机栈按照先进后出的方案存储的是非本地方法的调用对应的栈帧。每一次方法调用的时候会被压入栈中，方法结束的时候会被弹出栈中。栈帧中包含局部变量表、操作次数栈（存储操作数和临时计算结果）、动态链接、方法的返回地址。虚拟机的生命周期随着线程的创建而创建，随着线程的结束而死亡。
+作用：存储非本地方法的栈帧，支持方法的调用和返回。当栈深度超过虚拟机允许的最大深度，会抛出 StackOverflowError 栈溢出异常。如果虚拟机栈无法动态扩展或申请到足够的内存，会抛出 OutOfMemoryError 内存不足异常。
+
+
+栈帧中包含局部变量表、操作次数栈（存储操作数和临时变量）、动态链接、方法的返回地址。其中，局部变量表存放的是所有的局部变量，或者其出对应的地址（数组）。动态链接就是当前类常量池的引用。
+
+局部变量表：存放方法参数传入的形参值，方法内的局部变量、方法的 this 引用。内部结构主要存放了编译期可知的各种数据类型（boolean、byte、char、short、int、float、long、double）、对象引用（reference 类型，它不同于对象本身，可能是一个指向对象起始地址的引用指针）
+操作数栈：主要作为方法调用的中转站使用，用于存放方法执行过程中产生的中间计算结果。另外，计算过程中产生的临时变量也会放在操作数栈中。
+动态链接：主要作用是实现在当前方法中调用其他方法。 Class 文件的常量池里面保存有大量的符号引用，比如方法的符号引用。 当一个方法需要调用其他方法，需要将常量池中只想方法的符号引用转换为在内存地址当中的直接引用。动态链接的作用就是把常量池的符号引用转换为内存当中的直接引用。
+
+【本地方法栈】
+
+定义：本地方法栈和虚拟栈的结构是一样的。不同的是，本地方法栈是 JVM 调用 Native 方法的时候才会用到的，虚拟机栈是执行 Java 自身的方法 (也就是字节码) 会用到的。
+作用：存储本地方法 (Native) 栈帧，支持方法的调用和返回。
+
+【注意】 在 HotSpot 虚拟机当中，将本地方法栈和虚拟机栈合二为一了。
+其次，我们将介绍线程共享的部分，堆 和 方法区 （JDK 1.8叫元空间）">
+
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position":  1 ,
+      "name": "📚 Posts",
+      "item": "https://swimmingliu.cn/posts/"
+    }, 
+    {
+      "@type": "ListItem",
+      "position":  2 ,
+      "name": "💻 Job",
+      "item": "https://swimmingliu.cn/posts/job/"
+    }, 
+    {
+      "@type": "ListItem",
+      "position":  3 ,
+      "name": "JVM 面试题笔记",
+      "item": "https://swimmingliu.cn/posts/job/java-jvm-interview-questions/"
+    }
+  ]
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "JVM 面试题笔记",
+  "name": "JVM 面试题笔记",
+  "description": "JVM 面试题笔记 1. JVM 的内存区域是如何划分的？ JVM 内存当中，运行时数据的区域包含堆、方法区（元空间）、虚拟机栈、本地方法栈、程序计数器。另外，其他的内存区域属于本地内存，本地内存就包括直接内存，直接内存是非运行时数据区的一部分。 其中，堆和方法区（元空间） 是线程共享的，虚拟机栈、本地方法栈、程序计数器都是线程私有的。\n【注意】 JVM 规范对于运行时数据区域的规定是很宽松的。就拿堆来说，堆可以是连续空间，也可以是不连续空间。堆的大小可以固定，也可以再运行时按照需求进行扩展。虚拟机实现者可以使用任何垃圾回收算法管理堆，甚至完全不进行垃圾回收也是可以的。\n下面逐一介绍不同部分的功能和作用\n首先是线程私有的部分，程序计数器、虚拟机栈、本地方法栈。\n【程序计数器】\n定义：程序计数器就是记录当前所执行的字节码的行号。字节码解释器通过改变程序计数器的值，来选取下一条需要执行的字节码指令。它的生命周期随着线程的创建而创建，随着线程的结束而死亡。 作用：分支、循环、跳转、异常处理、线程恢复这些功能都需要依赖程序计数器完成。比如线程切换上下文中，从 A线程 先切换到 B线程，然后从 B线程 恢复到 A线程 的过程当中，为了 A线程 能够恢复到正确的执行位置，就需要读取 A线程 程序计数器的值，来确认切换线程前执行的位置在哪里。 为什么是线程私有：因为线程切换的过程当中，每个线程都需要一个程序计数器来记录自己的程序执行位置。 【注意】 程序计数器是唯一一个不会出现 OOM 内存不足的内存区域，因为他就只是存储一个值。\n【虚拟机栈】\n定义：虚拟机栈按照先进后出的方案存储的是非本地方法的调用对应的栈帧。每一次方法调用的时候会被压入栈中，方法结束的时候会被弹出栈中。栈帧中包含局部变量表、操作次数栈（存储操作数和临时计算结果）、动态链接、方法的返回地址。虚拟机的生命周期随着线程的创建而创建，随着线程的结束而死亡。 作用：存储非本地方法的栈帧，支持方法的调用和返回。当栈深度超过虚拟机允许的最大深度，会抛出 StackOverflowError 栈溢出异常。如果虚拟机栈无法动态扩展或申请到足够的内存，会抛出 OutOfMemoryError 内存不足异常。 栈帧中包含局部变量表、操作次数栈（存储操作数和临时变量）、动态链接、方法的返回地址。其中，局部变量表存放的是所有的局部变量，或者其出对应的地址（数组）。动态链接就是当前类常量池的引用。\n局部变量表：存放方法参数传入的形参值，方法内的局部变量、方法的 this 引用。内部结构主要存放了编译期可知的各种数据类型（boolean、byte、char、short、int、float、long、double）、对象引用（reference 类型，它不同于对象本身，可能是一个指向对象起始地址的引用指针） 操作数栈：主要作为方法调用的中转站使用，用于存放方法执行过程中产生的中间计算结果。另外，计算过程中产生的临时变量也会放在操作数栈中。 动态链接：主要作用是实现在当前方法中调用其他方法。 Class 文件的常量池里面保存有大量的符号引用，比如方法的符号引用。 当一个方法需要调用其他方法，需要将常量池中只想方法的符号引用转换为在内存地址当中的直接引用。动态链接的作用就是把常量池的符号引用转换为内存当中的直接引用。 【本地方法栈】\n定义：本地方法栈和虚拟栈的结构是一样的。不同的是，本地方法栈是 JVM 调用 Native 方法的时候才会用到的，虚拟机栈是执行 Java 自身的方法 (也就是字节码) 会用到的。 作用：存储本地方法 (Native) 栈帧，支持方法的调用和返回。 【注意】 在 HotSpot 虚拟机当中，将本地方法栈和虚拟机栈合二为一了。\n其次，我们将介绍线程共享的部分，堆 和 方法区 （JDK 1.8叫元空间）\n",
+  "keywords": [
+    "Java", "JVM"
+  ],
+  "articleBody": "JVM 面试题笔记 1. JVM 的内存区域是如何划分的？ JVM 内存当中，运行时数据的区域包含堆、方法区（元空间）、虚拟机栈、本地方法栈、程序计数器。另外，其他的内存区域属于本地内存，本地内存就包括直接内存，直接内存是非运行时数据区的一部分。 其中，堆和方法区（元空间） 是线程共享的，虚拟机栈、本地方法栈、程序计数器都是线程私有的。\n【注意】 JVM 规范对于运行时数据区域的规定是很宽松的。就拿堆来说，堆可以是连续空间，也可以是不连续空间。堆的大小可以固定，也可以再运行时按照需求进行扩展。虚拟机实现者可以使用任何垃圾回收算法管理堆，甚至完全不进行垃圾回收也是可以的。\n下面逐一介绍不同部分的功能和作用\n首先是线程私有的部分，程序计数器、虚拟机栈、本地方法栈。\n【程序计数器】\n定义：程序计数器就是记录当前所执行的字节码的行号。字节码解释器通过改变程序计数器的值，来选取下一条需要执行的字节码指令。它的生命周期随着线程的创建而创建，随着线程的结束而死亡。 作用：分支、循环、跳转、异常处理、线程恢复这些功能都需要依赖程序计数器完成。比如线程切换上下文中，从 A线程 先切换到 B线程，然后从 B线程 恢复到 A线程 的过程当中，为了 A线程 能够恢复到正确的执行位置，就需要读取 A线程 程序计数器的值，来确认切换线程前执行的位置在哪里。 为什么是线程私有：因为线程切换的过程当中，每个线程都需要一个程序计数器来记录自己的程序执行位置。 【注意】 程序计数器是唯一一个不会出现 OOM 内存不足的内存区域，因为他就只是存储一个值。\n【虚拟机栈】\n定义：虚拟机栈按照先进后出的方案存储的是非本地方法的调用对应的栈帧。每一次方法调用的时候会被压入栈中，方法结束的时候会被弹出栈中。栈帧中包含局部变量表、操作次数栈（存储操作数和临时计算结果）、动态链接、方法的返回地址。虚拟机的生命周期随着线程的创建而创建，随着线程的结束而死亡。 作用：存储非本地方法的栈帧，支持方法的调用和返回。当栈深度超过虚拟机允许的最大深度，会抛出 StackOverflowError 栈溢出异常。如果虚拟机栈无法动态扩展或申请到足够的内存，会抛出 OutOfMemoryError 内存不足异常。 栈帧中包含局部变量表、操作次数栈（存储操作数和临时变量）、动态链接、方法的返回地址。其中，局部变量表存放的是所有的局部变量，或者其出对应的地址（数组）。动态链接就是当前类常量池的引用。\n局部变量表：存放方法参数传入的形参值，方法内的局部变量、方法的 this 引用。内部结构主要存放了编译期可知的各种数据类型（boolean、byte、char、short、int、float、long、double）、对象引用（reference 类型，它不同于对象本身，可能是一个指向对象起始地址的引用指针） 操作数栈：主要作为方法调用的中转站使用，用于存放方法执行过程中产生的中间计算结果。另外，计算过程中产生的临时变量也会放在操作数栈中。 动态链接：主要作用是实现在当前方法中调用其他方法。 Class 文件的常量池里面保存有大量的符号引用，比如方法的符号引用。 当一个方法需要调用其他方法，需要将常量池中只想方法的符号引用转换为在内存地址当中的直接引用。动态链接的作用就是把常量池的符号引用转换为内存当中的直接引用。 【本地方法栈】\n定义：本地方法栈和虚拟栈的结构是一样的。不同的是，本地方法栈是 JVM 调用 Native 方法的时候才会用到的，虚拟机栈是执行 Java 自身的方法 (也就是字节码) 会用到的。 作用：存储本地方法 (Native) 栈帧，支持方法的调用和返回。 【注意】 在 HotSpot 虚拟机当中，将本地方法栈和虚拟机栈合二为一了。\n其次，我们将介绍线程共享的部分，堆 和 方法区 （JDK 1.8叫元空间）\n【堆】\n定义：堆当中存储了所有的对象实例、数组。堆是 JVM 内存区域当中最大的一块，所有线程均可共享。另外，JVM 的堆是垃圾收集器管理的主要区域，因此也被称作 GC 堆（Garbage Collected Heap） 堆结构：从垃圾回收的角度，堆可以分为新生代、老年代、永久代。其中，新生代当中还包括了一个 Eden 伊甸园区 和 两个 Survivor 存活区 (S0 和 S1) 。在 JDK 1.8 当中，永久代已经被元空间取代了，而且元空间用得是本地内存。 不同代的区别：大部分情况下，对象会分先分到新生代的 Eden 区域，在一次新生代垃圾回收之后，如果对象还存货，则进入 Survivor 区中的 s0 或者 s1。同时，对象的年龄还会增加 1 (从 Eden 区到 Survior 区后，对象的初始年龄变为 1)。当它的年龄达到一定阈值 (默认为 15 岁)，就会从新生代晋升到老年代。年龄的阈值可以通过 XX:MaxTenuringThreshold 来设置，但是设置的值必须在 0 ~ 15 之间，不然会报错。 为什么年龄只能是 0-15?: 因为记录对象年龄的区域在对象头中，这个区域的大小通常是 4 位。这 4 位可以表示的最大二进制数字是 1111 ，即十进制的 15 。因此，对象的年龄被限制为 0 ~ 15。 在Hotspot 虚拟机中，遍历所有对象时，按照年龄从小到大对其所占用的大小进行累积，当累积的某个年龄大小超过了 Survivor 区的一半时，取这个年龄和 MaxTenuringThreshold 中更小的一个值，作为新的晋升年龄阈值 【注意】 JVM 的堆 最容易出现的就是 OutOfMemoryError 内存不足错误，并且出现这种错误之后的表现形式还会有好几种。比如 java.lang.OutOfMemoryError: GC Overhead Limit Exceeded 说明 JVM 花太多时间 ( 98% 的时间) 进行垃圾回收并且只回收了很少的垃圾 (2% 的垃圾); java.lang.OutOfMemoryError: Java heap space 是在创建新对象的时候，堆内存中空间不足，不能再存放新创建的对象了。\n【方法区】\n定义：当虚拟机要使用一个类的时候，它需要读取并解析 Class 文件并获取相关信息，再将信息存入方法区。方法区存储被 JVM 加载的 类信息、字段信息、方法信息、常量、静态变量、JIT 即时编译器编译后的代码缓存等数据\n方法区和永久代以及元空间是什么关系？：方法区和永久代以及元空间的关系，特别像 Java 当中的接口和类的关系，类实现了接口。类就相当于永久代或者元空间，接口就是方法区。也就是说永久代或者元空间是 HotSpot 虚拟机对方法区的两种实现方式。 JDK 1.7 是 永久代， JDK 1.8 之后是方法区。\n为什么JDK 1.8 采用元空间替换永久代？\n无法动态调整大小，容易内存溢出：整个永久代的大小受 JVM 内存大小的限制，而元空间用的是本地内存，元空间的大小和本机可用内存大小相关。虽然元空间还是可能出现内存溢出，但是比原来的几率更小。\n可以使用 -XX：MaxMetaspaceSize 标志设置最大元空间大小，默认值为 unlimited，这意味着它只受系统内存的限制。-XX：MetaspaceSize 调整标志定义元空间的初始大小如果未指定此标志，则元空间将根据运行时的应用程序需求动态地重新调整大小。\n元空间加载的类更多：元空间存放的是类的元数据，所以加载类的元数据不再受 MaxPermSize 控制 (永久代的最大阈值) ，而是由系统的实际可用空间来进行控制的，这样加载的类就更多了。\n永久代 GC 复杂度更高：永久代会为 GC 带来不必要的复杂度，并且回收效率偏低。\n方法区常用参数有哪些？： 可以分为 JDK 1.7 和 JDK 1.8 来看\nJDK 1.7: 采用永久代，常用下面的参数\n-XX:PermSize=N //方法区 (永久代) 初始大小 -XX:MaxPermSize=N //方法区 (永久代) 最大大小,超过这个值将会抛出 OutOfMemoryError 异常:java.lang.OutOfMemoryError: PermGen JDK 1.8：采用元空间，常用下面的参数\n-XX:MetaspaceSize=N //设置 Metaspace 的初始（和最小大小） -XX:MaxMetaspaceSize=N //设置 Metaspace 的最大大小, 默认值为 unlimited 下面将对运行时常量池 （方法区）、字符串常量池 （堆）、直接内存进行介绍\n【运行时常量池】\n运行时常量池是用来存放编译期间生成的各种字面量和符号引用的常量池表。这个常量池表会在类加载之后，存放到方法区的运行时常量池当中。\n字面量：顾名思义，包括整数、浮点数、字符串等字面量 符号引用：类符号引用、字段符号引用、方法符号引用、接口方法符号 【字符串常量池】\n字符串常量池是 JVM 为了提升性能和减少内存消耗专门针对字符串 String 类开辟的一块区域，主要是用来避免字符串的重复创建。\n// 在字符串常量池中创建字符串对象 \"ab\" // 将字符串对象 \"ab\" 的引用赋值给给 aa String aa = \"ab\"; // 直接返回字符串常量池中字符串对象\"ab\"，赋值给引用 bb String bb = \"ab\"; System.out.println(aa==bb); // true, aa和bb都是用的字符串常量池中的\"ab\" JDK 1.6 和 JDK 1.7 中，字符串常量池的存放位置不一致。在 JDK 1.6 中和 运行时常量池一样，存放在方法区里面。在 JDK 1.7 中，存放在堆里面。那么 JDK 1.7 为什么要将字符串常量池移动到堆中呢？ 主要是因为永久代 (方法区) 的 GC 回收效率太低， 只有在整堆收集 Full GC 的时候，才会被执行 GC。 Java 程序中通常会有大量的被创建的字符串等待回收，将这些字符串常量池存放在堆中，能够更高效及时地回收字符串内存。\n【直接内存】\n直接内存是一种特殊的内存缓冲区，并不属于 JVM 当中的堆或者方法区，而是通过 JNI （Java Native Interface）Java 本地方法接口的方式在本地内存上直接分配的一块区域。直接内存并不是虚拟机运行时数据区的一部分，也不是虚拟机规范中定义的内存区域，但是这部分内存也被频繁地使用。而且也可能导致 OutOfMemoryError 错误出现。\nJDK1.4 中新加入的 NIO（Non-Blocking I/O，也被称为 New I/O），引入了一种基于通道（Channel）与缓存区（Buffer）的 I/O 方式，它可以直接使用 Native 函数库直接分配堆外内存，然后通过一个存储在 Java 堆中的 DirectByteBuffer 对象作为这块内存的引用进行操作。这样就能在一些场景中显著提高性能，因为避免了在 Java 堆和 Native 堆之间来回复制数据。\n2. HotSpot 对象的创建过程 在 HotSpot 虚拟机当中，对象的创建过程如下：\n类加载检查：虚拟机遇到一条 new 指令时，首先将去检查这个指令的参数是否能在常量池中定位到这个类的符号引用，并且检查这个符号引用代表的类是否已被加载过、解析和初始化过。如果没有，那必须先执行相应的类加载过程。\n分配内存：在类加载检查通过后，接下来 JVM 将为新生对象分配内存。对象所需的内存大小在类加载完成后便可确定，为对象分配空间的任务等同于把一块确定大小的内存从 Java 堆中划分出来。分配方式有 “指针碰撞” 和 “空闲列表” 两种，选择哪种分配方式由 Java 堆是否规整决定，而 Java 堆是否规整又由所采用的垃圾收集器是否带有压缩整理功能决定。\n指针碰撞：\n适用场合：**堆内存规整（即没有内存碎片）**的情况下。 原理：用过的内存全部整合到一边，没有用过的内存放在另一边，中间有一个分界指针，只需要向着没用过的内存方向将该指针移动对象内存大小位置即可。 使用该分配方式的 GC 收集器：Serial, ParNew 空闲列表：\n适用场合：堆内存不规整的情况下。 原理：虚拟机会维护一个列表，该列表中会记录哪些内存块是可用的，在分配的时候，找一块儿足够大的内存块儿来划分给对象实例，最后更新列表记录。 使用该分配方式的 GC 收集器：CMS 初始化零值：内存分配完成后，虚拟机需要将分配到的内存空间都初始化为零值（不包括对象头），这一步操作保证了对象的实例字段在 Java 代码中可以不赋初始值就直接使用，程序能访问到这些字段的数据类型所对应的零值。\n设置对象头：初始化零值完成之后，虚拟机要对对象进行必要的设置，例如这个对象是哪个类的实例、如何才能找到类的元数据信息、对象的哈希值、对象的 GC 分代年龄等信息。 这些信息存放在对象头中。 另外，根据虚拟机当前运行状态的不同，如是否启用偏向锁等，对象头会有不同的设置方式。\n执行 init 方法：在上面工作都完成之后，从虚拟机的视角来看，一个新的对象已经产生了，但从 Java 程序的视角来看，对象创建才刚开始， 方法还没有执行，所有的字段都还为零。所以一般来说，执行 new 指令之后会接着执行 方法，把对象按照程序员的意愿进行初始化，这样一个真正可用的对象才算完全产生出来。\n【对象的内存布局】\n在 Hotspot 虚拟机中，对象在内存中的布局可以分为 3 块区域：对象头（Header）、**实例数据（Instance Data）**和 对齐填充（Padding）。\n对象头： 对象头主要包含标记字段和类型指针两个部分\n标记字段（Mark Word）：用于存储对象自身的运行时数据， 如哈希码（HashCode）、GC 分代年龄、锁状态标志、线程持有的锁、偏向线程 ID、偏向时间戳等等。 类型指针（Klass pointer）：对象指向它的类元数据的指针，虚拟机通过这个指针来确定这个对象是哪个类的实例。 实例数据：实例数据部分是对象真正存储的有效信息，也是在程序中所定义的各种类型的字段内容。\n对齐填充：对齐填充部分不是必然存在的，也没有什么特别的含义，仅仅起占位作用。因为 Hotspot 虚拟机的自动内存管理系统要求对象起始地址必须是 8 字节的整数倍，换句话说就是对象的大小必须是 8 字节的整数倍。而对象头部分正好是 8 字节的倍数（1 倍或 2 倍），因此，当对象实例数据部分没有对齐时，就需要通过对齐填充来补全.\n【对象的访问方式】\n对象的访问方式主要有两种：使用句柄 或者 直接指针\n句柄：如果使用句柄的话，那么 Java 堆中将会划分出一块内存来作为句柄池，reference 中存储的就是对象的句柄地址，而句柄中包含了对象实例数据与对象类型数据各自的具体地址信息。 直接指针：如果使用直接指针访问，reference 中存储的直接就是对象的地址。 ",
+  "wordCount" : "425",
+  "inLanguage": "en",
+  "image": "https://swimmingliu.cn/papermod-cover.png","datePublished": "2025-03-22T21:45:41+08:00",
+  "dateModified": "2025-03-22T21:45:41+08:00",
+  "author":[{
+    "@type": "Person",
+    "name": "SwimmingLiu"
+  }],
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": "https://swimmingliu.cn/posts/job/java-jvm-interview-questions/"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "SwimmingLiu's Blog",
+    "logo": {
+      "@type": "ImageObject",
+      "url": "https://swimmingliu.cn/images/swimmingliu_icon.png"
+    }
+  }
+}
+</script>
+</head>
+
+<body class="" id="top">
+<script>
+    if (localStorage.getItem("pref-theme") === "dark") {
+        document.body.classList.add('dark');
+    } else if (localStorage.getItem("pref-theme") === "light") {
+        document.body.classList.remove('dark')
+    } else if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+        document.body.classList.add('dark');
+    }
+
+</script>
+
+<header class="header">
+    <nav class="nav">
+        <div class="logo">
+            <a href="https://swimmingliu.cn/" accesskey="h" title="𝓢𝔀𝓲𝓶𝓶𝓲𝓷𝓰𝓛𝓲𝓾&#39;𝓼 𝓑𝓵𝓸𝓰 (Alt + H)">
+                <img src="https://swimmingliu.cn/images/swimmingliu_icon.png" alt="" aria-label="logo"
+                    height="30">𝓢𝔀𝓲𝓶𝓶𝓲𝓷𝓰𝓛𝓲𝓾&#39;𝓼 𝓑𝓵𝓸𝓰</a>
+            <div class="logo-switches">
+                <button id="theme-toggle" accesskey="t" title="(Alt + T)">
+                    <svg id="moon" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                    </svg>
+                    <svg id="sun" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="5"></circle>
+                        <line x1="12" y1="1" x2="12" y2="3"></line>
+                        <line x1="12" y1="21" x2="12" y2="23"></line>
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                        <line x1="1" y1="12" x2="3" y2="12"></line>
+                        <line x1="21" y1="12" x2="23" y2="12"></line>
+                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                    </svg>
+                </button>
+            </div>
+        </div>
+        <ul id="menu">
+            <li>
+                <a href="https://swimmingliu.cn/index.html" title="🏡 Home">
+                    <span>🏡 Home</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://swimmingliu.cn/search/" title="🔍 Search">
+                    <span>🔍 Search</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://swimmingliu.cn/posts/" title="🗒️ Posts">
+                    <span>🗒️ Posts</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://swimmingliu.cn/archives/" title="📃 Archive">
+                    <span>📃 Archive</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://swimmingliu.cn/tags/" title="📑 Tags">
+                    <span>📑 Tags</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://bento.me/swimmingliu" title="👨🏻‍🎓 About Me">
+                    <span>👨🏻‍🎓 About Me</span>&nbsp;
+                    <svg fill="none" shape-rendering="geometricPrecision" stroke="currentColor" stroke-linecap="round"
+                        stroke-linejoin="round" stroke-width="2.5" viewBox="0 0 24 24" height="12" width="12">
+                        <path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"></path>
+                        <path d="M15 3h6v6"></path>
+                        <path d="M10 14L21 3"></path>
+                    </svg>
+                </a>
+            </li>
+            <li>
+                <a href="https://www.emojisearch.app/" title="Emoji">
+                    <span>Emoji</span>&nbsp;
+                    <svg fill="none" shape-rendering="geometricPrecision" stroke="currentColor" stroke-linecap="round"
+                        stroke-linejoin="round" stroke-width="2.5" viewBox="0 0 24 24" height="12" width="12">
+                        <path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"></path>
+                        <path d="M15 3h6v6"></path>
+                        <path d="M10 14L21 3"></path>
+                    </svg>
+                </a>
+            </li>
+        </ul>
+    </nav>
+</header>
+<main class="main">
+
+<article class="post-single">
+  <header class="post-header">
+    <div class="breadcrumbs"><a href="https://swimmingliu.cn/">Home</a>&nbsp;»&nbsp;<a href="https://swimmingliu.cn/posts/">📚 Posts</a>&nbsp;»&nbsp;<a href="https://swimmingliu.cn/posts/job/">💻 Job</a></div>
+    <h1 class="post-title entry-hint-parent">
+      JVM 面试题笔记
+    </h1>
+    <div class="post-meta"><span title='2025-03-22 21:45:41 +0800 CST'>March 22, 2025</span>&nbsp;·&nbsp;2 min&nbsp;·&nbsp;SwimmingLiu
+
+</div>
+  </header> <div class="toc">
+    <details >
+        <summary accesskey="c" title="(Alt + C)">
+            <span class="details">Table of Contents</span>
+        </summary>
+
+        <div class="inner"><ul>
+                <li>
+                    <a href="#jvm-%e9%9d%a2%e8%af%95%e9%a2%98%e7%ac%94%e8%ae%b0" aria-label="JVM 面试题笔记">JVM 面试题笔记</a><ul>
+                        
+                <li>
+                    <a href="#1-jvm-%e7%9a%84%e5%86%85%e5%ad%98%e5%8c%ba%e5%9f%9f%e6%98%af%e5%a6%82%e4%bd%95%e5%88%92%e5%88%86%e7%9a%84" aria-label="1. JVM 的内存区域是如何划分的？">1. JVM 的内存区域是如何划分的？</a></li>
+                <li>
+                    <a href="#2-hotspot-%e5%af%b9%e8%b1%a1%e7%9a%84%e5%88%9b%e5%bb%ba%e8%bf%87%e7%a8%8b" aria-label="2. HotSpot 对象的创建过程">2. HotSpot 对象的创建过程</a>
+                </li>
+            </ul>
+            </li>
+            </ul>
+        </div>
+    </details>
+</div>
+  <div class="post-content"><h1 id="jvm-面试题笔记">JVM 面试题笔记<a hidden class="anchor" aria-hidden="true" href="#jvm-面试题笔记">#</a></h1>
+<h2 id="1-jvm-的内存区域是如何划分的">1. JVM 的内存区域是如何划分的？<a hidden class="anchor" aria-hidden="true" href="#1-jvm-的内存区域是如何划分的">#</a></h2>
+<p><code>JVM</code> 内存当中，运行时数据的区域包含堆、方法区（元空间）、虚拟机栈、本地方法栈、程序计数器。另外，其他的内存区域属于本地内存，本地内存就包括直接内存，直接内存是非运行时数据区的一部分。
+其中，堆和方法区（元空间） 是线程共享的，虚拟机栈、本地方法栈、程序计数器都是线程私有的。</p>
+<p><strong>【注意】</strong> <code>JVM</code> 规范对于运行时数据区域的规定是很宽松的。就拿堆来说，堆可以是连续空间，也可以是不连续空间。堆的大小可以固定，也可以再运行时按照需求进行扩展。虚拟机实现者可以使用任何<strong>垃圾回收算法</strong>管理堆，甚至完全不进行垃圾回收也是可以的。</p>
+<p><img alt="JVM内存区域" loading="lazy" src="https://oss.swimmingliu.cn/6ebff0fa-07e8-11f0-86bd-c858c0c1debd"></p>
+<p>下面逐一介绍不同部分的功能和作用</p>
+<p>首先是线程私有的部分，<strong>程序计数器</strong>、<strong>虚拟机栈</strong>、<strong>本地方法栈</strong>。</p>
+<p><strong>【程序计数器】</strong></p>
+<ul>
+<li><strong>定义</strong>：程序计数器就是记录当前所执行的字节码的行号。字节码解释器通过改变程序计数器的值，来选取下一条需要执行的字节码指令。它的生命周期随着线程的创建而创建，随着线程的结束而死亡。</li>
+<li><strong>作用</strong>：分支、循环、跳转、异常处理、线程恢复这些功能都需要依赖程序计数器完成。比如线程切换上下文中，从 <code>A线程</code> 先切换到 <code>B线程</code>，然后从 <code>B线程</code> 恢复到 <code>A线程</code> 的过程当中，为了 <code>A线程</code> 能够恢复到正确的执行位置，就需要读取 <code>A线程</code> 程序计数器的值，来确认切换线程前执行的位置在哪里。</li>
+<li><strong>为什么是线程私有</strong>：因为线程切换的过程当中，每个线程都需要一个程序计数器来记录自己的程序执行位置。</li>
+</ul>
+<p><strong>【注意】</strong> 程序计数器是唯一一个不会出现 <code>OOM</code> 内存不足的内存区域，因为他就只是存储一个值。</p>
+<p><strong>【虚拟机栈】</strong></p>
+<ul>
+<li><strong>定义</strong>：虚拟机栈按照先进后出的方案存储的是非本地方法的调用对应的<strong>栈帧</strong>。每一次方法调用的时候会被压入栈中，方法结束的时候会被弹出栈中。栈帧中包含<strong>局部变量表</strong>、<strong>操作次数栈</strong>（存储操作数和临时计算结果）、<strong>动态链接</strong>、<strong>方法的返回地址</strong>。虚拟机的生命周期随着线程的创建而创建，随着线程的结束而死亡。</li>
+<li><strong>作用</strong>：存储非本地方法的栈帧，支持方法的调用和返回。当栈深度超过虚拟机允许的最大深度，会抛出 <code>StackOverflowError</code> 栈溢出异常。如果虚拟机栈无法动态扩展或申请到足够的内存，会抛出 <code>OutOfMemoryError</code> 内存不足异常。</li>
+</ul>
+<p><img alt="JVM-虚拟机栈-完整结构" loading="lazy" src="https://oss.swimmingliu.cn/6f22fcdc-07e8-11f0-92ef-c858c0c1debd"></p>
+<p>栈帧中包含<strong>局部变量表</strong>、<strong>操作次数栈</strong>（存储操作数和临时变量）、<strong>动态链接</strong>、<strong>方法的返回地址</strong>。其中，局部变量表存放的是所有的局部变量，或者其出对应的地址（数组）。动态链接就是当前类常量池的引用。</p>
+<ul>
+<li><strong>局部变量表</strong>：存放<strong>方法参数传入的形参值</strong>，<strong>方法内的局部变量</strong>、<strong>方法的 <code>this</code> 引用</strong>。内部结构主要存放了编译期可知的各种数据类型（<code>boolean</code>、<code>byte</code>、<code>char</code>、<code>short</code>、<code>int</code>、<code>float</code>、<code>long</code>、<code>double</code>）、对象引用（reference 类型，它不同于对象本身，可能是一个指向对象起始地址的引用指针）</li>
+<li><strong>操作数栈</strong>：主要作为<strong>方法调用的中转站</strong>使用，用于存放<strong>方法执行过程中</strong>产生的<strong>中间计算结果</strong>。另外，<strong>计算过程中产生的临时变量</strong>也会放在操作数栈中。</li>
+<li><strong>动态链接</strong>：主要作用是实现在<strong>当前方法中调用其他方法</strong>。 <code>Class</code> 文件的常量池里面保存有大量的符号引用，比如方法的符号引用。 当一个方法需要调用其他方法，需要将常量池中只想方法的符号引用转换为在内存地址当中的直接引用。动态链接的作用就是<strong>把常量池的符号引用转换为内存当中的直接引用</strong>。</li>
+</ul>
+<p><strong>【本地方法栈】</strong></p>
+<ul>
+<li><strong>定义</strong>：本地方法栈和虚拟栈的结构是一样的。不同的是，本地方法栈是 <code>JVM</code> 调用 <code>Native</code> 方法的时候才会用到的，虚拟机栈是执行 <code>Java</code> 自身的方法 (也就是字节码) 会用到的。</li>
+<li><strong>作用</strong>：存储本地方法 (<code>Native</code>) 栈帧，支持方法的调用和返回。</li>
+</ul>
+<p><strong>【注意】</strong> 在 <code>HotSpot</code> 虚拟机当中，将本地方法栈和虚拟机栈合二为一了。</p>
+<p>其次，我们将介绍线程共享的部分，<strong>堆</strong> 和 <strong>方法区 （<code>JDK 1.8</code>叫元空间）</strong></p>
+<p><strong>【堆】</strong></p>
+<ul>
+<li><strong>定义</strong>：堆当中存储了<strong>所有的对象实例</strong>、<strong>数组</strong>。堆是 <code>JVM</code> 内存区域当中最大的一块，所有线程均可共享。另外，<code>JVM</code> 的堆<strong>是垃圾收集器</strong>管理的<strong>主要区域</strong>，因此也被称作 <strong>GC 堆（Garbage Collected Heap）</strong></li>
+<li><strong>堆结构</strong>：从垃圾回收的角度，堆可以分为<strong>新生代</strong>、<strong>老年代</strong>、<strong>永久代</strong>。其中，新生代当中还包括了一个 <code>Eden</code> 伊甸园区 和 两个 <code>Survivor</code> 存活区 (<code>S0</code> 和 <code>S1</code>) 。在 <code>JDK 1.8</code> 当中，永久代已经被元空间取代了，而且元空间用得是本地内存。</li>
+</ul>
+<p><img alt="JVM-堆结构" loading="lazy" src="https://oss.swimmingliu.cn/6f5466c7-07e8-11f0-91c4-c858c0c1debd"></p>
+<ul>
+<li><strong>不同代的区别</strong>：大部分情况下，对象会分先分到新生代的 <code>Eden</code> 区域，在一次新生代垃圾回收之后，如果对象还存货，则进入 <code>Survivor</code> 区中的 <code>s0</code> 或者 <code>s1</code>。同时，对象的年龄还会增加 <code>1</code>  (从 <code>Eden</code> 区到 <code>Survior</code> 区后，对象的初始年龄变为 <code>1</code>)。当它的年龄达到一定阈值 (默认为 <code>15</code> 岁)，就会从新生代晋升到老年代。年龄的阈值可以通过 <code>XX:MaxTenuringThreshold</code> 来设置，但是设置的值必须在 <code>0 ~ 15</code> 之间，不然会报错。</li>
+<li><strong>为什么年龄只能是 0-15?</strong>: 因为记录<strong>对象年龄的区域</strong>在<strong>对象头</strong>中，这个区域的大小通常是 <strong><code>4</code> 位</strong>。这 4 位可以表示的最大二进制数字是 <code>1111</code> ，即十进制的 <code>15</code> 。因此，对象的年龄被限制为 <code>0 ~ 15</code>。
+在<code>Hotspot</code> 虚拟机中，遍历所有对象时，按照年龄从小到大对其所占用的大小进行累积，当累积的<strong>某个年龄大小</strong>超过了 <strong><code>Survivor</code> 区的一半</strong>时，取这个年龄和 <code>MaxTenuringThreshold</code> 中<strong>更小</strong>的一个值，作为新的晋升年龄阈值</li>
+</ul>
+<p><strong>【注意】</strong> <code>JVM</code> 的堆 最容易出现的就是 <code>OutOfMemoryError</code> 内存不足错误，并且出现这种错误之后的表现形式还会有好几种。比如 <code>java.lang.OutOfMemoryError: GC Overhead Limit Exceeded</code> 说明 <code>JVM</code> 花太多时间 ( <strong><code>98%</code> 的时间</strong>) 进行垃圾回收并且只回收了很少的垃圾 (<strong><code>2%</code> 的垃圾</strong>); <code>java.lang.OutOfMemoryError: Java heap space</code> 是在创建新对象的时候，堆内存中空间不足，不能再存放新创建的对象了。</p>
+<p><strong>【方法区】</strong></p>
+<ul>
+<li>
+<p><strong>定义</strong>：当虚拟机要使用一个类的时候，它需要读取并解析 <code>Class</code> 文件并获取相关信息，再将信息存入方法区。方法区存储被 <code>JVM</code> 加载的 <strong>类信息</strong>、<strong>字段信息</strong>、<strong>方法信息</strong>、<strong>常量</strong>、<strong>静态变量</strong>、<strong><code>JIT</code> 即时编译器编译后的代码缓存</strong>等数据</p>
+</li>
+<li>
+<p><strong>方法区和永久代以及元空间是什么关系？</strong>：方法区和永久代以及元空间的关系，特别像 <code>Java</code> 当中的接口和类的关系，类实现了接口。类就相当于永久代或者元空间，接口就是方法区。也就是说永久代或者元空间是 <code>HotSpot</code> 虚拟机对方法区的两种实现方式。 <code>JDK 1.7</code> 是 永久代， <code>JDK 1.8</code> 之后是方法区。</p>
+<p><img alt="方法区-永久代和元空间" loading="lazy" src="https://oss.swimmingliu.cn/6f7881dd-07e8-11f0-9839-c858c0c1debd"></p>
+</li>
+<li>
+<p><strong>为什么<code>JDK 1.8</code> 采用元空间替换永久代？</strong></p>
+<ul>
+<li>
+<p><strong>无法动态调整大小，容易内存溢出</strong>：整个永久代的大小受 <code>JVM</code> 内存大小的限制，而元空间用的是本地内存，元空间的大小和本机可用内存大小相关。虽然元空间还是可能出现内存溢出，但是比原来的几率更小。</p>
+<blockquote>
+<p>可以使用 <code>-XX：MaxMetaspaceSize</code> 标志设置最大元空间大小，默认值为 <code>unlimited</code>，这意味着它只受系统内存的限制。<code>-XX：MetaspaceSize</code> 调整标志定义元空间的初始大小如果未指定此标志，则元空间将根据运行时的应用程序需求动态地重新调整大小。</p>
+</blockquote>
+</li>
+<li>
+<p><strong>元空间加载的类更多</strong>：元空间存放的是类的元数据，所以加载类的元数据不再受 <code>MaxPermSize</code>  控制 (永久代的最大阈值) ，而是由系统的实际可用空间来进行控制的，这样加载的类就更多了。</p>
+</li>
+<li>
+<p><strong>永久代 <code>GC</code> 复杂度更高</strong>：永久代会为 <code>GC</code> 带来不必要的复杂度，并且回收效率偏低。</p>
+</li>
+</ul>
+</li>
+<li>
+<p><strong>方法区常用参数有哪些？</strong>： 可以分为 <code>JDK 1.7</code> 和 <code>JDK 1.8</code> 来看</p>
+<ul>
+<li>
+<p><strong>JDK 1.7</strong>: 采用永久代，常用下面的参数</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="o">-</span><span class="n">XX</span><span class="p">:</span><span class="n">PermSize</span><span class="o">=</span><span class="n">N</span><span class="w"> </span><span class="c1">//方法区 (永久代) 初始大小</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="o">-</span><span class="n">XX</span><span class="p">:</span><span class="n">MaxPermSize</span><span class="o">=</span><span class="n">N</span><span class="w"> </span><span class="c1">//方法区 (永久代) 最大大小,超过这个值将会抛出 OutOfMemoryError 异常:java.lang.OutOfMemoryError: PermGen</span><span class="w">
+</span></span></span></code></pre></div></li>
+<li>
+<p><strong>JDK 1.8</strong>：采用元空间，常用下面的参数</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="o">-</span><span class="n">XX</span><span class="p">:</span><span class="n">MetaspaceSize</span><span class="o">=</span><span class="n">N</span><span class="w"> </span><span class="c1">//设置 Metaspace 的初始（和最小大小）</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="o">-</span><span class="n">XX</span><span class="p">:</span><span class="n">MaxMetaspaceSize</span><span class="o">=</span><span class="n">N</span><span class="w"> </span><span class="c1">//设置 Metaspace 的最大大小, 默认值为 unlimited</span><span class="w">
+</span></span></span></code></pre></div></li>
+</ul>
+</li>
+</ul>
+<p>下面将对运行时常量池 （方法区）、字符串常量池 （堆）、直接内存进行介绍</p>
+<p><strong>【运行时常量池】</strong></p>
+<p>运行时常量池是用来存放编译期间生成的各种<strong>字面量</strong>和<strong>符号引用</strong>的常量池表。这个常量池表会在类加载之后，存放到方法区的运行时常量池当中。</p>
+<ul>
+<li><strong>字面量</strong>：顾名思义，包括整数、浮点数、字符串等字面量</li>
+<li><strong>符号引用</strong>：类符号引用、字段符号引用、方法符号引用、接口方法符号</li>
+</ul>
+<p><strong>【字符串常量池】</strong></p>
+<p>字符串常量池是 <code>JVM</code> 为了提升性能和减少内存消耗专门针对字符串 <code>String</code> 类开辟的一块区域，主要是用来避免字符串的重复创建。</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="c1">// 在字符串常量池中创建字符串对象 &#34;ab&#34;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="c1">// 将字符串对象 &#34;ab&#34; 的引用赋值给给 aa</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="n">String</span><span class="w"> </span><span class="n">aa</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&#34;ab&#34;</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="c1">// 直接返回字符串常量池中字符串对象&#34;ab&#34;，赋值给引用 bb</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="n">String</span><span class="w"> </span><span class="n">bb</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&#34;ab&#34;</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="n">System</span><span class="p">.</span><span class="na">out</span><span class="p">.</span><span class="na">println</span><span class="p">(</span><span class="n">aa</span><span class="o">==</span><span class="n">bb</span><span class="p">);</span><span class="w"> </span><span class="c1">// true, aa和bb都是用的字符串常量池中的&#34;ab&#34;</span><span class="w">
+</span></span></span></code></pre></div><p><code>JDK 1.6</code> 和 <code>JDK 1.7</code> 中，字符串常量池的存放位置不一致。在 <code>JDK 1.6</code> 中和 运行时常量池一样，存放在方法区里面。在 <code>JDK 1.7</code>  中，存放在堆里面。那么 <code>JDK 1.7</code> 为什么要将字符串常量池移动到堆中呢？
+主要是因为永久代 (方法区) 的 <code>GC</code> 回收效率太低， 只有在整堆收集 <code>Full GC</code> 的时候，才会被执行 <code>GC</code>。 <code>Java</code> 程序中通常会有大量的被创建的字符串等待回收，将这些字符串常量池存放在堆中，能够更高效及时地回收字符串内存。</p>
+<p><img alt="方法区-结构图-jdk1.6和jdk1.7对比" loading="lazy" src="https://oss.swimmingliu.cn/6f8e05a3-07e8-11f0-9a6e-c858c0c1debd"></p>
+<p><strong>【直接内存】</strong></p>
+<p>直接内存是一种特殊的内存缓冲区，并不属于 <code>JVM</code> 当中的堆或者方法区，而是通过 <code>JNI</code> （Java Native Interface）<code>Java</code> 本地方法接口的方式在本地内存上直接分配的一块区域。直接内存并不是虚拟机运行时数据区的一部分，也不是虚拟机规范中定义的内存区域，但是这部分内存也被频繁地使用。而且也可能导致 <code>OutOfMemoryError</code> 错误出现。</p>
+<blockquote>
+<p>JDK1.4 中新加入的 NIO（Non-Blocking I/O，也被称为 New I/O），引入了一种基于通道（Channel）与缓存区（Buffer）的 I/O 方式，它可以直接使用 Native 函数库直接分配堆外内存，然后通过一个存储在 Java 堆中的 <code>DirectByteBuffer</code> 对象作为这块内存的引用进行操作。这样就能在一些场景中显著提高性能，因为避免了在 Java 堆和 Native 堆之间来回复制数据。</p>
+</blockquote>
+<h2 id="2-hotspot-对象的创建过程">2. HotSpot 对象的创建过程<a hidden class="anchor" aria-hidden="true" href="#2-hotspot-对象的创建过程">#</a></h2>
+<p>在 <code>HotSpot</code> 虚拟机当中，对象的创建过程如下：</p>
+<ol>
+<li>
+<p><strong>类加载检查</strong>：虚拟机遇到一条 <code>new</code> 指令时，首先将去检查这个<strong>指令的参数</strong>是否能在<strong>常量池</strong>中定位到<strong>这个类的符号引用</strong>，并且检查这个<strong>符号引用代表的类</strong>是否已<strong>被加载过、解析和初始化过</strong>。如果没有，那必须先执行相应的<strong>类加载过程</strong>。</p>
+</li>
+<li>
+<p><strong>分配内存</strong>：在类加载检查通过后，接下来 <code>JVM</code> 将为<strong>新生对象分配内存。<strong>对象所需的</strong>内存大小</strong>在<strong>类加载完成</strong>后便可确定，为对象分配空间的任务等同于<strong>把一块确定大小的内存从 <code>Java</code> 堆中划分出来</strong>。分配方式有 <strong>“指针碰撞”</strong> 和 <strong>“空闲列表”</strong> 两种，选择哪种分配方式由 <code>Java</code> 堆是否规整决定，而  <strong><code>Java</code> 堆是否规整</strong>又由所采用的<strong>垃圾收集器是否带有压缩整理功能决定</strong>。</p>
+<ul>
+<li>
+<p><strong>指针碰撞</strong>：</p>
+<ul>
+<li>适用场合：**堆内存规整（即没有内存碎片）**的情况下。</li>
+<li>原理：用过的内存全部整合到一边，没有用过的内存放在另一边，中间有一个分界指针，只需要向着没用过的内存方向将该指针移动对象内存大小位置即可。</li>
+<li>使用该分配方式的 GC 收集器：<strong>Serial</strong>, <strong>ParNew</strong></li>
+</ul>
+</li>
+<li>
+<p><strong>空闲列表</strong>：</p>
+<ul>
+<li>适用场合：堆内存不规整的情况下。</li>
+<li>原理：虚拟机会维护一个列表，该列表中会记录哪些内存块是可用的，在分配的时候，找一块儿足够大的内存块儿来划分给对象实例，最后更新列表记录。</li>
+<li>使用该分配方式的 GC 收集器：<strong>CMS</strong></li>
+</ul>
+</li>
+</ul>
+</li>
+<li>
+<p><strong>初始化零值</strong>：内存分配完成后，虚拟机需要将分配到的内存空间都初始化为<strong>零值</strong>（不包括对象头），这一步操作保证了对象的实例字段在 Java 代码中可以<strong>不赋初始值</strong>就<strong>直接使用</strong>，程序能访问到这些字段的数据类型所对应的零值。</p>
+</li>
+<li>
+<p><strong>设置对象头</strong>：初始化零值完成之后，虚拟机要对<strong>对象</strong>进行必要的设置，例如这个对象是<strong>哪个类的实例</strong>、<strong>如何才能找到类的元数据信息</strong>、<strong>对象的哈希值</strong>、<strong>对象的 GC 分代年龄等信息</strong>。 这些信息存放在<strong>对象头</strong>中。 另外，根据虚拟机当前运行状态的不同，如<strong>是否启用偏向锁</strong>等，对象头会有不同的设置方式。</p>
+</li>
+<li>
+<p><strong>执行 <code>init</code> 方法</strong>：在上面工作都完成之后，从虚拟机的视角来看，一个新的对象已经产生了，但从 Java 程序的视角来看，对象创建才刚开始，<code>&lt;init&gt;</code> 方法还没有执行，所有的字段都还为零。所以一般来说，执行 new 指令之后会接着执行 <code>&lt;init&gt;</code> 方法，把对象按照程序员的意愿进行初始化，这样一个真正可用的对象才算完全产生出来。</p>
+</li>
+</ol>
+<p><strong>【对象的内存布局】</strong></p>
+<p>在 Hotspot 虚拟机中，对象在内存中的布局可以分为 3 块区域：<strong>对象头（Header）</strong>、**实例数据（Instance Data）**和 <strong>对齐填充（Padding）</strong>。</p>
+<ul>
+<li>
+<p><strong>对象头</strong>： 对象头主要包含<strong>标记字段</strong>和<strong>类型指针</strong>两个部分</p>
+<ul>
+<li><strong>标记字段（Mark Word）</strong>：用于存储对象自身的运行时数据， 如哈希码（HashCode）、GC 分代年龄、锁状态标志、线程持有的锁、偏向线程 ID、偏向时间戳等等。</li>
+<li><strong>类型指针（Klass pointer）</strong>：对象指向它的类元数据的指针，虚拟机通过这个指针来确定这个对象是哪个类的实例。</li>
+</ul>
+</li>
+<li>
+<p><strong>实例数据</strong>：实例数据部分是对象真正存储的有效信息，也是在程序中所定义的各种类型的字段内容。</p>
+</li>
+<li>
+<p><strong>对齐填充</strong>：对齐填充部分不是必然存在的，也没有什么特别的含义，仅仅起占位作用。因为 <code>Hotspot</code> 虚拟机的自动内存管理系统<strong>要求对象起始地址</strong>必须是 <strong><code>8</code> 字节的整数倍</strong>，换句话说就是<strong>对象的大小必须是 <code>8</code> 字节的整数倍</strong>。而<strong>对象头部分正好是 <code>8</code> 字节的倍数（1 倍或 2 倍）</strong>，因此，当<strong>对象实例数据部分没有对齐时</strong>，就需要通过<strong>对齐填充</strong>来补全.</p>
+</li>
+</ul>
+<p><img alt="Java对象内存布局和数据布局-完整图" loading="lazy" src="https://oss.swimmingliu.cn/6fbb1f69-07e8-11f0-b576-c858c0c1debd"></p>
+<p><strong>【对象的访问方式】</strong></p>
+<p>对象的访问方式主要有两种：<strong>使用句柄</strong> 或者 <strong>直接指针</strong></p>
+<ul>
+<li><strong>句柄</strong>：如果使用句柄的话，那么 <code>Java</code> 堆中将会划分出一块内存来作为<strong>句柄池</strong>，<code>reference</code> 中存储的就是<strong>对象的句柄地址</strong>，而句柄中包含了<strong>对象实例数据</strong>与<strong>对象类型数据各自的具体地址信息</strong>。</li>
+<li><strong>直接指针</strong>：如果使用直接指针访问，<code>reference</code> 中存储的直接就是对象的地址。</li>
+</ul>
+<p><img alt="对象访问" loading="lazy" src="https://oss.swimmingliu.cn/6fecdbcc-07e8-11f0-8fcc-c858c0c1debd"></p>
+
+
+  </div>
+
+
+
+  <footer class="post-footer">
+    <ul class="post-tags">
+      <li><a href="https://swimmingliu.cn/tags/java/">Java</a></li>
+      <li><a href="https://swimmingliu.cn/tags/jvm/">JVM</a></li>
+    </ul>
+<nav class="paginav">
+  <a class="next" href="https://swimmingliu.cn/posts/job/computer-networks-interview-questions/">
+    <span class="title">Next »</span>
+    <br>
+    <span>计算机网络面试题笔记</span>
+  </a>
+</nav>
+
+  </footer>
+</article>
+    </main>
+    
+<footer class="footer">
+        <span>&copy; 2023-2025 <a href="https://swimmingliu.cn/">SwimmingLiu&#39;s Blog</a></span> · 
+
+    <span>
+        Powered by
+        <a href="https://gohugo.io/" rel="noopener noreferrer" target="_blank">Hugo</a> &
+        <a href="https://github.com/adityatelange/hugo-PaperMod/" rel="noopener" target="_blank">PaperMod</a>
+    </span>
+    <span>
+        <a href="https://beian.miit.gov.cn/">浙ICP备2024056260号</a>
+    </span>
+</footer>
+<a href="#top" aria-label="go to top" title="Go to Top (Alt + G)" class="top-link" id="top-link" accesskey="g">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 6" fill="currentColor">
+        <path d="M12 6H0l6-6z" />
+    </svg>
+</a>
+
+<script>
+    let menu = document.getElementById('menu')
+    if (menu) {
+        menu.scrollLeft = localStorage.getItem("menu-scroll-position");
+        menu.onscroll = function () {
+            localStorage.setItem("menu-scroll-position", menu.scrollLeft);
+        }
+    }
+
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener("click", function (e) {
+            e.preventDefault();
+            var id = this.getAttribute("href").substr(1);
+            if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView({
+                    behavior: "smooth"
+                });
+            } else {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView();
+            }
+            if (id === "top") {
+                history.replaceState(null, null, " ");
+            } else {
+                history.pushState(null, null, `#${id}`);
+            }
+        });
+    });
+
+</script>
+<script>
+    var mybutton = document.getElementById("top-link");
+    window.onscroll = function () {
+        if (document.body.scrollTop > 800 || document.documentElement.scrollTop > 800) {
+            mybutton.style.visibility = "visible";
+            mybutton.style.opacity = "1";
+        } else {
+            mybutton.style.visibility = "hidden";
+            mybutton.style.opacity = "0";
+        }
+    };
+
+</script>
+<script>
+    document.getElementById("theme-toggle").addEventListener("click", () => {
+        if (document.body.className.includes("dark")) {
+            document.body.classList.remove('dark');
+            localStorage.setItem("pref-theme", 'light');
+        } else {
+            document.body.classList.add('dark');
+            localStorage.setItem("pref-theme", 'dark');
+        }
+    })
+
+</script>
+<script>
+    document.querySelectorAll('pre > code').forEach((codeblock) => {
+        const container = codeblock.parentNode.parentNode;
+
+        const copybutton = document.createElement('button');
+        copybutton.classList.add('copy-code');
+        copybutton.innerHTML = 'copy';
+
+        function copyingDone() {
+            copybutton.innerHTML = 'copied!';
+            setTimeout(() => {
+                copybutton.innerHTML = 'copy';
+            }, 2000);
+        }
+
+        copybutton.addEventListener('click', (cb) => {
+            if ('clipboard' in navigator) {
+                navigator.clipboard.writeText(codeblock.textContent);
+                copyingDone();
+                return;
+            }
+
+            const range = document.createRange();
+            range.selectNodeContents(codeblock);
+            const selection = window.getSelection();
+            selection.removeAllRanges();
+            selection.addRange(range);
+            try {
+                document.execCommand('copy');
+                copyingDone();
+            } catch (e) { };
+            selection.removeRange(range);
+        });
+
+        if (container.classList.contains("highlight")) {
+            container.appendChild(copybutton);
+        } else if (container.parentNode.firstChild == container) {
+            
+        } else if (codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.nodeName == "TABLE") {
+            
+            codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.appendChild(copybutton);
+        } else {
+            
+            codeblock.parentNode.appendChild(copybutton);
+        }
+    });
+</script>
+</body>
+
+</html>

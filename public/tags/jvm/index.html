@@ -5,11 +5,11 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 <meta name="robots" content="index, follow">
-<title>Categories | SwimmingLiu&#39;s Blog</title>
+<title>JVM | SwimmingLiu&#39;s Blog</title>
 <meta name="keywords" content="">
 <meta name="description" content="">
 <meta name="author" content="👨🏻‍🎓 SwimmingLiu">
-<link rel="canonical" href="https://swimmingliu.cn/categories/">
+<link rel="canonical" href="https://swimmingliu.cn/tags/jvm/">
 <link crossorigin="anonymous" href="/assets/css/stylesheet.6ecbb0040febd20e47edd88a662c19f1ea945bf7427774b86594271d18f88faf.css" integrity="sha256-bsuwBA/r0g5H7diKZiwZ8eqUW/dCd3S4ZZQnHRj4j68=" rel="preload stylesheet" as="style">
 <link rel="icon" href="https://swimmingliu.cn/images/swimmingliu_icon.png">
 <link rel="icon" type="image/png" sizes="16x16" href="https://swimmingliu.cn/images/swimmingliu_icon.png">
@@ -18,8 +18,8 @@
 <link rel="mask-icon" href="https://swimmingliu.cn/images/swimmingliu_icon.png">
 <meta name="theme-color" content="#2e2e33">
 <meta name="msapplication-TileColor" content="#2e2e33">
-<link rel="alternate" type="application/rss+xml" href="https://swimmingliu.cn/categories/index.xml">
-<link rel="alternate" hreflang="en" href="https://swimmingliu.cn/categories/">
+<link rel="alternate" type="application/rss+xml" href="https://swimmingliu.cn/tags/jvm/index.xml">
+<link rel="alternate" hreflang="en" href="https://swimmingliu.cn/tags/jvm/">
 <noscript>
     <style>
         #theme-toggle,
@@ -57,15 +57,15 @@
 
     </style>
 </noscript>
-<meta property="og:url" content="https://swimmingliu.cn/categories/">
+<meta property="og:url" content="https://swimmingliu.cn/tags/jvm/">
   <meta property="og:site_name" content="SwimmingLiu&#39;s Blog">
-  <meta property="og:title" content="Categories">
+  <meta property="og:title" content="JVM">
   <meta property="og:locale" content="en">
   <meta property="og:type" content="website">
       <meta property="og:image" content="https://swimmingliu.cn/papermod-cover.png">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:image" content="https://swimmingliu.cn/papermod-cover.png">
-<meta name="twitter:title" content="Categories">
+<meta name="twitter:title" content="JVM">
 <meta name="twitter:description" content="">
 
 </head>
@@ -162,22 +162,43 @@
         </ul>
     </nav>
 </header>
-<main class="main">
-<header class="page-header">
-    <h1>Categories</h1>
+<main class="main"> 
+<header class="page-header"><div class="breadcrumbs"><a href="https://swimmingliu.cn/">Home</a>&nbsp;»&nbsp;<a href="https://swimmingliu.cn/tags/">Tags</a></div>
+  <h1>
+    JVM
+    <a href="/tags/jvm/index.xml" title="RSS" aria-label="RSS">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+        stroke-linecap="round" stroke-linejoin="round" height="23">
+        <path d="M4 11a9 9 0 0 1 9 9" />
+        <path d="M4 4a16 16 0 0 1 16 16" />
+        <circle cx="5" cy="19" r="1" />
+      </svg>
+    </a>
+  </h1>
 </header>
 
-<ul class="terms-tags">
-    <li>
-        <a href="https://swimmingliu.cn/categories/-job/">💻 Job <sup><strong><sup>11</sup></strong></sup> </a>
-    </li>
-    <li>
-        <a href="https://swimmingliu.cn/categories/-diary/">📓 Diary <sup><strong><sup>7</sup></strong></sup> </a>
-    </li>
-    <li>
-        <a href="https://swimmingliu.cn/categories/-paper-notes/">📝 Paper Notes <sup><strong><sup>8</sup></strong></sup> </a>
-    </li>
-</ul>
+<article class="post-entry tag-entry"> 
+  <header class="entry-header">
+    <h2 class="entry-hint-parent">JVM 面试题笔记
+    </h2>
+  </header>
+  <div class="entry-content">
+    <p>JVM 面试题笔记 1. JVM 的内存区域是如何划分的？ JVM 内存当中，运行时数据的区域包含堆、方法区（元空间）、虚拟机栈、本地方法栈、程序计数器。另外，其他的内存区域属于本地内存，本地内存就包括直接内存，直接内存是非运行时数据区的一部分。 其中，堆和方法区（元空间） 是线程共享的，虚拟机栈、本地方法栈、程序计数器都是线程私有的。
+【注意】 JVM 规范对于运行时数据区域的规定是很宽松的。就拿堆来说，堆可以是连续空间，也可以是不连续空间。堆的大小可以固定，也可以再运行时按照需求进行扩展。虚拟机实现者可以使用任何垃圾回收算法管理堆，甚至完全不进行垃圾回收也是可以的。
+下面逐一介绍不同部分的功能和作用
+首先是线程私有的部分，程序计数器、虚拟机栈、本地方法栈。
+【程序计数器】
+定义：程序计数器就是记录当前所执行的字节码的行号。字节码解释器通过改变程序计数器的值，来选取下一条需要执行的字节码指令。它的生命周期随着线程的创建而创建，随着线程的结束而死亡。 作用：分支、循环、跳转、异常处理、线程恢复这些功能都需要依赖程序计数器完成。比如线程切换上下文中，从 A线程 先切换到 B线程，然后从 B线程 恢复到 A线程 的过程当中，为了 A线程 能够恢复到正确的执行位置，就需要读取 A线程 程序计数器的值，来确认切换线程前执行的位置在哪里。 为什么是线程私有：因为线程切换的过程当中，每个线程都需要一个程序计数器来记录自己的程序执行位置。 【注意】 程序计数器是唯一一个不会出现 OOM 内存不足的内存区域，因为他就只是存储一个值。
+【虚拟机栈】
+定义：虚拟机栈按照先进后出的方案存储的是非本地方法的调用对应的栈帧。每一次方法调用的时候会被压入栈中，方法结束的时候会被弹出栈中。栈帧中包含局部变量表、操作次数栈（存储操作数和临时计算结果）、动态链接、方法的返回地址。虚拟机的生命周期随着线程的创建而创建，随着线程的结束而死亡。 作用：存储非本地方法的栈帧，支持方法的调用和返回。当栈深度超过虚拟机允许的最大深度，会抛出 StackOverflowError 栈溢出异常。如果虚拟机栈无法动态扩展或申请到足够的内存，会抛出 OutOfMemoryError 内存不足异常。 栈帧中包含局部变量表、操作次数栈（存储操作数和临时变量）、动态链接、方法的返回地址。其中，局部变量表存放的是所有的局部变量，或者其出对应的地址（数组）。动态链接就是当前类常量池的引用。
+局部变量表：存放方法参数传入的形参值，方法内的局部变量、方法的 this 引用。内部结构主要存放了编译期可知的各种数据类型（boolean、byte、char、short、int、float、long、double）、对象引用（reference 类型，它不同于对象本身，可能是一个指向对象起始地址的引用指针） 操作数栈：主要作为方法调用的中转站使用，用于存放方法执行过程中产生的中间计算结果。另外，计算过程中产生的临时变量也会放在操作数栈中。 动态链接：主要作用是实现在当前方法中调用其他方法。 Class 文件的常量池里面保存有大量的符号引用，比如方法的符号引用。 当一个方法需要调用其他方法，需要将常量池中只想方法的符号引用转换为在内存地址当中的直接引用。动态链接的作用就是把常量池的符号引用转换为内存当中的直接引用。 【本地方法栈】
+定义：本地方法栈和虚拟栈的结构是一样的。不同的是，本地方法栈是 JVM 调用 Native 方法的时候才会用到的，虚拟机栈是执行 Java 自身的方法 (也就是字节码) 会用到的。 作用：存储本地方法 (Native) 栈帧，支持方法的调用和返回。 【注意】 在 HotSpot 虚拟机当中，将本地方法栈和虚拟机栈合二为一了。
+其次，我们将介绍线程共享的部分，堆 和 方法区 （JDK 1.8叫元空间）
+...</p>
+  </div>
+  <footer class="entry-footer"><span title='2025-03-22 21:45:41 +0800 CST'>March 22, 2025</span>&nbsp;·&nbsp;2 min&nbsp;·&nbsp;SwimmingLiu</footer>
+  <a class="entry-link" aria-label="post link to JVM 面试题笔记" href="https://swimmingliu.cn/posts/job/java-jvm-interview-questions/"></a>
+</article>
     </main>
     
 <footer class="footer">

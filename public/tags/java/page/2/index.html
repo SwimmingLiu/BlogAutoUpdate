@@ -5,11 +5,11 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 <meta name="robots" content="index, follow">
-<title>Categories | SwimmingLiu&#39;s Blog</title>
+<title>Java | SwimmingLiu&#39;s Blog</title>
 <meta name="keywords" content="">
 <meta name="description" content="">
 <meta name="author" content="👨🏻‍🎓 SwimmingLiu">
-<link rel="canonical" href="https://swimmingliu.cn/categories/">
+<link rel="canonical" href="https://swimmingliu.cn/tags/java/">
 <link crossorigin="anonymous" href="/assets/css/stylesheet.6ecbb0040febd20e47edd88a662c19f1ea945bf7427774b86594271d18f88faf.css" integrity="sha256-bsuwBA/r0g5H7diKZiwZ8eqUW/dCd3S4ZZQnHRj4j68=" rel="preload stylesheet" as="style">
 <link rel="icon" href="https://swimmingliu.cn/images/swimmingliu_icon.png">
 <link rel="icon" type="image/png" sizes="16x16" href="https://swimmingliu.cn/images/swimmingliu_icon.png">
@@ -18,8 +18,8 @@
 <link rel="mask-icon" href="https://swimmingliu.cn/images/swimmingliu_icon.png">
 <meta name="theme-color" content="#2e2e33">
 <meta name="msapplication-TileColor" content="#2e2e33">
-<link rel="alternate" type="application/rss+xml" href="https://swimmingliu.cn/categories/index.xml">
-<link rel="alternate" hreflang="en" href="https://swimmingliu.cn/categories/">
+<link rel="alternate" type="application/rss+xml" href="https://swimmingliu.cn/tags/java/index.xml">
+<link rel="alternate" hreflang="en" href="https://swimmingliu.cn/tags/java/">
 <noscript>
     <style>
         #theme-toggle,
@@ -57,15 +57,15 @@
 
     </style>
 </noscript>
-<meta property="og:url" content="https://swimmingliu.cn/categories/">
+<meta property="og:url" content="https://swimmingliu.cn/tags/java/">
   <meta property="og:site_name" content="SwimmingLiu&#39;s Blog">
-  <meta property="og:title" content="Categories">
+  <meta property="og:title" content="Java">
   <meta property="og:locale" content="en">
   <meta property="og:type" content="website">
       <meta property="og:image" content="https://swimmingliu.cn/papermod-cover.png">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:image" content="https://swimmingliu.cn/papermod-cover.png">
-<meta name="twitter:title" content="Categories">
+<meta name="twitter:title" content="Java">
 <meta name="twitter:description" content="">
 
 </head>
@@ -162,22 +162,46 @@
         </ul>
     </nav>
 </header>
-<main class="main">
-<header class="page-header">
-    <h1>Categories</h1>
+<main class="main"> 
+<header class="page-header"><div class="breadcrumbs"><a href="https://swimmingliu.cn/">Home</a>&nbsp;»&nbsp;<a href="https://swimmingliu.cn/tags/">Tags</a></div>
+  <h1>
+    Java
+    <a href="/tags/java/index.xml" title="RSS" aria-label="RSS">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+        stroke-linecap="round" stroke-linejoin="round" height="23">
+        <path d="M4 11a9 9 0 0 1 9 9" />
+        <path d="M4 4a16 16 0 0 1 16 16" />
+        <circle cx="5" cy="19" r="1" />
+      </svg>
+    </a>
+  </h1>
 </header>
 
-<ul class="terms-tags">
-    <li>
-        <a href="https://swimmingliu.cn/categories/-job/">💻 Job <sup><strong><sup>11</sup></strong></sup> </a>
-    </li>
-    <li>
-        <a href="https://swimmingliu.cn/categories/-diary/">📓 Diary <sup><strong><sup>7</sup></strong></sup> </a>
-    </li>
-    <li>
-        <a href="https://swimmingliu.cn/categories/-paper-notes/">📝 Paper Notes <sup><strong><sup>8</sup></strong></sup> </a>
-    </li>
-</ul>
+<article class="post-entry tag-entry"> 
+  <header class="entry-header">
+    <h2 class="entry-hint-parent">Java面试题-随手记
+    </h2>
+  </header>
+  <div class="entry-content">
+    <p>== 和 equals 区别 == 基本类型(int, long, float, char, boolean) 值比较， 引用类型(String，List) 进行地址比较
+equals 默认就是 == ，但是部分引用类型(String，List)重写了该方法，进行值比较
+get 和 post 区别 特性 GET POST 目的 获取资源，查询数据 提交数据，创建或更新资源 请求数据方式 参数通过 URL 查询字符串传递 数据通过请求体传递 数据暴露 数据暴露在 URL 中，较不安全 数据存储在请求体中，相对安全 数据大小限制 URL 长度有限制（约 2048 个字符） 没有数据大小限制 适用场景 获取数据，查询，展示资源 提交表单，上传文件，修改资源，发送敏感数据等 SpringMVC中@ReponseBody、@PathVariable、@RequestParameters在什么情况下使用? @ReponseBody 用于接受请求体数据，一般用于POST请求
+@PathVariable 用于接受路径参数，一般用户接受 id
+@RequestParameters 用于接受请求参数，一般用于GET请求
+JVM堆的结构、GC介绍和作用 JVM堆结构的参考文章 、 GC垃圾回收过程
+区域 主要用途 特点 新生代（Young Generation） 存储新创建的对象，快速垃圾回收 包含 Eden 区和两个 Survivor 区，采用复制算法进行回收 老年代（Old Generation） 存储长期存活的对象 回收频率较低，垃圾回收较耗时 永久代（Permanent Generation) (jdk 1.7） 存储类的元数据、方法字节码等 在 jdk 1.8 被 Metaspace 替代 元空间（jdk 1.8） 存储类的元数据 不再属于堆，使用本地内存，大小由系统限制 GC 是垃圾回收器， 作用是自动内存管理和避免内存泄漏
+...</p>
+  </div>
+  <footer class="entry-footer"><span title='2024-12-27 17:27:35 +0800 CST'>December 27, 2024</span>&nbsp;·&nbsp;3 min&nbsp;·&nbsp;SwimmingLiu</footer>
+  <a class="entry-link" aria-label="post link to Java面试题-随手记" href="https://swimmingliu.cn/posts/job/java-interview-questions-notes/"></a>
+</article>
+<footer class="page-footer">
+  <nav class="pagination">
+    <a class="prev" href="https://swimmingliu.cn/tags/java/">
+      «&nbsp;Prev&nbsp;
+    </a>
+  </nav>
+</footer>
     </main>
     
 <footer class="footer">

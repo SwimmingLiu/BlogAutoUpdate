@@ -11,20 +11,27 @@
     </image>
     <generator>Hugo -- 0.136.0</generator>
     <language>en</language>
-    <lastBuildDate>Thu, 13 Mar 2025 21:49:44 +0800</lastBuildDate>
+    <lastBuildDate>Sat, 22 Mar 2025 21:45:41 +0800</lastBuildDate>
     <atom:link href="https://swimmingliu.cn/tags/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Java</title>
+      <link>https://swimmingliu.cn/tags/java/</link>
+      <pubDate>Sat, 22 Mar 2025 21:45:41 +0800</pubDate>
+      <guid>https://swimmingliu.cn/tags/java/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>JVM</title>
+      <link>https://swimmingliu.cn/tags/jvm/</link>
+      <pubDate>Sat, 22 Mar 2025 21:45:41 +0800</pubDate>
+      <guid>https://swimmingliu.cn/tags/jvm/</guid>
+      <description></description>
+    </item>
     <item>
       <title>CN</title>
       <link>https://swimmingliu.cn/tags/cn/</link>
       <pubDate>Thu, 13 Mar 2025 21:49:44 +0800</pubDate>
       <guid>https://swimmingliu.cn/tags/cn/</guid>
-      <description></description>
-    </item>
-    <item>
-      <title>Java</title>
-      <link>https://swimmingliu.cn/tags/java/</link>
-      <pubDate>Thu, 13 Mar 2025 21:49:44 +0800</pubDate>
-      <guid>https://swimmingliu.cn/tags/java/</guid>
       <description></description>
     </item>
     <item>

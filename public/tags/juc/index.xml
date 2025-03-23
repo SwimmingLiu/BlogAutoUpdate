@@ -18,9 +18,13 @@
       <link>https://swimmingliu.cn/posts/job/java-juc-interview-questions/</link>
       <pubDate>Wed, 05 Mar 2025 21:45:49 +0800</pubDate>
       <guid>https://swimmingliu.cn/posts/job/java-juc-interview-questions/</guid>
-      <description>&lt;h1 id=&#34;juc-java并发面试题笔记&#34;&gt;(JUC) Java并发面试题笔记&lt;/h1&gt;
-&lt;h2 id=&#34;1-什么是-java-内存模型jmm&#34;&gt;1. 什么是 Java 内存模型（JMM）？&lt;/h2&gt;
+      <description>&lt;h2 id=&#34;1-什么是-java-内存模型jmm&#34;&gt;1. 什么是 Java 内存模型（JMM）？&lt;/h2&gt;
 &lt;p&gt;&lt;code&gt;JMM&lt;/code&gt; 是 Java内存模型 ， 它是Java虚拟机 &lt;code&gt;JVM&lt;/code&gt; 定义的一种规范，用于描述多线程程序中的变量，像实例字段、静态字段和数组元素，他们如何在内存中存储和传递的规则。也就是规定线程啥时候从住内存里面读数据，啥时候把数据写回到住内存。&lt;code&gt;JMM&lt;/code&gt; 的核心目标是确保多线程环境下的&lt;strong&gt;可见性&lt;/strong&gt;、&lt;strong&gt;有序性&lt;/strong&gt;和&lt;strong&gt;原子性&lt;/strong&gt;, 避免硬件和编译器优化带来的不一致问题。&lt;/p&gt;
+&lt;p&gt;&lt;code&gt;JMM&lt;/code&gt;  当中包含&lt;strong&gt;主内存&lt;/strong&gt; (所有线程共享) 和 &lt;strong&gt;工作内存&lt;/strong&gt; （每个线程私有）两种内存。&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;主内存&lt;/strong&gt;：主内存是Java堆内存的一部分，是线程共享的区域，存储全局变量，比如静态变量、实例字段、数组元素等等。线程不能直接操作主内存，必须通过工作内存间接访问。&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;工作内存&lt;/strong&gt;：每个线程私有的本地内存，缓存主内存的变量副本。线程对变量的读写操作均在工作内存种进行，修改后的结果需要同步会主内存。线程是通过内存屏障 ( &lt;code&gt;volatile&lt;/code&gt; 关键字) 或者 同步操作 ( &lt;code&gt;synchronized&lt;/code&gt; ) 实现主内存和工作内存的数据一致性的。&lt;/li&gt;
+&lt;/ul&gt;
 &lt;p&gt;&lt;strong&gt;【可见性、有序性、原子性定义】&lt;/strong&gt;&lt;/p&gt;
 &lt;ul&gt;
 &lt;li&gt;&lt;strong&gt;可见性&lt;/strong&gt;：确保一个线程对共享变量的修改，能够及时被另外一个线程看到。 &lt;code&gt;volatile&lt;/code&gt;就是用来保证可见性的，强制线程每次读写的时候，直接从主内存当中获取最新值。&lt;/li&gt;
@@ -49,12 +53,7 @@
 &lt;li&gt;&lt;strong&gt;store 存储&lt;/strong&gt;：把工作内存中的一个变量的值传送给主内存中&lt;/li&gt;
 &lt;li&gt;&lt;strong&gt;write 写入&lt;/strong&gt;：把store操作从工作内存中得到的变量值放入主内存的变量中&lt;/li&gt;
 &lt;/ol&gt;
-&lt;p&gt;&lt;strong&gt;【volatile 特殊规则】&lt;/strong&gt;&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;&lt;strong&gt;可见性&lt;/strong&gt;：对于 &lt;code&gt;volatile&lt;/code&gt; 修饰的变量的写操作会立即刷新到内存中，任何线程对这个&lt;code&gt;volatile&lt;/code&gt; 变量的读操作都能立即看到最新的值。&lt;/li&gt;
-&lt;li&gt;&lt;strong&gt;禁止指令重排序&lt;/strong&gt;： 在对 &lt;code&gt;volatile&lt;/code&gt; 变量进行读/写操作的时候，会插入内存屏障，禁止指令重排序。也就是该变量的写操作不能与之前的读/写操作重排序，它的都操作不能与之后的读/写操作重排序。&lt;/li&gt;
-&lt;/ul&gt;
-&lt;p&gt;&lt;strong&gt;【Happens-Before 原则】&lt;/strong&gt;&lt;/p&gt;</description>
+&lt;p&gt;&lt;strong&gt;【volatile 特殊规则】&lt;/strong&gt;&lt;/p&gt;</description>
     </item>
   </channel>
 </rss>

@@ -2,13 +2,16 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url>
-    <loc>https://swimmingliu.cn/categories/-job/</loc>
-    <lastmod>2025-03-13T21:49:44+08:00</lastmod>
-  </url><url>
     <loc>https://swimmingliu.cn/posts/job/</loc>
-    <lastmod>2025-03-13T21:49:44+08:00</lastmod>
+    <lastmod>2025-03-23T21:45:49+08:00</lastmod>
   </url><url>
     <loc>https://swimmingliu.cn/posts/</loc>
+    <lastmod>2025-03-23T21:45:49+08:00</lastmod>
+  </url><url>
+    <loc>https://swimmingliu.cn/</loc>
+    <lastmod>2025-03-23T21:45:49+08:00</lastmod>
+  </url><url>
+    <loc>https://swimmingliu.cn/categories/-job/</loc>
     <lastmod>2025-03-13T21:49:44+08:00</lastmod>
   </url><url>
     <loc>https://swimmingliu.cn/categories/</loc>
@@ -21,9 +24,6 @@
     <lastmod>2025-03-13T21:49:44+08:00</lastmod>
   </url><url>
     <loc>https://swimmingliu.cn/tags/</loc>
-    <lastmod>2025-03-13T21:49:44+08:00</lastmod>
-  </url><url>
-    <loc>https://swimmingliu.cn/</loc>
     <lastmod>2025-03-13T21:49:44+08:00</lastmod>
   </url><url>
     <loc>https://swimmingliu.cn/posts/job/computer-networks-interview-questions/</loc>

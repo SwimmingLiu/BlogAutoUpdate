@@ -18,7 +18,8 @@
       <link>https://swimmingliu.cn/posts/job/java-jvm-interview-questions/</link>
       <pubDate>Sat, 22 Mar 2025 21:45:41 +0800</pubDate>
       <guid>https://swimmingliu.cn/posts/job/java-jvm-interview-questions/</guid>
-      <description>&lt;h1 id=&#34;jvm-面试题笔记&#34;&gt;JVM 面试题笔记&lt;/h1&gt;
+      <description>&lt;p&gt;&lt;code&gt;JVM&lt;/code&gt; 全局构架图如下，包含 &lt;code&gt;JVM&lt;/code&gt; 的全部内容&lt;/p&gt;
+&lt;p&gt;&lt;img alt=&#34;JVM-全局结构图&#34; loading=&#34;lazy&#34; src=&#34;https://oss.swimmingliu.cn/695c3cf0-098e-11f0-a8ba-c858c0c1deba&#34;&gt;&lt;/p&gt;
 &lt;h2 id=&#34;1-jvm-的内存区域是如何划分的&#34;&gt;1. JVM 的内存区域是如何划分的？&lt;/h2&gt;
 &lt;p&gt;&lt;code&gt;JVM&lt;/code&gt; 内存当中，运行时数据的区域包含堆、方法区（元空间）、虚拟机栈、本地方法栈、程序计数器。另外，其他的内存区域属于本地内存，本地内存就包括直接内存，直接内存是非运行时数据区的一部分。
 其中，堆和方法区（元空间） 是线程共享的，虚拟机栈、本地方法栈、程序计数器都是线程私有的。&lt;/p&gt;
@@ -50,8 +51,7 @@
 &lt;li&gt;&lt;strong&gt;定义&lt;/strong&gt;：本地方法栈和虚拟栈的结构是一样的。不同的是，本地方法栈是 &lt;code&gt;JVM&lt;/code&gt; 调用 &lt;code&gt;Native&lt;/code&gt; 方法的时候才会用到的，虚拟机栈是执行 &lt;code&gt;Java&lt;/code&gt; 自身的方法 (也就是字节码) 会用到的。&lt;/li&gt;
 &lt;li&gt;&lt;strong&gt;作用&lt;/strong&gt;：存储本地方法 (&lt;code&gt;Native&lt;/code&gt;) 栈帧，支持方法的调用和返回。&lt;/li&gt;
 &lt;/ul&gt;
-&lt;p&gt;&lt;strong&gt;【注意】&lt;/strong&gt; 在 &lt;code&gt;HotSpot&lt;/code&gt; 虚拟机当中，将本地方法栈和虚拟机栈合二为一了。&lt;/p&gt;
-&lt;p&gt;其次，我们将介绍线程共享的部分，&lt;strong&gt;堆&lt;/strong&gt; 和 &lt;strong&gt;方法区 （&lt;code&gt;JDK 1.8&lt;/code&gt;叫元空间）&lt;/strong&gt;&lt;/p&gt;</description>
+&lt;p&gt;&lt;strong&gt;【注意】&lt;/strong&gt; 在 &lt;code&gt;HotSpot&lt;/code&gt; 虚拟机当中，将本地方法栈和虚拟机栈合二为一了。&lt;/p&gt;</description>
     </item>
     <item>
       <title>计算机网络面试题笔记</title>

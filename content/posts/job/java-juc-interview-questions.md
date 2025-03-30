@@ -1125,4 +1125,15 @@ public class SemaphoreTest {
    }
    ```
 
-   
+
+## 12. 请你讲讲ThreadLocal有什么问题？
+
+[ThreadLocal 参考材料](https://javaguide.cn/java/concurrent/threadlocal.html)
+
+正常的情况下面，使用 `ThreadLocal` 一般不会出现问题。但是在极端的情况下，比如数据比较多的时候，可能会出现下面的问题：
+
+- **内存泄露问题** ：`ThreadLocal` 的生命周期和现成的生命周期绑定，因为线程池中的线程可能被复用。如果 `ThreadLocal` 中的值不会自动清理，可能会发生内存泄露。
+  【注意】内存泄漏（Memory Leak）是指程序中已动态分配的内存未被正确释放，导致这部分内存无法被回收，长期占用系统资源的现象
+- **哈希冲突的处理方式，效率低**：`ThreadLocal` 中的 `ThreadLocalMap` Hash冲突用的是线性探测法 (找到`slotToExpunge `，然后逐个向前遍历找到合适的位置)。如果冲突的次数比较多，需要遍历的次数就很多了。另外，后面再次 `get` 查找该元素的时候，Hash命中之后，仍然需要向后遍历来找到对应的元素。优化方式是像 `HashMap` 一样改成数组 + 链表 + 红黑树
+  ![ThreadLocal哈希冲突处理方式](https://oss.swimmingliu.cn/a8b80e87-0d5f-11f0-b126-c858c0c1deba)
+- **主动清理 `key` 为 `null` 的开销**：`ThreadLocal` 需要主动清理 `Entry` 的 `key` 为空的对象，会带来一定的开销。因为 `ThreadLocal` 使用了弱引用来保证资源可以被释放，但是可能会产生一些 `Entry` 的 `key` 为 `null`，也就是无用的 `Entry` 存在。需要在使用 `set` 和 `get` 方法的时候，`ThreadLocal` 会清理掉无用的 `Entry`， 减轻内存泄露的发生。如果需要清理的`Entry` 对象很多，可能会导致 `get` 和 `set` 操作相对比较慢。   

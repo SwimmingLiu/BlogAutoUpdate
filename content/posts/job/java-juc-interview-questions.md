@@ -1125,15 +1125,43 @@ public class SemaphoreTest {
    }
    ```
 
-
 ## 12. 请你讲讲ThreadLocal有什么问题？
 
 [ThreadLocal 参考材料](https://javaguide.cn/java/concurrent/threadlocal.html)
 
 正常的情况下面，使用 `ThreadLocal` 一般不会出现问题。但是在极端的情况下，比如数据比较多的时候，可能会出现下面的问题：
 
-- **内存泄露问题** ：`ThreadLocal` 的生命周期和现成的生命周期绑定，因为线程池中的线程可能被复用。如果 `ThreadLocal` 中的值不会自动清理，可能会发生内存泄露。
+- **内存泄露问题** ：`ThreadLocal` 的生命周期和线程的生命周期绑定，如果线程没有结束的话， `ThreadLocal` 就不会被释放。因为线程池中的线程可能被复用，如果 `ThreadLocal` 中的值不会自动清理，可能会发生内存泄露。
   【注意】内存泄漏（Memory Leak）是指程序中已动态分配的内存未被正确释放，导致这部分内存无法被回收，长期占用系统资源的现象
+
 - **哈希冲突的处理方式，效率低**：`ThreadLocal` 中的 `ThreadLocalMap` Hash冲突用的是线性探测法 (找到`slotToExpunge `，然后逐个向前遍历找到合适的位置)。如果冲突的次数比较多，需要遍历的次数就很多了。另外，后面再次 `get` 查找该元素的时候，Hash命中之后，仍然需要向后遍历来找到对应的元素。优化方式是像 `HashMap` 一样改成数组 + 链表 + 红黑树
   ![ThreadLocal哈希冲突处理方式](https://oss.swimmingliu.cn/a8b80e87-0d5f-11f0-b126-c858c0c1deba)
-- **主动清理 `key` 为 `null` 的开销**：`ThreadLocal` 需要主动清理 `Entry` 的 `key` 为空的对象，会带来一定的开销。因为 `ThreadLocal` 使用了弱引用来保证资源可以被释放，但是可能会产生一些 `Entry` 的 `key` 为 `null`，也就是无用的 `Entry` 存在。需要在使用 `set` 和 `get` 方法的时候，`ThreadLocal` 会清理掉无用的 `Entry`， 减轻内存泄露的发生。如果需要清理的`Entry` 对象很多，可能会导致 `get` 和 `set` 操作相对比较慢。   
+
+- **主动清理 `key` 为 `null` 的开销**：`ThreadLocal` 需要主动清理 `Entry` 的 `key` 为空的对象，会带来一定的开销。因为 `ThreadLocal` 使用了弱引用来保证资源可以被释放，但是可能会产生一些 `Entry` 的 `key` 为 `null`，也就是无用的 `Entry` 存在。需要在使用 `set` 和 `get` 方法的时候，`ThreadLocal` 会清理掉无用的 `Entry`， 减轻内存泄露的发生。如果需要清理的`Entry` 对象很多，可能会导致 `get` 和 `set` 操作相对比较慢。
+
+## 13. 为什么 Java 中的 ThreadLocal 对 key 的引用为弱引用？
+
+`ThreadLocal` 对 `key` 的引用采用弱引用可以**防止内存泄露**。如果 `ThreadLocal` 实例被不再需要的线程持有为强引用，即便线程结束之后，相关的 `ThreadLocal` 实例及其对应的数据可能无法被回收，可能导致**内存持续占用**。**弱引用**允许垃圾回收器在内存不足的时候，回收对象。如果当没有其他强引用指向某个 `ThreadLocal` 实例时，它可以被及时回收，避免长时间占用内存。
+
+**【注意】** 弱引用和软引用的区别如下：
+
+- **弱引用**：当对象被弱引用关联的时候，垃圾回收器 `GC` **无论内存是否充足**，都会在下次 `GC` 运行的时候，回收该对象。
+- **软引用**：当对象被虚引用的时候，垃圾回收器 `GC` **在内存不足的时候**，会回收掉软引用对象来释放内存，一般用于**实现内存敏感的缓存** (内存敏感指的是避免过度消耗内存，非常节约内存的使用)
+
+**【总结】**
+
+1. **弱引用**：`ThreadLocal` 使用弱引用主要是为了防止内存泄露，但是也只能在一定程度上防止内存泄露。如果采用强引用的话，当主线程当中的 `ThreadLocal` 相关代码执行完毕，栈桢被弹出，`Entry` 对象仍然强引用着 `ThreadLocal` 对象，无法被垃圾回收。
+
+2. **`ThreadLocal` 底层原理**：
+
+   - 每个线程都有独立的 `ThreadLocalMap`
+   - `ThreadLocalMap` 的底层数据结构是一个数组，每个 `ThreadLocalMap` 当中包含多个 `Entry`对象，这些对象是存储在数组上，采用强引用
+   - `Entry` 对象通过弱引用关联当前要使用的 `ThreadLocal` 对象，它的 `key` 就是 `ThreadLocal`， `value` 是我们需要设置的值，可以为任意 `Java` 对象类型。
+   - `ThreadLocal` 通过强引用 `value` 保存设置的值
+   - 主线程当中使用 `ThreadLocal` 的时候，采用强引用指向 `Entry` 当中的 `ThreadLocal` 对象
+
+   ![ThreadLocal引用关系](https://oss.swimmingliu.cn/8457b017-1491-11f0-91ef-c858c0c1debd)
+
+3. 采用弱引用之后，也只能在一定程度上防止内存泄露。在使用线程池等场景中，线程的生命周期可能长于 `ThreadLocal` 实例，`ThreadLocalMap` 可能一直被强引用，不会被垃圾回收。所以在使用完 `ThreadLocal` 后，需要调用 `remove() `方法清理 `ThreadLocalMap` 中可能残留无用的键值对。
+
+4. `ThreadLocal` 内部在执行 `set` 和 `get` 的过程当中，也会像后遍历去清理掉 `key` 为 `null` 的 `Entry` 对象。

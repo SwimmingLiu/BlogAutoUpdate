@@ -99,9 +99,7 @@ Challenge:">
     });
 </script>
 
-
-+
-+<meta property="og:url" content="https://swimmingliu.cn/posts/papernotes/2023-dbnet/">
+<meta property="og:url" content="https://swimmingliu.cn/posts/papernotes/2023-dbnet/">
   <meta property="og:site_name" content="SwimmingLiu&#39;s Blog">
   <meta property="og:title" content="A Dual-Branch Framework with Prior Knowledge for Precise Segmentation of Lung Nodules in Challenging CT Scans">
   <meta property="og:description" content="Abstract 肺癌是全球最致命的癌症之一，早期诊断对于患者的生存至关重要。肺结节是早期肺癌的主要表现，通常通过 CT 扫描进行评估。如今，计算机辅助诊断系统被广泛用于辅助医生进行疾病诊断。肺结节的准确分割受到内部异质性和外部数据因素的影响。为了克服结节的细微、混合、粘附型、良性和不确定类别的分割挑战，提出了一种新的混合手动特征网络，可增强灵敏度和准确性。该方法通过双分支网络框架和多维融合模块集成特征信息。通过使用多个数据源和不同数据质量进行训练和验证，我们的方法在 LUNA16、多厚度切片图像数据集 (Multi-thickness Slice Image dataset)、LIDC 和 UniToChest 上表现出领先的性能，Dice 相似系数达到 86.89%、75.72%、84.12% 和 80.74分别超过了当前大多数肺结节分割方法。我们的方法进一步提高了肺结节分割任务的准确性、可靠性和稳定性，即使是在具有挑战性的 CT 扫描中也是如此。本研究中使用的代码发布在 GitHub 上，可通过以下 URL (https://github.com/BITEWKRER/DBNet) 获取。
@@ -122,8 +120,7 @@ Challenge:">
     <meta property="article:modified_time" content="2024-03-03T15:37:07+08:00">
     <meta property="article:tag" content="Unet">
       <meta property="og:image" content="https://swimmingliu.cn/papermod-cover.png">
-
-+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:image" content="https://swimmingliu.cn/papermod-cover.png">
 <meta name="twitter:title" content="A Dual-Branch Framework with Prior Knowledge for Precise Segmentation of Lung Nodules in Challenging CT Scans">
 <meta name="twitter:description" content="Abstract
@@ -146,7 +143,6 @@ Introduction
 其次，肺结节内部因素造成的分割困难在于医生注释、层厚、数据来源和数据质量。数据质量差或不同医生的经验可能会导致不同的注释和注释者数量。由多名医生注释的病变区域通常更可靠，减少了潜在的临床风险。在资源有限的地区，由于 CT 扫描仪短缺和成像设备陈旧，CT 扫描质量差的情况很常见。较厚的切片更有可能产生“体积平均效应”和伪影，使医生难以达成一致的诊断。即使使用移动 CT 扫描仪也可能无法提供完整的诊断详细信息。最后，目前大多数肺结节分割方法都是基于2D图像，但这些方法忽略了空间关系，因此提出一种有效的3D肺结节分割模型来捕获肺结节的空间位置、纹理和其他详细信息变得越来越重要以避免误诊和漏诊。
 Challenge:">
 
-+
 
 <script type="application/ld+json">
 {

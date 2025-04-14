@@ -118,9 +118,7 @@ public class Singleton {
     });
 </script>
 
-
-+
-+<meta property="og:url" content="https://swimmingliu.cn/posts/job/desgin-mode-interview-questions/">
+<meta property="og:url" content="https://swimmingliu.cn/posts/job/desgin-mode-interview-questions/">
   <meta property="og:site_name" content="SwimmingLiu&#39;s Blog">
   <meta property="og:title" content="设计模式面试题笔记">
   <meta property="og:description" content="1. 单例模式有哪几种实现？如何保证线程安全？ 首先，单例模式和工厂模式都是一种设计模式。单例模式当中，一个类只允许创建一个对象(或者说实例)， 那这个类就是单例类。单例类是不可以被继承的，也没有了多态的特性。
@@ -139,8 +137,7 @@ public class Singleton { private static Singleton instance; private Singleton ()
     <meta property="article:tag" content="Java">
     <meta property="article:tag" content="Design Mode">
       <meta property="og:image" content="https://swimmingliu.cn/papermod-cover.png">
-
-+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:image" content="https://swimmingliu.cn/papermod-cover.png">
 <meta name="twitter:title" content="设计模式面试题笔记">
 <meta name="twitter:description" content="1. 单例模式有哪几种实现？如何保证线程安全？
@@ -182,7 +179,6 @@ public class Singleton {
 
 双重检查锁：饿汉式锁不支持延迟加载，然后懒汉式锁的粒度比较大，不支持高并发。双重检查锁可以实现既延迟加载，又支持高并发。其实就是在判断了没有实例之后，再进行上锁，创建实例。 但是实例必须用volatile 修饰，不然new 操作创建对象时，容易出现重排序的问题。">
 
-+
 
 <script type="application/ld+json">
 {

@@ -133,9 +133,7 @@ Related work
     });
 </script>
 
-
-+
-+<meta property="og:url" content="https://swimmingliu.cn/posts/papernotes/2024-yolov9/">
+<meta property="og:url" content="https://swimmingliu.cn/posts/papernotes/2024-yolov9/">
   <meta property="og:site_name" content="SwimmingLiu&#39;s Blog">
   <meta property="og:title" content="YOLOv9: Learning What You Want to Learn Using Programmable Gradient Information">
   <meta property="og:description" content="Abstract 如今的深度学习方法主要关注如何设计最合适的目标函数，使模型的预测结果能够最接近真实情况。同时，必须设计一个适当的架构，可以帮助获取足够的信息进行预测。现有方法忽略了一个事实，即当输入数据经过逐层特征提取和空间变换时，大量信息将会丢失。本文将深入研究数据通过深度网络传输时数据丢失的重要问题，即信息瓶颈和可逆函数。我们提出了可编程梯度信息（PGI）的概念来应对深度网络实现多个目标所需的各种变化。 PGI可以为目标任务计算目标函数提供完整的输入信息，从而获得可靠的梯度信息来更新网络权值。此外，还设计了一种基于梯度路径规划的新型轻量级网络架构——通用高效层聚合网络（GELAN）。GELAN的架构证实了PGI在轻量级模型上取得了优异的结果。我们在基于 MS COCO 数据集的目标检测上验证了所提出的 GELAN 和 PGI。结果表明，与基于深度卷积开发的最先进方法相比，GELAN 仅使用传统的卷积算子即可实现更好的参数利用率。 PGI 可用于从轻型到大型的各种模型。它可以用来获取完整的信息，使得train-from-scratch (从零开始训练) 模型能够比使用大数据集预训练的state-of-theart模型获得更好的结果，对比结果如图1所示。源代码位于：https： //github.com/WongKinYiu/yolov9。
@@ -163,8 +161,7 @@ GELAN：
     <meta property="article:modified_time" content="2024-03-01T15:26:23+08:00">
     <meta property="article:tag" content="YOLO">
       <meta property="og:image" content="https://swimmingliu.cn/papermod-cover.png">
-
-+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:image" content="https://swimmingliu.cn/papermod-cover.png">
 <meta name="twitter:title" content="YOLOv9: Learning What You Want to Learn Using Programmable Gradient Information">
 <meta name="twitter:description" content="Abstract
@@ -221,7 +218,6 @@ Related work
 
 目前主流的实时目标检测器是YOLO系列[2,7,13–15,25,30,31,47–49,61–63,74,75]，这些模型大多数使用CSPNet[64]或 ELAN [65] 及其变体作为主要计算单元。在特征集成方面，通常使用改进的PAN[37]或FPN[35]作为工具，然后使用改进的YOLOv3头[49]或FCOS头[57, 58]作为预测头。最近也提出了一些实时目标检测器，例如 RT DETR [43]，其基础是 DETR [4]。然而，由于DETR系列目标检测器在没有相应领域预训练模型的情况下很难应用于新领域，因此目前应用最广泛的实时目标检测器仍然是YOLO系列。本文选择 YOLOv7 [63] 作为开发该方法的基础，该方法已在各种计算机视觉任务和各种场景中被证明有效。">
 
-+
 
 <script type="application/ld+json">
 {

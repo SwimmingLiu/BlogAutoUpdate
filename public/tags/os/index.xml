@@ -9,7 +9,7 @@
       <url>https://swimmingliu.cn/papermod-cover.png</url>
       <link>https://swimmingliu.cn/papermod-cover.png</link>
     </image>
-    <generator>Hugo -- 0.136.0</generator>
+    <generator>Hugo -- 0.145.0</generator>
     <language>en</language>
     <lastBuildDate>Sat, 01 Mar 2025 09:49:44 +0800</lastBuildDate>
     <atom:link href="https://swimmingliu.cn/tags/os/index.xml" rel="self" type="application/rss+xml" />
@@ -62,8 +62,7 @@
 &lt;p&gt;&lt;strong&gt;【为什么会产生各种I/O】&lt;/strong&gt;&lt;/p&gt;
 &lt;p&gt;下图是两个不同主机上，应用程序传递数据的过程，借助该过程来理解 &lt;code&gt;I/O&lt;/code&gt; 是如何产生的&lt;/p&gt;
 &lt;blockquote&gt;
-&lt;p&gt;DMA（直接内存访问）是一种不经过CPU直接在网络适配器（网卡）和主机内存之间进行数据传输的机制，用于提升数据传输效率。&lt;/p&gt;
-&lt;/blockquote&gt;
+&lt;p&gt;DMA（直接内存访问）是一种不经过CPU直接在网络适配器（网卡）和主机内存之间进行数据传输的机制，用于提升数据传输效率。&lt;/p&gt;&lt;/blockquote&gt;
 &lt;p&gt;&lt;img alt=&#34;两个主机的应用程序是如何通信的&#34; loading=&#34;lazy&#34; src=&#34;https://oss.swimmingliu.cn/c3fa5783-0332-11f0-9b6e-c858c0c1debd&#34;&gt;&lt;/p&gt;
 &lt;p&gt;&lt;strong&gt;【同步阻塞 I/O &lt;code&gt;BIO&lt;/code&gt;】&lt;/strong&gt;&lt;/p&gt;
 &lt;p&gt;同步阻塞I/O &lt;code&gt;BIO&lt;/code&gt; 的工作机制：应用程序被阻塞，直到数据复制到应用进程的缓冲区才返回。阻塞并意味着整个操作系统都被阻塞。其他程序还可以执行，不消耗CPU事件。同步阻塞 I/O &lt;code&gt;BIO&lt;/code&gt; 中，应用程序发起 &lt;code&gt;read&lt;/code&gt; 调用来读取数据之后，一直被阻塞，直到内核把数据copy到用户空间。该方案适合客户端连接数量不高的情况。下图的&lt;code&gt;read&lt;/code&gt; 和 &lt;code&gt;recvfrom&lt;/code&gt; 函数是一个意思。&lt;/p&gt;

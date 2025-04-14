@@ -9,7 +9,7 @@
       <url>https://swimmingliu.cn/papermod-cover.png</url>
       <link>https://swimmingliu.cn/papermod-cover.png</link>
     </image>
-    <generator>Hugo -- 0.136.0</generator>
+    <generator>Hugo -- 0.145.0</generator>
     <language>en</language>
     <lastBuildDate>Wed, 19 Feb 2025 15:16:42 +0800</lastBuildDate>
     <atom:link href="https://swimmingliu.cn/tags/mysql/index.xml" rel="self" type="application/rss+xml" />
@@ -33,8 +33,7 @@
 &lt;p&gt;知识拓展1：一级索引和二级索引区别&lt;/p&gt;
 &lt;blockquote&gt;
 &lt;p&gt;&lt;strong&gt;一级索引（聚簇索引）&lt;/strong&gt;：数据表的主键索引，数据和索引存储在同一B+树的叶子节点中。每个表只能有一个一级索引。&lt;/p&gt;
-&lt;p&gt;&lt;strong&gt;二级索引（非聚簇索引）&lt;/strong&gt;：除主键外的其他索引，叶子节点存储索引列的值和对应的主键值。通过二级索引查询时，需要先通过二级索引获取主键值，再通过主键值查询数据，这个过程称为“回表”。&lt;/p&gt;
-&lt;/blockquote&gt;
+&lt;p&gt;&lt;strong&gt;二级索引（非聚簇索引）&lt;/strong&gt;：除主键外的其他索引，叶子节点存储索引列的值和对应的主键值。通过二级索引查询时，需要先通过二级索引获取主键值，再通过主键值查询数据，这个过程称为“回表”。&lt;/p&gt;&lt;/blockquote&gt;
 &lt;p&gt;知识拓展2:  MySQL中有哪些常见索引？都有什么区别？&lt;/p&gt;
 &lt;blockquote&gt;
 &lt;p&gt;在MySQL中，索引是提高查询效率的关键工具。常见的索引类型包括主键索引、唯一索引、普通索引、全文索引和空间索引。&lt;/p&gt;
@@ -70,8 +69,7 @@
 &lt;li&gt;&lt;strong&gt;普通索引&lt;/strong&gt;：最基本的索引类型，允许重复和空值。&lt;/li&gt;
 &lt;li&gt;&lt;strong&gt;全文索引&lt;/strong&gt;：用于对文本数据进行全文搜索，适用于MyISAM存储引擎。&lt;/li&gt;
 &lt;li&gt;&lt;strong&gt;空间索引&lt;/strong&gt;：用于对地理空间数据进行索引，支持空间数据类型的快速查询。&lt;/li&gt;
-&lt;/ul&gt;
-&lt;/blockquote&gt;
+&lt;/ul&gt;&lt;/blockquote&gt;
 &lt;h2 id=&#34;3-详细描述一条-sql-语句在-mysql-中的执行过程&#34;&gt;3. 详细描述一条 SQL 语句在 MySQL 中的执行过程。&lt;/h2&gt;
 &lt;ol&gt;
 &lt;li&gt;连接器判断用户是否成功建立连接，数据库连接的权限校验&lt;/li&gt;

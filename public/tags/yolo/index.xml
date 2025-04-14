@@ -9,7 +9,7 @@
       <url>https://swimmingliu.cn/papermod-cover.png</url>
       <link>https://swimmingliu.cn/papermod-cover.png</link>
     </image>
-    <generator>Hugo -- 0.136.0</generator>
+    <generator>Hugo -- 0.145.0</generator>
     <language>en</language>
     <lastBuildDate>Tue, 20 Aug 2024 10:35:06 +0800</lastBuildDate>
     <atom:link href="https://swimmingliu.cn/tags/yolo/index.xml" rel="self" type="application/rss+xml" />
@@ -21,8 +21,7 @@
       <description>&lt;h2 id=&#34;abstract&#34;&gt;Abstract&lt;/h2&gt;
 &lt;blockquote&gt;
 &lt;p&gt;如今的深度学习方法主要关注如何设计&lt;strong&gt;最合适的目标函数&lt;/strong&gt;，使模型的预测结果能够最接近真实情况。同时，必须设计一个&lt;strong&gt;适当的架构&lt;/strong&gt;，可以帮助&lt;strong&gt;获取足够的信息进行预测&lt;/strong&gt;。现有方法忽略了一个事实，即&lt;strong&gt;当输入数据经过逐层特征提取和空间变换时&lt;/strong&gt;，&lt;strong&gt;大量信息将会丢失&lt;/strong&gt;。本文将深入研究数据通过&lt;strong&gt;深度网络传输时数据丢失的重要问题&lt;/strong&gt;，即&lt;strong&gt;信息瓶颈和可逆函数&lt;/strong&gt;。我们提出了&lt;strong&gt;可编程梯度信息（PGI）&lt;strong&gt;的概念来应对深度网络实现&lt;/strong&gt;多个目标所需的各种变化&lt;/strong&gt;。
-PGI可以为&lt;strong&gt;目标任务计算目标函数&lt;/strong&gt;提供&lt;strong&gt;完整的输入信息&lt;/strong&gt;，从而获得&lt;strong&gt;可靠的梯度信息来更新网络权值&lt;/strong&gt;。此外，还设计了一种基于&lt;strong&gt;梯度路径规划的新型轻量级网络架构&lt;/strong&gt;——&lt;strong&gt;通用高效层聚合网络（GELAN）&lt;/strong&gt;。GELAN的架构证实了PGI在轻量级模型上取得了优异的结果。我们在基于 MS COCO 数据集的目标检测上验证了所提出的 GELAN 和 PGI。结果表明，与基于深度卷积开发的最先进方法相比，GELAN 仅使用&lt;strong&gt;传统的卷积算子&lt;/strong&gt;即可实现更好的参数利用率。 PGI 可用于从轻型到大型的各种模型。它可以用来获取完整的信息，使得&lt;strong&gt;train-from-scratch (从零开始训练) 模型能够比使用大数据集预训练&lt;/strong&gt;的state-of-theart模型获得更好的结果，对比结果如图1所示。源代码位于：https： //github.com/WongKinYiu/yolov9。&lt;/p&gt;
-&lt;/blockquote&gt;
+PGI可以为&lt;strong&gt;目标任务计算目标函数&lt;/strong&gt;提供&lt;strong&gt;完整的输入信息&lt;/strong&gt;，从而获得&lt;strong&gt;可靠的梯度信息来更新网络权值&lt;/strong&gt;。此外，还设计了一种基于&lt;strong&gt;梯度路径规划的新型轻量级网络架构&lt;/strong&gt;——&lt;strong&gt;通用高效层聚合网络（GELAN）&lt;/strong&gt;。GELAN的架构证实了PGI在轻量级模型上取得了优异的结果。我们在基于 MS COCO 数据集的目标检测上验证了所提出的 GELAN 和 PGI。结果表明，与基于深度卷积开发的最先进方法相比，GELAN 仅使用&lt;strong&gt;传统的卷积算子&lt;/strong&gt;即可实现更好的参数利用率。 PGI 可用于从轻型到大型的各种模型。它可以用来获取完整的信息，使得&lt;strong&gt;train-from-scratch (从零开始训练) 模型能够比使用大数据集预训练&lt;/strong&gt;的state-of-theart模型获得更好的结果，对比结果如图1所示。源代码位于：https： //github.com/WongKinYiu/yolov9。&lt;/p&gt;&lt;/blockquote&gt;
 &lt;p&gt;核心创新点:  依然是网络结构的创新&lt;/p&gt;
 &lt;ol&gt;
 &lt;li&gt;Programmable Gradient Information (PGI)&lt;/li&gt;
@@ -50,8 +49,7 @@ PGI可以为&lt;strong&gt;目标任务计算目标函数&lt;/strong&gt;提供&lt
 &lt;li&gt;
 &lt;p&gt;结合所提出的PGI和GELAN，YOLOv9在MS COCO数据集上的目标检测性能在各个方面都大大超过了现有的实时目标检测器。&lt;/p&gt;
 &lt;/li&gt;
-&lt;/ol&gt;
-&lt;/blockquote&gt;
+&lt;/ol&gt;&lt;/blockquote&gt;
 &lt;p&gt;Programmable Gradient Information (PGI)：&lt;/p&gt;
 &lt;ol&gt;
 &lt;li&gt;

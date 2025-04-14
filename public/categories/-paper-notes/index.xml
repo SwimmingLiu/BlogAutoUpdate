@@ -9,7 +9,7 @@
       <url>https://swimmingliu.cn/papermod-cover.png</url>
       <link>https://swimmingliu.cn/papermod-cover.png</link>
     </image>
-    <generator>Hugo -- 0.136.0</generator>
+    <generator>Hugo -- 0.145.0</generator>
     <language>en</language>
     <lastBuildDate>Sun, 03 Mar 2024 15:37:07 +0800</lastBuildDate>
     <atom:link href="https://swimmingliu.cn/categories/-paper-notes/index.xml" rel="self" type="application/rss+xml" />
@@ -20,31 +20,23 @@
       <guid>https://swimmingliu.cn/posts/papernotes/2023-dbnet/</guid>
       <description>&lt;h2 id=&#34;abstract&#34;&gt;Abstract&lt;/h2&gt;
 &lt;blockquote&gt;
-&lt;p&gt;肺癌是全球最致命的癌症之一，早期诊断对于患者的生存至关重要。&lt;strong&gt;肺结节&lt;/strong&gt;是&lt;strong&gt;早期肺癌的主要表现&lt;/strong&gt;，通常通过 &lt;strong&gt;CT 扫描&lt;/strong&gt;进行评估。如今，计算机辅助诊断系统被广泛用于辅助医生进行疾病诊断。&lt;strong&gt;肺结节的准确分割&lt;/strong&gt;受到&lt;strong&gt;内部异质性和外部数据&lt;/strong&gt;因素的影响。为了克服&lt;strong&gt;结节的细微、混合、粘附型、良性和不确定类别&lt;/strong&gt;的分割挑战，提出了一种新的&lt;strong&gt;混合手动特征网络&lt;/strong&gt;，可&lt;strong&gt;增强灵敏度和准确性&lt;/strong&gt;。该方法通过&lt;strong&gt;双分支网络框架和多维融合模块&lt;/strong&gt;集成&lt;strong&gt;特征信息&lt;/strong&gt;。通过使用&lt;strong&gt;多个数据源和不同数据质量&lt;/strong&gt;进行训练和验证，我们的方法在 &lt;strong&gt;LUNA16&lt;/strong&gt;、&lt;strong&gt;多厚度切片图像数据集 (Multi-thickness Slice Image dataset)&lt;/strong&gt;、&lt;strong&gt;LIDC&lt;/strong&gt; 和 &lt;strong&gt;UniToChest&lt;/strong&gt; 上表现出领先的性能，Dice 相似系数达到 86.89%、75.72%、84.12% 和 80.74分别超过了当前大多数肺结节分割方法。我们的方法进一步提高了肺结节分割任务的&lt;strong&gt;准确性、可靠性和稳定性&lt;/strong&gt;，即使是在具有挑战性的 CT 扫描中也是如此。本研究中使用的代码发布在 GitHub 上，可通过以下 URL (&lt;a href=&#34;https://github.com/BITEWKRER/DBNet&#34;&gt;https://github.com/BITEWKRER/DBNet&lt;/a&gt;) 获取。&lt;/p&gt;
-&lt;/blockquote&gt;
+&lt;p&gt;肺癌是全球最致命的癌症之一，早期诊断对于患者的生存至关重要。&lt;strong&gt;肺结节&lt;/strong&gt;是&lt;strong&gt;早期肺癌的主要表现&lt;/strong&gt;，通常通过 &lt;strong&gt;CT 扫描&lt;/strong&gt;进行评估。如今，计算机辅助诊断系统被广泛用于辅助医生进行疾病诊断。&lt;strong&gt;肺结节的准确分割&lt;/strong&gt;受到&lt;strong&gt;内部异质性和外部数据&lt;/strong&gt;因素的影响。为了克服&lt;strong&gt;结节的细微、混合、粘附型、良性和不确定类别&lt;/strong&gt;的分割挑战，提出了一种新的&lt;strong&gt;混合手动特征网络&lt;/strong&gt;，可&lt;strong&gt;增强灵敏度和准确性&lt;/strong&gt;。该方法通过&lt;strong&gt;双分支网络框架和多维融合模块&lt;/strong&gt;集成&lt;strong&gt;特征信息&lt;/strong&gt;。通过使用&lt;strong&gt;多个数据源和不同数据质量&lt;/strong&gt;进行训练和验证，我们的方法在 &lt;strong&gt;LUNA16&lt;/strong&gt;、&lt;strong&gt;多厚度切片图像数据集 (Multi-thickness Slice Image dataset)&lt;/strong&gt;、&lt;strong&gt;LIDC&lt;/strong&gt; 和 &lt;strong&gt;UniToChest&lt;/strong&gt; 上表现出领先的性能，Dice 相似系数达到 86.89%、75.72%、84.12% 和 80.74分别超过了当前大多数肺结节分割方法。我们的方法进一步提高了肺结节分割任务的&lt;strong&gt;准确性、可靠性和稳定性&lt;/strong&gt;，即使是在具有挑战性的 CT 扫描中也是如此。本研究中使用的代码发布在 GitHub 上，可通过以下 URL (&lt;a href=&#34;https://github.com/BITEWKRER/DBNet&#34;&gt;https://github.com/BITEWKRER/DBNet&lt;/a&gt;) 获取。&lt;/p&gt;&lt;/blockquote&gt;
 &lt;h2 id=&#34;introduction&#34;&gt;Introduction&lt;/h2&gt;
 &lt;blockquote&gt;
 &lt;p&gt;肺癌是全球癌症相关死亡的主要原因[1]。仅在美国，预计 2023 年将有 127,070 人死于肺癌，占所有癌症死亡的 21% [2]。不幸的是，超过 50% 的肺癌病例发生在发展中国家或不发达国家，与发达国家相比，这些国家的医疗资源有限[3]。&lt;/p&gt;
-&lt;p&gt;为了增加生存机会，早期诊断和治疗肺癌仍然至关重要。在中国，研究表明，&lt;strong&gt;小于1厘米的I期肺癌的5年生存率为92%&lt;/strong&gt;。然而，&lt;strong&gt;晚期肺癌的5年生存率低得多&lt;/strong&gt;，仅为&lt;strong&gt;7.0%&lt;/strong&gt;[4]。&lt;strong&gt;利用计算机断层扫描 (CT) 进行肺癌筛查已显示出可大幅降低死亡率的潜力&lt;/strong&gt; [5]、[6]。低剂量CT是目前肺癌筛查最常用的方法。此外，移动CT的引入有助于解决欠发达国家和偏远地区缺乏CT扫描仪的问题[6]。由于可能没有明显的症状，检测早期肺癌的存在可能会带来重大挑战。&lt;/p&gt;
-&lt;/blockquote&gt;
+&lt;p&gt;为了增加生存机会，早期诊断和治疗肺癌仍然至关重要。在中国，研究表明，&lt;strong&gt;小于1厘米的I期肺癌的5年生存率为92%&lt;/strong&gt;。然而，&lt;strong&gt;晚期肺癌的5年生存率低得多&lt;/strong&gt;，仅为&lt;strong&gt;7.0%&lt;/strong&gt;[4]。&lt;strong&gt;利用计算机断层扫描 (CT) 进行肺癌筛查已显示出可大幅降低死亡率的潜力&lt;/strong&gt; [5]、[6]。低剂量CT是目前肺癌筛查最常用的方法。此外，移动CT的引入有助于解决欠发达国家和偏远地区缺乏CT扫描仪的问题[6]。由于可能没有明显的症状，检测早期肺癌的存在可能会带来重大挑战。&lt;/p&gt;&lt;/blockquote&gt;
 &lt;p&gt;&lt;strong&gt;这种医学背景数据可以直接借鉴，Chatgpt润色改写就完事儿&lt;/strong&gt;&lt;/p&gt;
 &lt;blockquote&gt;
 &lt;p&gt;在 &lt;strong&gt;CT 图像上识别肺结节提供了疾病的关键指标&lt;/strong&gt; [1], [3]。这些结节代表&lt;strong&gt;圆形异常&lt;/strong&gt;，其&lt;strong&gt;大小各异&lt;/strong&gt;，直径范围为 &lt;strong&gt;3 至 30 毫米&lt;/strong&gt; [7]。为了进一步研究肺结节，美国国家癌症研究所组装了“肺部图像数据库联盟和图像数据库资源计划（LIDC）”数据集[8]。&lt;/p&gt;
-&lt;p&gt;&lt;strong&gt;欠发达地区设备不足、人员不足，导致医生的诊断和治疗时间有限&lt;/strong&gt;[9]。在这种情况下，&lt;strong&gt;医生的工作量很大、重复且耗时&lt;/strong&gt;[10]、[5]。此外，由于与CT切片相比，&lt;strong&gt;肺部结节性病变&lt;/strong&gt;占据相对&lt;strong&gt;较小的面积&lt;/strong&gt;，&lt;strong&gt;长时间和密集的CT筛查&lt;/strong&gt;可能会导致&lt;strong&gt;漏检小的、细微的或 GGO&lt;/strong&gt; (肺磨玻璃结节) [3]，[6]。为了解决这些问题，计算机辅助诊断系统（CAD）出现并得到了快速发展，特别是随着基于深度学习技术的诊断方法的进步。 &lt;strong&gt;CAD系统大大减轻了医生的工作量，最大限度地降低了未发现结节的风险，并提高了肺结节诊断的效率和可靠性&lt;/strong&gt;。然而，当前用于肺结节分割的 CAD 系统仍然面临一些挑战。&lt;/p&gt;
-&lt;/blockquote&gt;
+&lt;p&gt;&lt;strong&gt;欠发达地区设备不足、人员不足，导致医生的诊断和治疗时间有限&lt;/strong&gt;[9]。在这种情况下，&lt;strong&gt;医生的工作量很大、重复且耗时&lt;/strong&gt;[10]、[5]。此外，由于与CT切片相比，&lt;strong&gt;肺部结节性病变&lt;/strong&gt;占据相对&lt;strong&gt;较小的面积&lt;/strong&gt;，&lt;strong&gt;长时间和密集的CT筛查&lt;/strong&gt;可能会导致&lt;strong&gt;漏检小的、细微的或 GGO&lt;/strong&gt; (肺磨玻璃结节) [3]，[6]。为了解决这些问题，计算机辅助诊断系统（CAD）出现并得到了快速发展，特别是随着基于深度学习技术的诊断方法的进步。 &lt;strong&gt;CAD系统大大减轻了医生的工作量，最大限度地降低了未发现结节的风险，并提高了肺结节诊断的效率和可靠性&lt;/strong&gt;。然而，当前用于肺结节分割的 CAD 系统仍然面临一些挑战。&lt;/p&gt;&lt;/blockquote&gt;
 &lt;p&gt;下面详细阐述了肺结节分割的几个现有挑战，可以从这些挑战入手&lt;/p&gt;
 &lt;blockquote&gt;
 &lt;p&gt;首先，&lt;strong&gt;放射科医生标记的肺结节&lt;/strong&gt;包含&lt;strong&gt;九个诊断特征&lt;/strong&gt;[11]，&lt;strong&gt;异质性表型&lt;/strong&gt;阻碍了&lt;strong&gt;肺结节分割的发展&lt;/strong&gt;。如图1所示，&lt;strong&gt;实心结节（a，b）具有清晰的形状和边界&lt;/strong&gt;，而&lt;strong&gt;微妙的GGO结节（e）具有低对比度和模糊的边界&lt;/strong&gt;[4]，使得网络很容易将&lt;strong&gt;它们分类为背景区域&lt;/strong&gt;。&lt;strong&gt;空洞（g）结节降低了网络分割的敏感性&lt;/strong&gt;，并且由于&lt;strong&gt;背景和分割目标之间的极度不平衡，小结节很容易被遗漏&lt;/strong&gt;[12]。&lt;/p&gt;
-&lt;p&gt;由于周围多余的组织结构，&lt;strong&gt;血管旁或胸膜旁（c、d、f）可能会导致网络分类错误&lt;/strong&gt;[13]。此外，&lt;strong&gt;部分实性结节（h）比纯GGO更致密&lt;/strong&gt;，产生更&lt;strong&gt;复杂的异质纹理，更容易发展成恶性结节&lt;/strong&gt;[14]。&lt;/p&gt;
-&lt;/blockquote&gt;
+&lt;p&gt;由于周围多余的组织结构，&lt;strong&gt;血管旁或胸膜旁（c、d、f）可能会导致网络分类错误&lt;/strong&gt;[13]。此外，&lt;strong&gt;部分实性结节（h）比纯GGO更致密&lt;/strong&gt;，产生更&lt;strong&gt;复杂的异质纹理，更容易发展成恶性结节&lt;/strong&gt;[14]。&lt;/p&gt;&lt;/blockquote&gt;
 &lt;p&gt;&lt;img alt=&#34;image-20240303102609243&#34; loading=&#34;lazy&#34; src=&#34;https://oss.swimmingliu.cn/262f8e71-d931-11ee-b68c-c858c0c1debd&#34;&gt;&lt;/p&gt;
 &lt;blockquote&gt;
-&lt;p&gt;其次，肺结节内部因素造成的分割困难在于&lt;strong&gt;医生注释、层厚、数据来源和数据质量&lt;/strong&gt;。&lt;strong&gt;数据质量差&lt;/strong&gt;或&lt;strong&gt;不同医生的经验&lt;/strong&gt;可能会导致&lt;strong&gt;不同的注释和注释者数量&lt;/strong&gt;。由&lt;strong&gt;多名医生注释的病变区域&lt;/strong&gt;通常更&lt;strong&gt;可靠&lt;/strong&gt;，减少了潜在的临床风险。&lt;strong&gt;在资源有限的地区&lt;/strong&gt;，由于 &lt;strong&gt;CT 扫描仪短缺和成像设备陈旧&lt;/strong&gt;，&lt;strong&gt;CT 扫描质量差的情况很常见&lt;/strong&gt;。&lt;strong&gt;较厚的切片&lt;/strong&gt;更有可能产生“&lt;strong&gt;体积平均效应”和伪影&lt;/strong&gt;，使医生&lt;strong&gt;难以达成一致的诊断&lt;/strong&gt;。即使使用&lt;strong&gt;移动 CT 扫描仪&lt;/strong&gt;也可能&lt;strong&gt;无法提供完整的诊断详细信息&lt;/strong&gt;。最后，目前&lt;strong&gt;大多数肺结节分割方法&lt;/strong&gt;都是基于&lt;strong&gt;2D图像&lt;/strong&gt;，但这些方法忽略了&lt;strong&gt;空间关系&lt;/strong&gt;，因此提出一种有效的&lt;strong&gt;3D肺结节分割模型&lt;/strong&gt;来&lt;strong&gt;捕获肺结节的空间位置&lt;/strong&gt;、&lt;strong&gt;纹理和其他详细信息变得越来越重要以避免误诊和漏诊&lt;/strong&gt;。&lt;/p&gt;
-&lt;/blockquote&gt;
-&lt;p&gt;&lt;strong&gt;Challenge&lt;/strong&gt;:&lt;/p&gt;
-&lt;ol&gt;
-&lt;li&gt;
-&lt;p&gt;异质性: 肺结节的形状多异 （实心结节、磨玻璃结节 (GGO) 、空洞结节、血管和胸膜旁边的结节）&lt;/p&gt;</description>
+&lt;p&gt;其次，肺结节内部因素造成的分割困难在于&lt;strong&gt;医生注释、层厚、数据来源和数据质量&lt;/strong&gt;。&lt;strong&gt;数据质量差&lt;/strong&gt;或&lt;strong&gt;不同医生的经验&lt;/strong&gt;可能会导致&lt;strong&gt;不同的注释和注释者数量&lt;/strong&gt;。由&lt;strong&gt;多名医生注释的病变区域&lt;/strong&gt;通常更&lt;strong&gt;可靠&lt;/strong&gt;，减少了潜在的临床风险。&lt;strong&gt;在资源有限的地区&lt;/strong&gt;，由于 &lt;strong&gt;CT 扫描仪短缺和成像设备陈旧&lt;/strong&gt;，&lt;strong&gt;CT 扫描质量差的情况很常见&lt;/strong&gt;。&lt;strong&gt;较厚的切片&lt;/strong&gt;更有可能产生“&lt;strong&gt;体积平均效应”和伪影&lt;/strong&gt;，使医生&lt;strong&gt;难以达成一致的诊断&lt;/strong&gt;。即使使用&lt;strong&gt;移动 CT 扫描仪&lt;/strong&gt;也可能&lt;strong&gt;无法提供完整的诊断详细信息&lt;/strong&gt;。最后，目前&lt;strong&gt;大多数肺结节分割方法&lt;/strong&gt;都是基于&lt;strong&gt;2D图像&lt;/strong&gt;，但这些方法忽略了&lt;strong&gt;空间关系&lt;/strong&gt;，因此提出一种有效的&lt;strong&gt;3D肺结节分割模型&lt;/strong&gt;来&lt;strong&gt;捕获肺结节的空间位置&lt;/strong&gt;、&lt;strong&gt;纹理和其他详细信息变得越来越重要以避免误诊和漏诊&lt;/strong&gt;。&lt;/p&gt;&lt;/blockquote&gt;
+&lt;p&gt;&lt;strong&gt;Challenge&lt;/strong&gt;:&lt;/p&gt;</description>
     </item>
     <item>
       <title>YOLOv9: Learning What You Want to Learn Using Programmable Gradient Information</title>
@@ -54,8 +46,7 @@
       <description>&lt;h2 id=&#34;abstract&#34;&gt;Abstract&lt;/h2&gt;
 &lt;blockquote&gt;
 &lt;p&gt;如今的深度学习方法主要关注如何设计&lt;strong&gt;最合适的目标函数&lt;/strong&gt;，使模型的预测结果能够最接近真实情况。同时，必须设计一个&lt;strong&gt;适当的架构&lt;/strong&gt;，可以帮助&lt;strong&gt;获取足够的信息进行预测&lt;/strong&gt;。现有方法忽略了一个事实，即&lt;strong&gt;当输入数据经过逐层特征提取和空间变换时&lt;/strong&gt;，&lt;strong&gt;大量信息将会丢失&lt;/strong&gt;。本文将深入研究数据通过&lt;strong&gt;深度网络传输时数据丢失的重要问题&lt;/strong&gt;，即&lt;strong&gt;信息瓶颈和可逆函数&lt;/strong&gt;。我们提出了&lt;strong&gt;可编程梯度信息（PGI）&lt;strong&gt;的概念来应对深度网络实现&lt;/strong&gt;多个目标所需的各种变化&lt;/strong&gt;。
-PGI可以为&lt;strong&gt;目标任务计算目标函数&lt;/strong&gt;提供&lt;strong&gt;完整的输入信息&lt;/strong&gt;，从而获得&lt;strong&gt;可靠的梯度信息来更新网络权值&lt;/strong&gt;。此外，还设计了一种基于&lt;strong&gt;梯度路径规划的新型轻量级网络架构&lt;/strong&gt;——&lt;strong&gt;通用高效层聚合网络（GELAN）&lt;/strong&gt;。GELAN的架构证实了PGI在轻量级模型上取得了优异的结果。我们在基于 MS COCO 数据集的目标检测上验证了所提出的 GELAN 和 PGI。结果表明，与基于深度卷积开发的最先进方法相比，GELAN 仅使用&lt;strong&gt;传统的卷积算子&lt;/strong&gt;即可实现更好的参数利用率。 PGI 可用于从轻型到大型的各种模型。它可以用来获取完整的信息，使得&lt;strong&gt;train-from-scratch (从零开始训练) 模型能够比使用大数据集预训练&lt;/strong&gt;的state-of-theart模型获得更好的结果，对比结果如图1所示。源代码位于：https： //github.com/WongKinYiu/yolov9。&lt;/p&gt;
-&lt;/blockquote&gt;
+PGI可以为&lt;strong&gt;目标任务计算目标函数&lt;/strong&gt;提供&lt;strong&gt;完整的输入信息&lt;/strong&gt;，从而获得&lt;strong&gt;可靠的梯度信息来更新网络权值&lt;/strong&gt;。此外，还设计了一种基于&lt;strong&gt;梯度路径规划的新型轻量级网络架构&lt;/strong&gt;——&lt;strong&gt;通用高效层聚合网络（GELAN）&lt;/strong&gt;。GELAN的架构证实了PGI在轻量级模型上取得了优异的结果。我们在基于 MS COCO 数据集的目标检测上验证了所提出的 GELAN 和 PGI。结果表明，与基于深度卷积开发的最先进方法相比，GELAN 仅使用&lt;strong&gt;传统的卷积算子&lt;/strong&gt;即可实现更好的参数利用率。 PGI 可用于从轻型到大型的各种模型。它可以用来获取完整的信息，使得&lt;strong&gt;train-from-scratch (从零开始训练) 模型能够比使用大数据集预训练&lt;/strong&gt;的state-of-theart模型获得更好的结果，对比结果如图1所示。源代码位于：https： //github.com/WongKinYiu/yolov9。&lt;/p&gt;&lt;/blockquote&gt;
 &lt;p&gt;核心创新点:  依然是网络结构的创新&lt;/p&gt;
 &lt;ol&gt;
 &lt;li&gt;Programmable Gradient Information (PGI)&lt;/li&gt;
@@ -83,8 +74,7 @@ PGI可以为&lt;strong&gt;目标任务计算目标函数&lt;/strong&gt;提供&lt
 &lt;li&gt;
 &lt;p&gt;结合所提出的PGI和GELAN，YOLOv9在MS COCO数据集上的目标检测性能在各个方面都大大超过了现有的实时目标检测器。&lt;/p&gt;
 &lt;/li&gt;
-&lt;/ol&gt;
-&lt;/blockquote&gt;
+&lt;/ol&gt;&lt;/blockquote&gt;
 &lt;p&gt;Programmable Gradient Information (PGI)：&lt;/p&gt;
 &lt;ol&gt;
 &lt;li&gt;
@@ -114,16 +104,14 @@ PGI可以为&lt;strong&gt;目标任务计算目标函数&lt;/strong&gt;提供&lt
       <guid>https://swimmingliu.cn/posts/papernotes/2023-unet_v2/</guid>
       <description>&lt;h2 id=&#34;abstract&#34;&gt;Abstract&lt;/h2&gt;
 &lt;blockquote&gt;
-&lt;p&gt;在本文中，我们介绍了 U-Net v2，这是一种用于医学图像分割的新的稳健且高效的 U-Net 变体。它的目的是&lt;strong&gt;增强语义信息在低级特征中的注入&lt;/strong&gt;，同时&lt;strong&gt;用更精细的细节来细化高级特征&lt;/strong&gt;。对于输入图像，我们首先使用&lt;strong&gt;深度神经网络编码器提取多级特征&lt;/strong&gt;。接下来，我们通过&lt;strong&gt;注入来自更高级别特征的语义信息&lt;/strong&gt;并通过 &lt;strong&gt;Hadamard 乘积&lt;/strong&gt;集成来自&lt;strong&gt;较低级别特征的更精细的细节&lt;/strong&gt;来&lt;strong&gt;增强每个级别的特征图&lt;/strong&gt;。我们新颖的&lt;strong&gt;跳跃连接&lt;/strong&gt;赋予&lt;strong&gt;所有级别的功能&lt;/strong&gt;以&lt;strong&gt;丰富的语义特征和复杂的细节&lt;/strong&gt;。&lt;strong&gt;改进后的特征随后被传输到解码器&lt;/strong&gt;以进行&lt;strong&gt;进一步处理和分割&lt;/strong&gt;。我们的方法可以&lt;strong&gt;无缝集成到任何编码器-解码器网络中&lt;/strong&gt;。我们在几个公共医学图像分割数据集上评估了我们的方法，用于皮肤病变分割和息肉分割，实验结果证明了我们的新方法相对于最先进的方法的分割准确性，同时&lt;strong&gt;保留了内存和计算效率&lt;/strong&gt;。代码位于：https://github.com/yaoppeng/U-Net_v2。&lt;/p&gt;
-&lt;/blockquote&gt;
+&lt;p&gt;在本文中，我们介绍了 U-Net v2，这是一种用于医学图像分割的新的稳健且高效的 U-Net 变体。它的目的是&lt;strong&gt;增强语义信息在低级特征中的注入&lt;/strong&gt;，同时&lt;strong&gt;用更精细的细节来细化高级特征&lt;/strong&gt;。对于输入图像，我们首先使用&lt;strong&gt;深度神经网络编码器提取多级特征&lt;/strong&gt;。接下来，我们通过&lt;strong&gt;注入来自更高级别特征的语义信息&lt;/strong&gt;并通过 &lt;strong&gt;Hadamard 乘积&lt;/strong&gt;集成来自&lt;strong&gt;较低级别特征的更精细的细节&lt;/strong&gt;来&lt;strong&gt;增强每个级别的特征图&lt;/strong&gt;。我们新颖的&lt;strong&gt;跳跃连接&lt;/strong&gt;赋予&lt;strong&gt;所有级别的功能&lt;/strong&gt;以&lt;strong&gt;丰富的语义特征和复杂的细节&lt;/strong&gt;。&lt;strong&gt;改进后的特征随后被传输到解码器&lt;/strong&gt;以进行&lt;strong&gt;进一步处理和分割&lt;/strong&gt;。我们的方法可以&lt;strong&gt;无缝集成到任何编码器-解码器网络中&lt;/strong&gt;。我们在几个公共医学图像分割数据集上评估了我们的方法，用于皮肤病变分割和息肉分割，实验结果证明了我们的新方法相对于最先进的方法的分割准确性，同时&lt;strong&gt;保留了内存和计算效率&lt;/strong&gt;。代码位于：https://github.com/yaoppeng/U-Net_v2。&lt;/p&gt;&lt;/blockquote&gt;
 &lt;p&gt;主要工作就在于中间的skip-connection&lt;/p&gt;
 &lt;h2 id=&#34;introduction&#34;&gt;Introduction&lt;/h2&gt;
 &lt;blockquote&gt;
 &lt;p&gt;随着现代深度神经网络的进步，语义图像分割取得了重大进展。语义图像分割的典型范例涉及具有&lt;strong&gt;跳跃连接的编码器-解码器网络[&lt;strong&gt;1]。在此框架中，编码器从&lt;/strong&gt;输入图像中提取层次和抽象特征&lt;/strong&gt;，而解码器获取&lt;strong&gt;编码器生成的特征图并重建像素级分割掩模或图&lt;/strong&gt;，&lt;strong&gt;为输入图像中的每个像素分配类标签&lt;/strong&gt;。人们进行了一系列研究[2, 3]，&lt;strong&gt;将全局信息纳入特征图&lt;/strong&gt;中并增强多尺度特征，从而大大提高了分割性能。
 在医学图像分析领域，&lt;strong&gt;精确的图像分割&lt;/strong&gt;在计算机辅助诊断和分析中起着至关重要的作用。 U-Net [4] 最初是为了&lt;strong&gt;医学图像分割&lt;/strong&gt;而引入的，利用&lt;strong&gt;跳跃连接&lt;/strong&gt;来连接每个级别的&lt;strong&gt;编码器和解码器阶段&lt;/strong&gt;。&lt;strong&gt;跳跃连接&lt;/strong&gt;使解码器能够访问&lt;strong&gt;早期编码器阶段&lt;/strong&gt;的特征，从而保留&lt;strong&gt;高级语义信息&lt;/strong&gt;和&lt;strong&gt;细粒度空间细节&lt;/strong&gt;。这种方法有助于&lt;strong&gt;精确描绘对象边界&lt;/strong&gt;并提取&lt;strong&gt;医学图像中的小结构&lt;/strong&gt;。此外，还应用了&lt;strong&gt;密集连接机制&lt;/strong&gt;，通过&lt;strong&gt;连接所有级别&lt;/strong&gt;和&lt;strong&gt;所有阶段的特征&lt;/strong&gt;来减少&lt;strong&gt;编码器和解码器中特征之间的差异&lt;/strong&gt;[5]。设计了一种机制来&lt;strong&gt;通过连接较高和较低级别&lt;/strong&gt;的&lt;strong&gt;不同尺度的特征&lt;/strong&gt;来&lt;strong&gt;增强特征&lt;/strong&gt;[6]。
 然而，基于 U-Net 的模型中的这些连接在&lt;strong&gt;集成低级和高级特征方面&lt;/strong&gt;可能&lt;strong&gt;不够有效&lt;/strong&gt;。例如，在 ResNet [7] 中，深度神经网络是作为&lt;strong&gt;多个浅层网络的集合&lt;/strong&gt;而形成的，并且&lt;strong&gt;显式添加的残差连接&lt;/strong&gt;表明，即使在百万规模的训练中，网络也很难学习&lt;strong&gt;恒等映射函数图像&lt;/strong&gt;数据集。&lt;/p&gt;
-&lt;p&gt;&lt;strong&gt;对于编码器提取的特征，低级特征通常保留更多细节，但缺乏足够的语义信息，并且可能包含不需要的噪声&lt;/strong&gt;。相反，&lt;strong&gt;高级特征包含更多语义信息，但由于分辨率显着降低而缺乏精确的细节（例如对象边界）&lt;/strong&gt;。通过&lt;strong&gt;串联简单地融合特征&lt;/strong&gt;将在&lt;strong&gt;很大程度上依赖于网络的学习能力&lt;/strong&gt;，这&lt;strong&gt;通常与训练数据集的大小成正比&lt;/strong&gt;。这是一个具有挑战性的问题，特别是在医学成像领域，&lt;strong&gt;通常受到有限数据的限制&lt;/strong&gt;。这种信息融合是&lt;strong&gt;通过密集连接跨多个级别连接低级和高级特征&lt;/strong&gt;来实现的，可能会限制来自&lt;strong&gt;不同级别的信息的贡献&lt;/strong&gt;并可能引入噪声。另一方面，尽管&lt;strong&gt;引入的额外卷积并没有显着增加参数数量&lt;/strong&gt;，但 &lt;strong&gt;GPU 内存消耗将会增加&lt;/strong&gt;，因为必须&lt;strong&gt;存储所有中间特征图和相应的梯度&lt;/strong&gt;以进行前向传递和后向梯度计算。这会导致 &lt;strong&gt;GPU 内存使用量&lt;/strong&gt;和&lt;strong&gt;浮点运算 (FLOP) 增加&lt;/strong&gt;。&lt;/p&gt;
-&lt;/blockquote&gt;
+&lt;p&gt;&lt;strong&gt;对于编码器提取的特征，低级特征通常保留更多细节，但缺乏足够的语义信息，并且可能包含不需要的噪声&lt;/strong&gt;。相反，&lt;strong&gt;高级特征包含更多语义信息，但由于分辨率显着降低而缺乏精确的细节（例如对象边界）&lt;/strong&gt;。通过&lt;strong&gt;串联简单地融合特征&lt;/strong&gt;将在&lt;strong&gt;很大程度上依赖于网络的学习能力&lt;/strong&gt;，这&lt;strong&gt;通常与训练数据集的大小成正比&lt;/strong&gt;。这是一个具有挑战性的问题，特别是在医学成像领域，&lt;strong&gt;通常受到有限数据的限制&lt;/strong&gt;。这种信息融合是&lt;strong&gt;通过密集连接跨多个级别连接低级和高级特征&lt;/strong&gt;来实现的，可能会限制来自&lt;strong&gt;不同级别的信息的贡献&lt;/strong&gt;并可能引入噪声。另一方面，尽管&lt;strong&gt;引入的额外卷积并没有显着增加参数数量&lt;/strong&gt;，但 &lt;strong&gt;GPU 内存消耗将会增加&lt;/strong&gt;，因为必须&lt;strong&gt;存储所有中间特征图和相应的梯度&lt;/strong&gt;以进行前向传递和后向梯度计算。这会导致 &lt;strong&gt;GPU 内存使用量&lt;/strong&gt;和&lt;strong&gt;浮点运算 (FLOP) 增加&lt;/strong&gt;。&lt;/p&gt;&lt;/blockquote&gt;
 &lt;p&gt;&lt;img alt=&#34;image-20231211193109745&#34; loading=&#34;lazy&#34; src=&#34;https://oss.swimmingliu.cn/mCdvu.png&#34;&gt;&lt;/p&gt;
 &lt;p&gt;(a) U-Net v2 模型的整体架构，由&lt;strong&gt;编码器、SDI（语义和细节注入）模块和解码器&lt;/strong&gt;组成。 (b) SDI模块的架构。为简单起见，我们仅显示第三级特征的细化（l = 3）。 &lt;strong&gt;SmoothConv 表示用于特征平滑的 3 × 3 卷积&lt;/strong&gt;。$\bigotimes$ 表示哈达玛积。&lt;/p&gt;
 &lt;blockquote&gt;
@@ -139,8 +127,7 @@ PGI可以为&lt;strong&gt;目标任务计算目标函数&lt;/strong&gt;提供&lt
       <description>&lt;h2 id=&#34;abstract&#34;&gt;Abstract&lt;/h2&gt;
 &lt;blockquote&gt;
 &lt;p&gt;放射科医生拥有不同的培训和临床经验，导致&lt;strong&gt;肺结节的分割注释&lt;/strong&gt;存在&lt;strong&gt;差异&lt;/strong&gt;，从而导&lt;strong&gt;致分割的不确定性&lt;/strong&gt;。传统方法通常选择&lt;strong&gt;单个注释&lt;/strong&gt;作为学习目标或尝试学习包含&lt;strong&gt;多个注释&lt;/strong&gt;的&lt;strong&gt;潜在空间&lt;/strong&gt;。&lt;/p&gt;
-&lt;p&gt;然而，这些方法无法&lt;strong&gt;利用多个注释之间的共识和分歧所固有的有价值的信息&lt;/strong&gt;。在本文中，我们提出了一种&lt;strong&gt;不确定性感知注意机制&lt;/strong&gt;（UAAM），它利用多个&lt;strong&gt;注释之间的共识&lt;/strong&gt;和分歧来促进更好的分割。为此，我们引入了&lt;strong&gt;多置信度掩模&lt;/strong&gt;（MCM），它结合了&lt;strong&gt;低置信度（LC）掩模&lt;/strong&gt;和高置信度（HC）掩模。 &lt;strong&gt;LC 掩模&lt;/strong&gt;表示&lt;strong&gt;分割置信度较低的区域&lt;/strong&gt;，&lt;strong&gt;放射科医生可能有不同的分割选择&lt;/strong&gt;。继&lt;strong&gt;UAAM&lt;/strong&gt;之后，我们进一步设计了一个&lt;strong&gt;不确定性引导多置信分割网络&lt;/strong&gt;（UGMCS-Net），它包含三个模块：&lt;strong&gt;一个捕获肺结节一般特征的特征提取模块&lt;/strong&gt;，&lt;strong&gt;一个为肺结节产生三个特征的不确定性感知模块&lt;/strong&gt;。&lt;strong&gt;注释的并集、交集和注释集，以及一个交集并集约束模块&lt;/strong&gt;，该模块使用&lt;strong&gt;三个特征之间的距离来平衡最终分割和 MCM 的预测&lt;/strong&gt;。为了全面展示我们方法的性能，我们提出了 LIDC-IDRI 上的复杂结节验证，它测试了 UGMCS-Net 对使用常规方法难以分割的肺结节的分割性能。实验结果表明，我们的方法可以显着提高传统方法难以分割的结节的分割性能。&lt;/p&gt;
-&lt;/blockquote&gt;
+&lt;p&gt;然而，这些方法无法&lt;strong&gt;利用多个注释之间的共识和分歧所固有的有价值的信息&lt;/strong&gt;。在本文中，我们提出了一种&lt;strong&gt;不确定性感知注意机制&lt;/strong&gt;（UAAM），它利用多个&lt;strong&gt;注释之间的共识&lt;/strong&gt;和分歧来促进更好的分割。为此，我们引入了&lt;strong&gt;多置信度掩模&lt;/strong&gt;（MCM），它结合了&lt;strong&gt;低置信度（LC）掩模&lt;/strong&gt;和高置信度（HC）掩模。 &lt;strong&gt;LC 掩模&lt;/strong&gt;表示&lt;strong&gt;分割置信度较低的区域&lt;/strong&gt;，&lt;strong&gt;放射科医生可能有不同的分割选择&lt;/strong&gt;。继&lt;strong&gt;UAAM&lt;/strong&gt;之后，我们进一步设计了一个&lt;strong&gt;不确定性引导多置信分割网络&lt;/strong&gt;（UGMCS-Net），它包含三个模块：&lt;strong&gt;一个捕获肺结节一般特征的特征提取模块&lt;/strong&gt;，&lt;strong&gt;一个为肺结节产生三个特征的不确定性感知模块&lt;/strong&gt;。&lt;strong&gt;注释的并集、交集和注释集，以及一个交集并集约束模块&lt;/strong&gt;，该模块使用&lt;strong&gt;三个特征之间的距离来平衡最终分割和 MCM 的预测&lt;/strong&gt;。为了全面展示我们方法的性能，我们提出了 LIDC-IDRI 上的复杂结节验证，它测试了 UGMCS-Net 对使用常规方法难以分割的肺结节的分割性能。实验结果表明，我们的方法可以显着提高传统方法难以分割的结节的分割性能。&lt;/p&gt;&lt;/blockquote&gt;
 &lt;h2 id=&#34;introduction&#34;&gt;INTRODUCTION&lt;/h2&gt;
 &lt;blockquote&gt;
 &lt;p&gt;&lt;strong&gt;肺结节分割&lt;/strong&gt;在&lt;strong&gt;肺癌计算机辅助诊断 (CAD)&lt;/strong&gt; 系统中至关重要 [1]，可提供&lt;strong&gt;结节大小、形状和其他重要医学特征&lt;/strong&gt;等关键信息。然而，对于深度学习方法的&lt;strong&gt;一般训练和测试范例&lt;/strong&gt;，每个结节图像数据只有一个由&lt;strong&gt;一名放射科医生&lt;/strong&gt;描绘的注释掩模[2]-[6]。因此，&lt;strong&gt;网络每次只能提供结节区域&lt;/strong&gt;的单个预测。&lt;/p&gt;
@@ -149,8 +136,7 @@ PGI可以为&lt;strong&gt;目标任务计算目标函数&lt;/strong&gt;提供&lt
 &lt;p&gt;&lt;strong&gt;解决放射科医生之间注释不同问题&lt;/strong&gt;的一个直接解决方案是为&lt;strong&gt;每个肺结节图像合并多个注释&lt;/strong&gt;。这导致了另一个问题：&lt;strong&gt;多个注释不可避免地会带来不确定性和冲突&lt;/strong&gt;，因为放射科医生&lt;strong&gt;可能会对同一区域进行不同的注释&lt;/strong&gt;。为了克服这个问题，Kohl 等人在 2018 年提出了一种概率 U-Net，它&lt;strong&gt;利用条件变分自动编码器&lt;/strong&gt;将&lt;strong&gt;多个分割变体编码&lt;/strong&gt;到&lt;strong&gt;低维潜在空间&lt;/strong&gt;中 [8]、[10]。通过从该空间采样，网络可以影响相应的分割图。基于这项研究，Hu等人提出将&lt;strong&gt;真实不确定性&lt;/strong&gt;与&lt;strong&gt;概率UNet&lt;/strong&gt;相结合，这可以&lt;strong&gt;提高预测不确定性估计&lt;/strong&gt;、&lt;strong&gt;样本准确性和样本多样性&lt;/strong&gt;[7]。这些方法依赖于&lt;strong&gt;潜在空间和该空间中的随机样本&lt;/strong&gt;。因此，这些方法只能通过多次预测来提供不确定区域。&lt;/p&gt;
 &lt;p&gt;在本文中，我们提出了一个论点，即&lt;strong&gt;多个注释之间的不确定性遵循特定的模式&lt;/strong&gt;。&lt;/p&gt;
 &lt;p&gt;为了演示这种现象，我们引入了&lt;strong&gt;多重置信掩码&lt;/strong&gt; (MCM)，它结合了&lt;strong&gt;高置信度 (HC) 掩码&lt;/strong&gt;和低置信度 (LC) 掩码，如图 1 所示。 A. 交叉掩码等于 &lt;strong&gt;HC mask&lt;/strong&gt;，代表&lt;strong&gt;所有注释的交集&lt;/strong&gt;。&lt;/p&gt;
-&lt;p&gt;&lt;strong&gt;联合掩码是所有注释的联合&lt;/strong&gt;。 &lt;strong&gt;LC掩模是交集掩模和并集掩模之间的差异&lt;/strong&gt;。当在 LIDC-IDRI 数据集 [11] 上计算 HC 和 LC 的 Hounsfield 单位 (HU) 核估计时，&lt;strong&gt;如图 1.B 所示，我们可以观察到 LC 和 HC 掩模之间的 HU 分布存在明显区别&lt;/strong&gt;。具体地，LC区域具有比HC区域更低的HU值。从像素分布来看，&lt;strong&gt;HU值越低，对应区域的密度越低&lt;/strong&gt;。就CT图像特征而言，LC区域&lt;strong&gt;主要由结节边缘、毛刺和磨玻璃特征等边界相关特征组成&lt;/strong&gt;，而&lt;strong&gt;HC区域主要分布在结节核心内&lt;/strong&gt;。因此，我们提出了这样的假设：导致放射科医生之间差异的区域主要与&lt;strong&gt;低密度组织和边界相关特征&lt;/strong&gt;有关。&lt;/p&gt;
-&lt;/blockquote&gt;
+&lt;p&gt;&lt;strong&gt;联合掩码是所有注释的联合&lt;/strong&gt;。 &lt;strong&gt;LC掩模是交集掩模和并集掩模之间的差异&lt;/strong&gt;。当在 LIDC-IDRI 数据集 [11] 上计算 HC 和 LC 的 Hounsfield 单位 (HU) 核估计时，&lt;strong&gt;如图 1.B 所示，我们可以观察到 LC 和 HC 掩模之间的 HU 分布存在明显区别&lt;/strong&gt;。具体地，LC区域具有比HC区域更低的HU值。从像素分布来看，&lt;strong&gt;HU值越低，对应区域的密度越低&lt;/strong&gt;。就CT图像特征而言，LC区域&lt;strong&gt;主要由结节边缘、毛刺和磨玻璃特征等边界相关特征组成&lt;/strong&gt;，而&lt;strong&gt;HC区域主要分布在结节核心内&lt;/strong&gt;。因此，我们提出了这样的假设：导致放射科医生之间差异的区域主要与&lt;strong&gt;低密度组织和边界相关特征&lt;/strong&gt;有关。&lt;/p&gt;&lt;/blockquote&gt;
 &lt;p&gt;&lt;img alt=&#34;image-20231130203343980&#34; loading=&#34;lazy&#34; src=&#34;https://oss.swimmingliu.cn/327b2.png&#34;&gt;&lt;/p&gt;
 &lt;blockquote&gt;
 &lt;p&gt;与其他方法不同，我们建议利用 &lt;strong&gt;MCM (多重置信掩码) ** 和注释集作为具有&lt;/strong&gt;不同分割确定性的特征的学习指导**，有助于更好的分割性能。我们将这种训练称为&lt;strong&gt;UncertaintyAware Attention Mechanism&lt;/strong&gt;，如图2所示。按照这种机制，我们进一步设计了用于肺结节分割的&lt;strong&gt;Uncertainty-Guide Multi-Confidence Segmentation Network&lt;/strong&gt;（UGMCS-Net）。&lt;/p&gt;</description>
@@ -163,31 +149,26 @@ PGI可以为&lt;strong&gt;目标任务计算目标函数&lt;/strong&gt;提供&lt
       <description>&lt;h1 id=&#34;prior-attention-network-用于医学图像中多病灶分割的预先注意网络&#34;&gt;Prior Attention Network: 用于医学图像中多病灶分割的预先注意网络&lt;/h1&gt;
 &lt;h2 id=&#34;abstract&#34;&gt;Abstract&lt;/h2&gt;
 &lt;blockquote&gt;
-&lt;p&gt;医学图像中邻近组织的多种类型病变的准确分割在临床实践中具有重要意义。基于从&lt;strong&gt;粗到精策略的卷积神经网络（CNN）&lt;strong&gt;已广泛应用于该领域。然而，由于&lt;/strong&gt;组织的大小、对比度和高类间相似性的不确定性&lt;/strong&gt;，多病灶分割仍然具有挑战性。此外，&lt;strong&gt;普遍采用的级联策略&lt;/strong&gt;对&lt;strong&gt;硬件要求较高&lt;/strong&gt;，限制了临床部署的潜力。为了解决上述问题，我们提出了一种新颖的先验注意网络（PANet），它&lt;strong&gt;遵循从粗到细的策略&lt;/strong&gt;来在医学图像中执行多病灶分割。所提出的网络通过在网络中&lt;strong&gt;插入与病变相关的空间注意机制&lt;/strong&gt;，在单个网络中实现了&lt;strong&gt;两个步骤的分割&lt;/strong&gt;。此外，我们还提出了&lt;strong&gt;中间监督策略&lt;/strong&gt;，用于&lt;strong&gt;生成与病变相关的注意力&lt;/strong&gt;来获取&lt;strong&gt;感兴趣区域（ROI）&lt;/strong&gt;，这加速了收敛并明显提高了分割性能。我们在两个应用中研究了所提出的分割框架：&lt;strong&gt;肺部 CT 切片&lt;/strong&gt;中多发性&lt;strong&gt;肺部感染的 2D 分割&lt;/strong&gt;和&lt;strong&gt;脑 MRI 中多发性病变的 3D 分割&lt;/strong&gt;。实验结果表明，与级联网络相比，在 2D 和 3D 分割任务中，我们提出的网络以更少的计算成本实现了更好的性能。所提出的网络可以被视为 2D 和 3D 任务中多病灶分割的通用解决方案。源代码可在 &lt;a href=&#34;https://github.com/hsiangyuzhao/PANet&#34;&gt;https://github.com/hsiangyuzhao/PANet&lt;/a&gt; 获取&lt;/p&gt;
-&lt;/blockquote&gt;
+&lt;p&gt;医学图像中邻近组织的多种类型病变的准确分割在临床实践中具有重要意义。基于从&lt;strong&gt;粗到精策略的卷积神经网络（CNN）&lt;strong&gt;已广泛应用于该领域。然而，由于&lt;/strong&gt;组织的大小、对比度和高类间相似性的不确定性&lt;/strong&gt;，多病灶分割仍然具有挑战性。此外，&lt;strong&gt;普遍采用的级联策略&lt;/strong&gt;对&lt;strong&gt;硬件要求较高&lt;/strong&gt;，限制了临床部署的潜力。为了解决上述问题，我们提出了一种新颖的先验注意网络（PANet），它&lt;strong&gt;遵循从粗到细的策略&lt;/strong&gt;来在医学图像中执行多病灶分割。所提出的网络通过在网络中&lt;strong&gt;插入与病变相关的空间注意机制&lt;/strong&gt;，在单个网络中实现了&lt;strong&gt;两个步骤的分割&lt;/strong&gt;。此外，我们还提出了&lt;strong&gt;中间监督策略&lt;/strong&gt;，用于&lt;strong&gt;生成与病变相关的注意力&lt;/strong&gt;来获取&lt;strong&gt;感兴趣区域（ROI）&lt;/strong&gt;，这加速了收敛并明显提高了分割性能。我们在两个应用中研究了所提出的分割框架：&lt;strong&gt;肺部 CT 切片&lt;/strong&gt;中多发性&lt;strong&gt;肺部感染的 2D 分割&lt;/strong&gt;和&lt;strong&gt;脑 MRI 中多发性病变的 3D 分割&lt;/strong&gt;。实验结果表明，与级联网络相比，在 2D 和 3D 分割任务中，我们提出的网络以更少的计算成本实现了更好的性能。所提出的网络可以被视为 2D 和 3D 任务中多病灶分割的通用解决方案。源代码可在 &lt;a href=&#34;https://github.com/hsiangyuzhao/PANet&#34;&gt;https://github.com/hsiangyuzhao/PANet&lt;/a&gt; 获取&lt;/p&gt;&lt;/blockquote&gt;
 &lt;p&gt;问题导向：&lt;/p&gt;
 &lt;p&gt;①&lt;strong&gt;组织的大小、对比度和高类间相似性的不确定性&lt;/strong&gt;&lt;/p&gt;
 &lt;p&gt;②多类别病灶分割&lt;/p&gt;
 &lt;p&gt;③&lt;strong&gt;普遍采用的级联策略&lt;/strong&gt;对&lt;strong&gt;硬件要求较高&lt;/strong&gt;&lt;/p&gt;
 &lt;h2 id=&#34;introduction&#34;&gt;Introduction&lt;/h2&gt;
 &lt;blockquote&gt;
-&lt;p&gt;&lt;strong&gt;医学图像分割对于疾病的准确筛查和患者的预后具有重要意义。基于病灶分割的病灶评估提供了疾病进展的信息，帮助医生提高临床诊断和治疗的质量。然而，手动病变分割相当主观且费力，这限制了其潜在的临床应用。近年来，随着人工智能的快速发展，基于深度学习的算法得到了广泛的应用，并在医学图像分割方面取得了最先进的性能[1]&lt;/strong&gt;。卷积神经网络（CNN）由于其高分割质量而在医学图像中的病变分割中很受欢迎。此类算法通常具有&lt;strong&gt;深度编码器&lt;/strong&gt;，可从输入图像中自动提取特征，并通过以下操作&lt;strong&gt;生成密集预测&lt;/strong&gt;。例如，Long等人[2]提出了一种用于图像语义分割的全卷积网络，该网络颇具影响力，并启发了后来的医学分割中的端到端框架。 Ronneberger等人[3]提出了一种用于医学图像分割的U形网络（U-Net），该网络在医学分割的许多领域都显示出了可喜的结果，并已成为许多医学分割任务的虚拟基准。&lt;/p&gt;
-&lt;/blockquote&gt;
+&lt;p&gt;&lt;strong&gt;医学图像分割对于疾病的准确筛查和患者的预后具有重要意义。基于病灶分割的病灶评估提供了疾病进展的信息，帮助医生提高临床诊断和治疗的质量。然而，手动病变分割相当主观且费力，这限制了其潜在的临床应用。近年来，随着人工智能的快速发展，基于深度学习的算法得到了广泛的应用，并在医学图像分割方面取得了最先进的性能[1]&lt;/strong&gt;。卷积神经网络（CNN）由于其高分割质量而在医学图像中的病变分割中很受欢迎。此类算法通常具有&lt;strong&gt;深度编码器&lt;/strong&gt;，可从输入图像中自动提取特征，并通过以下操作&lt;strong&gt;生成密集预测&lt;/strong&gt;。例如，Long等人[2]提出了一种用于图像语义分割的全卷积网络，该网络颇具影响力，并启发了后来的医学分割中的端到端框架。 Ronneberger等人[3]提出了一种用于医学图像分割的U形网络（U-Net），该网络在医学分割的许多领域都显示出了可喜的结果，并已成为许多医学分割任务的虚拟基准。&lt;/p&gt;&lt;/blockquote&gt;
 &lt;p&gt;这一段都可以当成经典医学图像分割的背景引入&lt;/p&gt;
 &lt;blockquote&gt;
 &lt;p&gt;然而，尽管医学分割取得了这些突破，但目前的&lt;strong&gt;医学分割方法主要集中在病灶的二元分割上&lt;/strong&gt;，即&lt;strong&gt;区分病灶（前景）和其他一切（背景）&lt;/strong&gt;。尽管二元分割确实有助于&lt;strong&gt;隔离某些感兴趣区域&lt;/strong&gt;并允许对&lt;strong&gt;医学图像进行精确分析&lt;/strong&gt;，但在某些需要&lt;strong&gt;对病变进行多类分割的场景中，二元分割还不够&lt;/strong&gt;。与二元分割相比，由于&lt;strong&gt;组织的类间相似性，这种情况要困难得多&lt;/strong&gt;，因为&lt;strong&gt;不同类型的病变在纹理、大小和形状上可能相似&lt;/strong&gt;。具有从粗到细策略的级联网络已广泛应用于此类场景，例如&lt;strong&gt;肝脏和病变的分割、脑肿瘤分割&lt;/strong&gt;[4]、[5][6]、[7]。&lt;/p&gt;
-&lt;p&gt;此类网络通常由两个独立的网络组成，其中第一个&lt;strong&gt;网络执行粗分割，第二个网络基于从第一个网络分割的 ROI 细化分割&lt;/strong&gt;。然而，尽管&lt;strong&gt;级联网络&lt;/strong&gt;已广泛应用于医学图像的&lt;strong&gt;多病灶分割&lt;/strong&gt;，但级联策略也有其缺点。由于&lt;strong&gt;级联网络由两个独立的网络组成&lt;/strong&gt;，&lt;strong&gt;参数量和显存占用通常是单个网络的两倍&lt;/strong&gt;，这对硬件要求较高，限制了其在临床使用的潜力。更重要的是，由于级联网络中的两个网络通常是独立的，因此&lt;strong&gt;级联网络的训练过程有时比单个网络更困难&lt;/strong&gt;，这可能导致欠拟合。&lt;/p&gt;
-&lt;/blockquote&gt;
+&lt;p&gt;此类网络通常由两个独立的网络组成，其中第一个&lt;strong&gt;网络执行粗分割，第二个网络基于从第一个网络分割的 ROI 细化分割&lt;/strong&gt;。然而，尽管&lt;strong&gt;级联网络&lt;/strong&gt;已广泛应用于医学图像的&lt;strong&gt;多病灶分割&lt;/strong&gt;，但级联策略也有其缺点。由于&lt;strong&gt;级联网络由两个独立的网络组成&lt;/strong&gt;，&lt;strong&gt;参数量和显存占用通常是单个网络的两倍&lt;/strong&gt;，这对硬件要求较高，限制了其在临床使用的潜力。更重要的是，由于级联网络中的两个网络通常是独立的，因此&lt;strong&gt;级联网络的训练过程有时比单个网络更困难&lt;/strong&gt;，这可能导致欠拟合。&lt;/p&gt;&lt;/blockquote&gt;
 &lt;p&gt;级联网络：参数量大、容易欠拟合。&lt;/p&gt;
 &lt;blockquote&gt;
 &lt;p&gt;在本文中，我们提出了一种名为先验注意网络（PANet）的新型网络结构，用于在医学图像中执行&lt;strong&gt;多病灶分割&lt;/strong&gt;。所提出的网络由&lt;strong&gt;一个&lt;/strong&gt;用于&lt;strong&gt;特征提取的编码器&lt;/strong&gt;和&lt;strong&gt;两个分别生成病变区域注意力和最终预测的解码器组成&lt;/strong&gt;。该网络与&lt;strong&gt;注意力机制&lt;/strong&gt;结合在一起。为了&lt;strong&gt;减少参数大小和硬件&lt;/strong&gt;占用，我们使用&lt;strong&gt;网络编码器的深层、语义丰富的特征&lt;/strong&gt;来&lt;strong&gt;生成病变区域的空间注意力&lt;/strong&gt;。&lt;/p&gt;
-&lt;p&gt;然后，&lt;strong&gt;编码器生成的特征&lt;/strong&gt;表示通过&lt;strong&gt;空间注意力&lt;/strong&gt;进行细化，并将其发送到解码器以进行&lt;strong&gt;最终的多类预测&lt;/strong&gt;。为了&lt;strong&gt;提高分割性能并加速收敛&lt;/strong&gt;，我们还在网络结构中引入了&lt;strong&gt;中间监督和深度监督&lt;/strong&gt;。通过这些改进，与传统的级联网络相比，所提出的网络以&lt;strong&gt;显着降低的参数大小和计算成本&lt;/strong&gt;实现了有竞争力的结果。&lt;/p&gt;
-&lt;/blockquote&gt;
+&lt;p&gt;然后，&lt;strong&gt;编码器生成的特征&lt;/strong&gt;表示通过&lt;strong&gt;空间注意力&lt;/strong&gt;进行细化，并将其发送到解码器以进行&lt;strong&gt;最终的多类预测&lt;/strong&gt;。为了&lt;strong&gt;提高分割性能并加速收敛&lt;/strong&gt;，我们还在网络结构中引入了&lt;strong&gt;中间监督和深度监督&lt;/strong&gt;。通过这些改进，与传统的级联网络相比，所提出的网络以&lt;strong&gt;显着降低的参数大小和计算成本&lt;/strong&gt;实现了有竞争力的结果。&lt;/p&gt;&lt;/blockquote&gt;
 &lt;p&gt;利用网络编码器的深层、特征信息来生成空间注意力（WTF ???）&lt;/p&gt;
 &lt;p&gt;中间监督、深度监督 （不错不错， 好多一区和顶会的文章都用深度监督）&lt;/p&gt;
 &lt;blockquote&gt;
-&lt;p&gt;这项工作的贡献体现在三个方面。&lt;strong&gt;首先&lt;/strong&gt;，我们提出了一种新颖的网络架构，通过将传统级联网络中的两个分割步骤结合在&lt;strong&gt;单个网络&lt;/strong&gt;中，遵循 2D 和 3D 医学图像中多病灶分割的&lt;strong&gt;从粗到细的策略&lt;/strong&gt;。与级联网络相比，所提出的架构以更少的额外计算成本实现了有竞争力的分割性能，更容易训练和部署到生产环境。&lt;strong&gt;其次&lt;/strong&gt;，我们提出了一种&lt;strong&gt;监督空间注意力机制&lt;/strong&gt;，将&lt;strong&gt;病变区域的注意力与网络提取的特征相结合&lt;/strong&gt;，将多病变分割分解为&lt;strong&gt;两个更容易的阶段&lt;/strong&gt;，并且与当前&lt;strong&gt;基于注意力的方法相比具有更好的可解释性&lt;/strong&gt;。&lt;strong&gt;第三&lt;/strong&gt;，所提出的网络已在两个实际应用中得到验证，&lt;strong&gt;包括肺部 CT 切片中的 COVID-19 病变的 2D 分割和多模态 MRI 中的脑肿瘤的 3D 分割&lt;/strong&gt;。所提出的网络在 2D 和 3D 任务中都优于前沿方法，并且在参数和计算成本方面比当前网络更高效。&lt;/p&gt;
-&lt;/blockquote&gt;
+&lt;p&gt;这项工作的贡献体现在三个方面。&lt;strong&gt;首先&lt;/strong&gt;，我们提出了一种新颖的网络架构，通过将传统级联网络中的两个分割步骤结合在&lt;strong&gt;单个网络&lt;/strong&gt;中，遵循 2D 和 3D 医学图像中多病灶分割的&lt;strong&gt;从粗到细的策略&lt;/strong&gt;。与级联网络相比，所提出的架构以更少的额外计算成本实现了有竞争力的分割性能，更容易训练和部署到生产环境。&lt;strong&gt;其次&lt;/strong&gt;，我们提出了一种&lt;strong&gt;监督空间注意力机制&lt;/strong&gt;，将&lt;strong&gt;病变区域的注意力与网络提取的特征相结合&lt;/strong&gt;，将多病变分割分解为&lt;strong&gt;两个更容易的阶段&lt;/strong&gt;，并且与当前&lt;strong&gt;基于注意力的方法相比具有更好的可解释性&lt;/strong&gt;。&lt;strong&gt;第三&lt;/strong&gt;，所提出的网络已在两个实际应用中得到验证，&lt;strong&gt;包括肺部 CT 切片中的 COVID-19 病变的 2D 分割和多模态 MRI 中的脑肿瘤的 3D 分割&lt;/strong&gt;。所提出的网络在 2D 和 3D 任务中都优于前沿方法，并且在参数和计算成本方面比当前网络更高效。&lt;/p&gt;&lt;/blockquote&gt;
 &lt;p&gt;一个网络、监督空间注意力机制、参数和计算成本方面比当前网络更高效。&lt;/p&gt;
 &lt;h2 id=&#34;related-work&#34;&gt;Related Work&lt;/h2&gt;
 &lt;blockquote&gt;
@@ -208,8 +189,7 @@ ACC-UNet结合了&lt;strong&gt;卷积神经网络（ConvNets）的内在归纳�
 ACC-UNet 在 5 个不同的医学图像分割基准上进行了评估，并且始终优于卷积网络、Transfomer及其混合网络。&lt;/p&gt;
 &lt;h2 id=&#34;2introduction&#34;&gt;2.Introduction&lt;/h2&gt;
 &lt;blockquote&gt;
-&lt;p&gt;语义分割是计算机辅助医学图像分析的重要组成部分，可识别并突出显示各种诊断任务中感兴趣的区域。然而，由于涉及图像模态和采集以及病理和生物变化的各种因素，这通常变得复杂[18]。深度学习在这一领域的应用无疑在这方面受益匪浅。最值得注意的是，自推出以来，UNet 模型 [19] 在医学图像分割方面表现出了惊人的功效。结果，UNet 及其衍生品已成为事实上的标准[25]。&lt;/p&gt;
-&lt;/blockquote&gt;
+&lt;p&gt;语义分割是计算机辅助医学图像分析的重要组成部分，可识别并突出显示各种诊断任务中感兴趣的区域。然而，由于涉及图像模态和采集以及病理和生物变化的各种因素，这通常变得复杂[18]。深度学习在这一领域的应用无疑在这方面受益匪浅。最值得注意的是，自推出以来，UNet 模型 [19] 在医学图像分割方面表现出了惊人的功效。结果，UNet 及其衍生品已成为事实上的标准[25]。&lt;/p&gt;&lt;/blockquote&gt;
 &lt;p&gt;学习一下这里的背景描述&lt;/p&gt;
 &lt;blockquote&gt;
 &lt;p&gt;原始的 UNet 模型包含对称的编码器-解码器架构（图 1a）并采用跳跃连接，这为解码器提供了在编码器的池化操作期间可能丢失的空间信息。尽管通过简单串联的信息传播提高了性能，但编码器-解码器特征图之间可能存在语义差距。这导致了第二类 UNet 的发展（图 1b）。 U-Net++ [26] 利用密集连接，而 MultiResUNet [11] 在跳过连接上添加了额外的卷积块作为潜在的补救措施。到目前为止，UNet 的历史上所有创新都是使用 CNN 进行的。然而，2020 年的十年给计算机视觉领域带来了根本性的变化。 CNN 在视觉领域的长期主导地位被视觉转换器打破了 [7]。 Swin Transformers [15] 进一步针对一般视觉应用调整了变压器。因此，UNet 模型开始采用 Transformer [5]。 Swin-Unet [9] 用 Swin Transformer 块取代了卷积块，从而开创了一类新的模型（图 1c）。尽管如此，CNN 在图像分割方面仍然具有各种优点，导致了融合这两者的发展[2]。这种混合类 UNet 模型（图 1d）在编码器-解码器中采用卷积块，并沿跳跃连接使用变换器层。 UCTransNet [22]和MCTrans[24]是此类的两个代表性模型。最后，还尝试开发全变压器 UNet 架构（图 1e），例如，SMESwin Unet [27] 在编码器-解码器块和跳跃连接中都使用变压器。&lt;/p&gt;</description>
@@ -224,20 +204,17 @@ ACC-UNet 在 5 个不同的医学图像分割基准上进行了评估，并且�
 &lt;blockquote&gt;
 &lt;p&gt;准确的医学图像分割对于早期医学诊断至关重要。大多数现有方法基于U形结构，并使用&lt;strong&gt;逐元素加法或串联在解码器中逐步融合不同级别的特征&lt;/strong&gt;。然而，这两种操作都&lt;strong&gt;容易产生大量冗余信息&lt;/strong&gt;，从而&lt;strong&gt;削弱不同级别特征之间的互补性&lt;/strong&gt;，导致&lt;strong&gt;病灶定位不准确和边缘模糊&lt;/strong&gt;。为了应对这一挑战，我们提出了一种通用的多尺度减法网络（M2SNet）来完成医学图像的多样化分割。具体来说，我们首先设计一个基本&lt;strong&gt;减法单元（SU）&lt;strong&gt;来产生编码器中相邻级别之间的差异特征。接下来，我们将单尺度 SU 扩展到层内多尺度 SU，它可以为解码器&lt;/strong&gt;提供像素级和结构级差异信息&lt;/strong&gt;。&lt;/p&gt;
 &lt;p&gt;然后，我们金字塔式地为不同层次的多尺度SU配备不同的感受野，从而实现层间多尺度特征聚合并获得丰富的多尺度差异信息。此外，我们构建了一个免训练网络“LossNet”来全面监督从底层到顶层的任务感知特征，这驱动我们的多尺度减法网络同时捕获细节和结构线索。&lt;/p&gt;
-&lt;p&gt;没有花里胡哨的东西，我们的方法在不同的评估指标下，在不同图像模态的四种不同医学图像分割任务的 11 个数据集上表现优于大多数最先进的方法，包括彩色结肠镜成像、超声成像、计算机断层扫描 (CT) ）和光学相干断层扫描（OCT）。&lt;/p&gt;
-&lt;/blockquote&gt;
+&lt;p&gt;没有花里胡哨的东西，我们的方法在不同的评估指标下，在不同图像模态的四种不同医学图像分割任务的 11 个数据集上表现优于大多数最先进的方法，包括彩色结肠镜成像、超声成像、计算机断层扫描 (CT) ）和光学相干断层扫描（OCT）。&lt;/p&gt;&lt;/blockquote&gt;
 &lt;p&gt;两个主要创新点：多尺度金字塔减法单元 （确实牛逼）+ LossNet（为了创新而创新的损失函数）&lt;/p&gt;
 &lt;h2 id=&#34;introduction&#34;&gt;Introduction&lt;/h2&gt;
 &lt;blockquote&gt;
-&lt;p&gt;作为计算机辅助诊断系统中的重要作用，精确的医学图像分割技术可以为医生做出临床决策提供重要指导。精确分割存在三个普遍的挑战：首先，U形结构[1]、[2]由于其利用多级信息重建高分辨率特征图的能力而受到了相当多的关注。在UNet [2]中，上采样的特征图与从编码器跳过的特征图连接在一起，并在上采样步骤之间添加卷积和非线性，如图1（a）所示。后续基于UNet的方法通过注意力机制[3]、[4]、门机制[5]、[6]、变压器技术[7]、[8]设计不同的特征增强模块，如图1（b）所示。 UNet++[9]使用嵌套和密集的跳跃连接来减少编码器和解码器的特征图之间的语义差距，如图1（c）所示。&lt;/p&gt;
-&lt;/blockquote&gt;
+&lt;p&gt;作为计算机辅助诊断系统中的重要作用，精确的医学图像分割技术可以为医生做出临床决策提供重要指导。精确分割存在三个普遍的挑战：首先，U形结构[1]、[2]由于其利用多级信息重建高分辨率特征图的能力而受到了相当多的关注。在UNet [2]中，上采样的特征图与从编码器跳过的特征图连接在一起，并在上采样步骤之间添加卷积和非线性，如图1（a）所示。后续基于UNet的方法通过注意力机制[3]、[4]、门机制[5]、[6]、变压器技术[7]、[8]设计不同的特征增强模块，如图1（b）所示。 UNet++[9]使用嵌套和密集的跳跃连接来减少编码器和解码器的特征图之间的语义差距，如图1（c）所示。&lt;/p&gt;&lt;/blockquote&gt;
 &lt;p&gt;先说医学分割在医学领域重要&amp;hellip;(balabala)  然后当前领域存在xxx挑战&amp;hellip;(balabala)&lt;/p&gt;
 &lt;p&gt;这里是以医学图像分割挑战的视角，介绍UNet发展的情况。然后在描述不同UNet变体发展过程中解决的不同问题（感觉可以借鉴）&lt;/p&gt;
 &lt;blockquote&gt;
 &lt;p&gt;一般来说，编码器中不同级别的特征有不同的特征。&lt;strong&gt;高级别具有更多的语义信息&lt;/strong&gt;，有助于定位对象，而低级别具有&lt;strong&gt;更详细的信息&lt;/strong&gt;，可以捕捉对象的&lt;strong&gt;微妙边界&lt;/strong&gt;。解码器利用特定级别和跨级别特征来生成最终的&lt;strong&gt;高分辨率预测&lt;/strong&gt;。然而，上述方法&lt;strong&gt;直接使用逐元素加法或串联来融合来自编码器的任意两级特征&lt;/strong&gt;并将它们传输到解码器。这些简单的操作并没有更多地关注&lt;strong&gt;不同层次之间的差异信息。&lt;strong&gt;这一缺点不仅会产生&lt;/strong&gt;冗余信息来稀释真正有用的特征&lt;/strong&gt;，还会&lt;strong&gt;削弱特定于级别的特征的特性&lt;/strong&gt;，从而导致网络无法平衡精确定位和微妙的边界细化。其次，由于&lt;strong&gt;感受野有限&lt;/strong&gt;，单尺度卷积核很难捕获大小变化物体的&lt;strong&gt;上下文信息&lt;/strong&gt;。一些方法[1]、[2]、[9]-[11]依赖于层间多尺度特征，并逐步整合来自不同尺度表示的&lt;strong&gt;语义上下文和纹理细节&lt;/strong&gt;。其他人[6]、[12]-[15]专注于基于网络中的空洞空间金字塔池化模块[16]（ASPP）或DenseASPP [17]提取&lt;strong&gt;层内多尺度信息&lt;/strong&gt;。然而，类似ASPP的多尺度卷积模块会产生&lt;strong&gt;许多额外的参数和计算&lt;/strong&gt;。许多方法[5]、[18]-[21]通常将多个ASPP模块安装到不同级别的编码器/解码器块中，而有些方法[13]、[14]、[22]、[23]将其安装在不同级别的编码器/解码器块中。最高级别的编码器块。第三，损失函数的形式直接为网络的梯度优化提供了方向。在分割领域，提出了许多损失函数来监督不同级别的预测，例如像素级别的L1损失、交叉熵损失和加权交叉熵损失[24]，SSIM[25]损失区域层面的不确定性损失[26]，全局层面的IoU损失、Dice损失和一致性增强损失[11]。尽管这些基本损失函数及其变体具有不同的优化特性，但复杂的手动数学形式的设计对于许多研究来说确实非常耗时。为了获得综合性能，模型通常会集成多种损失函数，这对研究人员的训练技能提出了很高的要求。因此，我们认为有必要引入一种无需复杂人工设计的智能损失函数来全面监督分割预测。&lt;/p&gt;
 &lt;p&gt;在本文中，我们提出了一种用于一般医学图像分割的新型多尺度减法网络（M2SNet）。首先，我们设计一个减法单元（SU）并将其应用于&lt;strong&gt;每对相邻的级别特征&lt;/strong&gt;。 SU突出了&lt;strong&gt;特征之间有用的差异信息，并消除了冗余部分的干扰&lt;/strong&gt;。其次，我们借助所提出的&lt;strong&gt;多尺度减法模块&lt;/strong&gt;收集&lt;strong&gt;极端多尺度信息&lt;/strong&gt;。&lt;/p&gt;
-&lt;p&gt;对于层间多尺度信息，我们以金字塔方式连接多个减法单元来捕获大跨度的跨层信息。然后，我们&lt;strong&gt;聚合特定于级别的特征&lt;/strong&gt;和&lt;strong&gt;多路径跨级别差分特征&lt;/strong&gt;，然后在解码器中生成最终预测。对于层内多尺度信息，我们通过一组不同内核大小的full one滤波器将单尺度减法单元&lt;strong&gt;改进为多尺度减法单元，可以自然地实现多尺度减法聚合，而无需引入额外的参数&lt;/strong&gt;。如图1所示，MSNet配备了层间多尺度减法模块，M2SNet同时具有层间和层内多尺度减法结构。第三，我们提出了一个LossNet来自动监督从底层到顶层提取的特征图，它可以通过简单的L2损失函数优化从细节到结构的分割。&lt;/p&gt;
-&lt;/blockquote&gt;
+&lt;p&gt;对于层间多尺度信息，我们以金字塔方式连接多个减法单元来捕获大跨度的跨层信息。然后，我们&lt;strong&gt;聚合特定于级别的特征&lt;/strong&gt;和&lt;strong&gt;多路径跨级别差分特征&lt;/strong&gt;，然后在解码器中生成最终预测。对于层内多尺度信息，我们通过一组不同内核大小的full one滤波器将单尺度减法单元&lt;strong&gt;改进为多尺度减法单元，可以自然地实现多尺度减法聚合，而无需引入额外的参数&lt;/strong&gt;。如图1所示，MSNet配备了层间多尺度减法模块，M2SNet同时具有层间和层内多尺度减法结构。第三，我们提出了一个LossNet来自动监督从底层到顶层提取的特征图，它可以通过简单的L2损失函数优化从细节到结构的分割。&lt;/p&gt;&lt;/blockquote&gt;
 &lt;p&gt;多尺度减法单元可以去特征之间的差异信息，消除冗余干扰。&lt;/p&gt;
 &lt;p&gt;（也就是说可以用这种办法替换注意力机制）&lt;/p&gt;
 &lt;h2 id=&#34;related-work&#34;&gt;RELATED WORK&lt;/h2&gt;
@@ -260,12 +237,10 @@ ACC-UNet 在 5 个不同的医学图像分割基准上进行了评估，并且�
 &lt;p&gt;2.GAB 通过对低级特征、高级特征以及解码器在每个阶段生成的掩码进行分组，有效地融合了多尺度信息。&lt;/p&gt;
 &lt;h2 id=&#34;2-introduction&#34;&gt;2. Introduction&lt;/h2&gt;
 &lt;blockquote&gt;
-&lt;p&gt;背景: 恶性黑色素瘤是世界上增长最快的癌症之一。据美国癌症协会估计，2020 年约有 100,350 例新发病例，超过 6,500 例死亡。因此，自动化皮肤病变分割系统势在必行，因为它可以帮助医疗专业人员快速识别病变区域并促进后续治疗过程。&lt;/p&gt;
-&lt;/blockquote&gt;
+&lt;p&gt;背景: 恶性黑色素瘤是世界上增长最快的癌症之一。据美国癌症协会估计，2020 年约有 100,350 例新发病例，超过 6,500 例死亡。因此，自动化皮肤病变分割系统势在必行，因为它可以帮助医疗专业人员快速识别病变区域并促进后续治疗过程。&lt;/p&gt;&lt;/blockquote&gt;
 &lt;p&gt;&lt;strong&gt;相同方式可引入脑瘤、肺癌。&lt;/strong&gt;&lt;/p&gt;
 &lt;blockquote&gt;
-&lt;p&gt;为了提高分割性能，最近的研究倾向于采用具有更大参数和计算复杂度的模块，例如结合视觉变换器（ViT）的自注意力机制[7]。例如，Swin-UNet [4]，基于Swin Transformer [11]，利用自注意力机制的特征提取能力来提高分割性能。 TransUNet [5] 开创了用于医学图像分割的 CNN 和 ViT 的串行融合。 TransFuse [26]采用双路径结构，利用 CNN 和 ViT 分别捕获局部和全局信息。UTNetV2[8]利用混合分层架构、高效的双向注意力和语义图来实现全局多尺度特征融合，结合了CNN和ViT的优点。 TransBTS [23] 将自注意力引入脑肿瘤分割任务中，并用它来聚合高级信息。&lt;/p&gt;
-&lt;/blockquote&gt;
+&lt;p&gt;为了提高分割性能，最近的研究倾向于采用具有更大参数和计算复杂度的模块，例如结合视觉变换器（ViT）的自注意力机制[7]。例如，Swin-UNet [4]，基于Swin Transformer [11]，利用自注意力机制的特征提取能力来提高分割性能。 TransUNet [5] 开创了用于医学图像分割的 CNN 和 ViT 的串行融合。 TransFuse [26]采用双路径结构，利用 CNN 和 ViT 分别捕获局部和全局信息。UTNetV2[8]利用混合分层架构、高效的双向注意力和语义图来实现全局多尺度特征融合，结合了CNN和ViT的优点。 TransBTS [23] 将自注意力引入脑肿瘤分割任务中，并用它来聚合高级信息。&lt;/p&gt;&lt;/blockquote&gt;
 &lt;p&gt;&lt;strong&gt;Abstract提到当前医学分割模型大部分是Transformer + Unet，这里做出具体阐述。&lt;/strong&gt;&lt;/p&gt;
 &lt;blockquote&gt;
 &lt;p&gt;先前的工作通过引入复杂的模块来提高性能，但忽略了实际医疗环境中计算资源的限制。因此，迫切需要为移动医疗中的分割任务设计一种低参数、低计算负载的模型。最近，UNeXt [22] 结合了 UNet [18] 和 MLP [21] 开发了一种轻量级模型，该模型可以获得优异的性能，同时减少参数和计算量。此外，MALUNet [19]通过减少模型通道数并引入多个注意力模块来减小模型大小，从而比 UNeXt 具有更好的皮肤病变分割性能。然而，尽管MALUNet大大减少了参数数量和计算量，但其分割性能仍然低于一些大型模型，例如TransFuse。因此，在本研究中，我们提出了 EGE-UNet，这是一种轻量级皮肤病变分割模型，可实现最先进的效果，同时显着降低参数和计算成本。此外，据我们所知，这是第一个将参数减少到大约 50KB 的工作。&lt;/p&gt;</description>

@@ -10,7 +10,6 @@
 <meta name="description" content="Abstract
 
 在本文中，我们介绍了 U-Net v2，这是一种用于医学图像分割的新的稳健且高效的 U-Net 变体。它的目的是增强语义信息在低级特征中的注入，同时用更精细的细节来细化高级特征。对于输入图像，我们首先使用深度神经网络编码器提取多级特征。接下来，我们通过注入来自更高级别特征的语义信息并通过 Hadamard 乘积集成来自较低级别特征的更精细的细节来增强每个级别的特征图。我们新颖的跳跃连接赋予所有级别的功能以丰富的语义特征和复杂的细节。改进后的特征随后被传输到解码器以进行进一步处理和分割。我们的方法可以无缝集成到任何编码器-解码器网络中。我们在几个公共医学图像分割数据集上评估了我们的方法，用于皮肤病变分割和息肉分割，实验结果证明了我们的新方法相对于最先进的方法的分割准确性，同时保留了内存和计算效率。代码位于：https://github.com/yaoppeng/U-Net_v2。
-
 主要工作就在于中间的skip-connection
 Introduction
 
@@ -18,7 +17,6 @@ Introduction
 在医学图像分析领域，精确的图像分割在计算机辅助诊断和分析中起着至关重要的作用。 U-Net [4] 最初是为了医学图像分割而引入的，利用跳跃连接来连接每个级别的编码器和解码器阶段。跳跃连接使解码器能够访问早期编码器阶段的特征，从而保留高级语义信息和细粒度空间细节。这种方法有助于精确描绘对象边界并提取医学图像中的小结构。此外，还应用了密集连接机制，通过连接所有级别和所有阶段的特征来减少编码器和解码器中特征之间的差异[5]。设计了一种机制来通过连接较高和较低级别的不同尺度的特征来增强特征[6]。
 然而，基于 U-Net 的模型中的这些连接在集成低级和高级特征方面可能不够有效。例如，在 ResNet [7] 中，深度神经网络是作为多个浅层网络的集合而形成的，并且显式添加的残差连接表明，即使在百万规模的训练中，网络也很难学习恒等映射函数图像数据集。
 对于编码器提取的特征，低级特征通常保留更多细节，但缺乏足够的语义信息，并且可能包含不需要的噪声。相反，高级特征包含更多语义信息，但由于分辨率显着降低而缺乏精确的细节（例如对象边界）。通过串联简单地融合特征将在很大程度上依赖于网络的学习能力，这通常与训练数据集的大小成正比。这是一个具有挑战性的问题，特别是在医学成像领域，通常受到有限数据的限制。这种信息融合是通过密集连接跨多个级别连接低级和高级特征来实现的，可能会限制来自不同级别的信息的贡献并可能引入噪声。另一方面，尽管引入的额外卷积并没有显着增加参数数量，但 GPU 内存消耗将会增加，因为必须存储所有中间特征图和相应的梯度以进行前向传递和后向梯度计算。这会导致 GPU 内存使用量和浮点运算 (FLOP) 增加。
-
 
 (a) U-Net v2 模型的整体架构，由编码器、SDI（语义和细节注入）模块和解码器组成。 (b) SDI模块的架构。为简单起见，我们仅显示第三级特征的细化（l = 3）。 SmoothConv 表示用于特征平滑的 3 × 3 卷积。$\bigotimes$ 表示哈达玛积。
 
@@ -98,106 +96,8 @@ Introduction
     });
 </script>
 
-<meta property="og:url" content="https://swimmingliu.cn/posts/papernotes/2023-unet_v2/">
-  <meta property="og:site_name" content="SwimmingLiu&#39;s Blog">
-  <meta property="og:title" content="U-NET V2: RETHINKING THE SKIP CONNECTIONS OF U-NET FOR MEDICAL IMAGE SEGMENTATION">
-  <meta property="og:description" content="Abstract 在本文中，我们介绍了 U-Net v2，这是一种用于医学图像分割的新的稳健且高效的 U-Net 变体。它的目的是增强语义信息在低级特征中的注入，同时用更精细的细节来细化高级特征。对于输入图像，我们首先使用深度神经网络编码器提取多级特征。接下来，我们通过注入来自更高级别特征的语义信息并通过 Hadamard 乘积集成来自较低级别特征的更精细的细节来增强每个级别的特征图。我们新颖的跳跃连接赋予所有级别的功能以丰富的语义特征和复杂的细节。改进后的特征随后被传输到解码器以进行进一步处理和分割。我们的方法可以无缝集成到任何编码器-解码器网络中。我们在几个公共医学图像分割数据集上评估了我们的方法，用于皮肤病变分割和息肉分割，实验结果证明了我们的新方法相对于最先进的方法的分割准确性，同时保留了内存和计算效率。代码位于：https://github.com/yaoppeng/U-Net_v2。
-主要工作就在于中间的skip-connection
-Introduction 随着现代深度神经网络的进步，语义图像分割取得了重大进展。语义图像分割的典型范例涉及具有跳跃连接的编码器-解码器网络[1]。在此框架中，编码器从输入图像中提取层次和抽象特征，而解码器获取编码器生成的特征图并重建像素级分割掩模或图，为输入图像中的每个像素分配类标签。人们进行了一系列研究[2, 3]，将全局信息纳入特征图中并增强多尺度特征，从而大大提高了分割性能。 在医学图像分析领域，精确的图像分割在计算机辅助诊断和分析中起着至关重要的作用。 U-Net [4] 最初是为了医学图像分割而引入的，利用跳跃连接来连接每个级别的编码器和解码器阶段。跳跃连接使解码器能够访问早期编码器阶段的特征，从而保留高级语义信息和细粒度空间细节。这种方法有助于精确描绘对象边界并提取医学图像中的小结构。此外，还应用了密集连接机制，通过连接所有级别和所有阶段的特征来减少编码器和解码器中特征之间的差异[5]。设计了一种机制来通过连接较高和较低级别的不同尺度的特征来增强特征[6]。 然而，基于 U-Net 的模型中的这些连接在集成低级和高级特征方面可能不够有效。例如，在 ResNet [7] 中，深度神经网络是作为多个浅层网络的集合而形成的，并且显式添加的残差连接表明，即使在百万规模的训练中，网络也很难学习恒等映射函数图像数据集。
-对于编码器提取的特征，低级特征通常保留更多细节，但缺乏足够的语义信息，并且可能包含不需要的噪声。相反，高级特征包含更多语义信息，但由于分辨率显着降低而缺乏精确的细节（例如对象边界）。通过串联简单地融合特征将在很大程度上依赖于网络的学习能力，这通常与训练数据集的大小成正比。这是一个具有挑战性的问题，特别是在医学成像领域，通常受到有限数据的限制。这种信息融合是通过密集连接跨多个级别连接低级和高级特征来实现的，可能会限制来自不同级别的信息的贡献并可能引入噪声。另一方面，尽管引入的额外卷积并没有显着增加参数数量，但 GPU 内存消耗将会增加，因为必须存储所有中间特征图和相应的梯度以进行前向传递和后向梯度计算。这会导致 GPU 内存使用量和浮点运算 (FLOP) 增加。
-(a) U-Net v2 模型的整体架构，由编码器、SDI（语义和细节注入）模块和解码器组成。 (b) SDI模块的架构。为简单起见，我们仅显示第三级特征的细化（l = 3）。 SmoothConv 表示用于特征平滑的 3 × 3 卷积。$\bigotimes$ 表示哈达玛积。
-在[8]中，利用反向注意力来明确地建立多尺度特征之间的联系。在[9]中，ReLU激活应用于较高级别的特征，并将激活的特征与较低级别的特征相乘。此外，在[10]中，作者提出分别从 CNN 和 Transformer 模型中提取特征，在多个级别上组合来自 CNN 和 Transformer 分支的特征来增强特征图。然而，这些方法都很复杂，而且它们的性能仍然不是很令人满意，因此需要进一步改进。
-在本文中，我们提出了 U-Net v2，这是一种基于 U-Net 的新分割框架，具有简单且高效的跳跃连接。我们的模型首先使用 CNN 或 Transformer 编码器提取多级特征图。接下来，对于第 i 层的特征图，我们通过简单的哈达玛乘积操作显式地注入高层特征（包含更多语义信息）和低层特征（捕获更精细的细节），从而增强语义和细节第 i 级特征。随后，细化的特征被传输到解码器进行分辨率重建和分割。我们的方法可以无缝集成到任何编码器-解码器网络中。
-我们使用公开的数据集在两个医学图像分割任务（皮肤病变分割和息肉分割）上评估我们的新方法。实验结果表明，我们的 U-Net v2 在这些分割任务中始终优于最先进的方法，同时保持 FLOP 和 GPU 内存效率。">
-  <meta property="og:locale" content="en">
-  <meta property="og:type" content="article">
-    <meta property="article:section" content="posts">
-    <meta property="article:published_time" content="2023-12-11T20:49:32+08:00">
-    <meta property="article:modified_time" content="2023-12-11T20:49:32+08:00">
-    <meta property="article:tag" content="Unet">
-      <meta property="og:image" content="https://swimmingliu.cn/papermod-cover.png">
-<meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:image" content="https://swimmingliu.cn/papermod-cover.png">
-<meta name="twitter:title" content="U-NET V2: RETHINKING THE SKIP CONNECTIONS OF U-NET FOR MEDICAL IMAGE SEGMENTATION">
-<meta name="twitter:description" content="Abstract
-
-在本文中，我们介绍了 U-Net v2，这是一种用于医学图像分割的新的稳健且高效的 U-Net 变体。它的目的是增强语义信息在低级特征中的注入，同时用更精细的细节来细化高级特征。对于输入图像，我们首先使用深度神经网络编码器提取多级特征。接下来，我们通过注入来自更高级别特征的语义信息并通过 Hadamard 乘积集成来自较低级别特征的更精细的细节来增强每个级别的特征图。我们新颖的跳跃连接赋予所有级别的功能以丰富的语义特征和复杂的细节。改进后的特征随后被传输到解码器以进行进一步处理和分割。我们的方法可以无缝集成到任何编码器-解码器网络中。我们在几个公共医学图像分割数据集上评估了我们的方法，用于皮肤病变分割和息肉分割，实验结果证明了我们的新方法相对于最先进的方法的分割准确性，同时保留了内存和计算效率。代码位于：https://github.com/yaoppeng/U-Net_v2。
-
-主要工作就在于中间的skip-connection
-Introduction
-
-随着现代深度神经网络的进步，语义图像分割取得了重大进展。语义图像分割的典型范例涉及具有跳跃连接的编码器-解码器网络[1]。在此框架中，编码器从输入图像中提取层次和抽象特征，而解码器获取编码器生成的特征图并重建像素级分割掩模或图，为输入图像中的每个像素分配类标签。人们进行了一系列研究[2, 3]，将全局信息纳入特征图中并增强多尺度特征，从而大大提高了分割性能。
-在医学图像分析领域，精确的图像分割在计算机辅助诊断和分析中起着至关重要的作用。 U-Net [4] 最初是为了医学图像分割而引入的，利用跳跃连接来连接每个级别的编码器和解码器阶段。跳跃连接使解码器能够访问早期编码器阶段的特征，从而保留高级语义信息和细粒度空间细节。这种方法有助于精确描绘对象边界并提取医学图像中的小结构。此外，还应用了密集连接机制，通过连接所有级别和所有阶段的特征来减少编码器和解码器中特征之间的差异[5]。设计了一种机制来通过连接较高和较低级别的不同尺度的特征来增强特征[6]。
-然而，基于 U-Net 的模型中的这些连接在集成低级和高级特征方面可能不够有效。例如，在 ResNet [7] 中，深度神经网络是作为多个浅层网络的集合而形成的，并且显式添加的残差连接表明，即使在百万规模的训练中，网络也很难学习恒等映射函数图像数据集。
-对于编码器提取的特征，低级特征通常保留更多细节，但缺乏足够的语义信息，并且可能包含不需要的噪声。相反，高级特征包含更多语义信息，但由于分辨率显着降低而缺乏精确的细节（例如对象边界）。通过串联简单地融合特征将在很大程度上依赖于网络的学习能力，这通常与训练数据集的大小成正比。这是一个具有挑战性的问题，特别是在医学成像领域，通常受到有限数据的限制。这种信息融合是通过密集连接跨多个级别连接低级和高级特征来实现的，可能会限制来自不同级别的信息的贡献并可能引入噪声。另一方面，尽管引入的额外卷积并没有显着增加参数数量，但 GPU 内存消耗将会增加，因为必须存储所有中间特征图和相应的梯度以进行前向传递和后向梯度计算。这会导致 GPU 内存使用量和浮点运算 (FLOP) 增加。
 
 
-(a) U-Net v2 模型的整体架构，由编码器、SDI（语义和细节注入）模块和解码器组成。 (b) SDI模块的架构。为简单起见，我们仅显示第三级特征的细化（l = 3）。 SmoothConv 表示用于特征平滑的 3 × 3 卷积。$\bigotimes$ 表示哈达玛积。
-
-在[8]中，利用反向注意力来明确地建立多尺度特征之间的联系。在[9]中，ReLU激活应用于较高级别的特征，并将激活的特征与较低级别的特征相乘。此外，在[10]中，作者提出分别从 CNN 和 Transformer 模型中提取特征，在多个级别上组合来自 CNN 和 Transformer 分支的特征来增强特征图。然而，这些方法都很复杂，而且它们的性能仍然不是很令人满意，因此需要进一步改进。
-在本文中，我们提出了 U-Net v2，这是一种基于 U-Net 的新分割框架，具有简单且高效的跳跃连接。我们的模型首先使用 CNN 或 Transformer 编码器提取多级特征图。接下来，对于第 i 层的特征图，我们通过简单的哈达玛乘积操作显式地注入高层特征（包含更多语义信息）和低层特征（捕获更精细的细节），从而增强语义和细节第 i 级特征。随后，细化的特征被传输到解码器进行分辨率重建和分割。我们的方法可以无缝集成到任何编码器-解码器网络中。
-我们使用公开的数据集在两个医学图像分割任务（皮肤病变分割和息肉分割）上评估我们的新方法。实验结果表明，我们的 U-Net v2 在这些分割任务中始终优于最先进的方法，同时保持 FLOP 和 GPU 内存效率。">
-
-
-<script type="application/ld+json">
-{
-  "@context": "https://schema.org",
-  "@type": "BreadcrumbList",
-  "itemListElement": [
-    {
-      "@type": "ListItem",
-      "position":  1 ,
-      "name": "📚 Posts",
-      "item": "https://swimmingliu.cn/posts/"
-    }, 
-    {
-      "@type": "ListItem",
-      "position":  2 ,
-      "name": "📝 Paper Notes",
-      "item": "https://swimmingliu.cn/posts/papernotes/"
-    }, 
-    {
-      "@type": "ListItem",
-      "position":  3 ,
-      "name": "U-NET V2: RETHINKING THE SKIP CONNECTIONS OF U-NET FOR MEDICAL IMAGE SEGMENTATION",
-      "item": "https://swimmingliu.cn/posts/papernotes/2023-unet_v2/"
-    }
-  ]
-}
-</script>
-<script type="application/ld+json">
-{
-  "@context": "https://schema.org",
-  "@type": "BlogPosting",
-  "headline": "U-NET V2: RETHINKING THE SKIP CONNECTIONS OF U-NET FOR MEDICAL IMAGE SEGMENTATION",
-  "name": "U-NET V2: RETHINKING THE SKIP CONNECTIONS OF U-NET FOR MEDICAL IMAGE SEGMENTATION",
-  "description": "Abstract 在本文中，我们介绍了 U-Net v2，这是一种用于医学图像分割的新的稳健且高效的 U-Net 变体。它的目的是增强语义信息在低级特征中的注入，同时用更精细的细节来细化高级特征。对于输入图像，我们首先使用深度神经网络编码器提取多级特征。接下来，我们通过注入来自更高级别特征的语义信息并通过 Hadamard 乘积集成来自较低级别特征的更精细的细节来增强每个级别的特征图。我们新颖的跳跃连接赋予所有级别的功能以丰富的语义特征和复杂的细节。改进后的特征随后被传输到解码器以进行进一步处理和分割。我们的方法可以无缝集成到任何编码器-解码器网络中。我们在几个公共医学图像分割数据集上评估了我们的方法，用于皮肤病变分割和息肉分割，实验结果证明了我们的新方法相对于最先进的方法的分割准确性，同时保留了内存和计算效率。代码位于：https://github.com/yaoppeng/U-Net_v2。\n主要工作就在于中间的skip-connection\nIntroduction 随着现代深度神经网络的进步，语义图像分割取得了重大进展。语义图像分割的典型范例涉及具有跳跃连接的编码器-解码器网络[1]。在此框架中，编码器从输入图像中提取层次和抽象特征，而解码器获取编码器生成的特征图并重建像素级分割掩模或图，为输入图像中的每个像素分配类标签。人们进行了一系列研究[2, 3]，将全局信息纳入特征图中并增强多尺度特征，从而大大提高了分割性能。 在医学图像分析领域，精确的图像分割在计算机辅助诊断和分析中起着至关重要的作用。 U-Net [4] 最初是为了医学图像分割而引入的，利用跳跃连接来连接每个级别的编码器和解码器阶段。跳跃连接使解码器能够访问早期编码器阶段的特征，从而保留高级语义信息和细粒度空间细节。这种方法有助于精确描绘对象边界并提取医学图像中的小结构。此外，还应用了密集连接机制，通过连接所有级别和所有阶段的特征来减少编码器和解码器中特征之间的差异[5]。设计了一种机制来通过连接较高和较低级别的不同尺度的特征来增强特征[6]。 然而，基于 U-Net 的模型中的这些连接在集成低级和高级特征方面可能不够有效。例如，在 ResNet [7] 中，深度神经网络是作为多个浅层网络的集合而形成的，并且显式添加的残差连接表明，即使在百万规模的训练中，网络也很难学习恒等映射函数图像数据集。\n对于编码器提取的特征，低级特征通常保留更多细节，但缺乏足够的语义信息，并且可能包含不需要的噪声。相反，高级特征包含更多语义信息，但由于分辨率显着降低而缺乏精确的细节（例如对象边界）。通过串联简单地融合特征将在很大程度上依赖于网络的学习能力，这通常与训练数据集的大小成正比。这是一个具有挑战性的问题，特别是在医学成像领域，通常受到有限数据的限制。这种信息融合是通过密集连接跨多个级别连接低级和高级特征来实现的，可能会限制来自不同级别的信息的贡献并可能引入噪声。另一方面，尽管引入的额外卷积并没有显着增加参数数量，但 GPU 内存消耗将会增加，因为必须存储所有中间特征图和相应的梯度以进行前向传递和后向梯度计算。这会导致 GPU 内存使用量和浮点运算 (FLOP) 增加。\n(a) U-Net v2 模型的整体架构，由编码器、SDI（语义和细节注入）模块和解码器组成。 (b) SDI模块的架构。为简单起见，我们仅显示第三级特征的细化（l = 3）。 SmoothConv 表示用于特征平滑的 3 × 3 卷积。$\\bigotimes$ 表示哈达玛积。\n在[8]中，利用反向注意力来明确地建立多尺度特征之间的联系。在[9]中，ReLU激活应用于较高级别的特征，并将激活的特征与较低级别的特征相乘。此外，在[10]中，作者提出分别从 CNN 和 Transformer 模型中提取特征，在多个级别上组合来自 CNN 和 Transformer 分支的特征来增强特征图。然而，这些方法都很复杂，而且它们的性能仍然不是很令人满意，因此需要进一步改进。\n在本文中，我们提出了 U-Net v2，这是一种基于 U-Net 的新分割框架，具有简单且高效的跳跃连接。我们的模型首先使用 CNN 或 Transformer 编码器提取多级特征图。接下来，对于第 i 层的特征图，我们通过简单的哈达玛乘积操作显式地注入高层特征（包含更多语义信息）和低层特征（捕获更精细的细节），从而增强语义和细节第 i 级特征。随后，细化的特征被传输到解码器进行分辨率重建和分割。我们的方法可以无缝集成到任何编码器-解码器网络中。\n我们使用公开的数据集在两个医学图像分割任务（皮肤病变分割和息肉分割）上评估我们的新方法。实验结果表明，我们的 U-Net v2 在这些分割任务中始终优于最先进的方法，同时保持 FLOP 和 GPU 内存效率。\n",
-  "keywords": [
-    "Unet_V2", "SDI"
-  ],
-  "articleBody": "Abstract 在本文中，我们介绍了 U-Net v2，这是一种用于医学图像分割的新的稳健且高效的 U-Net 变体。它的目的是增强语义信息在低级特征中的注入，同时用更精细的细节来细化高级特征。对于输入图像，我们首先使用深度神经网络编码器提取多级特征。接下来，我们通过注入来自更高级别特征的语义信息并通过 Hadamard 乘积集成来自较低级别特征的更精细的细节来增强每个级别的特征图。我们新颖的跳跃连接赋予所有级别的功能以丰富的语义特征和复杂的细节。改进后的特征随后被传输到解码器以进行进一步处理和分割。我们的方法可以无缝集成到任何编码器-解码器网络中。我们在几个公共医学图像分割数据集上评估了我们的方法，用于皮肤病变分割和息肉分割，实验结果证明了我们的新方法相对于最先进的方法的分割准确性，同时保留了内存和计算效率。代码位于：https://github.com/yaoppeng/U-Net_v2。\n主要工作就在于中间的skip-connection\nIntroduction 随着现代深度神经网络的进步，语义图像分割取得了重大进展。语义图像分割的典型范例涉及具有跳跃连接的编码器-解码器网络[1]。在此框架中，编码器从输入图像中提取层次和抽象特征，而解码器获取编码器生成的特征图并重建像素级分割掩模或图，为输入图像中的每个像素分配类标签。人们进行了一系列研究[2, 3]，将全局信息纳入特征图中并增强多尺度特征，从而大大提高了分割性能。 在医学图像分析领域，精确的图像分割在计算机辅助诊断和分析中起着至关重要的作用。 U-Net [4] 最初是为了医学图像分割而引入的，利用跳跃连接来连接每个级别的编码器和解码器阶段。跳跃连接使解码器能够访问早期编码器阶段的特征，从而保留高级语义信息和细粒度空间细节。这种方法有助于精确描绘对象边界并提取医学图像中的小结构。此外，还应用了密集连接机制，通过连接所有级别和所有阶段的特征来减少编码器和解码器中特征之间的差异[5]。设计了一种机制来通过连接较高和较低级别的不同尺度的特征来增强特征[6]。 然而，基于 U-Net 的模型中的这些连接在集成低级和高级特征方面可能不够有效。例如，在 ResNet [7] 中，深度神经网络是作为多个浅层网络的集合而形成的，并且显式添加的残差连接表明，即使在百万规模的训练中，网络也很难学习恒等映射函数图像数据集。\n对于编码器提取的特征，低级特征通常保留更多细节，但缺乏足够的语义信息，并且可能包含不需要的噪声。相反，高级特征包含更多语义信息，但由于分辨率显着降低而缺乏精确的细节（例如对象边界）。通过串联简单地融合特征将在很大程度上依赖于网络的学习能力，这通常与训练数据集的大小成正比。这是一个具有挑战性的问题，特别是在医学成像领域，通常受到有限数据的限制。这种信息融合是通过密集连接跨多个级别连接低级和高级特征来实现的，可能会限制来自不同级别的信息的贡献并可能引入噪声。另一方面，尽管引入的额外卷积并没有显着增加参数数量，但 GPU 内存消耗将会增加，因为必须存储所有中间特征图和相应的梯度以进行前向传递和后向梯度计算。这会导致 GPU 内存使用量和浮点运算 (FLOP) 增加。\n(a) U-Net v2 模型的整体架构，由编码器、SDI（语义和细节注入）模块和解码器组成。 (b) SDI模块的架构。为简单起见，我们仅显示第三级特征的细化（l = 3）。 SmoothConv 表示用于特征平滑的 3 × 3 卷积。$\\bigotimes$ 表示哈达玛积。\n在[8]中，利用反向注意力来明确地建立多尺度特征之间的联系。在[9]中，ReLU激活应用于较高级别的特征，并将激活的特征与较低级别的特征相乘。此外，在[10]中，作者提出分别从 CNN 和 Transformer 模型中提取特征，在多个级别上组合来自 CNN 和 Transformer 分支的特征来增强特征图。然而，这些方法都很复杂，而且它们的性能仍然不是很令人满意，因此需要进一步改进。\n在本文中，我们提出了 U-Net v2，这是一种基于 U-Net 的新分割框架，具有简单且高效的跳跃连接。我们的模型首先使用 CNN 或 Transformer 编码器提取多级特征图。接下来，对于第 i 层的特征图，我们通过简单的哈达玛乘积操作显式地注入高层特征（包含更多语义信息）和低层特征（捕获更精细的细节），从而增强语义和细节第 i 级特征。随后，细化的特征被传输到解码器进行分辨率重建和分割。我们的方法可以无缝集成到任何编码器-解码器网络中。\n我们使用公开的数据集在两个医学图像分割任务（皮肤病变分割和息肉分割）上评估我们的新方法。实验结果表明，我们的 U-Net v2 在这些分割任务中始终优于最先进的方法，同时保持 FLOP 和 GPU 内存效率。\nMethod 2.1 Overall Architecture 我们的 U-Net v2 的整体架构如图 1（a）所示。它包括三个主要模块：编码器、SDI（语义和细节注入）模块和解码器。给定输入图像 I，其中 I ∈ $R^{H×W×C}$ ，编码器产生 M 个级别的特征。我们将第 i 级特征表示为$ f^0_i$ , 1 ≤ i ≤ M。这些收集到的特征，{$ f^0_1$ ,$ f^0_2$,… , $ f^0_M$}，然后传输到 SDI 模块进行进一步细化。\n2.2 Semantics and Detail Infusion (SDI) Module 利用编码器生成的分层特征图，我们首先将空间和通道注意机制[11]应用于每个级别 i 的特征 $ f^0_i$。此过程使特征能够集成局部空间信息和全局通道信息，如下所示：\n其中$f^1_i$表示第 i 层处理后的特征图，$φ^s_i$ 和 $\\phi^c_i$ 分别表示第 i 层空间注意力和通道注意力的参数。此外，我们应用 1 × 1 卷积将$f^1_i$的通道减少到 c，其中 c 是超参数。得到的特征图表示为$f^2_i$，其中 $f^2_i$ ∈ $R^{H_i × W_i × c}$ ，其中$H_i$、$W_i$ 和 c 分别表示 $f^2_i$ 的宽度、高度和通道。\n接下来，我们需要将精炼后的特征图发送到解码器。在每个解码器级别 i，我们使用 $f^2_i$ 作为目标参考。然后，我们调整每个第 j 层的特征图的大小，以匹配与 $f^2_i$ 相同的分辨率，公式为：\n其中 D 、 I 和 U 分别表示自适应平均池化、恒等映射和双线性插值 $f^2_i$ 到 $H_i$、$W_i$ 的分辨率，其中 1 ≤ i，j ≤ M。\n然后，应用 3 × 3 卷积来平滑每个调整大小的特征图 $f^3_{ij}$ ，公式为：\n其中$θ_{ij}$表示平滑卷积的参数， $f^4_{ij}$ 是第i层的第j个平滑特征图。\n将所有第 i 级特征图调整为相同的分辨率后，我们将元素级哈达玛积应用于所有调整大小的特征图，以通过更多语义信息和更精细的细节来增强第 i 级特征，如下所示：\n其中$H(·)$表示哈达玛积 (见图1(b))。然后，$f^5_i$ 被分派到第i级解码器以进行进一步的分辨率重建和分割。\nExperiments 3.1 Datasets 我们使用以下数据集评估新的 U-Net v2。 ISIC 数据集：使用两个皮肤病变分割数据集：ISIC 2017 [15, 16]，其中包含 2050 个皮肤镜图像，ISIC 2018 [15]，其中包含 2694 个皮肤镜图像。为了公平比较，我们遵循[13]中概述的训练/测试分割策略。 息肉分割数据集：使用五个数据集：Kvasir-SEG [17]、ClinicDB [18]、ColonDB [19]、Endoscene [20] 和 ETIS [21]。为了公平比较，我们使用[8]中的训练/测试分割策略。具体来说，使用来自 ClinicDB 的 900 张图像和来自 Kvasir-SEG 的 548 张图像作为训练集，其余图像作为测试集。\n3.2 Experimental Setup 我们使用 PyTorch 在 NVIDIA P100 GPU 上进行实验。我们的网络使用 Adam 优化器进行优化，初始学习率 = 0.001，β1 = 0.9，β2 = 0.999。\n我们采用幂为 0.9 的多项式学习率衰减。训练时期的最大数量设置为 300。超参数 c 设置为 32。按照[13]中的方法，我们报告 ISIC 数据集的 DSC（骰子相似系数）和 IoU（并集交集）分数。对于息肉数据集，我们报告 DSC、IoU 和 MAE（平均绝对误差）分数。每个实验运行 5 次，并报告平均结果。我们使用金字塔视觉变换器（PVT）[22]作为特征提取的编码器。\n3.3 Results and Analysis 表 1 列出了 ISIC 数据集上最先进方法的比较结果。如图所示，我们提出的 UNet v2 将 DSC 分数提高了 1.44% 和 2.48%，IoU 分数提高了 2.36% 和 3.90%。分别是 ISIC 2017 和 ISIC 2018 数据集。这些改进证明了我们提出的将语义信息和更精细的细节注入每个特征图的方法的有效性。\n表 2 列出了息肉分割数据集上最先进方法的比较结果。如图所示，我们提出的 U-Net v2 在 Kavasir-SEG、ClinicDB、ColonDB 和 ETIS 上优于 Poly-PVT [14]数据集，DSC 得分分别提高了 1.1%、0.7%、0.4% 和 0.3%。这强调了我们提出的方法在将语义信息和更精细的细节注入每个级别的特征图中的一致有效性。\n3.4 Ablation Study 我们使用 ISIC 2017 和 ColonDB 数据集进行消融研究，以检查 U-Net v2 的有效性，如表 3 所示。具体来说，我们使用 PVT [22] 模型作为 UNet++ [5] 的编码器。请注意，当我们的 SDI 模块被移除时，U-Net v2 将恢复为具有 PVT 主干的普通 U-Net。 **SC 表示 SDI 模块内的空间和通道关注点。**从表 3 可以看出，与不带 SDI 的 U-Net v2（即带 PVT 编码器的 U-Net）相比，UNet++ 的性能略有下降。\n这种下降可能归因于密集连接生成的多级特征的简单串联，这可能会混淆模型并引入噪声。表 3 表明 SDI 模块对整体性能贡献最大，突出显示我们提出的跳跃连接（即 SDI）持续带来性能改进。\n3.5 Qualitative Results 图 2 给出了 ISIC 2017 数据集的一些定性示例，这表明我们的 U-Net v2 能够将语义信息和更精细的细节合并到每个级别的特征图中。因此，我们的分割模型可以捕获对象边界的更精细的细节。\n3.6 Computation, GPU Memory, and Inference Time 为了检查 U-Net v2 的计算复杂性、GPU 内存使用情况和推理时间，我们报告了我们的方法 U-Net [4] 的参数、GPU 内存使用情况、FLOP 和 FPS（每秒帧数），以及表 4 中的 UNet++ [5]。实验使用 float32 作为数据类型，这导致每个变量使用 4B 的内存。 GPU内存使用记录了前向/后向传递过程中存储的参数和中间变量的大小。\n(1, 3, 256, 256) 表示输入图像的大小。所有测试均在 NVIDIA P100 GPU 上进行。\n从表4中可以看出，UNet++引入了更多的参数，并且由于在密集前向过程中存储中间变量（例如特征图），其GPU内存使用量更大。通常，此类中间变量比参数消耗更多的 GPU 内存。\n此外，U-Net v2 的 FLOPs 和 FPS 也优于 UNet++。与 U-Net (PVT) 相比，我们的 U-Net v2 的 FPS 降低是有限的。\nConclusion 引入了新的 U-Net 变体 U-Net v2，它采用新颖且简单的跳跃连接设计，以改进医学图像分割。该设计明确地将来自较高级别特征的语义信息和来自较低级别特征的更精细细节集成到编码器使用 Hadamard 乘积生成的每个级别的特征映射中。在皮肤病变和息肉分割数据集上进行的实验验证了我们的 UNet v2 的有效性。复杂性分析表明 U-Net v2 在 FLOP 和 GPU 内存使用方面也很高效\n这篇文章比较简单，整体的行文风格一看就是会议论文。核心创新点就一个SDI（Semantic and Detail Infusion）模块。SDI模块作用就是 连接高级特征的语义信息和低级特征的细节信息。首先通过通道和特征注意力机制，分别关注不同级别的通道和空间信息。然后将所有的通道都 padding / scaling 到和第i级别相同的通道数，然后通过双线性插值 / 自适应平均池化到相同大小的尺寸。最后，使用哈达码乘积进行特征融合。 对，没错就这么简单！！！\n（思考: 能不能用减法单元来融合差异性？？？）\n",
-  "wordCount" : "445",
-  "inLanguage": "en",
-  "image": "https://swimmingliu.cn/papermod-cover.png","datePublished": "2023-12-11T20:49:32+08:00",
-  "dateModified": "2023-12-11T20:49:32+08:00",
-  "author":[{
-    "@type": "Person",
-    "name": "SwimmingLiu"
-  }],
-  "mainEntityOfPage": {
-    "@type": "WebPage",
-    "@id": "https://swimmingliu.cn/posts/papernotes/2023-unet_v2/"
-  },
-  "publisher": {
-    "@type": "Organization",
-    "name": "SwimmingLiu's Blog",
-    "logo": {
-      "@type": "ImageObject",
-      "url": "https://swimmingliu.cn/images/swimmingliu_icon.png"
-    }
-  }
-}
-</script>
 </head>
 
 <body class="" id="top">
@@ -347,28 +247,24 @@ Introduction
 </div>
   <div class="post-content"><h2 id="abstract">Abstract<a hidden class="anchor" aria-hidden="true" href="#abstract">#</a></h2>
 <blockquote>
-<p>在本文中，我们介绍了 U-Net v2，这是一种用于医学图像分割的新的稳健且高效的 U-Net 变体。它的目的是<strong>增强语义信息在低级特征中的注入</strong>，同时<strong>用更精细的细节来细化高级特征</strong>。对于输入图像，我们首先使用<strong>深度神经网络编码器提取多级特征</strong>。接下来，我们通过<strong>注入来自更高级别特征的语义信息</strong>并通过 <strong>Hadamard 乘积</strong>集成来自<strong>较低级别特征的更精细的细节</strong>来<strong>增强每个级别的特征图</strong>。我们新颖的<strong>跳跃连接</strong>赋予<strong>所有级别的功能</strong>以<strong>丰富的语义特征和复杂的细节</strong>。<strong>改进后的特征随后被传输到解码器</strong>以进行<strong>进一步处理和分割</strong>。我们的方法可以<strong>无缝集成到任何编码器-解码器网络中</strong>。我们在几个公共医学图像分割数据集上评估了我们的方法，用于皮肤病变分割和息肉分割，实验结果证明了我们的新方法相对于最先进的方法的分割准确性，同时<strong>保留了内存和计算效率</strong>。代码位于：https://github.com/yaoppeng/U-Net_v2。</p>
-</blockquote>
+<p>在本文中，我们介绍了 U-Net v2，这是一种用于医学图像分割的新的稳健且高效的 U-Net 变体。它的目的是<strong>增强语义信息在低级特征中的注入</strong>，同时<strong>用更精细的细节来细化高级特征</strong>。对于输入图像，我们首先使用<strong>深度神经网络编码器提取多级特征</strong>。接下来，我们通过<strong>注入来自更高级别特征的语义信息</strong>并通过 <strong>Hadamard 乘积</strong>集成来自<strong>较低级别特征的更精细的细节</strong>来<strong>增强每个级别的特征图</strong>。我们新颖的<strong>跳跃连接</strong>赋予<strong>所有级别的功能</strong>以<strong>丰富的语义特征和复杂的细节</strong>。<strong>改进后的特征随后被传输到解码器</strong>以进行<strong>进一步处理和分割</strong>。我们的方法可以<strong>无缝集成到任何编码器-解码器网络中</strong>。我们在几个公共医学图像分割数据集上评估了我们的方法，用于皮肤病变分割和息肉分割，实验结果证明了我们的新方法相对于最先进的方法的分割准确性，同时<strong>保留了内存和计算效率</strong>。代码位于：https://github.com/yaoppeng/U-Net_v2。</p></blockquote>
 <p>主要工作就在于中间的skip-connection</p>
 <h2 id="introduction">Introduction<a hidden class="anchor" aria-hidden="true" href="#introduction">#</a></h2>
 <blockquote>
 <p>随着现代深度神经网络的进步，语义图像分割取得了重大进展。语义图像分割的典型范例涉及具有<strong>跳跃连接的编码器-解码器网络[<strong>1]。在此框架中，编码器从</strong>输入图像中提取层次和抽象特征</strong>，而解码器获取<strong>编码器生成的特征图并重建像素级分割掩模或图</strong>，<strong>为输入图像中的每个像素分配类标签</strong>。人们进行了一系列研究[2, 3]，<strong>将全局信息纳入特征图</strong>中并增强多尺度特征，从而大大提高了分割性能。
 在医学图像分析领域，<strong>精确的图像分割</strong>在计算机辅助诊断和分析中起着至关重要的作用。 U-Net [4] 最初是为了<strong>医学图像分割</strong>而引入的，利用<strong>跳跃连接</strong>来连接每个级别的<strong>编码器和解码器阶段</strong>。<strong>跳跃连接</strong>使解码器能够访问<strong>早期编码器阶段</strong>的特征，从而保留<strong>高级语义信息</strong>和<strong>细粒度空间细节</strong>。这种方法有助于<strong>精确描绘对象边界</strong>并提取<strong>医学图像中的小结构</strong>。此外，还应用了<strong>密集连接机制</strong>，通过<strong>连接所有级别</strong>和<strong>所有阶段的特征</strong>来减少<strong>编码器和解码器中特征之间的差异</strong>[5]。设计了一种机制来<strong>通过连接较高和较低级别</strong>的<strong>不同尺度的特征</strong>来<strong>增强特征</strong>[6]。
 然而，基于 U-Net 的模型中的这些连接在<strong>集成低级和高级特征方面</strong>可能<strong>不够有效</strong>。例如，在 ResNet [7] 中，深度神经网络是作为<strong>多个浅层网络的集合</strong>而形成的，并且<strong>显式添加的残差连接</strong>表明，即使在百万规模的训练中，网络也很难学习<strong>恒等映射函数图像</strong>数据集。</p>
-<p><strong>对于编码器提取的特征，低级特征通常保留更多细节，但缺乏足够的语义信息，并且可能包含不需要的噪声</strong>。相反，<strong>高级特征包含更多语义信息，但由于分辨率显着降低而缺乏精确的细节（例如对象边界）</strong>。通过<strong>串联简单地融合特征</strong>将在<strong>很大程度上依赖于网络的学习能力</strong>，这<strong>通常与训练数据集的大小成正比</strong>。这是一个具有挑战性的问题，特别是在医学成像领域，<strong>通常受到有限数据的限制</strong>。这种信息融合是<strong>通过密集连接跨多个级别连接低级和高级特征</strong>来实现的，可能会限制来自<strong>不同级别的信息的贡献</strong>并可能引入噪声。另一方面，尽管<strong>引入的额外卷积并没有显着增加参数数量</strong>，但 <strong>GPU 内存消耗将会增加</strong>，因为必须<strong>存储所有中间特征图和相应的梯度</strong>以进行前向传递和后向梯度计算。这会导致 <strong>GPU 内存使用量</strong>和<strong>浮点运算 (FLOP) 增加</strong>。</p>
-</blockquote>
+<p><strong>对于编码器提取的特征，低级特征通常保留更多细节，但缺乏足够的语义信息，并且可能包含不需要的噪声</strong>。相反，<strong>高级特征包含更多语义信息，但由于分辨率显着降低而缺乏精确的细节（例如对象边界）</strong>。通过<strong>串联简单地融合特征</strong>将在<strong>很大程度上依赖于网络的学习能力</strong>，这<strong>通常与训练数据集的大小成正比</strong>。这是一个具有挑战性的问题，特别是在医学成像领域，<strong>通常受到有限数据的限制</strong>。这种信息融合是<strong>通过密集连接跨多个级别连接低级和高级特征</strong>来实现的，可能会限制来自<strong>不同级别的信息的贡献</strong>并可能引入噪声。另一方面，尽管<strong>引入的额外卷积并没有显着增加参数数量</strong>，但 <strong>GPU 内存消耗将会增加</strong>，因为必须<strong>存储所有中间特征图和相应的梯度</strong>以进行前向传递和后向梯度计算。这会导致 <strong>GPU 内存使用量</strong>和<strong>浮点运算 (FLOP) 增加</strong>。</p></blockquote>
 <p><img alt="image-20231211193109745" loading="lazy" src="https://oss.swimmingliu.cn/mCdvu.png"></p>
 <p>(a) U-Net v2 模型的整体架构，由<strong>编码器、SDI（语义和细节注入）模块和解码器</strong>组成。 (b) SDI模块的架构。为简单起见，我们仅显示第三级特征的细化（l = 3）。 <strong>SmoothConv 表示用于特征平滑的 3 × 3 卷积</strong>。$\bigotimes$ 表示哈达玛积。</p>
 <blockquote>
 <p>在[8]中，利用<strong>反向注意力</strong>来明确地建立<strong>多尺度特征之间</strong>的联系。在[9]中，ReLU激活应用于<strong>较高级别</strong>的特征，并<strong>将激活的特征与较低级别的特征相乘</strong>。此外，在[10]中，作者提出分别从 <strong>CNN 和 Transformer 模型</strong>中提取特征，在多个级别上组合<strong>来自 CNN 和 Transformer 分支</strong>的特征来<strong>增强特征图</strong>。然而，这些方法<strong>都很复杂</strong>，而且它们的<strong>性能仍然不是很令人满意</strong>，因此需要进一步改进。</p>
 <p>在本文中，我们提出了 U-Net v2，这是一种基于 U-Net 的新分割框架，具有<strong>简单且高效的跳跃连接</strong>。我们的模型首先<strong>使用 CNN 或 Transformer 编码器</strong>提取<strong>多级特征图</strong>。接下来，<strong>对于第 i 层的特征图</strong>，我们通过<strong>简单的哈达玛乘积操作</strong>显式地注入<strong>高层特征（包含更多语义信息）<strong>和</strong>低层特征（捕获更精细的细节）</strong>，从而<strong>增强语义和细节第 i 级特征</strong>。随后，<strong>细化的特征</strong>被传输到解码器进行<strong>分辨率重建和分割</strong>。我们的方法可以无缝集成到任何编码器-解码器网络中。</p>
-<p>我们使用公开的数据集在两个医学图像分割任务（皮肤病变分割和息肉分割）上评估我们的新方法。实验结果表明，我们的 U-Net v2 在这些分割任务中始终优于最先进的方法，<strong>同时保持 FLOP 和 GPU 内存效率</strong>。</p>
-</blockquote>
+<p>我们使用公开的数据集在两个医学图像分割任务（皮肤病变分割和息肉分割）上评估我们的新方法。实验结果表明，我们的 U-Net v2 在这些分割任务中始终优于最先进的方法，<strong>同时保持 FLOP 和 GPU 内存效率</strong>。</p></blockquote>
 <h2 id="method">Method<a hidden class="anchor" aria-hidden="true" href="#method">#</a></h2>
 <h3 id="21-overall-architecture">2.1 Overall Architecture<a hidden class="anchor" aria-hidden="true" href="#21-overall-architecture">#</a></h3>
 <blockquote>
-<p>我们的 U-Net v2 的整体架构如图 1（a）所示。它包括三个主要模块：编码器、SDI（语义和细节注入）模块和解码器。给定输入图像 I，其中 I ∈ $R^{H×W×C}$ ，编码器产生 M 个级别的特征。我们将第 i 级特征表示为$ f^0_i$ , 1 ≤ i ≤ M。这些收集到的特征，{$ f^0_1$ ,$ f^0_2$,… , $ f^0_M$}，然后传输到 SDI 模块进行进一步细化。</p>
-</blockquote>
+<p>我们的 U-Net v2 的整体架构如图 1（a）所示。它包括三个主要模块：编码器、SDI（语义和细节注入）模块和解码器。给定输入图像 I，其中 I ∈ $R^{H×W×C}$ ，编码器产生 M 个级别的特征。我们将第 i 级特征表示为$ f^0_i$ , 1 ≤ i ≤ M。这些收集到的特征，{$ f^0_1$ ,$ f^0_2$,… , $ f^0_M$}，然后传输到 SDI 模块进行进一步细化。</p></blockquote>
 <h3 id="22-semantics-and-detail-infusion-sdi-module">2.2 Semantics and Detail Infusion (SDI) Module<a hidden class="anchor" aria-hidden="true" href="#22-semantics-and-detail-infusion-sdi-module">#</a></h3>
 <blockquote>
 <p>利用编码器生成的分层特征图，我们首先将空间和通道注意机制[11]应用于每个级别 i 的特征 $ f^0_i$。此过程使特征能够集成局部空间信息和全局通道信息，如下所示：</p>
@@ -382,52 +278,43 @@ Introduction
 <p>其中$θ_{ij}$表示平滑卷积的参数， $f^4_{ij}$ 是第i层的第j个平滑特征图。</p>
 <p>将所有第 i 级特征图调整为<strong>相同的分辨率后</strong>，我们将<strong>元素级哈达玛积应用于所有调整大小的特征图</strong>，以通过更多语义信息和更精细的细节来增强第 i 级特征，如下所示：</p>
 <p><img alt="image-20231211202225292" loading="lazy" src="https://oss.swimmingliu.cn/mC9n2.png"></p>
-<p>其中$H(·)$表示哈达玛积 (见图1(b))。然后，$f^5_i$ 被分派到第i级解码器以进行进一步的分辨率重建和分割。</p>
-</blockquote>
+<p>其中$H(·)$表示哈达玛积 (见图1(b))。然后，$f^5_i$ 被分派到第i级解码器以进行进一步的分辨率重建和分割。</p></blockquote>
 <h2 id="experiments">Experiments<a hidden class="anchor" aria-hidden="true" href="#experiments">#</a></h2>
 <h3 id="31-datasets">3.1 Datasets<a hidden class="anchor" aria-hidden="true" href="#31-datasets">#</a></h3>
 <blockquote>
 <p>我们使用以下数据集评估新的 U-Net v2。
 ISIC 数据集：使用两<strong>个皮肤病变分割数据集</strong>：ISIC 2017 [15, 16]，其中包含 2050 个皮肤镜图像，ISIC 2018 [15]，其中包含 2694 个皮肤镜图像。为了公平比较，我们遵循[13]中概述的训练/测试分割策略。
-<strong>息肉分割数据集</strong>：使用五个数据集：Kvasir-SEG [17]、ClinicDB [18]、ColonDB [19]、Endoscene [20] 和 ETIS [21]。为了公平比较，我们使用[8]中的训练/测试分割策略。具体来说，使用来自 ClinicDB 的 900 张图像和来自 Kvasir-SEG 的 548 张图像作为训练集，其余图像作为测试集。</p>
-</blockquote>
+<strong>息肉分割数据集</strong>：使用五个数据集：Kvasir-SEG [17]、ClinicDB [18]、ColonDB [19]、Endoscene [20] 和 ETIS [21]。为了公平比较，我们使用[8]中的训练/测试分割策略。具体来说，使用来自 ClinicDB 的 900 张图像和来自 Kvasir-SEG 的 548 张图像作为训练集，其余图像作为测试集。</p></blockquote>
 <h3 id="32--experimental-setup">3.2  Experimental Setup<a hidden class="anchor" aria-hidden="true" href="#32--experimental-setup">#</a></h3>
 <blockquote>
 <p>我们使用 PyTorch 在 NVIDIA P100 GPU 上进行实验。我们的网络使用 <strong>Adam 优化器</strong>进行优化，<strong>初始学习率 = 0.001，β1 = 0.9，β2 = 0.999</strong>。</p>
-<p>我们采用<strong>幂为 0.9 的多项式学习率衰减</strong>。训练时期的最大数量设置为 <strong>300</strong>。超参数 c 设置为 <strong>32</strong>。按照[13]中的方法，我们报告 ISIC 数据集的 <strong>DSC（骰子相似系数）和 IoU（并集交集）分数</strong>。对于息肉数据集，我们报告 <strong>DSC、IoU 和 MAE（平均绝对误差）分数</strong>。<strong>每个实验运行 5 次，并报告平均结果</strong>。我们使用金字塔视觉变换器（PVT）[22]作为特征提取的编码器。</p>
-</blockquote>
+<p>我们采用<strong>幂为 0.9 的多项式学习率衰减</strong>。训练时期的最大数量设置为 <strong>300</strong>。超参数 c 设置为 <strong>32</strong>。按照[13]中的方法，我们报告 ISIC 数据集的 <strong>DSC（骰子相似系数）和 IoU（并集交集）分数</strong>。对于息肉数据集，我们报告 <strong>DSC、IoU 和 MAE（平均绝对误差）分数</strong>。<strong>每个实验运行 5 次，并报告平均结果</strong>。我们使用金字塔视觉变换器（PVT）[22]作为特征提取的编码器。</p></blockquote>
 <h3 id="33-results-and-analysis">3.3 Results and Analysis<a hidden class="anchor" aria-hidden="true" href="#33-results-and-analysis">#</a></h3>
 <blockquote>
-<p>表 1 列出了 ISIC 数据集上最先进方法的比较结果。如图所示，我们提出的 UNet v2 <strong>将 DSC 分数提高了 1.44% 和 2.48%</strong>，<strong>IoU 分数提高了 2.36% 和 3.90%</strong>。<strong>分别是 ISIC 2017 和 ISIC 2018 数据集</strong>。这些改进证明了我们提出的<strong>将语义信息和更精细的细节</strong>注入<strong>每个特征图的方法的有效性</strong>。</p>
-</blockquote>
+<p>表 1 列出了 ISIC 数据集上最先进方法的比较结果。如图所示，我们提出的 UNet v2 <strong>将 DSC 分数提高了 1.44% 和 2.48%</strong>，<strong>IoU 分数提高了 2.36% 和 3.90%</strong>。<strong>分别是 ISIC 2017 和 ISIC 2018 数据集</strong>。这些改进证明了我们提出的<strong>将语义信息和更精细的细节</strong>注入<strong>每个特征图的方法的有效性</strong>。</p></blockquote>
 <p><img alt="image-20231211202650574" loading="lazy" src="https://oss.swimmingliu.cn/mCGbj.png"></p>
 <blockquote>
-<p>表 2 列出了<strong>息肉分割数据集</strong>上最先进方法的比较结果。如图所示，我们提出的 U-Net v2 在 <strong>Kavasir-SEG、ClinicDB、ColonDB 和 ETIS 上优于 Poly-PVT</strong> [14]数据集，<strong>DSC 得分分别提高了 1.1%、0.7%、0.4% 和 0.3%</strong>。这强调了我们提出的方法在<strong>将语义信息和更精细的细节注入每个级别的特征图中的一致有效性</strong>。</p>
-</blockquote>
+<p>表 2 列出了<strong>息肉分割数据集</strong>上最先进方法的比较结果。如图所示，我们提出的 U-Net v2 在 <strong>Kavasir-SEG、ClinicDB、ColonDB 和 ETIS 上优于 Poly-PVT</strong> [14]数据集，<strong>DSC 得分分别提高了 1.1%、0.7%、0.4% 和 0.3%</strong>。这强调了我们提出的方法在<strong>将语义信息和更精细的细节注入每个级别的特征图中的一致有效性</strong>。</p></blockquote>
 <p><img alt="image-20231211202835003" loading="lazy" src="https://oss.swimmingliu.cn/mCN5I.png"></p>
 <h3 id="34-ablation-study">3.4 Ablation Study<a hidden class="anchor" aria-hidden="true" href="#34-ablation-study">#</a></h3>
 <blockquote>
 <p>我们使用 <strong>ISIC 2017 和 ColonDB</strong> 数据集进行消融研究，以检查 <strong>U-Net v2 的有效性</strong>，如表 3 所示。具体来说，我们使用 <strong>PVT [22] 模型作为 UNet++ [5] 的编码器</strong>。请注意，当我们的 SDI 模块被移除时，<strong>U-Net v2 将恢复为具有 PVT 主干的普通 U-Net</strong>。 **SC 表示 SDI 模块内的空间和通道关注点。**从表 3 可以看出，与不带 SDI 的 U-Net v2（即带 PVT 编码器的 U-Net）相比，<strong>UNet++ 的性能略有下降</strong>。</p>
-<p>这种下降可能归因于<strong>密集连接生成的多级特征的简单串联</strong>，这可能会<strong>混淆模型并引入噪声</strong>。表 3 表明 SDI 模块对整体性能贡献最大，突出显示我们提出的跳跃连接（即 SDI）持续带来性能改进。</p>
-</blockquote>
+<p>这种下降可能归因于<strong>密集连接生成的多级特征的简单串联</strong>，这可能会<strong>混淆模型并引入噪声</strong>。表 3 表明 SDI 模块对整体性能贡献最大，突出显示我们提出的跳跃连接（即 SDI）持续带来性能改进。</p></blockquote>
 <p><img alt="image-20231211203117751" loading="lazy" src="https://oss.swimmingliu.cn/mCvrV.png"></p>
 <h3 id="35-qualitative-results">3.5 Qualitative Results<a hidden class="anchor" aria-hidden="true" href="#35-qualitative-results">#</a></h3>
 <blockquote>
-<p>图 2 给出了 ISIC 2017 数据集的一些定性示例，这表明我们的 U-Net v2 能够<strong>将语义信息和更精细的细节</strong>合并到<strong>每个级别的特征图</strong>中。因此，我们的分割模型可以捕获对象边界的更精细的细节。</p>
-</blockquote>
+<p>图 2 给出了 ISIC 2017 数据集的一些定性示例，这表明我们的 U-Net v2 能够<strong>将语义信息和更精细的细节</strong>合并到<strong>每个级别的特征图</strong>中。因此，我们的分割模型可以捕获对象边界的更精细的细节。</p></blockquote>
 <p><img alt="image-20231211203515499" loading="lazy" src="https://oss.swimmingliu.cn/mCyBJ.png"></p>
 <h3 id="36-computation-gpu-memory-and-inference-time">3.6 Computation, GPU Memory, and Inference Time<a hidden class="anchor" aria-hidden="true" href="#36-computation-gpu-memory-and-inference-time">#</a></h3>
 <blockquote>
 <p>为了<strong>检查 U-Net v2 的计算复杂性、GPU 内存使用情况和推理时间</strong>，我们报告了我们的方法 <strong>U-Net [4] 的参数、GPU 内存使用情况、FLOP 和 FPS（每秒帧数）</strong>，以及表 4 中的 UNet++ [5]。实验使用 float32 作为数据类型，这导致<strong>每个变量使用 4B</strong> 的内存。 GPU内存使用记录了<strong>前向/后向传递过程中存储的参数和中间变量的大小</strong>。</p>
 <p>(1, 3, 256, 256)  表示输入图像的大小。所有测试均在 NVIDIA P100 GPU 上进行。</p>
 <p>从表4中可以看出，<strong>UNet++引入了更多的参数</strong>，并且由于<strong>在密集前向过程中存储中间变量</strong>（例如特征图），其<strong>GPU内存使用量更大</strong>。通常，此类中间变量比参数消耗更多的 GPU 内存。</p>
-<p>此外，<strong>U-Net v2 的 FLOPs 和 FPS 也优于</strong> UNet++。与 U-Net (PVT) 相比，我们的 U-Net v2 的 FPS 降低是有限的。</p>
-</blockquote>
+<p>此外，<strong>U-Net v2 的 FLOPs 和 FPS 也优于</strong> UNet++。与 U-Net (PVT) 相比，我们的 U-Net v2 的 FPS 降低是有限的。</p></blockquote>
 <p><img alt="image-20231211203713548" loading="lazy" src="https://oss.swimmingliu.cn/mPCJW.png"></p>
 <h2 id="conclusion">Conclusion<a hidden class="anchor" aria-hidden="true" href="#conclusion">#</a></h2>
 <blockquote>
-<p>引入了新的 U-Net 变体 <strong>U-Net v2</strong>，它采用新颖且简单的<strong>跳跃连接设计</strong>，以改进医学图像分割。该设计明确地将来自<strong>较高级别特征的语义信息</strong>和来自<strong>较低级别特征的更精细细节</strong>集成到编码器使用 <strong>Hadamard 乘积</strong>生成的每个级别的<strong>特征映射</strong>中。在皮肤病变和息肉分割数据集上进行的实验验证了我们的 UNet v2 的有效性。复杂性分析表明 U-Net v2 在 FLOP 和 GPU 内存使用方面也很高效</p>
-</blockquote>
+<p>引入了新的 U-Net 变体 <strong>U-Net v2</strong>，它采用新颖且简单的<strong>跳跃连接设计</strong>，以改进医学图像分割。该设计明确地将来自<strong>较高级别特征的语义信息</strong>和来自<strong>较低级别特征的更精细细节</strong>集成到编码器使用 <strong>Hadamard 乘积</strong>生成的每个级别的<strong>特征映射</strong>中。在皮肤病变和息肉分割数据集上进行的实验验证了我们的 UNet v2 的有效性。复杂性分析表明 U-Net v2 在 FLOP 和 GPU 内存使用方面也很高效</p></blockquote>
 <p>这篇文章比较简单，整体的行文风格一看就是会议论文。核心创新点就一个SDI（Semantic and Detail Infusion）模块。SDI模块作用就是 连接高级特征的语义信息和低级特征的细节信息。首先通过通道和特征注意力机制，分别关注不同级别的通道和空间信息。然后将所有的通道都 padding / scaling 到和第i级别相同的通道数，然后通过双线性插值 / 自适应平均池化到相同大小的尺寸。最后，使用哈达码乘积进行特征融合。 对，没错就这么简单！！！</p>
 <p>（思考: 能不能用减法单元来融合差异性？？？）</p>
 

@@ -1,0 +1,1548 @@
+<!DOCTYPE html>
+<html lang="en" dir="auto">
+
+<head><meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta name="robots" content="index, follow">
+<title>恒生聚源面经记录 | SwimmingLiu&#39;s Blog</title>
+<meta name="keywords" content="Java">
+<meta name="description" content="八股题
+Java 基础 &#43; 集合
+面向对象和面向过程的区别？
+面向对象：将数据和方法封装成对象，作为程序的基本单元来组织代码，包含封装、继承、多态三大特性，方便代码复用和灵活性。
+面向过程：以过程做为基本单元来组织代码，过程对应到代码中就是函数，将函数和数据分离，比较关注步骤和流程。其实就是一条路走到底的思想，关注如何设计一系列顺序执行的过程实现。
+封装、继承、多态?
+封装（Encapsulation）：通过将对象的属性和方法结合为独立单元，并利用访问修饰符（如private）隐藏内部细节，仅通过公共接口（如getter/setter）控制访问，从而提升安全性和可维护性
+继承（Inheritance）：允许子类基于父类的属性和方法进行扩展，实现代码复用，Java采用单继承机制（仅支持一个直接父类），但可通过接口实现多重继承的效果
+多态（Polymorphism）：同一方法调用因对象实际类型不同而产生不同行为，通常通过父类引用指向子类对象及方法重写实现，依赖运行时动态绑定机制决定具体执行逻辑。（重写和重载）
+常见排序算法？时间复杂度？
+
+
+直接插入排序：o(n^2)
+
+
+冒泡排序：o(n^2)
+
+
+快速排序: o(nlogn)
+
+
+堆排序：o(nlogn)
+
+
+归并排序：o(nlogn)
+
+
+
+  
+      
+          算法
+          平均时间复杂度
+          最坏时间复杂度
+          空间复杂度
+          稳定性
+          适用场景
+      
+  
+  
+      
+          插入排序
+          O(n²)
+          O(n²)
+          O(1)
+          稳定
+          部分有序数据
+      
+      
+          冒泡排序
+          O(n²)
+          O(n²)
+          O(1)
+          稳定
+          教学示例、小数据
+      
+      
+          快速排序
+          O(n log n)
+          O(n²)
+          O(log n)
+          不稳定
+          大规模随机数据
+      
+      
+          归并排序
+          O(n log n)
+          O(n log n)
+          O(n)
+          稳定
+          大数据、外部排序
+      
+      
+          堆排序
+          O(n log n)
+          O(n log n)
+          O(1)
+          不稳定
+          实时系统、内存受限场景
+      
+  
+
+ArrayList 和 LinkedList 的区别？
+
+ArrayList：底层是动态数组，有扩容机制，内存连续，查询快，增删慢。
+LinkedList：底层是双向链表，内存不连续，查询慢，增删快。
+
+【注意】 实际过程中，ArrayList 的增删操作比 LinkedList 快了进百倍。">
+<meta name="author" content="SwimmingLiu">
+<link rel="canonical" href="https://swimmingliu.cn/posts/job/hensheng-interview-questions/">
+<link crossorigin="anonymous" href="/assets/css/stylesheet.6ecbb0040febd20e47edd88a662c19f1ea945bf7427774b86594271d18f88faf.css" integrity="sha256-bsuwBA/r0g5H7diKZiwZ8eqUW/dCd3S4ZZQnHRj4j68=" rel="preload stylesheet" as="style">
+<link rel="icon" href="https://swimmingliu.cn/images/swimmingliu_icon.png">
+<link rel="icon" type="image/png" sizes="16x16" href="https://swimmingliu.cn/images/swimmingliu_icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="https://swimmingliu.cn/images/swimmingliu_icon.png">
+<link rel="apple-touch-icon" href="https://swimmingliu.cn/images/swimmingliu_icon.png">
+<link rel="mask-icon" href="https://swimmingliu.cn/images/swimmingliu_icon.png">
+<meta name="theme-color" content="#2e2e33">
+<meta name="msapplication-TileColor" content="#2e2e33">
+<link rel="alternate" hreflang="en" href="https://swimmingliu.cn/posts/job/hensheng-interview-questions/">
+<noscript>
+    <style>
+        #theme-toggle,
+        .top-link {
+            display: none;
+        }
+
+    </style>
+    <style>
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --theme: rgb(29, 30, 32);
+                --entry: rgb(46, 46, 51);
+                --primary: rgb(218, 218, 219);
+                --secondary: rgb(155, 156, 157);
+                --tertiary: rgb(65, 66, 68);
+                --content: rgb(196, 196, 197);
+                --code-block-bg: rgb(46, 46, 51);
+                --code-bg: rgb(55, 56, 62);
+                --border: rgb(51, 51, 51);
+            }
+
+            .list {
+                background: var(--theme);
+            }
+
+            .list:not(.dark)::-webkit-scrollbar-track {
+                background: 0 0;
+            }
+
+            .list:not(.dark)::-webkit-scrollbar-thumb {
+                border-color: var(--theme);
+            }
+        }
+
+    </style>
+</noscript>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css" integrity="sha384-n8MVd4RsNIU0tAv4ct0nTaAbDJwPJzDEaqSD1odI+WdtXRGWt2kTvGFasHpSy3SV" crossorigin="anonymous">
+
+
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js" integrity="sha384-XjKyOOlGwcjNTAIQHIpgOno0Hl1YQqzUOEleOLALmuqehneUG+vnGctmUb0ZY0l8" crossorigin="anonymous"></script>
+
+
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js" integrity="sha384-+VBxd3r6XgURycqtZ117nYw44OOcIax56Z4dCRWbxyPt0Koah1uHoK0o4+/RRE05" crossorigin="anonymous"
+    onload="renderMathInElement(document.body);"></script>
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        renderMathInElement(document.body, {
+            
+            
+            delimiters: [
+                { left: '$$', right: '$$', display: true },
+                { left: '$', right: '$', display: false },
+                { left: '\\(', right: '\\)', display: false },
+                { left: '\\[', right: '\\]', display: true }
+            ],
+            
+            throwOnError: false
+        });
+    });
+</script>
+
+<meta property="og:url" content="https://swimmingliu.cn/posts/job/hensheng-interview-questions/">
+  <meta property="og:site_name" content="SwimmingLiu&#39;s Blog">
+  <meta property="og:title" content="恒生聚源面经记录">
+  <meta property="og:description" content="八股题 Java 基础 &#43; 集合 面向对象和面向过程的区别？ 面向对象：将数据和方法封装成对象，作为程序的基本单元来组织代码，包含封装、继承、多态三大特性，方便代码复用和灵活性。
+面向过程：以过程做为基本单元来组织代码，过程对应到代码中就是函数，将函数和数据分离，比较关注步骤和流程。其实就是一条路走到底的思想，关注如何设计一系列顺序执行的过程实现。
+封装、继承、多态? 封装（Encapsulation）：通过将对象的属性和方法结合为独立单元，并利用访问修饰符（如private）隐藏内部细节，仅通过公共接口（如getter/setter）控制访问，从而提升安全性和可维护性
+继承（Inheritance）：允许子类基于父类的属性和方法进行扩展，实现代码复用，Java采用单继承机制（仅支持一个直接父类），但可通过接口实现多重继承的效果
+多态（Polymorphism）：同一方法调用因对象实际类型不同而产生不同行为，通常通过父类引用指向子类对象及方法重写实现，依赖运行时动态绑定机制决定具体执行逻辑。（重写和重载）
+常见排序算法？时间复杂度？ 直接插入排序：o(n^2)
+冒泡排序：o(n^2)
+快速排序: o(nlogn)
+堆排序：o(nlogn)
+归并排序：o(nlogn)
+算法 平均时间复杂度 最坏时间复杂度 空间复杂度 稳定性 适用场景 插入排序 O(n²) O(n²) O(1) 稳定 部分有序数据 冒泡排序 O(n²) O(n²) O(1) 稳定 教学示例、小数据 快速排序 O(n log n) O(n²) O(log n) 不稳定 大规模随机数据 归并排序 O(n log n) O(n log n) O(n) 稳定 大数据、外部排序 堆排序 O(n log n) O(n log n) O(1) 不稳定 实时系统、内存受限场景 ArrayList 和 LinkedList 的区别？ ArrayList：底层是动态数组，有扩容机制，内存连续，查询快，增删慢。 LinkedList：底层是双向链表，内存不连续，查询慢，增删快。 【注意】 实际过程中，ArrayList 的增删操作比 LinkedList 快了进百倍。">
+  <meta property="og:locale" content="en">
+  <meta property="og:type" content="article">
+    <meta property="article:section" content="posts">
+    <meta property="article:published_time" content="2025-05-06T13:27:35+08:00">
+    <meta property="article:modified_time" content="2025-05-06T13:27:35+08:00">
+    <meta property="article:tag" content="Java">
+      <meta property="og:image" content="https://swimmingliu.cn/papermod-cover.png">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://swimmingliu.cn/papermod-cover.png">
+<meta name="twitter:title" content="恒生聚源面经记录">
+<meta name="twitter:description" content="八股题
+Java 基础 &#43; 集合
+面向对象和面向过程的区别？
+面向对象：将数据和方法封装成对象，作为程序的基本单元来组织代码，包含封装、继承、多态三大特性，方便代码复用和灵活性。
+面向过程：以过程做为基本单元来组织代码，过程对应到代码中就是函数，将函数和数据分离，比较关注步骤和流程。其实就是一条路走到底的思想，关注如何设计一系列顺序执行的过程实现。
+封装、继承、多态?
+封装（Encapsulation）：通过将对象的属性和方法结合为独立单元，并利用访问修饰符（如private）隐藏内部细节，仅通过公共接口（如getter/setter）控制访问，从而提升安全性和可维护性
+继承（Inheritance）：允许子类基于父类的属性和方法进行扩展，实现代码复用，Java采用单继承机制（仅支持一个直接父类），但可通过接口实现多重继承的效果
+多态（Polymorphism）：同一方法调用因对象实际类型不同而产生不同行为，通常通过父类引用指向子类对象及方法重写实现，依赖运行时动态绑定机制决定具体执行逻辑。（重写和重载）
+常见排序算法？时间复杂度？
+
+
+直接插入排序：o(n^2)
+
+
+冒泡排序：o(n^2)
+
+
+快速排序: o(nlogn)
+
+
+堆排序：o(nlogn)
+
+
+归并排序：o(nlogn)
+
+
+
+  
+      
+          算法
+          平均时间复杂度
+          最坏时间复杂度
+          空间复杂度
+          稳定性
+          适用场景
+      
+  
+  
+      
+          插入排序
+          O(n²)
+          O(n²)
+          O(1)
+          稳定
+          部分有序数据
+      
+      
+          冒泡排序
+          O(n²)
+          O(n²)
+          O(1)
+          稳定
+          教学示例、小数据
+      
+      
+          快速排序
+          O(n log n)
+          O(n²)
+          O(log n)
+          不稳定
+          大规模随机数据
+      
+      
+          归并排序
+          O(n log n)
+          O(n log n)
+          O(n)
+          稳定
+          大数据、外部排序
+      
+      
+          堆排序
+          O(n log n)
+          O(n log n)
+          O(1)
+          不稳定
+          实时系统、内存受限场景
+      
+  
+
+ArrayList 和 LinkedList 的区别？
+
+ArrayList：底层是动态数组，有扩容机制，内存连续，查询快，增删慢。
+LinkedList：底层是双向链表，内存不连续，查询慢，增删快。
+
+【注意】 实际过程中，ArrayList 的增删操作比 LinkedList 快了进百倍。">
+
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position":  1 ,
+      "name": "📚 Posts",
+      "item": "https://swimmingliu.cn/posts/"
+    }, 
+    {
+      "@type": "ListItem",
+      "position":  2 ,
+      "name": "💻 Job",
+      "item": "https://swimmingliu.cn/posts/job/"
+    }, 
+    {
+      "@type": "ListItem",
+      "position":  3 ,
+      "name": "恒生聚源面经记录",
+      "item": "https://swimmingliu.cn/posts/job/hensheng-interview-questions/"
+    }
+  ]
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "恒生聚源面经记录",
+  "name": "恒生聚源面经记录",
+  "description": "八股题 Java 基础 + 集合 面向对象和面向过程的区别？ 面向对象：将数据和方法封装成对象，作为程序的基本单元来组织代码，包含封装、继承、多态三大特性，方便代码复用和灵活性。\n面向过程：以过程做为基本单元来组织代码，过程对应到代码中就是函数，将函数和数据分离，比较关注步骤和流程。其实就是一条路走到底的思想，关注如何设计一系列顺序执行的过程实现。\n封装、继承、多态? 封装（Encapsulation）：通过将对象的属性和方法结合为独立单元，并利用访问修饰符（如private）隐藏内部细节，仅通过公共接口（如getter/setter）控制访问，从而提升安全性和可维护性\n继承（Inheritance）：允许子类基于父类的属性和方法进行扩展，实现代码复用，Java采用单继承机制（仅支持一个直接父类），但可通过接口实现多重继承的效果\n多态（Polymorphism）：同一方法调用因对象实际类型不同而产生不同行为，通常通过父类引用指向子类对象及方法重写实现，依赖运行时动态绑定机制决定具体执行逻辑。（重写和重载）\n常见排序算法？时间复杂度？ 直接插入排序：o(n^2)\n冒泡排序：o(n^2)\n快速排序: o(nlogn)\n堆排序：o(nlogn)\n归并排序：o(nlogn)\n算法 平均时间复杂度 最坏时间复杂度 空间复杂度 稳定性 适用场景 插入排序 O(n²) O(n²) O(1) 稳定 部分有序数据 冒泡排序 O(n²) O(n²) O(1) 稳定 教学示例、小数据 快速排序 O(n log n) O(n²) O(log n) 不稳定 大规模随机数据 归并排序 O(n log n) O(n log n) O(n) 稳定 大数据、外部排序 堆排序 O(n log n) O(n log n) O(1) 不稳定 实时系统、内存受限场景 ArrayList 和 LinkedList 的区别？ ArrayList：底层是动态数组，有扩容机制，内存连续，查询快，增删慢。 LinkedList：底层是双向链表，内存不连续，查询慢，增删快。 【注意】 实际过程中，ArrayList 的增删操作比 LinkedList 快了进百倍。\n",
+  "keywords": [
+    "Java"
+  ],
+  "articleBody": "八股题 Java 基础 + 集合 面向对象和面向过程的区别？ 面向对象：将数据和方法封装成对象，作为程序的基本单元来组织代码，包含封装、继承、多态三大特性，方便代码复用和灵活性。\n面向过程：以过程做为基本单元来组织代码，过程对应到代码中就是函数，将函数和数据分离，比较关注步骤和流程。其实就是一条路走到底的思想，关注如何设计一系列顺序执行的过程实现。\n封装、继承、多态? 封装（Encapsulation）：通过将对象的属性和方法结合为独立单元，并利用访问修饰符（如private）隐藏内部细节，仅通过公共接口（如getter/setter）控制访问，从而提升安全性和可维护性\n继承（Inheritance）：允许子类基于父类的属性和方法进行扩展，实现代码复用，Java采用单继承机制（仅支持一个直接父类），但可通过接口实现多重继承的效果\n多态（Polymorphism）：同一方法调用因对象实际类型不同而产生不同行为，通常通过父类引用指向子类对象及方法重写实现，依赖运行时动态绑定机制决定具体执行逻辑。（重写和重载）\n常见排序算法？时间复杂度？ 直接插入排序：o(n^2)\n冒泡排序：o(n^2)\n快速排序: o(nlogn)\n堆排序：o(nlogn)\n归并排序：o(nlogn)\n算法 平均时间复杂度 最坏时间复杂度 空间复杂度 稳定性 适用场景 插入排序 O(n²) O(n²) O(1) 稳定 部分有序数据 冒泡排序 O(n²) O(n²) O(1) 稳定 教学示例、小数据 快速排序 O(n log n) O(n²) O(log n) 不稳定 大规模随机数据 归并排序 O(n log n) O(n log n) O(n) 稳定 大数据、外部排序 堆排序 O(n log n) O(n log n) O(1) 不稳定 实时系统、内存受限场景 ArrayList 和 LinkedList 的区别？ ArrayList：底层是动态数组，有扩容机制，内存连续，查询快，增删慢。 LinkedList：底层是双向链表，内存不连续，查询慢，增删快。 【注意】 实际过程中，ArrayList 的增删操作比 LinkedList 快了进百倍。\n随着集合容量的增加，LinkedList add累计耗时直线上升，ArrayList add累计耗时上升很慢；LinkedList 慢的原因应该是每次add一个值都需要封装成Node然后追加到链表尾部，每次封装Node（实例化Node对象）的耗时不容小觑；ArrayList add 不需要封装，影响耗时的只有扩容，而每次扩容都是调用底层System.arraycopy 数组拷贝，这个拷贝函数内存复制执行很快，而且每次扩容int newCapacity = oldCapacity + (oldCapacity \u003e\u003e 1); 为原容量的1.5倍，所以随着容量增加其实扩容不了几次，这也是ArrayList add速度快的原因。\nJava的基本数据类型？ String创建对象时如何创建，创建几个对象，用new和不用的区别？ String创建对象的时候，可能会创建1个或者2个对象。\n如果不使用 new\n第一次需要创建字符串字面量存入字符串常量池中，String s1 = \"SwimmingLiu\"，引用该字符串字面量 第二次如果需要相同的字符串，String s2 = \"SwimmingLiu\"，引用该字符串字面量且不会创建任何对象 如果使用new ：每次创建字符串对象都会在堆内存中存放一个新的对象\n如果字符串字面量不在字符串常量池中，会创建两个对象（堆内存对象 + 字符串常量池中的对象），String s3 = new String(\"SwimmingLiu\") 如果字符串字面量已经在字符串常量池中，只会创建一个对象（堆内存对象），String s4 = new String(\"SwimmingLiu\") 字符串操作有哪些类？有什么区别？ String、StringBuilder、StringBuffer\n线程安全：String 、StringBuffer String：String 是不可变量，底层用 final 修饰，每次对String修改都会产生新的副本，从而占用更多的资源，频繁大量的修改会造成资源的浪费 StringBuffer：StringBuffer 是为了解决String 可能造成资源浪费的问题，底层用 char[] 数组，所有修改方法采用 synchronized 锁， 所以线程安全 线程不安全：StringBuilder StringBuilder：StringBuilder 在 StringBuffer 的基础上把 synchronized 锁去掉了，舍弃了线程安全单性能更高 如何通过Stream流进行过滤、集合和映射的操作？ JUC 并发 Java的锁有哪些？ 内置锁（synchronized）：Java语言层面提供的关键字，隐式加锁，使用简单。 显示锁（Lock接口及其实现）：比如 ReentrantLock、ReentrantReadWriteLock（读写锁）、StampedLock 等，提供更灵活的锁操作，如可中断、公平性等。 【不同锁的区别】\nsynchronized：内置锁（Monitor Lock），可以用于方法或代码块，提供互斥访问。当一个线程进入 synchronized 方法或块时，它会自动获取对象的锁，其他线程则需等待锁释放后才能进入。 synchronized 是一种非公平，悲观，独享，互斥，可重入的重量级锁。\nReentrantLock：是一个重入锁，是 java.util.concurrent.locks 包中的接口 Lock 的实现，提供了比 synchronized 更灵活的锁操作，如尝试获取锁、可中断的获取锁、超时获取锁等。它也支持公平锁和非公平锁策略。 ReentrantLock 是一种默认非公平但可实现公平的，悲观，独享，互斥，可重入，重量级锁。\nReentrantReadWriteLock（读写锁）：也是 java.util.concurrent.locks 包中的一部分，允许同时有多个读取者，但只允许一个写入者。它分为读锁和写锁，读锁之间不互斥，读锁与写锁互斥，写锁之间也互斥，适用于读多写少的场景。\nReentrantReadWriteLock 是一种 默认非公平但可实现公平的，悲观，写独享，读共享，读写，可重入，重量级锁。\nStampedLock（Java 8 引入）：提供了三种锁模式：读锁、写锁和乐观读锁。相较于 ReentrantReadWriteLock ，StampedLock 提供了更细粒度的控制，支持乐观读取操作，可以提高并发性能。\n可以给我简述一下你都有什么并发经验吗 （JUC当中用到了哪些功能）？平时项目中有哪些地方用到了锁？项目中哪些部分考虑了线程安全？怎么用的？ 面试官您好，我平时在项目中大部分用到的都是分布式锁，主要是为了避免项目服务宕机和锁带来的内存压力。不过，我之前在学习的过程中，是整个方法区/代码块这种粒度比较大的地方，涉及到多个线程功能访问操作。我可能会选用 sychronized 。如果需要更细粒度的显示控制，或者需要让所有线程按顺序执行，我会采用ReentantLock 。\nSynchronized可以用在哪里？Synchronized锁升级的机制？ sychronized 一般用于需要存在线程安全问题的代码块/方法区，上锁需要一个锁对象。\nsychronized 锁升级机制主要是三种状态，从偏向锁(一个线程) -\u003e 轻量级锁 (多个线程) -\u003e 重量级锁 (多个线程竞争激烈)\n偏向锁：最开始有一个线程第一次获取锁的时候，JVM 会记录修改锁对象的对象头，标记为偏向状态。对象头里面会记录线程 id 和 对应的 epoch 偏向锁版本。后续该线程再获取这个锁，基本没啥开销。 轻量级锁：当有另外的线程尝试去获取已经被偏向的锁时，锁会升级为轻量级锁。上锁的过程中，JVM 会在当前线程的栈帧中，创建一个锁记录 LockRecord ，当锁记录指向锁对象。然后用 CAS 替换锁对象的标记字 Mark Word， 并将 Mark Word 的值存入锁记录。如果替换成功，锁对象的 Mark Word 就变成当前线程的所锁记录。使用 CAS 操作的目的是减少锁竞争的开销。 重量级锁：当 CAS 失败无法获取锁的时候，JVM判定其为多个线程竞争锁激烈，锁会升级成为重量锁。会使用操作系统的互斥量 Mutex 来实现线程的阻塞和唤醒。如果获取锁成功，线程会被放入Monitor的 owner 当中 Java内存模型（JMM), jdk8中有什么变化？ JMM 是用来解决由硬件速度差异引起的并发编程问题。CPU、内存、I/O设备之间的速度差异回影响程序性能。为了提高效率，采用了缓存、多任务处理和指令重排序等技术，但是这也导致了并发程序当中的可见性、有序性、原子性问题。JMM 就定义了一系列关键字 volatile 、synchronized 、final 确保程序能正确执行，还定义了Happens-Before 规则来明确操作之间的顺序关系。 【JDK8 变化】\nJDK 8通过元空间替代永久代、锁机制优化及内存屏障指令增强，JDK 8通过元空间替代永久代、锁机制优化及内存屏障指令增强\nJVM 虚拟机 JVM的垃圾回收机制和JVM性能调优了解？ 垃圾回收一般都是发生在堆内存里面，所以下面所有垃圾回收操作的对象基本都是在堆内存里面\n【JVM垃圾回收机制】\nJVM垃圾回收机制有三种，标记-清除 (CMS) 、**标记-整理 (G1) **、标记-复制\n标记-清除：主要分为两个阶段，标记 和 清除 标记：从 GC Roots 开始，通过 DFS 或者 BFS 遍历所有被引用的对象，并且在对象的头部 Header 标记为存活 （标记的都是不需要回收的对象-存活对象）。GC Roots 的对象包括 JVM 中引用的对象（如局部变量、方法参数）、方法区中类静态属性引用的对象（全局变量）、方法区中常量引用的对象、本地方法栈中 JNI 引用的对象 清除：遍历堆中的对象，将所有没有被标记的对象进行垃圾回收。垃圾回收的过程，不会移动和整理内存空间。一般都是通过空闲链表（双向链表）来标记被垃圾回收的区域，内存是空闲可用的。所以这种算法会导致内存空间碎片的产生 标记-复制：主要分为两个阶段，标记 和 复制，标记部分和上面一样 复制：该算法会把堆分成两块 (From 区和 To 区)，所有对象创建的时候都在 From 区里面（标记的对象也都在 From 区）。发生 GC 垃圾回收的时候，会将标记的对象（存活对象）从 From 区 复制到 To 区，然后整体回收 From 区。然后再从 To 区中，将存活对象复制回 From 区 标记-整理：主要分为两个阶段，标记 和 整理，标记部分和上面一样 整理：将被标记的对象（存活对象）往边界上整理，对其他的部分进行垃圾回收。它的优点是不会出现内存碎片，也不需要像复制算法那样腾出一半的空间，所以内存利用率也挺高的。它的缺点是需要对堆内存进行多次搜索，因为需要在同一个空间里面，完成标记和整理（移动）的操作。 【JVM性能调优】\nGC 垃圾回收器调优的核心原理就是尽可能在年轻代 Young GC 回收对象 （年轻代包含 Eden 区 和 两个 Survivor 区）。\n具体实现步骤如下：\n选择合适的GC：CMS (实时Web服务、电商秒杀等对响应时间敏感的场景)、G1 (平衡吞吐与延迟，如微服务集群、分布式缓存) 调整堆和新生代大小：内存设置合理可以减少 GC 频率，通过设置 -Xms 和 -Xmx 调整堆内存初始/最大值，结合 -Xmn 或 -XX:NewRatio 控制新生代占比，并通过 -XX:SurvivorRatio 调节 Eden 与 Survivor 区比例，根据应用对象生命周期和 GC 监控动态优化。 启用GC日志检测：监控和分析GC的行为，找出性能瓶颈 调整GC线程：提高并行GC性能 【CMS 和 G1对比】\n维度 CMS G1 算法 标记-清除（内存碎片） 标记-整理（减少碎片） 停顿时间 短（但可能因碎片触发Full GC） 可预测（默认200ms，可调） 堆内存范围 中小堆（\u003c32GB） 大堆（4GB~32GB+） CPU占用 高（并发阶段占用25% CPU） 较低（并发线程自适应） JVM 运行时内存情况，每个地方存储的是什么？（JVM内存区域如何划分？） 堆内存、方法区（元空间）、直接内存、虚拟机栈、本地方法栈、程序计数器\n线程的共享区域以及非共享？ 共享区域：堆内存、直接内存、方法区（元空间） 私有区域：虚拟机栈、本地方法栈、程序计数器 MySQL 一条SQL语句的执行过程？ 检查连接： 校验账号密码，确定用户的连接权限 缓存查询：如果存在缓存，直接返回查询结果。(MySQL 8.0之后废弃) 语法分析：通过语法树分析SQL语句的语法是否正确 查询条件优化：优化 where 语句中的查询条件，比如联合索引拼接等等 执行SQL语句：执行器执行SQL语句，并返回执行结果 说一下MySQL索引？有什么优点？ 划分方向 索引类型 数据结构 B+树索引、Hash索引、倒排索引 (全文索引)、R-树索引 (多维空间树)、位图索引(Bitmap) 物理存储 聚簇索引、非聚簇索引 字段特性 主键索引、唯一索引、普通索引(二级索引、辅助索引)、前缀索引 字段个数 单列索引、联合索引 优点：索引可以加速SQL语句条件查询的检索过程，快速定位到关键行\n为什么我们不每一列数据都创建一个索引？索引过多的缺点是什么？ 索引不是越多越好，如果创建的索引过多，因为每次修改都需要维护索引数据，会消耗资源和导致查询时间增长。\n**【时间开销】**进行增删改操作的时候，索引也必须更新。索引越多，需要修改的地方就越多，时间开销大。B+树可能会出现页分裂、合并等操作，时间开销更大。\n【空间开销】 建立二级索引，都需要新建一个B+树，每个数据页面都是16KB。如果数据大，索引又多，占用的空间不小。\n什么情况会出先索引失效？简单说三种让索引失效的情况？ 联合索引不满足最左前缀匹配原则 联合索引的首列使用 \u003e 或者 \u003c (单列索引不会失效) 对索引列使用运算 where id + 8 = 16、函数 count()、distinct() 、like '%xx%' 等操作 对索引列使用不同的数据类型进行条件筛选 （强制转换 -\u003e 函数） 对索引列和非索引列使用 or 操作 (where name = \"swimmingliu\" or age = 34) 怎么判断查询是走索引还是走全表 ？ 使用 EXPLAIN 对指定的SQL语句进行分析，EXPLAIN 分析结果 的 type 表示查询的访问类型，影响查询的效率。常见的值：\nref: 使用索引，查找匹配某个单一列的值（比如通过外键查找）。比 range 更高效。 range: 使用索引扫描某个范围内的值，适用于 BETWEEN、\u003e \u003c 等条件。 index: 全索引扫描，扫描整个索引结构，不读表数据，通常效率比全表扫描好。 all: 全表扫描，没有使用索引 总结：ref \u003e range \u003e index \u003e all。\n了解分页查询吗？第一页查询和最后一页查询哪一个快？ 第一页查询通常比最后一页快。 使用 LIMIT 和 OFFSET 进行分页时，数据库必须跳过前面的记录。例如，LIMIT 10 OFFSET 0（第一页）只需读取前10条记录，而 LIMIT 10 OFFSET 99990（最后一页）则需要跳过99990条记录后再读取10条，导致性能下降。\n为提高性能，建议使用 “键集分页”（Keyset Pagination），即基于唯一字段（如自增ID）进行分页：\nSELECT * FROM table WHERE id \u003e ? ORDER BY id ASC LIMIT 10; MySQL索引怎么实现 （原理）? MySQL 索引主要通过 B+ 树实现，其原理是将所有数据存储在叶子节点，非叶子节点仅存储索引键。这种结构使得树的高度较低，减少磁盘 I/O 次数，提高查询效率。此外，叶子节点之间通过链表连接，支持高效的范围查询和顺序访问。由于非叶子节点不存储实际数据，每个节点可以容纳更多的索引键，从而进一步降低树的高度。这种设计充分利用磁盘预读特性，适合存储在磁盘上的大规模数据，提高了查询性能。\n怎么优化SQL语句查询效率？ 可以分为预防和解决慢查询两种方案。\n【预防】\n创建合适的索引：对需要频繁查询、数据分布一致性低、 group by 分组、order by 排序的列建立单列索引或者联合索引。 避免索引失效：联合索引最左前缀匹配原则、单列索引避免使用函数、计算、like %xx% 等 减少回表和I/O次数：避免 select * 操作。因为正常情况下，部分字段是没有二次索引的，它会用主键id或者rowid 进行回表查询，会增加系统的I/O。 【解决慢查询】\n开启慢SQL日志记录功能：使用set global slow_query_log = \"ON\"， 默认是关闭的。设置一个查询延迟的阈值，把超过规定时间的SQL查询找出来。 分析慢SQL：利用explain关键字分析慢SQL的原因，比如看看是否有索引失效、select *等情况 MySQL用了哪些优化方式？ 存储引擎优化：默认使用 InnoDB，支持事务、行级锁和崩溃恢复。 索引优化：使用 B+ 树索引，支持复合索引和覆盖索引，提升查询效率。 查询优化：利用查询优化器选择最佳执行计划，避免全表扫描。 缓存机制：通过调整 innodb_buffer_pool_size 等参数，提高数据和索引的缓存命中率。 连接管理：使用连接池减少连接开销，提升并发处理能力。 配置调整：根据负载调整参数，如 max_connections、query_cache_size 等，优化资源使用。 分库分表：对大数据量进行水平或垂直拆分，减小单表压力。 读写分离：主从复制架构中，主库负责写操作，从库负责读操作，提升整体性能。 MySQL是左优先还是右优先？ MySQL 使用 “最左前缀匹配原则”，即索引匹配从最左列开始，必须连续匹配。例如，联合索引 (a, b, c) 中，查询条件必须包含 a，才能利用索引。如果查询条件是 b=1 或 c=1，索引将不会被使用。此外，遇到范围查询（如 \u003e、\u003c、BETWEEN、LIKE）时，匹配会停止，后续列无法利用索引。查询优化器会尝试重排条件顺序，但必须包含最左列才能命中索引。\n聊一下MySQL隔离级别 ？ MySQL的隔离级别有四种：读未提交 RU、读已提交 RC、可重复读 RR、串行化 MySQL的默认隔离级别为 可重复度 RR\n隔离性 读未提交 RU 读已提交 RC 可重复读 RR 串行读 脏读 ❌ ✅ ✅ ✅ 不可重复读 ❌ ❌ ✅ ✅ 幻读 ❌ ❌ ❌ ✅ 脏读：事务A开启事务准备查询 name = SwimmingLiu 的学生信息 (数据库当中 age = 23 )，网络延迟还没开始执行。此时，事务B修改 name = SwimmingLiu 的 age = 99， 然后区执行其他的操作，还没提交事务。事务A读取到的数据为 age = 99， 但是此时数据库中的数据为 age = 23，出现数据不一致的情况。 不可重复读：事务A开启事务准备查询 name = SwimmingLiu 的学生信息 age = 23 ，然后去执行其他的事务。此时，事务B修改 name = SwimmingLiu 的 age = 99，提交事务。事务A 第二次重新去读取 name = SwimmingLiu 的学生信息 (age = 99)， 第二次读取的数据和第一次读取的数据出现数据不一致的情况。 幻读：事务A最开始查询 age = 23 的学生人数，发现有 10 个人，然后去执行其他的操作。事务B 新增了一条age = 23 的学生信息数据，提交事务。事务A第二次去查询 age = 23 的学生人数的时候，发现学生人数变成了 11 个人，和第一次读取的数据总量相比不一样。 MySQL的乐观锁，悲观锁 ？ 悲观锁：假设会发生并发冲突，操作前加锁。\n-- 悲观锁，使用SELECT ... FOR UPDATE START TRANSACTION; -- 开启事务 SELECT * FROM products WHERE id = 1 FOR UPDATE; -- 上锁（排他锁） UPDATE products SET stock = stock - 1 WHERE id = 1; COMMIT; 乐观锁：假设不会发生冲突，更新时校验版本号。\n-- 表结构添加version字段 ALTER TABLE products ADD COLUMN version INT DEFAULT 0; -- 查询当前版本 SELECT id, stock, version FROM products WHERE id = 1; -- 乐观锁更新，条件中包含版本号 UPDATE products SET stock = stock - 1, version = version + 1 WHERE id = 1 AND version = 当前版本号; Redis 聊一下Redis的应用场景 ？ 数据缓存：消息缓存、商品缓存预览 分布式锁：操作临界资源的时候，使用分布式锁进行上锁。 计数器（Counter）：适用于实现访问量统计、点赞数等功能，支持高并发下的原子自增操作。 排行榜（Leaderboard）：通过有序集合（Sorted Set）实现实时排名功能，如游戏积分榜等。 位图（Bitmap）：用于实现签到、活跃用户统计等功能，节省存储空间。 全局唯一 ID 生成（Unique ID Generation）：通过自增键生成全局唯一的标识符，适用于订单号等场景。 缓存三件套和对应的解决方案？ 穿透：客户端查询的数据在数据库中不存在，所有的请求都打到数据库上，导致数据库压力过大。解决方法有两种，一种是对数据库查询不到的数据，同样存入Redis当中，值设置为 null。另外一种方案是采用布隆过滤器的策略，过滤掉部分数据不存在的请求。 雪崩：Redis当中大量的key同时过期，导致大部分请求都打到数据库上。解决方法是设置随机的过期时间 TTL ，防止大量key同时过期。 击穿：Redis当中某个热点Key突然过期，大量的流量同一时间全部打到数据库上。可以采用互斥锁、逻辑过期两种方案。如果对数据一致性要求高，可以采用互斥锁。如果要求不高，可以采用逻辑过期的方案，可能返回的缓存数据和数据库不一致。 另外，雪崩和击穿都可以采用限流+熔断的机制，暂停服务对于缓存服务的访问，直接返回错误。或者启用限流规则，只允许商家或指定类型的用户请求发送数据库进行处理，过多的请求就会拒接。一般会使用 Hystrix 或者 Sentinel 实现熔断或者限流。\n为什么要用Redis进行缓存？ 因为Redis是基于内存的，查询速度比MySQL数据库的速度要快很多倍。用Redis进行缓存，可以加速查询操作。\nRedis持久化机制有哪些？各自的优缺点？ Redis的持久化机制主要有两种：RDB 和 AOF\nRDB: Redis在指定的时间间隔内，生成数据库的快照并将其保存为二进制文件（dump.rdb）。\n优点：\n性能高：RDB是通过生成快照的方式进行持久化，不会阻塞客户端操作。 备份方便：可以通过RDB文件进行数据备份，且RDB文件较小。 恢复速度快：Redis重启时，加载RDB文件比AOF恢复速度要快。 缺点：\n数据丢失：如果Redis在快照保存期间宕机，会丢失未持久化的数据。 持久化频率不灵活：需要根据业务需求手动设置持久化的间隔。 **AOF: **Redis将每次写操作追加到AOF日志文件中，保存所有写命令。\n优点：\n数据持久性高：AOF保证了所有写操作都会被记录，可以做到较高的数据可靠性。 灵活的持久化频率：AOF有三种同步策略： 每次写入后同步：最安全，但性能最差。 每秒同步：安全与性能的折衷。 从不同步：性能最佳，但最容易丢失数据。 缺点：\n性能开销大：频繁的文件追加和同步可能会影响性能。 恢复速度慢：AOF文件较大，恢复时需要重新执行所有写命令。 文件大小：AOF文件相较于RDB文件要大，且随着操作增多，AOF文件会变得越来越大。 你刚刚说到的RDB和AOF，是怎么开启的呢？你有修改过Redis的配置文件吗？开启的参数是什么？ RDB：\nredis.conf保留/添加 save 900 1, save 300 10, save 60 10000 等行即可（默认已启用 RDB）。\nsave 900 1 # 15分钟至少1次修改触发 save 60 10000 # 1分钟至少10000次修改触发 rdbcompression yes # 启用压缩减少磁盘占用 在线开启：CONFIG SET save \"900 1 300 10 60 10000\"，随后 CONFIG REWRITE 写回文件。\nAOF\nredis.conf 设置 appendonly yes，通常配置 appendfsync everysec。 在线开启：CONFIG SET appendonly yes，Redis 会自动触发 AOF 重写；完成后执行 CONFIG REWRITE 。 AOF 文件名默认 appendonly.aof，可用 appendfilename 自定义。 聊一下Redis集群 ？ Redis集群有两种模式：一种是主从节点+ 哨兵机制 Sential 模式，另外一种是 Redis Cluster 模式 Cluster 集群当中包含多个 哨兵机制 Sential 模式的主从节点\nCluster集群模式：集群模式用于对数据进行分片，主要用于解决大数据、高吞吐量的场景。将数据自动分不到多个Redis实例上，支持自动故障转移（如果某个实例失效，集群会自动重写配置和平衡，不需要手动进行调整，因为内置了哨兵逻辑）\nSentinel哨兵模式: 哨兵模式用于保证主从节点的高可用，读写分离场景。如果主节点宕机，哨兵会将从节点升为主节点。\n如果集群的Redis中一台突然挂了，此时有请求未处理怎么办？ 选取新的主节点：从有效的从节点中选取一个从节点做为新的主节点（选取条件：优先级 \u003e 复制进度 offset \u003e 从节点 id 大小）\n客户端重试与重定向：Redis集群的Smart客户端（如JedisCluster）内置路由表，当请求发送至故障节点时，客户端会收到 MOVED 或 ASK 重定向指令，自动将请求转发至新主节点。\nRedis如何设置均衡负载的？ Redis 缓存是如何更新的 （数据一致性问题）？ 先写数据库，再删缓存：除了删除缓存操作失败以外，能确保数据一致性问题 延迟双删 (先删缓存，再写数据库，再延迟删除缓存)：除了删除缓存操作失败以外，能确保数据一致性问题，另外也不好确定延迟的时间（一般是手动设置的） 【强一致性】\nbinlog + Canal：通过 binlog 检测数据库是否发生改动，如果出现改动，就触发删除缓存的机制。删除缓存操作使用消息队列的方式实现，之后当Redis消息被成功删除，才消费这条消息。 为什么Redis是单线程的 ？ 基于内存操作，Redis的瓶颈主要是内存，多数操作的性能瓶颈不是CPU带来的 (增加多线程也没啥用) 单线程模型的代码简单，可以减少线程上下文切换的性能开销。 单线程结合I/O多路复用模型，能提高I/O利用率 【注意】 Redis的单线程是指网络请求模块和数据操作模块是单线程的, 但是持久化存储模块和集群支撑模块是多线程的。\nSpring Spring的两大特性？IOC和AOP? IoC（控制反转）：将对象的创建和依赖关系交由 Spring 容器管理，实现解耦和灵活配置。\nAOP（面向切面编程）：将横切关注点（如日志、事务）从业务逻辑中抽离，集中管理，提高代码的模块化和可维护性。\nSpring 的 bean 生命周期？ Spring 的 Bean 生命周期从容器启动开始，首先加载 Bean 定义并实例化 Bean。然后 Spring 容器注入依赖，并调用初始化方法，如 @PostConstruct 注解的方法或配置文件中指定的 init-method 方法。Bean 完成初始化后，准备好供应用程序使用。当容器关闭时，Spring 会调用销毁方法，如 @PreDestroy 注解的方法或配置文件中指定的 destroy-method 方法，最后销毁 Bean 实例。\nSpringMVC 中的Bean作用域 ? singleton（默认）：整个 Spring 容器中仅有一个实例，适用于无状态的共享组件。 prototype：每次请求都会创建一个新的实例，适用于有状态的组件。 request：每个 HTTP 请求创建一个新的实例，适用于每次请求需要独立状态的组件。 session：每个 HTTP 会话创建一个新的实例，适用于需要在用户会话中共享状态的组件。 application：整个 ServletContext 共享一个实例，适用于需要在整个应用中共享状态的组件。 Springboot如何加载配置文件 ? Spring Boot通过多源层级化的配置加载机制，支持从多种来源（如属性文件、YAML文件、环境变量、命令行参数等）动态加载配置，并按优先级从高到低覆盖同名属性。默认情况下，它会优先加载命令行参数（如 --server.port=8080），其次是环境变量（如SPRING_DATASOURCE_URL）和外部配置文件（application.yml 或 application.properties），最后是项目内部资源目录下的默认配置文件。另外，可以通过spring.profiles.active 激活特定环境配置，比如dev 、test 、prod 环境\n【注意】application.properties 的优先级高于 application.yml\nSpringMVC的启动流程 ? 首先，启动时加载 DispatcherServlet，它是 SpringMVC 的核心控制器；\n其次，DispatcherServlet 通过 web.xml 配置文件读取相关配置，初始化Spring容器；\n然后，DispatcherServlet 根据 URL请求 通过 HandlerMapping 查找对应的处理器（Controller）；\n最后，执行处理器方法后，通过 ViewResolver 解析视图并返回给客户端。\n整个过程实现了请求的分发、处理和响应。\n其他 你自己在部署项目的时候有排查过问题没有？简单描述一下查询日志的linux命令 排查过问题, 我使用的是 tail -n 20 -f xxx.log\nLinux中pwd命令，以及如何查找指定文件命令 pwd 命令：这个命令是用来显示当前路径的绝对路径的 查找指定文件命令：find /home -name xxx.txt AI嵌入进IDEA中的底层原理是什么？什么算法？ copilot : 大语言模型接口 + 当前文件 / 指定文件做为上下文\n设计模式了解哪些，设计模式有哪些原则 【设计模式】\n设计模式是对软件设计中常见问题的通用可复用解决方案，分为三大类：\n创建型模式：解决对象创建的复杂性，如 Singleton（单例）、Factory Method（工厂方法）、Abstract Factory（抽象工厂）、Builder（建造者）、Prototype（原型）。 结构型模式：处理类和对象的组合，简化结构，如 Adapter（适配器）、Bridge（桥接）、Composite（组合）、Decorator（装饰器）、Facade（外观）、Flyweight（享元）、Proxy（代理）。 行为型模式：关注对象之间的通信和职责分配，如 Chain of Responsibility（责任链）、Command（命令）、Iterator（迭代器）、Observer（观察者）、Strategy（策略）、Template Method（模板方法）、Visitor（访问者）。 【设计原则】\n设计原则则是指导软件开发的高层次准则，帮助构建可维护、可扩展的系统。其中，SOLID 是五个核心面向对象设计原则的首字母缩写：\n单一职责原则（SRP）：一个类应仅有一个引起其变化的原因，即只承担一个职责。 开闭原则（OCP）：软件实体应对扩展开放，对修改关闭，即可以在不修改现有代码的情况下扩展功能。 里氏替换原则（LSP）：子类型对象应能够替换任何父类型对象，并且程序行为不受影响。 接口隔离原则（ISP）：不应强迫客户依赖它们不使用的方法，建议为不同的客户提供专门的接口。 依赖倒置原则（DIP）：高层模块不应依赖低层模块，二者都应依赖于抽象；抽象不应依赖细节，细节应依赖抽象。 请求转发和重定向区别 ? 特性 请求转发（Forward） 请求重定向（Redirect） 跳转方式 服务器端内部跳转 浏览器发起新请求 请求次数 一次请求 至少两次请求 URL 地址栏 不变 更新为新 URL 数据共享 同一请求对象，共享数据 不共享数据，需通过 session 或 URL 参数传递 性能 较快 较慢 使用场景 同一 Web 应用内部跳转 跨域、跨站点跳转，或避免重复提交等场景 TCP三次握手，4次挥手 简历相关八股 为什么要设置一人一单？如何解决超卖问题和一人一单问题？ 设置一人一单：防止顾客反复刷单 超卖问题：MySQL 乐观锁检测 stock \u003e 0 / Redis用 lua 脚本 一人一单问题：MySQL 统计是否存在该用户的订单 / Redis 用 lua 脚本 消息队列怎么保证数据可靠性 ? 消息队列（MQ）通过多种机制确保数据的可靠性，主要包括：\n消息持久化：将消息存储到磁盘，确保在系统崩溃或重启后消息不会丢失。 消息确认机制：生产者在发送消息后，等待消息被消费者确认处理成功，未确认的消息会被重试发送。 重试机制：在消息发送或消费失败时，系统会按照预定策略进行重试，直至消息成功处理或达到最大重试次数。 幂等性处理：消费者在处理消息时，确保同一消息多次消费不会导致数据不一致。 死信队列：将无法成功消费的消息转移到专门的队列中，供后续人工或系统处理。 事务机制：在生产者和消费者之间实现事务，确保消息的发送和消费操作要么都成功，要么都失败。 Websocket，websocket 与 http 区别？ Websocket 相当于全双工通信，例如直播聊天就是采用 Websocket 全双工通信，客户端和服务端可以双向发送消息\n【websocket 和 http 区别】\nHTTP 是基于请求-响应模式的无状态短连接协议，客户端每次需主动发起请求，服务器返回响应后连接立即断开，适用于传统网页加载等低频交互场景；WebSocket 则通过一次 HTTP 握手升级为全双工长连接协议，支持客户端与服务器实时双向通信，数据以二进制帧高效传输，减少了头部冗余开销，适用于在线聊天、实时游戏等高频低延迟场景。此外，HTTP 默认无加密（HTTPS 需额外配置），而 WebSocket 天然支持 WSS 加密，安全性更优。\n场景题 我现在有两千万的客户数据，但是我的Redis中只能存储20万的高净值用户数据，那么我该怎么确保每次拿出来的都是高净值的用户呢？ 筛选的步骤如图所示：\n高净值用户定义与数据建模： 根据业务特征定义多维度评估模型，构建指标体系。例如，金融资产总额 (40%)、年消费频次 (30%)、最近活跃时间 (20%)、风险等级 (10%)\n@Data public class Customer { private String id; // 用户ID（唯一标识） private BigDecimal assets; // 金融资产（精确计算） private int annualPurchases; // 年消费次数 private LocalDateTime lastActive; // 最近活跃时间 private int riskLevel; // 风险等级（1-5级） // 计算综合得分（需缓存避免重复计算） private transient BigDecimal score; } 高效筛选2000万中的20万优质数据：\n方案1：Stream API + 并行计算（适合全量筛选） List\u003cCustomer\u003e allCustomers = loadFromDatabase(); // 从数据库加载2000万数据 Predicate\u003cCustomer\u003e highValueFilter = customer -\u003e customer.getRiskLevel() \u003c= 3 \u0026\u0026 // 风险等级≤3 customer.getLastActive().isAfter(LocalDateTime.now().minusMonths(3)); // 近3个月活跃 List\u003cCustomer\u003e topCustomers = allCustomers.parallelStream() // 启用并行流 .filter(highValueFilter) .sorted(Comparator.comparing(Customer::getScore).reversed()) // 按得分降序 .limit(200_000) // 取前20万 .collect(Collectors.toList()); 方案2：数据库分页+实时计算（适合增量更新） // 使用JPA/Hibernate分页查询（避免内存溢出） int pageSize = 5000; int page = 0; List\u003cCustomer\u003e batchList; do { batchList = customerRepository.findHighValueCustomers( PageRequest.of(page, pageSize, Sort.by(\"score\").descending()) ); redisClient.batchInsert(batchList); // 批量写入Redis page++; } while (!batchList.isEmpty()); Redis 存储数据 (对应上面的批量写入Redis)：\n存储客户排名数据：采用 Sorted Set（ZSET) 以用户ID为 member，综合得分为score，自动按 score 排序，天然支持 TOP N查询。\nJedis jedis = RedisPool.getResource(); Pipeline pipeline = jedis.pipelined(); topCustomers.forEach(c -\u003e pipeline.zadd(\"high_value_users\", c.getScore().doubleValue(), c.getId()) ); pipeline.sync(); 存储客户信息数据：用Hash存储用户详细信息\ntopCustomers.forEach(c -\u003e { pipeline.hset(\"user:\" + c.getId(), \"assets\", c.getAssets().toString(), \"lastActive\", c.getLastActive().toString() ); }); 容量控制 (只保留20万数据)：\n// 保留前20万，自动淘汰低分用户 jedis.zremrangeByRank(\"high_value_users\", 200_000, -1); // 设置TTL避免数据过期（数据不一致） jedis.expire(\"high_value_users\", 86400); 动态更新机制 (定时更新)\n@Scheduled(cron = \"0 0 3 * * ?\") // 每天凌晨3点执行 public void refreshHighValueUsers() { List\u003cCustomer\u003e newHighValue = customerRepository.findNewHighValueUsers(); // 使用Lua脚本保证原子性（网页6[6](@ref)） String luaScript = \"redis.call('ZADD', KEYS[1], ARGV[1], ARGV[2]) \" + \"redis.call('ZREMRANGEBYRANK', KEYS[1], 200000, -1)\"; jedis.eval(luaScript, 1, \"high_value_users\", newHighValue.getScore(), newHighValue.getId()); } 我们在实际部署过程中，经常会遇到节点挂掉或者是整个Redis挂掉的情况，那么怎么才能保证Redis挂掉之后能够让数据进行恢复呢? 打开 AOF (everysec) + RDB 双持久化；重启时先加载 RDB 再回放 AOF，几乎零丢数据。 部署主从复制＋ 大于等于3 个 的哨兵Sentinel 或直接用 Redis Cluster，节点宕机秒级自动选主并切换客户端。 定时把 AOF/RDB 备份到外部存储；灾难时拉回文件启动或 RESTORE 即可，注意多 TB 备份的加载时间并定期演练。 【AOF 和 RDB 如何打开？】\nRDB：\nredis.conf保留/添加 save 900 1, save 300 10, save 60 10000 等行即可（默认已启用 RDB）。\nsave 900 1 # 15分钟至少1次修改触发 save 60 10000 # 1分钟至少10000次修改触发 rdbcompression yes # 启用压缩减少磁盘占用 在线开启：CONFIG SET save \"900 1 300 10 60 10000\"，随后 CONFIG REWRITE 写回文件。\nAOF\nredis.conf 设置 appendonly yes，通常配置 appendfsync everysec。 在线开启：CONFIG SET appendonly yes，Redis 会自动触发 AOF 重写；完成后执行 CONFIG REWRITE 。 AOF 文件名默认 appendonly.aof，可用 appendfilename 自定义。 我现在Redis是个单机，但是我现在有很多个系统，同时对一个类进行操作，那么我的一个key肯定会导致被多并发的去竞争？怎么解决这样的竞争问题？ 分布式锁（SETNX）：使用Redis的 SETNX 命令或者Redisson实现分布式锁，确保同一时间只有一个系统实例操作该key。\n消息队列串行化：将对同一 key 的操作放入消息队列，确保操作按顺序执行，避免并发冲突。例如，使用RabbitMQ或Kafka等消息中间件，将操作封装为消息，按顺序处理。\n时间戳控制：在写入key时，携带时间戳，只有当新操作的时间戳晚于当前存储的时间戳时，才执行写入，确保数据的时序性。\nHSET your_key value new_value timestamp new_timestamp 高并发主要要考虑哪些问题？ 线程/连接池容量：Tomcat workThreads、HikariCP max‑pool‑size 必须按 CPU×2+I/O 负载估算，防止池耗尽和排队 熔断‑限流‑隔离：用 Hystrix/Sentinel/Gateway 做线程池隔离、熔断与基于 Redis 的限流，阻断级联雪崩 缓存策略：热点预加载、互斥锁、布隆过滤器，分散过期时间，解决穿透/击穿/雪崩 数据一致性：幂等键＋TCC/SAGA 分布式事务，避免重复写与脏数据 JVM GC停顿：G1/ZGC + -XX:MaxGCPauseMillis=*，持续压测、监控 超时/重试/背压：超时 \u003e 重试总时长；Reactive 流背压守护线程池 可观测性：指标、日志、分布式 Tracing 持续审计性能瓶颈。 对一个字符串进行排序然后转换为大写怎么实现？ 将字符串专程数组，然后调用 Arrays.sort() 函数，然后调用 new String(chars).toUpperCase() 将字符数组转成字符串，然后将所有的字母都转换成大小。\nString originalStr = \"helloWorld\"; // 1. 转换为字符数组并排序 char[] chars = originalStr.toCharArray(); Arrays.sort(chars); // 2. 生成排序后的字符串并转大写 String sortedUpperStr = new String(chars).toUpperCase(); System.out.println(sortedUpperStr); // 输出: DEHLLLOORW 综合题 \u0026 智力题 高考完学生投档到各个学校，应该怎样设计算法？ 求两支股票在一段时间内的最长同步上升时间 ",
+  "wordCount" : "1484",
+  "inLanguage": "en",
+  "image": "https://swimmingliu.cn/papermod-cover.png","datePublished": "2025-05-06T13:27:35+08:00",
+  "dateModified": "2025-05-06T13:27:35+08:00",
+  "author":[{
+    "@type": "Person",
+    "name": "SwimmingLiu"
+  }],
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": "https://swimmingliu.cn/posts/job/hensheng-interview-questions/"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "SwimmingLiu's Blog",
+    "logo": {
+      "@type": "ImageObject",
+      "url": "https://swimmingliu.cn/images/swimmingliu_icon.png"
+    }
+  }
+}
+</script>
+</head>
+
+<body class="" id="top">
+<script>
+    if (localStorage.getItem("pref-theme") === "dark") {
+        document.body.classList.add('dark');
+    } else if (localStorage.getItem("pref-theme") === "light") {
+        document.body.classList.remove('dark')
+    } else if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+        document.body.classList.add('dark');
+    }
+
+</script>
+
+<header class="header">
+    <nav class="nav">
+        <div class="logo">
+            <a href="https://swimmingliu.cn/" accesskey="h" title="𝓢𝔀𝓲𝓶𝓶𝓲𝓷𝓰𝓛𝓲𝓾&#39;𝓼 𝓑𝓵𝓸𝓰 (Alt + H)">
+                <img src="https://swimmingliu.cn/images/swimmingliu_icon.png" alt="" aria-label="logo"
+                    height="30">𝓢𝔀𝓲𝓶𝓶𝓲𝓷𝓰𝓛𝓲𝓾&#39;𝓼 𝓑𝓵𝓸𝓰</a>
+            <div class="logo-switches">
+                <button id="theme-toggle" accesskey="t" title="(Alt + T)">
+                    <svg id="moon" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                    </svg>
+                    <svg id="sun" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="5"></circle>
+                        <line x1="12" y1="1" x2="12" y2="3"></line>
+                        <line x1="12" y1="21" x2="12" y2="23"></line>
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                        <line x1="1" y1="12" x2="3" y2="12"></line>
+                        <line x1="21" y1="12" x2="23" y2="12"></line>
+                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                    </svg>
+                </button>
+            </div>
+        </div>
+        <ul id="menu">
+            <li>
+                <a href="https://swimmingliu.cn/index.html" title="🏡 Home">
+                    <span>🏡 Home</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://swimmingliu.cn/search/" title="🔍 Search">
+                    <span>🔍 Search</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://swimmingliu.cn/posts/" title="🗒️ Posts">
+                    <span>🗒️ Posts</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://swimmingliu.cn/archives/" title="📃 Archive">
+                    <span>📃 Archive</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://swimmingliu.cn/tags/" title="📑 Tags">
+                    <span>📑 Tags</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://bento.me/swimmingliu" title="👨🏻‍🎓 About Me">
+                    <span>👨🏻‍🎓 About Me</span>&nbsp;
+                    <svg fill="none" shape-rendering="geometricPrecision" stroke="currentColor" stroke-linecap="round"
+                        stroke-linejoin="round" stroke-width="2.5" viewBox="0 0 24 24" height="12" width="12">
+                        <path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"></path>
+                        <path d="M15 3h6v6"></path>
+                        <path d="M10 14L21 3"></path>
+                    </svg>
+                </a>
+            </li>
+            <li>
+                <a href="https://www.emojisearch.app/" title="Emoji">
+                    <span>Emoji</span>&nbsp;
+                    <svg fill="none" shape-rendering="geometricPrecision" stroke="currentColor" stroke-linecap="round"
+                        stroke-linejoin="round" stroke-width="2.5" viewBox="0 0 24 24" height="12" width="12">
+                        <path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"></path>
+                        <path d="M15 3h6v6"></path>
+                        <path d="M10 14L21 3"></path>
+                    </svg>
+                </a>
+            </li>
+        </ul>
+    </nav>
+</header>
+<main class="main">
+
+<article class="post-single">
+  <header class="post-header">
+    <div class="breadcrumbs"><a href="https://swimmingliu.cn/">Home</a>&nbsp;»&nbsp;<a href="https://swimmingliu.cn/posts/">📚 Posts</a>&nbsp;»&nbsp;<a href="https://swimmingliu.cn/posts/job/">💻 Job</a></div>
+    <h1 class="post-title entry-hint-parent">
+      恒生聚源面经记录
+    </h1>
+    <div class="post-meta"><span title='2025-05-06 13:27:35 +0800 CST'>May 6, 2025</span>&nbsp;·&nbsp;7 min&nbsp;·&nbsp;SwimmingLiu
+
+</div>
+  </header> <div class="toc">
+    <details >
+        <summary accesskey="c" title="(Alt + C)">
+            <span class="details">Table of Contents</span>
+        </summary>
+
+        <div class="inner"><ul>
+                <li>
+                    <a href="#%e5%85%ab%e8%82%a1%e9%a2%98" aria-label="八股题">八股题</a><ul>
+                        
+                <li>
+                    <a href="#java-%e5%9f%ba%e7%a1%80--%e9%9b%86%e5%90%88" aria-label="Java 基础 &#43; 集合">Java 基础 + 集合</a><ul>
+                        
+                <li>
+                    <a href="#%e9%9d%a2%e5%90%91%e5%af%b9%e8%b1%a1%e5%92%8c%e9%9d%a2%e5%90%91%e8%bf%87%e7%a8%8b%e7%9a%84%e5%8c%ba%e5%88%ab" aria-label="面向对象和面向过程的区别？">面向对象和面向过程的区别？</a></li>
+                <li>
+                    <a href="#%e5%b0%81%e8%a3%85%e7%bb%a7%e6%89%bf%e5%a4%9a%e6%80%81" aria-label="封装、继承、多态?">封装、继承、多态?</a></li>
+                <li>
+                    <a href="#%e5%b8%b8%e8%a7%81%e6%8e%92%e5%ba%8f%e7%ae%97%e6%b3%95%e6%97%b6%e9%97%b4%e5%a4%8d%e6%9d%82%e5%ba%a6" aria-label="常见排序算法？时间复杂度？">常见排序算法？时间复杂度？</a></li>
+                <li>
+                    <a href="#arraylist-%e5%92%8c-linkedlist-%e7%9a%84%e5%8c%ba%e5%88%ab" aria-label="ArrayList 和 LinkedList 的区别？">ArrayList 和 LinkedList 的区别？</a></li>
+                <li>
+                    <a href="#java%e7%9a%84%e5%9f%ba%e6%9c%ac%e6%95%b0%e6%8d%ae%e7%b1%bb%e5%9e%8b" aria-label="Java的基本数据类型？">Java的基本数据类型？</a></li>
+                <li>
+                    <a href="#string%e5%88%9b%e5%bb%ba%e5%af%b9%e8%b1%a1%e6%97%b6%e5%a6%82%e4%bd%95%e5%88%9b%e5%bb%ba%e5%88%9b%e5%bb%ba%e5%87%a0%e4%b8%aa%e5%af%b9%e8%b1%a1%e7%94%a8new%e5%92%8c%e4%b8%8d%e7%94%a8%e7%9a%84%e5%8c%ba%e5%88%ab" aria-label="String创建对象时如何创建，创建几个对象，用new和不用的区别？">String创建对象时如何创建，创建几个对象，用new和不用的区别？</a></li>
+                <li>
+                    <a href="#%e5%ad%97%e7%ac%a6%e4%b8%b2%e6%93%8d%e4%bd%9c%e6%9c%89%e5%93%aa%e4%ba%9b%e7%b1%bb%e6%9c%89%e4%bb%80%e4%b9%88%e5%8c%ba%e5%88%ab" aria-label="字符串操作有哪些类？有什么区别？">字符串操作有哪些类？有什么区别？</a></li>
+                <li>
+                    <a href="#%e5%a6%82%e4%bd%95%e9%80%9a%e8%bf%87stream%e6%b5%81%e8%bf%9b%e8%a1%8c%e8%bf%87%e6%bb%a4%e9%9b%86%e5%90%88%e5%92%8c%e6%98%a0%e5%b0%84%e7%9a%84%e6%93%8d%e4%bd%9c" aria-label="如何通过Stream流进行过滤、集合和映射的操作？">如何通过Stream流进行过滤、集合和映射的操作？</a></li></ul>
+                </li>
+                <li>
+                    <a href="#juc-%e5%b9%b6%e5%8f%91" aria-label="JUC 并发">JUC 并发</a><ul>
+                        
+                <li>
+                    <a href="#java%e7%9a%84%e9%94%81%e6%9c%89%e5%93%aa%e4%ba%9b" aria-label="Java的锁有哪些？">Java的锁有哪些？</a></li>
+                <li>
+                    <a href="#%e5%8f%af%e4%bb%a5%e7%bb%99%e6%88%91%e7%ae%80%e8%bf%b0%e4%b8%80%e4%b8%8b%e4%bd%a0%e9%83%bd%e6%9c%89%e4%bb%80%e4%b9%88%e5%b9%b6%e5%8f%91%e7%bb%8f%e9%aa%8c%e5%90%97-juc%e5%bd%93%e4%b8%ad%e7%94%a8%e5%88%b0%e4%ba%86%e5%93%aa%e4%ba%9b%e5%8a%9f%e8%83%bd%e5%b9%b3%e6%97%b6%e9%a1%b9%e7%9b%ae%e4%b8%ad%e6%9c%89%e5%93%aa%e4%ba%9b%e5%9c%b0%e6%96%b9%e7%94%a8%e5%88%b0%e4%ba%86%e9%94%81%e9%a1%b9%e7%9b%ae%e4%b8%ad%e5%93%aa%e4%ba%9b%e9%83%a8%e5%88%86%e8%80%83%e8%99%91%e4%ba%86%e7%ba%bf%e7%a8%8b%e5%ae%89%e5%85%a8%e6%80%8e%e4%b9%88%e7%94%a8%e7%9a%84" aria-label="可以给我简述一下你都有什么并发经验吗 （JUC当中用到了哪些功能）？平时项目中有哪些地方用到了锁？项目中哪些部分考虑了线程安全？怎么用的？">可以给我简述一下你都有什么并发经验吗 （JUC当中用到了哪些功能）？平时项目中有哪些地方用到了锁？项目中哪些部分考虑了线程安全？怎么用的？</a></li>
+                <li>
+                    <a href="#synchronized%e5%8f%af%e4%bb%a5%e7%94%a8%e5%9c%a8%e5%93%aa%e9%87%8csynchronized%e9%94%81%e5%8d%87%e7%ba%a7%e7%9a%84%e6%9c%ba%e5%88%b6" aria-label="Synchronized可以用在哪里？Synchronized锁升级的机制？">Synchronized可以用在哪里？Synchronized锁升级的机制？</a></li>
+                <li>
+                    <a href="#java%e5%86%85%e5%ad%98%e6%a8%a1%e5%9e%8bjmm-jdk8%e4%b8%ad%e6%9c%89%e4%bb%80%e4%b9%88%e5%8f%98%e5%8c%96" aria-label="Java内存模型（JMM), jdk8中有什么变化？">Java内存模型（JMM), jdk8中有什么变化？</a></li></ul>
+                </li>
+                <li>
+                    <a href="#jvm-%e8%99%9a%e6%8b%9f%e6%9c%ba" aria-label="JVM 虚拟机">JVM 虚拟机</a><ul>
+                        
+                <li>
+                    <a href="#jvm%e7%9a%84%e5%9e%83%e5%9c%be%e5%9b%9e%e6%94%b6%e6%9c%ba%e5%88%b6%e5%92%8cjvm%e6%80%a7%e8%83%bd%e8%b0%83%e4%bc%98%e4%ba%86%e8%a7%a3" aria-label="JVM的垃圾回收机制和JVM性能调优了解？">JVM的垃圾回收机制和JVM性能调优了解？</a></li>
+                <li>
+                    <a href="#jvm-%e8%bf%90%e8%a1%8c%e6%97%b6%e5%86%85%e5%ad%98%e6%83%85%e5%86%b5%e6%af%8f%e4%b8%aa%e5%9c%b0%e6%96%b9%e5%ad%98%e5%82%a8%e7%9a%84%e6%98%af%e4%bb%80%e4%b9%88jvm%e5%86%85%e5%ad%98%e5%8c%ba%e5%9f%9f%e5%a6%82%e4%bd%95%e5%88%92%e5%88%86" aria-label="JVM 运行时内存情况，每个地方存储的是什么？（JVM内存区域如何划分？）">JVM 运行时内存情况，每个地方存储的是什么？（JVM内存区域如何划分？）</a></li>
+                <li>
+                    <a href="#%e7%ba%bf%e7%a8%8b%e7%9a%84%e5%85%b1%e4%ba%ab%e5%8c%ba%e5%9f%9f%e4%bb%a5%e5%8f%8a%e9%9d%9e%e5%85%b1%e4%ba%ab" aria-label="线程的共享区域以及非共享？">线程的共享区域以及非共享？</a></li></ul>
+                </li>
+                <li>
+                    <a href="#mysql" aria-label="MySQL">MySQL</a><ul>
+                        
+                <li>
+                    <a href="#%e4%b8%80%e6%9d%a1sql%e8%af%ad%e5%8f%a5%e7%9a%84%e6%89%a7%e8%a1%8c%e8%bf%87%e7%a8%8b" aria-label="一条SQL语句的执行过程？">一条SQL语句的执行过程？</a></li>
+                <li>
+                    <a href="#%e8%af%b4%e4%b8%80%e4%b8%8bmysql%e7%b4%a2%e5%bc%95%e6%9c%89%e4%bb%80%e4%b9%88%e4%bc%98%e7%82%b9" aria-label="说一下MySQL索引？有什么优点？">说一下MySQL索引？有什么优点？</a></li>
+                <li>
+                    <a href="#%e4%b8%ba%e4%bb%80%e4%b9%88%e6%88%91%e4%bb%ac%e4%b8%8d%e6%af%8f%e4%b8%80%e5%88%97%e6%95%b0%e6%8d%ae%e9%83%bd%e5%88%9b%e5%bb%ba%e4%b8%80%e4%b8%aa%e7%b4%a2%e5%bc%95%e7%b4%a2%e5%bc%95%e8%bf%87%e5%a4%9a%e7%9a%84%e7%bc%ba%e7%82%b9%e6%98%af%e4%bb%80%e4%b9%88" aria-label="为什么我们不每一列数据都创建一个索引？索引过多的缺点是什么？">为什么我们不每一列数据都创建一个索引？索引过多的缺点是什么？</a></li>
+                <li>
+                    <a href="#%e4%bb%80%e4%b9%88%e6%83%85%e5%86%b5%e4%bc%9a%e5%87%ba%e5%85%88%e7%b4%a2%e5%bc%95%e5%a4%b1%e6%95%88%e7%ae%80%e5%8d%95%e8%af%b4%e4%b8%89%e7%a7%8d%e8%ae%a9%e7%b4%a2%e5%bc%95%e5%a4%b1%e6%95%88%e7%9a%84%e6%83%85%e5%86%b5" aria-label="什么情况会出先索引失效？简单说三种让索引失效的情况？">什么情况会出先索引失效？简单说三种让索引失效的情况？</a></li>
+                <li>
+                    <a href="#%e6%80%8e%e4%b9%88%e5%88%a4%e6%96%ad%e6%9f%a5%e8%af%a2%e6%98%af%e8%b5%b0%e7%b4%a2%e5%bc%95%e8%bf%98%e6%98%af%e8%b5%b0%e5%85%a8%e8%a1%a8-" aria-label="怎么判断查询是走索引还是走全表 ？">怎么判断查询是走索引还是走全表 ？</a></li>
+                <li>
+                    <a href="#%e4%ba%86%e8%a7%a3%e5%88%86%e9%a1%b5%e6%9f%a5%e8%af%a2%e5%90%97%e7%ac%ac%e4%b8%80%e9%a1%b5%e6%9f%a5%e8%af%a2%e5%92%8c%e6%9c%80%e5%90%8e%e4%b8%80%e9%a1%b5%e6%9f%a5%e8%af%a2%e5%93%aa%e4%b8%80%e4%b8%aa%e5%bf%ab" aria-label="了解分页查询吗？第一页查询和最后一页查询哪一个快？">了解分页查询吗？第一页查询和最后一页查询哪一个快？</a></li>
+                <li>
+                    <a href="#mysql%e7%b4%a2%e5%bc%95%e6%80%8e%e4%b9%88%e5%ae%9e%e7%8e%b0-%e5%8e%9f%e7%90%86" aria-label="MySQL索引怎么实现 （原理）?">MySQL索引怎么实现 （原理）?</a></li>
+                <li>
+                    <a href="#%e6%80%8e%e4%b9%88%e4%bc%98%e5%8c%96sql%e8%af%ad%e5%8f%a5%e6%9f%a5%e8%af%a2%e6%95%88%e7%8e%87" aria-label="怎么优化SQL语句查询效率？">怎么优化SQL语句查询效率？</a></li>
+                <li>
+                    <a href="#mysql%e7%94%a8%e4%ba%86%e5%93%aa%e4%ba%9b%e4%bc%98%e5%8c%96%e6%96%b9%e5%bc%8f" aria-label="MySQL用了哪些优化方式？">MySQL用了哪些优化方式？</a></li>
+                <li>
+                    <a href="#mysql%e6%98%af%e5%b7%a6%e4%bc%98%e5%85%88%e8%bf%98%e6%98%af%e5%8f%b3%e4%bc%98%e5%85%88" aria-label="MySQL是左优先还是右优先？">MySQL是左优先还是右优先？</a></li>
+                <li>
+                    <a href="#%e8%81%8a%e4%b8%80%e4%b8%8bmysql%e9%9a%94%e7%a6%bb%e7%ba%a7%e5%88%ab-" aria-label="聊一下MySQL隔离级别 ？">聊一下MySQL隔离级别 ？</a></li>
+                <li>
+                    <a href="#mysql%e7%9a%84%e4%b9%90%e8%a7%82%e9%94%81%e6%82%b2%e8%a7%82%e9%94%81-" aria-label="MySQL的乐观锁，悲观锁 ？">MySQL的乐观锁，悲观锁 ？</a></li></ul>
+                </li>
+                <li>
+                    <a href="#redis" aria-label="Redis">Redis</a><ul>
+                        
+                <li>
+                    <a href="#%e8%81%8a%e4%b8%80%e4%b8%8bredis%e7%9a%84%e5%ba%94%e7%94%a8%e5%9c%ba%e6%99%af-" aria-label="聊一下Redis的应用场景 ？">聊一下Redis的应用场景 ？</a></li>
+                <li>
+                    <a href="#%e7%bc%93%e5%ad%98%e4%b8%89%e4%bb%b6%e5%a5%97%e5%92%8c%e5%af%b9%e5%ba%94%e7%9a%84%e8%a7%a3%e5%86%b3%e6%96%b9%e6%a1%88" aria-label="缓存三件套和对应的解决方案？">缓存三件套和对应的解决方案？</a></li>
+                <li>
+                    <a href="#%e4%b8%ba%e4%bb%80%e4%b9%88%e8%a6%81%e7%94%a8redis%e8%bf%9b%e8%a1%8c%e7%bc%93%e5%ad%98" aria-label="为什么要用Redis进行缓存？">为什么要用Redis进行缓存？</a></li>
+                <li>
+                    <a href="#redis%e6%8c%81%e4%b9%85%e5%8c%96%e6%9c%ba%e5%88%b6%e6%9c%89%e5%93%aa%e4%ba%9b%e5%90%84%e8%87%aa%e7%9a%84%e4%bc%98%e7%bc%ba%e7%82%b9" aria-label="Redis持久化机制有哪些？各自的优缺点？">Redis持久化机制有哪些？各自的优缺点？</a></li>
+                <li>
+                    <a href="#%e4%bd%a0%e5%88%9a%e5%88%9a%e8%af%b4%e5%88%b0%e7%9a%84rdb%e5%92%8caof%e6%98%af%e6%80%8e%e4%b9%88%e5%bc%80%e5%90%af%e7%9a%84%e5%91%a2%e4%bd%a0%e6%9c%89%e4%bf%ae%e6%94%b9%e8%bf%87redis%e7%9a%84%e9%85%8d%e7%bd%ae%e6%96%87%e4%bb%b6%e5%90%97%e5%bc%80%e5%90%af%e7%9a%84%e5%8f%82%e6%95%b0%e6%98%af%e4%bb%80%e4%b9%88" aria-label="你刚刚说到的RDB和AOF，是怎么开启的呢？你有修改过Redis的配置文件吗？开启的参数是什么？">你刚刚说到的RDB和AOF，是怎么开启的呢？你有修改过Redis的配置文件吗？开启的参数是什么？</a></li>
+                <li>
+                    <a href="#%e8%81%8a%e4%b8%80%e4%b8%8bredis%e9%9b%86%e7%be%a4-" aria-label="聊一下Redis集群 ？">聊一下Redis集群 ？</a></li>
+                <li>
+                    <a href="#%e5%a6%82%e6%9e%9c%e9%9b%86%e7%be%a4%e7%9a%84redis%e4%b8%ad%e4%b8%80%e5%8f%b0%e7%aa%81%e7%84%b6%e6%8c%82%e4%ba%86%e6%ad%a4%e6%97%b6%e6%9c%89%e8%af%b7%e6%b1%82%e6%9c%aa%e5%a4%84%e7%90%86%e6%80%8e%e4%b9%88%e5%8a%9e" aria-label="如果集群的Redis中一台突然挂了，此时有请求未处理怎么办？">如果集群的Redis中一台突然挂了，此时有请求未处理怎么办？</a></li>
+                <li>
+                    <a href="#redis%e5%a6%82%e4%bd%95%e8%ae%be%e7%bd%ae%e5%9d%87%e8%a1%a1%e8%b4%9f%e8%bd%bd%e7%9a%84" aria-label="Redis如何设置均衡负载的？">Redis如何设置均衡负载的？</a></li>
+                <li>
+                    <a href="#redis-%e7%bc%93%e5%ad%98%e6%98%af%e5%a6%82%e4%bd%95%e6%9b%b4%e6%96%b0%e7%9a%84-%e6%95%b0%e6%8d%ae%e4%b8%80%e8%87%b4%e6%80%a7%e9%97%ae%e9%a2%98" aria-label="Redis 缓存是如何更新的 （数据一致性问题）？">Redis 缓存是如何更新的 （数据一致性问题）？</a></li>
+                <li>
+                    <a href="#%e4%b8%ba%e4%bb%80%e4%b9%88redis%e6%98%af%e5%8d%95%e7%ba%bf%e7%a8%8b%e7%9a%84-" aria-label="为什么Redis是单线程的 ？">为什么Redis是单线程的 ？</a></li></ul>
+                </li>
+                <li>
+                    <a href="#spring" aria-label="Spring">Spring</a><ul>
+                        
+                <li>
+                    <a href="#spring%e7%9a%84%e4%b8%a4%e5%a4%a7%e7%89%b9%e6%80%a7ioc%e5%92%8caop" aria-label="Spring的两大特性？IOC和AOP?">Spring的两大特性？IOC和AOP?</a></li>
+                <li>
+                    <a href="#spring-%e7%9a%84-bean-%e7%94%9f%e5%91%bd%e5%91%a8%e6%9c%9f" aria-label="Spring 的 bean 生命周期？">Spring 的 bean 生命周期？</a></li>
+                <li>
+                    <a href="#springmvc-%e4%b8%ad%e7%9a%84bean%e4%bd%9c%e7%94%a8%e5%9f%9f-" aria-label="SpringMVC 中的Bean作用域 ?">SpringMVC 中的Bean作用域 ?</a></li>
+                <li>
+                    <a href="#springboot%e5%a6%82%e4%bd%95%e5%8a%a0%e8%bd%bd%e9%85%8d%e7%bd%ae%e6%96%87%e4%bb%b6-" aria-label="Springboot如何加载配置文件 ?">Springboot如何加载配置文件 ?</a></li>
+                <li>
+                    <a href="#springmvc%e7%9a%84%e5%90%af%e5%8a%a8%e6%b5%81%e7%a8%8b-" aria-label="SpringMVC的启动流程 ?">SpringMVC的启动流程 ?</a></li></ul>
+                </li>
+                <li>
+                    <a href="#%e5%85%b6%e4%bb%96" aria-label="其他">其他</a><ul>
+                        
+                <li>
+                    <a href="#%e4%bd%a0%e8%87%aa%e5%b7%b1%e5%9c%a8%e9%83%a8%e7%bd%b2%e9%a1%b9%e7%9b%ae%e7%9a%84%e6%97%b6%e5%80%99%e6%9c%89%e6%8e%92%e6%9f%a5%e8%bf%87%e9%97%ae%e9%a2%98%e6%b2%a1%e6%9c%89%e7%ae%80%e5%8d%95%e6%8f%8f%e8%bf%b0%e4%b8%80%e4%b8%8b%e6%9f%a5%e8%af%a2%e6%97%a5%e5%bf%97%e7%9a%84linux%e5%91%bd%e4%bb%a4" aria-label="你自己在部署项目的时候有排查过问题没有？简单描述一下查询日志的linux命令">你自己在部署项目的时候有排查过问题没有？简单描述一下查询日志的linux命令</a></li>
+                <li>
+                    <a href="#linux%e4%b8%adpwd%e5%91%bd%e4%bb%a4%e4%bb%a5%e5%8f%8a%e5%a6%82%e4%bd%95%e6%9f%a5%e6%89%be%e6%8c%87%e5%ae%9a%e6%96%87%e4%bb%b6%e5%91%bd%e4%bb%a4" aria-label="Linux中pwd命令，以及如何查找指定文件命令">Linux中pwd命令，以及如何查找指定文件命令</a></li>
+                <li>
+                    <a href="#ai%e5%b5%8c%e5%85%a5%e8%bf%9bidea%e4%b8%ad%e7%9a%84%e5%ba%95%e5%b1%82%e5%8e%9f%e7%90%86%e6%98%af%e4%bb%80%e4%b9%88%e4%bb%80%e4%b9%88%e7%ae%97%e6%b3%95" aria-label="AI嵌入进IDEA中的底层原理是什么？什么算法？">AI嵌入进IDEA中的底层原理是什么？什么算法？</a></li>
+                <li>
+                    <a href="#%e8%ae%be%e8%ae%a1%e6%a8%a1%e5%bc%8f%e4%ba%86%e8%a7%a3%e5%93%aa%e4%ba%9b%e8%ae%be%e8%ae%a1%e6%a8%a1%e5%bc%8f%e6%9c%89%e5%93%aa%e4%ba%9b%e5%8e%9f%e5%88%99" aria-label="设计模式了解哪些，设计模式有哪些原则">设计模式了解哪些，设计模式有哪些原则</a></li>
+                <li>
+                    <a href="#%e8%af%b7%e6%b1%82%e8%bd%ac%e5%8f%91%e5%92%8c%e9%87%8d%e5%ae%9a%e5%90%91%e5%8c%ba%e5%88%ab-" aria-label="请求转发和重定向区别 ?">请求转发和重定向区别 ?</a></li>
+                <li>
+                    <a href="#tcp%e4%b8%89%e6%ac%a1%e6%8f%a1%e6%89%8b4%e6%ac%a1%e6%8c%a5%e6%89%8b" aria-label="TCP三次握手，4次挥手">TCP三次握手，4次挥手</a></li></ul>
+                </li>
+                <li>
+                    <a href="#%e7%ae%80%e5%8e%86%e7%9b%b8%e5%85%b3%e5%85%ab%e8%82%a1" aria-label="简历相关八股">简历相关八股</a><ul>
+                        
+                <li>
+                    <a href="#%e4%b8%ba%e4%bb%80%e4%b9%88%e8%a6%81%e8%ae%be%e7%bd%ae%e4%b8%80%e4%ba%ba%e4%b8%80%e5%8d%95%e5%a6%82%e4%bd%95%e8%a7%a3%e5%86%b3%e8%b6%85%e5%8d%96%e9%97%ae%e9%a2%98%e5%92%8c%e4%b8%80%e4%ba%ba%e4%b8%80%e5%8d%95%e9%97%ae%e9%a2%98" aria-label="为什么要设置一人一单？如何解决超卖问题和一人一单问题？">为什么要设置一人一单？如何解决超卖问题和一人一单问题？</a></li>
+                <li>
+                    <a href="#%e6%b6%88%e6%81%af%e9%98%9f%e5%88%97%e6%80%8e%e4%b9%88%e4%bf%9d%e8%af%81%e6%95%b0%e6%8d%ae%e5%8f%af%e9%9d%a0%e6%80%a7-" aria-label="消息队列怎么保证数据可靠性 ?">消息队列怎么保证数据可靠性 ?</a></li>
+                <li>
+                    <a href="#websocketwebsocket-%e4%b8%8e-http-%e5%8c%ba%e5%88%ab" aria-label="Websocket，websocket 与 http 区别？">Websocket，websocket 与 http 区别？</a></li></ul>
+                </li>
+                <li>
+                    <a href="#%e5%9c%ba%e6%99%af%e9%a2%98" aria-label="场景题">场景题</a><ul>
+                        
+                <li>
+                    <a href="#%e6%88%91%e7%8e%b0%e5%9c%a8%e6%9c%89%e4%b8%a4%e5%8d%83%e4%b8%87%e7%9a%84%e5%ae%a2%e6%88%b7%e6%95%b0%e6%8d%ae%e4%bd%86%e6%98%af%e6%88%91%e7%9a%84redis%e4%b8%ad%e5%8f%aa%e8%83%bd%e5%ad%98%e5%82%a820%e4%b8%87%e7%9a%84%e9%ab%98%e5%87%80%e5%80%bc%e7%94%a8%e6%88%b7%e6%95%b0%e6%8d%ae%e9%82%a3%e4%b9%88%e6%88%91%e8%af%a5%e6%80%8e%e4%b9%88%e7%a1%ae%e4%bf%9d%e6%af%8f%e6%ac%a1%e6%8b%bf%e5%87%ba%e6%9d%a5%e7%9a%84%e9%83%bd%e6%98%af%e9%ab%98%e5%87%80%e5%80%bc%e7%9a%84%e7%94%a8%e6%88%b7%e5%91%a2" aria-label="我现在有两千万的客户数据，但是我的Redis中只能存储20万的高净值用户数据，那么我该怎么确保每次拿出来的都是高净值的用户呢？">我现在有两千万的客户数据，但是我的Redis中只能存储20万的高净值用户数据，那么我该怎么确保每次拿出来的都是高净值的用户呢？</a></li>
+                <li>
+                    <a href="#%e6%88%91%e4%bb%ac%e5%9c%a8%e5%ae%9e%e9%99%85%e9%83%a8%e7%bd%b2%e8%bf%87%e7%a8%8b%e4%b8%ad%e7%bb%8f%e5%b8%b8%e4%bc%9a%e9%81%87%e5%88%b0%e8%8a%82%e7%82%b9%e6%8c%82%e6%8e%89%e6%88%96%e8%80%85%e6%98%af%e6%95%b4%e4%b8%aaredis%e6%8c%82%e6%8e%89%e7%9a%84%e6%83%85%e5%86%b5%e9%82%a3%e4%b9%88%e6%80%8e%e4%b9%88%e6%89%8d%e8%83%bd%e4%bf%9d%e8%af%81redis%e6%8c%82%e6%8e%89%e4%b9%8b%e5%90%8e%e8%83%bd%e5%a4%9f%e8%ae%a9%e6%95%b0%e6%8d%ae%e8%bf%9b%e8%a1%8c%e6%81%a2%e5%a4%8d%e5%91%a2" aria-label="我们在实际部署过程中，经常会遇到节点挂掉或者是整个Redis挂掉的情况，那么怎么才能保证Redis挂掉之后能够让数据进行恢复呢?">我们在实际部署过程中，经常会遇到节点挂掉或者是整个Redis挂掉的情况，那么怎么才能保证Redis挂掉之后能够让数据进行恢复呢?</a></li>
+                <li>
+                    <a href="#%e6%88%91%e7%8e%b0%e5%9c%a8redis%e6%98%af%e4%b8%aa%e5%8d%95%e6%9c%ba%e4%bd%86%e6%98%af%e6%88%91%e7%8e%b0%e5%9c%a8%e6%9c%89%e5%be%88%e5%a4%9a%e4%b8%aa%e7%b3%bb%e7%bb%9f%e5%90%8c%e6%97%b6%e5%af%b9%e4%b8%80%e4%b8%aa%e7%b1%bb%e8%bf%9b%e8%a1%8c%e6%93%8d%e4%bd%9c%e9%82%a3%e4%b9%88%e6%88%91%e7%9a%84%e4%b8%80%e4%b8%aakey%e8%82%af%e5%ae%9a%e4%bc%9a%e5%af%bc%e8%87%b4%e8%a2%ab%e5%a4%9a%e5%b9%b6%e5%8f%91%e7%9a%84%e5%8e%bb%e7%ab%9e%e4%ba%89%e6%80%8e%e4%b9%88%e8%a7%a3%e5%86%b3%e8%bf%99%e6%a0%b7%e7%9a%84%e7%ab%9e%e4%ba%89%e9%97%ae%e9%a2%98" aria-label="我现在Redis是个单机，但是我现在有很多个系统，同时对一个类进行操作，那么我的一个key肯定会导致被多并发的去竞争？怎么解决这样的竞争问题？">我现在Redis是个单机，但是我现在有很多个系统，同时对一个类进行操作，那么我的一个key肯定会导致被多并发的去竞争？怎么解决这样的竞争问题？</a></li>
+                <li>
+                    <a href="#%e9%ab%98%e5%b9%b6%e5%8f%91%e4%b8%bb%e8%a6%81%e8%a6%81%e8%80%83%e8%99%91%e5%93%aa%e4%ba%9b%e9%97%ae%e9%a2%98" aria-label="高并发主要要考虑哪些问题？">高并发主要要考虑哪些问题？</a></li>
+                <li>
+                    <a href="#%e5%af%b9%e4%b8%80%e4%b8%aa%e5%ad%97%e7%ac%a6%e4%b8%b2%e8%bf%9b%e8%a1%8c%e6%8e%92%e5%ba%8f%e7%84%b6%e5%90%8e%e8%bd%ac%e6%8d%a2%e4%b8%ba%e5%a4%a7%e5%86%99%e6%80%8e%e4%b9%88%e5%ae%9e%e7%8e%b0" aria-label="对一个字符串进行排序然后转换为大写怎么实现？">对一个字符串进行排序然后转换为大写怎么实现？</a></li></ul>
+                </li>
+                <li>
+                    <a href="#%e7%bb%bc%e5%90%88%e9%a2%98--%e6%99%ba%e5%8a%9b%e9%a2%98" aria-label="综合题 &amp; 智力题">综合题 &amp; 智力题</a><ul>
+                        
+                <li>
+                    <a href="#%e9%ab%98%e8%80%83%e5%ae%8c%e5%ad%a6%e7%94%9f%e6%8a%95%e6%a1%a3%e5%88%b0%e5%90%84%e4%b8%aa%e5%ad%a6%e6%a0%a1%e5%ba%94%e8%af%a5%e6%80%8e%e6%a0%b7%e8%ae%be%e8%ae%a1%e7%ae%97%e6%b3%95" aria-label="高考完学生投档到各个学校，应该怎样设计算法？">高考完学生投档到各个学校，应该怎样设计算法？</a></li>
+                <li>
+                    <a href="#%e6%b1%82%e4%b8%a4%e6%94%af%e8%82%a1%e7%a5%a8%e5%9c%a8%e4%b8%80%e6%ae%b5%e6%97%b6%e9%97%b4%e5%86%85%e7%9a%84%e6%9c%80%e9%95%bf%e5%90%8c%e6%ad%a5%e4%b8%8a%e5%8d%87%e6%97%b6%e9%97%b4" aria-label="求两支股票在一段时间内的最长同步上升时间">求两支股票在一段时间内的最长同步上升时间</a>
+                </li>
+            </ul>
+            </li>
+            </ul>
+            </li>
+            </ul>
+        </div>
+    </details>
+</div>
+  <div class="post-content"><h2 id="八股题">八股题<a hidden class="anchor" aria-hidden="true" href="#八股题">#</a></h2>
+<h3 id="java-基础--集合">Java 基础 + 集合<a hidden class="anchor" aria-hidden="true" href="#java-基础--集合">#</a></h3>
+<h4 id="面向对象和面向过程的区别">面向对象和面向过程的区别？<a hidden class="anchor" aria-hidden="true" href="#面向对象和面向过程的区别">#</a></h4>
+<p><strong>面向对象</strong>：将数据和方法封装成对象，作为程序的基本单元来组织代码，包含封装、继承、多态三大特性，方便代码复用和灵活性。</p>
+<p><strong>面向过程</strong>：以过程做为基本单元来组织代码，过程对应到代码中就是函数，将函数和数据分离，比较关注步骤和流程。其实就是一条路走到底的思想，关注如何设计一系列顺序执行的过程实现。</p>
+<h4 id="封装继承多态">封装、继承、多态?<a hidden class="anchor" aria-hidden="true" href="#封装继承多态">#</a></h4>
+<p><strong>封装</strong>（Encapsulation）：通过将<strong>对象的属性和方法结合为独立单元</strong>，并利用访问修饰符（如<code>private</code>）隐藏内部细节，仅通过<strong>公共接口（如<code>getter/setter</code>）控制访问</strong>，从而提升安全性和可维护性</p>
+<p><strong>继承</strong>（Inheritance）：允许<strong>子类基于父类的属性和方法进行扩展</strong>，实现代码复用，Java采用单继承机制（仅支持一个直接父类），但可通过接口实现多重继承的效果</p>
+<p><strong>多态</strong>（Polymorphism）：同一方法调用因对象实际类型不同而产生不同行为，通常通过<strong>父类引用指向子类对象及方法重写实现</strong>，依赖运行时动态绑定机制决定具体执行逻辑。（重写和重载）</p>
+<h4 id="常见排序算法时间复杂度">常见排序算法？时间复杂度？<a hidden class="anchor" aria-hidden="true" href="#常见排序算法时间复杂度">#</a></h4>
+<ul>
+<li>
+<p>直接插入排序：o(n^2)</p>
+</li>
+<li>
+<p>冒泡排序：o(n^2)</p>
+</li>
+<li>
+<p>快速排序: o(nlogn)</p>
+</li>
+<li>
+<p>堆排序：o(nlogn)</p>
+</li>
+<li>
+<p>归并排序：o(nlogn)</p>
+</li>
+</ul>
+<table>
+  <thead>
+      <tr>
+          <th style="text-align: center"><strong>算法</strong></th>
+          <th style="text-align: center">平均时间复杂度</th>
+          <th style="text-align: center">最坏时间复杂度</th>
+          <th style="text-align: center">空间复杂度</th>
+          <th style="text-align: center">稳定性</th>
+          <th style="text-align: center">适用场景</th>
+      </tr>
+  </thead>
+  <tbody>
+      <tr>
+          <td style="text-align: center">插入排序</td>
+          <td style="text-align: center">O(n²)</td>
+          <td style="text-align: center">O(n²)</td>
+          <td style="text-align: center">O(1)</td>
+          <td style="text-align: center">稳定</td>
+          <td style="text-align: center">部分有序数据</td>
+      </tr>
+      <tr>
+          <td style="text-align: center">冒泡排序</td>
+          <td style="text-align: center">O(n²)</td>
+          <td style="text-align: center">O(n²)</td>
+          <td style="text-align: center">O(1)</td>
+          <td style="text-align: center">稳定</td>
+          <td style="text-align: center">教学示例、小数据</td>
+      </tr>
+      <tr>
+          <td style="text-align: center">快速排序</td>
+          <td style="text-align: center">O(n log n)</td>
+          <td style="text-align: center">O(n²)</td>
+          <td style="text-align: center">O(log n)</td>
+          <td style="text-align: center">不稳定</td>
+          <td style="text-align: center">大规模随机数据</td>
+      </tr>
+      <tr>
+          <td style="text-align: center">归并排序</td>
+          <td style="text-align: center">O(n log n)</td>
+          <td style="text-align: center">O(n log n)</td>
+          <td style="text-align: center">O(n)</td>
+          <td style="text-align: center">稳定</td>
+          <td style="text-align: center">大数据、外部排序</td>
+      </tr>
+      <tr>
+          <td style="text-align: center">堆排序</td>
+          <td style="text-align: center">O(n log n)</td>
+          <td style="text-align: center">O(n log n)</td>
+          <td style="text-align: center">O(1)</td>
+          <td style="text-align: center">不稳定</td>
+          <td style="text-align: center">实时系统、内存受限场景</td>
+      </tr>
+  </tbody>
+</table>
+<h4 id="arraylist-和-linkedlist-的区别">ArrayList 和 LinkedList 的区别？<a hidden class="anchor" aria-hidden="true" href="#arraylist-和-linkedlist-的区别">#</a></h4>
+<ul>
+<li><strong>ArrayList</strong>：底层是动态数组，有扩容机制，内存连续，查询快，增删慢。</li>
+<li><strong>LinkedList</strong>：底层是双向链表，内存不连续，查询慢，增删快。</li>
+</ul>
+<p><strong>【注意】</strong> 实际过程中，<code>ArrayList</code> 的增删操作比 <code>LinkedList</code> 快了进百倍。</p>
+<blockquote>
+<p>随着集合容量的增加，<code>LinkedList</code> add累计耗时直线上升，<code>ArrayList</code> add累计耗时上升很慢；<code>LinkedList</code> 慢的原因应该是每次add一个值都需要封装成Node然后追加到链表尾部，每次封装Node（实例化Node对象）的耗时不容小觑；ArrayList add 不需要封装，影响耗时的只有扩容，而每次扩容都是调用底层<code>System.arraycopy</code> 数组拷贝，这个拷贝函数内存复制执行很快，而且每次扩容<code>int newCapacity = oldCapacity + (oldCapacity &gt;&gt; 1);</code> 为原容量的1.5倍，所以随着容量增加其实扩容不了几次，这也是ArrayList add速度快的原因。</p></blockquote>
+<h4 id="java的基本数据类型">Java的基本数据类型？<a hidden class="anchor" aria-hidden="true" href="#java的基本数据类型">#</a></h4>
+<p><img alt="Java基础数据类型" loading="lazy" src="https://oss.swimmingliu.cn/44e3bab4-2a42-11f0-aaed-caaeffceb345"></p>
+<h4 id="string创建对象时如何创建创建几个对象用new和不用的区别">String创建对象时如何创建，创建几个对象，用new和不用的区别？<a hidden class="anchor" aria-hidden="true" href="#string创建对象时如何创建创建几个对象用new和不用的区别">#</a></h4>
+<p>String创建对象的时候，可能会创建1个或者2个对象。</p>
+<p>如果不使用 <code>new</code></p>
+<ul>
+<li>第一次需要创建字符串字面量存入字符串常量池中，<code>String s1 = &quot;SwimmingLiu&quot;</code>，引用该字符串字面量</li>
+<li>第二次如果需要相同的字符串，<code>String s2 = &quot;SwimmingLiu&quot;</code>，引用该字符串字面量且不会创建任何对象</li>
+</ul>
+<p>如果使用<code>new</code> ：每次创建字符串对象都会在堆内存中存放一个新的对象</p>
+<ul>
+<li>如果字符串字面量不在字符串常量池中，会创建两个对象（堆内存对象 + 字符串常量池中的对象），<code>String s3 = new String(&quot;SwimmingLiu&quot;)</code></li>
+<li>如果字符串字面量已经在字符串常量池中，只会创建一个对象（堆内存对象），<code>String s4 = new String(&quot;SwimmingLiu&quot;)</code></li>
+</ul>
+<p><img alt="字符串创建对象区别" loading="lazy" src="https://oss.swimmingliu.cn/45d0329a-2a42-11f0-aaed-caaeffceb345"></p>
+<h4 id="字符串操作有哪些类有什么区别">字符串操作有哪些类？有什么区别？<a hidden class="anchor" aria-hidden="true" href="#字符串操作有哪些类有什么区别">#</a></h4>
+<p><code>String</code>、<code>StringBuilder</code>、<code>StringBuffer</code></p>
+<ul>
+<li><strong>线程安全</strong>：<code>String</code> 、<code>StringBuffer</code>
+<ul>
+<li><strong>String</strong>：<code>String</code> 是不可变量，底层用 <code>final</code> 修饰，每次对<code>String</code>修改都会产生新的副本，从而占用更多的资源，频繁大量的修改会造成资源的浪费</li>
+<li><strong>StringBuffer</strong>：<code>StringBuffer</code> 是为了解决<code>String</code> 可能造成资源浪费的问题，底层用 <code>char[]</code> 数组，所有修改方法采用 <code>synchronized</code> 锁， 所以线程安全</li>
+</ul>
+</li>
+<li><strong>线程不安全</strong>：<code>StringBuilder</code>
+<ul>
+<li><strong>StringBuilder</strong>：<code>StringBuilder</code> 在 <code>StringBuffer</code> 的基础上把 <code>synchronized</code> 锁去掉了，舍弃了线程安全单性能更高</li>
+</ul>
+</li>
+</ul>
+<h4 id="如何通过stream流进行过滤集合和映射的操作">如何通过Stream流进行过滤、集合和映射的操作？<a hidden class="anchor" aria-hidden="true" href="#如何通过stream流进行过滤集合和映射的操作">#</a></h4>
+<h3 id="juc-并发">JUC 并发<a hidden class="anchor" aria-hidden="true" href="#juc-并发">#</a></h3>
+<h4 id="java的锁有哪些">Java的锁有哪些？<a hidden class="anchor" aria-hidden="true" href="#java的锁有哪些">#</a></h4>
+<ul>
+<li><strong>内置锁（synchronized）</strong>：Java语言层面提供的关键字，隐式加锁，使用简单。</li>
+<li><strong>显示锁（Lock接口及其实现）</strong>：比如 <strong>ReentrantLock</strong>、<strong>ReentrantReadWriteLock（读写锁）</strong>、<strong>StampedLock</strong> 等，提供更灵活的锁操作，如可中断、公平性等。</li>
+</ul>
+<p><strong>【不同锁的区别】</strong></p>
+<ol>
+<li>
+<p><strong>synchronized</strong>：内置锁（Monitor Lock），可以用于<strong>方法或代码块</strong>，提供互斥访问。当一个线程进入 synchronized 方法或块时，它会自动获取对象的锁，其他线程则需等待锁释放后才能进入。
+<code>synchronized</code> 是一种<strong>非公平，悲观，独享，互斥，可重入的重量级锁</strong>。</p>
+</li>
+<li>
+<p><strong>ReentrantLock</strong>：是一个重入锁，是 <code>java.util.concurrent.locks</code> 包中的接口 Lock 的实现，提供了比 <code>synchronized</code> 更灵活的锁操作，如尝试获取锁、可中断的获取锁、超时获取锁等。它也支持公平锁和非公平锁策略。
+<code>ReentrantLock</code> 是一种<strong>默认非公平但可实现公平的，悲观，独享，互斥，可重入，重量级锁</strong>。</p>
+</li>
+<li>
+<p><strong>ReentrantReadWriteLock（读写锁）</strong>：也是 java.util.concurrent.locks 包中的一部分，允许同时有多个读取者，但只允许一个写入者。它分为读锁和写锁，读锁之间不互斥，读锁与写锁互斥，写锁之间也互斥，适用于读多写少的场景。</p>
+<p><code>ReentrantReadWriteLock</code> 是一种 <strong>默认非公平但可实现公平的，悲观，写独享，读共享，读写，可重入，重量级锁。</strong></p>
+</li>
+<li>
+<p><strong>StampedLock（Java 8 引入）</strong>：提供了三种锁模式：读锁、写锁和乐观读锁。相较于 <code>ReentrantReadWriteLock</code> ，<code>StampedLock</code> 提供了<strong>更细粒度的控制，支持乐观读取操作</strong>，可以提高并发性能。</p>
+</li>
+</ol>
+<h4 id="可以给我简述一下你都有什么并发经验吗-juc当中用到了哪些功能平时项目中有哪些地方用到了锁项目中哪些部分考虑了线程安全怎么用的">可以给我简述一下你都有什么并发经验吗 （JUC当中用到了哪些功能）？平时项目中有哪些地方用到了锁？项目中哪些部分考虑了线程安全？怎么用的？<a hidden class="anchor" aria-hidden="true" href="#可以给我简述一下你都有什么并发经验吗-juc当中用到了哪些功能平时项目中有哪些地方用到了锁项目中哪些部分考虑了线程安全怎么用的">#</a></h4>
+<p>面试官您好，我平时在项目中大部分用到的都是<strong>分布式锁</strong>，主要是为了避免项目服务宕机和锁带来的内存压力。不过，我之前在学习的过程中，是整个方法区/代码块这种粒度比较大的地方，涉及到多个线程功能访问操作。我可能会选用 <code>sychronized</code> 。如果需要更细粒度的显示控制，或者需要让所有线程按顺序执行，我会采用<code>ReentantLock</code> 。</p>
+<h4 id="synchronized可以用在哪里synchronized锁升级的机制">Synchronized可以用在哪里？Synchronized锁升级的机制？<a hidden class="anchor" aria-hidden="true" href="#synchronized可以用在哪里synchronized锁升级的机制">#</a></h4>
+<p><code>sychronized</code> 一般用于需要存在线程安全问题的<strong>代码块/方法区</strong>，上锁需要一个<strong>锁对象</strong>。</p>
+<p><code>sychronized</code> 锁升级机制主要是三种状态，从偏向锁(一个线程) -&gt; 轻量级锁 (多个线程) -&gt; 重量级锁 (多个线程竞争激烈)</p>
+<ul>
+<li><strong>偏向锁</strong>：最开始有一个线程第一次获取锁的时候，<code>JVM</code> 会记录修改<strong>锁对象</strong>的对象头，标记为偏向状态。对象头里面会记录线程 <code>id</code> 和 对应的 <code>epoch</code> 偏向锁版本。后续该线程再获取这个锁，基本没啥开销。</li>
+<li><strong>轻量级锁</strong>：当有另外的线程尝试去获取已经被偏向的锁时，锁会升级为轻量级锁。上锁的过程中，<code>JVM </code> 会在当前线程的栈帧中，创建一个锁记录 <code>LockRecord</code> ，当锁记录指向锁对象。然后用 <code>CAS</code> 替换锁对象的标记字 <code>Mark Word</code>， 并将 <code>Mark Word</code> 的值存入锁记录。如果替换成功，锁对象的 <code>Mark Word</code> 就变成当前线程的所锁记录。使用 <code>CAS</code> 操作的目的是减少锁竞争的开销。</li>
+<li><strong>重量级锁</strong>：当 <code>CAS</code> 失败无法获取锁的时候，JVM判定其为多个线程竞争锁激烈，锁会升级成为重量锁。会使用操作系统的互斥量 <code>Mutex</code> 来实现线程的阻塞和唤醒。如果获取锁成功，线程会被放入Monitor的 <code>owner</code> 当中</li>
+</ul>
+<h4 id="java内存模型jmm-jdk8中有什么变化">Java内存模型（JMM), jdk8中有什么变化？<a hidden class="anchor" aria-hidden="true" href="#java内存模型jmm-jdk8中有什么变化">#</a></h4>
+<p><code>JMM</code> 是用来解决由硬件速度差异引起的并发编程问题。CPU、内存、I/O设备之间的速度差异回影响程序性能。为了提高效率，采用了缓存、多任务处理和指令重排序等技术，但是这也导致了并发程序当中的可见性、有序性、原子性问题。<code>JMM</code> 就定义了一系列关键字 <code>volatile</code> 、<code>synchronized</code> 、<code>final</code> 确保程序能正确执行，还定义了<code>Happens-Before</code> 规则来明确操作之间的顺序关系。
+【JDK8 变化】</p>
+<p><code>JDK 8</code>通过<strong>元空间替代永久代</strong>、<strong>锁机制优化</strong>及<strong>内存屏障指令增强</strong>，JDK 8通过<strong>元空间替代永久代</strong>、<strong>锁机制优化</strong>及<strong>内存屏障指令增强</strong></p>
+<h3 id="jvm-虚拟机">JVM 虚拟机<a hidden class="anchor" aria-hidden="true" href="#jvm-虚拟机">#</a></h3>
+<h4 id="jvm的垃圾回收机制和jvm性能调优了解">JVM的垃圾回收机制和JVM性能调优了解？<a hidden class="anchor" aria-hidden="true" href="#jvm的垃圾回收机制和jvm性能调优了解">#</a></h4>
+<blockquote>
+<p>垃圾回收一般都是发生在<strong>堆内存</strong>里面，所以下面所有垃圾回收操作的对象基本都是在堆内存里面</p></blockquote>
+<p><strong>【JVM垃圾回收机制】</strong></p>
+<p>JVM垃圾回收机制有三种，<strong>标记-清除 (CMS)</strong> 、**标记-整理 (G1) **、<strong>标记-复制</strong></p>
+<ul>
+<li><strong>标记-清除</strong>：主要分为两个阶段，<strong>标记</strong> 和 <strong>清除</strong>
+<ul>
+<li><strong>标记</strong>：从 <code>GC Roots</code> 开始，通过 <code>DFS</code> 或者 <code>BFS</code> 遍历所有被引用的对象，并且在对象的头部 <code>Header</code> 标记为<strong>存活</strong> （标记的都是不需要回收的对象-<strong>存活对象</strong>）。<code>GC Roots</code> 的对象包括 <code>JVM</code> 中引用的对象（如局部变量、方法参数）、方法区中类静态属性引用的对象（全局变量）、方法区中常量引用的对象、本地方法栈中 <code>JNI</code> 引用的对象</li>
+<li><strong>清除</strong>：遍历堆中的对象，将所有没有被标记的对象进行垃圾回收。垃圾回收的过程，不会移动和整理内存空间。一般都是通过空闲链表（双向链表）来标记被垃圾回收的区域，内存是空闲可用的。所以这种算法会导致<strong>内存空间碎片</strong>的产生</li>
+</ul>
+</li>
+<li><strong>标记-复制</strong>：主要分为两个阶段，<strong>标记</strong> 和 <strong>复制</strong>，标记部分和上面一样
+<ul>
+<li><strong>复制</strong>：该算法会把堆分成两块 (<code>From </code>区和 <code>To</code> 区)，所有对象创建的时候都在 <code>From</code> 区里面（标记的对象也都在 <code>From</code> 区）。发生 <code>GC</code> 垃圾回收的时候，会将标记的对象（存活对象）从 <code>From</code> 区 复制到 <code>To</code> 区，然后整体回收 <code>From</code> 区。然后再从 <code>To</code> 区中，将存活对象复制回 <code>From</code> 区</li>
+</ul>
+</li>
+<li><strong>标记-整理</strong>：主要分为两个阶段，<strong>标记</strong> 和 <strong>整理</strong>，标记部分和上面一样
+<ul>
+<li><strong>整理</strong>：将被标记的对象（存活对象）往边界上整理，对其他的部分进行垃圾回收。它的优点是不会出现内存碎片，也不需要像复制算法那样腾出一半的空间，所以内存利用率也挺高的。它的缺点是需要对堆内存进行多次搜索，因为需要在同一个空间里面，完成标记和整理（移动）的操作。</li>
+</ul>
+</li>
+</ul>
+<p><strong>【JVM性能调优】</strong></p>
+<p><code>GC</code> 垃圾回收器调优的核心原理就是尽可能在年轻代 <code>Young GC</code> 回收对象 （年轻代包含 <code>Eden</code> 区 和 两个 <code>Survivor</code> 区）。</p>
+<p>具体实现步骤如下：</p>
+<ol>
+<li><strong>选择合适的GC</strong>：<code>CMS</code> (实时Web服务、电商秒杀等对响应时间敏感的场景)、<code>G1</code> (平衡吞吐与延迟，如微服务集群、分布式缓存)</li>
+<li><strong>调整堆和新生代大小</strong>：内存设置合理可以减少 <code>GC</code> 频率，通过设置 <code>-Xms</code> 和 <code>-Xmx</code> 调整堆内存初始/最大值，结合 <code>-Xmn</code> 或 <code>-XX:NewRatio</code> 控制新生代占比，并通过 <code>-XX:SurvivorRatio</code> 调节 Eden 与 Survivor 区比例，根据应用对象生命周期和 GC 监控动态优化。</li>
+<li><strong>启用GC日志检测</strong>：监控和分析GC的行为，找出性能瓶颈</li>
+<li><strong>调整GC线程</strong>：提高并行GC性能</li>
+</ol>
+<p><strong>【CMS 和 G1对比】</strong></p>
+<table>
+  <thead>
+      <tr>
+          <th style="text-align: center"><strong>维度</strong></th>
+          <th style="text-align: center"><strong>CMS</strong></th>
+          <th style="text-align: center"><strong>G1</strong></th>
+      </tr>
+  </thead>
+  <tbody>
+      <tr>
+          <td style="text-align: center"><strong>算法</strong></td>
+          <td style="text-align: center">标记-清除（内存碎片）</td>
+          <td style="text-align: center">标记-整理（减少碎片）</td>
+      </tr>
+      <tr>
+          <td style="text-align: center"><strong>停顿时间</strong></td>
+          <td style="text-align: center">短（但可能因碎片触发Full GC）</td>
+          <td style="text-align: center">可预测（默认200ms，可调）</td>
+      </tr>
+      <tr>
+          <td style="text-align: center"><strong>堆内存范围</strong></td>
+          <td style="text-align: center">中小堆（&lt;32GB）</td>
+          <td style="text-align: center">大堆（4GB~32GB+）</td>
+      </tr>
+      <tr>
+          <td style="text-align: center"><strong>CPU占用</strong></td>
+          <td style="text-align: center">高（并发阶段占用25% CPU）</td>
+          <td style="text-align: center">较低（并发线程自适应）</td>
+      </tr>
+  </tbody>
+</table>
+<h4 id="jvm-运行时内存情况每个地方存储的是什么jvm内存区域如何划分">JVM 运行时内存情况，每个地方存储的是什么？（JVM内存区域如何划分？）<a hidden class="anchor" aria-hidden="true" href="#jvm-运行时内存情况每个地方存储的是什么jvm内存区域如何划分">#</a></h4>
+<p>堆内存、方法区（元空间）、直接内存、虚拟机栈、本地方法栈、程序计数器</p>
+<p><img alt="JVM内存区域" loading="lazy" src="https://oss.swimmingliu.cn/6ebff0fa-07e8-11f0-86bd-c858c0c1debd"></p>
+<h4 id="线程的共享区域以及非共享">线程的共享区域以及非共享？<a hidden class="anchor" aria-hidden="true" href="#线程的共享区域以及非共享">#</a></h4>
+<ul>
+<li><strong>共享区域</strong>：堆内存、直接内存、方法区（元空间）</li>
+<li><strong>私有区域</strong>：虚拟机栈、本地方法栈、程序计数器</li>
+</ul>
+<h3 id="mysql">MySQL<a hidden class="anchor" aria-hidden="true" href="#mysql">#</a></h3>
+<h4 id="一条sql语句的执行过程">一条SQL语句的执行过程？<a hidden class="anchor" aria-hidden="true" href="#一条sql语句的执行过程">#</a></h4>
+<ol>
+<li><strong>检查连接</strong>： 校验账号密码，确定用户的连接权限</li>
+<li><strong>缓存查询</strong>：如果存在缓存，直接返回查询结果。(MySQL 8.0之后废弃)</li>
+<li><strong>语法分析</strong>：通过语法树分析SQL语句的语法是否正确</li>
+<li><strong>查询条件优化</strong>：优化 <code>where</code> 语句中的查询条件，比如联合索引拼接等等</li>
+<li><strong>执行SQL语句</strong>：执行器执行SQL语句，并返回执行结果</li>
+</ol>
+<h4 id="说一下mysql索引有什么优点">说一下MySQL索引？有什么优点？<a hidden class="anchor" aria-hidden="true" href="#说一下mysql索引有什么优点">#</a></h4>
+<table>
+  <thead>
+      <tr>
+          <th>划分方向</th>
+          <th>索引类型</th>
+      </tr>
+  </thead>
+  <tbody>
+      <tr>
+          <td>数据结构</td>
+          <td>B+树索引、Hash索引、倒排索引 (全文索引)、R-树索引 (多维空间树)、位图索引(Bitmap)</td>
+      </tr>
+      <tr>
+          <td>物理存储</td>
+          <td>聚簇索引、非聚簇索引</td>
+      </tr>
+      <tr>
+          <td>字段特性</td>
+          <td>主键索引、唯一索引、普通索引(二级索引、辅助索引)、前缀索引</td>
+      </tr>
+      <tr>
+          <td>字段个数</td>
+          <td>单列索引、联合索引</td>
+      </tr>
+  </tbody>
+</table>
+<p>优点：索引可以加速SQL语句条件查询的检索过程，快速定位到关键行</p>
+<h4 id="为什么我们不每一列数据都创建一个索引索引过多的缺点是什么">为什么我们不每一列数据都创建一个索引？索引过多的缺点是什么？<a hidden class="anchor" aria-hidden="true" href="#为什么我们不每一列数据都创建一个索引索引过多的缺点是什么">#</a></h4>
+<p><strong>索引不是越多越好</strong>，如果创建的索引过多，因为每次修改都需要维护索引数据，会消耗资源和导致查询时间增长。</p>
+<p>**【时间开销】**进行增删改操作的时候，索引也必须更新。索引越多，需要修改的地方就越多，时间开销大。B+树可能会出现页分裂、合并等操作，时间开销更大。</p>
+<p><strong>【空间开销】</strong> 建立二级索引，都需要新建一个B+树，每个数据页面都是16KB。如果数据大，索引又多，占用的空间不小。</p>
+<h4 id="什么情况会出先索引失效简单说三种让索引失效的情况">什么情况会出先索引失效？简单说三种让索引失效的情况？<a hidden class="anchor" aria-hidden="true" href="#什么情况会出先索引失效简单说三种让索引失效的情况">#</a></h4>
+<ul>
+<li>联合索引不满足最左前缀匹配原则</li>
+<li>联合索引的首列使用 <code>&gt;</code> 或者 <code>&lt;</code> (单列索引不会失效)</li>
+<li>对索引列使用运算 <code>where id + 8 = 16</code>、函数 <code>count()、distinct()</code> 、<code>like '%xx%' </code> 等操作</li>
+<li>对索引列使用不同的数据类型进行条件筛选 （强制转换 -&gt; 函数）</li>
+<li>对索引列和非索引列使用 <code>or</code> 操作 (<code>where name = &quot;swimmingliu&quot; or age = 34</code>)</li>
+</ul>
+<h4 id="怎么判断查询是走索引还是走全表-">怎么判断查询是走索引还是走全表 ？<a hidden class="anchor" aria-hidden="true" href="#怎么判断查询是走索引还是走全表-">#</a></h4>
+<p>使用 <code>EXPLAIN</code> 对指定的SQL语句进行分析，<code>EXPLAIN</code> 分析结果 的 <code>type</code> 表示查询的访问类型，影响查询的效率。常见的值：</p>
+<ol>
+<li><strong>ref</strong>: 使用索引，查找匹配某个单一列的值（比如通过外键查找）。比 <code>range</code> 更高效。</li>
+<li><strong>range</strong>: 使用索引扫描某个范围内的值，适用于 <code>BETWEEN</code>、<code>&gt; &lt;</code> 等条件。</li>
+<li><strong>index</strong>: 全索引扫描，扫描整个索引结构，不读表数据，通常效率比全表扫描好。</li>
+<li><strong>all</strong>: 全表扫描，没有使用索引</li>
+</ol>
+<p>总结：<code>ref</code> &gt; <code>range</code> &gt; <code>index</code> &gt; <code>all</code>。</p>
+<h4 id="了解分页查询吗第一页查询和最后一页查询哪一个快">了解分页查询吗？第一页查询和最后一页查询哪一个快？<a hidden class="anchor" aria-hidden="true" href="#了解分页查询吗第一页查询和最后一页查询哪一个快">#</a></h4>
+<p><strong>第一页查询</strong>通常比<strong>最后一页快</strong>。 使用 <code>LIMIT</code> 和 <code>OFFSET</code> 进行分页时，数据库必须跳过前面的记录。例如，<code>LIMIT 10 OFFSET 0</code>（第一页）<strong>只需读取前10条记录</strong>，而 <code>LIMIT 10 OFFSET 99990</code>（最后一页）则需要<strong>跳过99990条记录后再读取10条</strong>，导致性能下降。</p>
+<p>为提高性能，建议使用 <strong>“键集分页”（Keyset Pagination）</strong>，即基于唯一字段（如自增ID）进行分页：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-sql" data-lang="sql"><span class="line"><span class="cl"><span class="k">SELECT</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="k">FROM</span><span class="w"> </span><span class="k">table</span><span class="w"> </span><span class="k">WHERE</span><span class="w"> </span><span class="n">id</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="o">?</span><span class="w"> </span><span class="k">ORDER</span><span class="w"> </span><span class="k">BY</span><span class="w"> </span><span class="n">id</span><span class="w"> </span><span class="k">ASC</span><span class="w"> </span><span class="k">LIMIT</span><span class="w"> </span><span class="mi">10</span><span class="p">;</span><span class="w">
+</span></span></span></code></pre></div><h4 id="mysql索引怎么实现-原理">MySQL索引怎么实现 （原理）?<a hidden class="anchor" aria-hidden="true" href="#mysql索引怎么实现-原理">#</a></h4>
+<p><strong>MySQL 索引</strong>主要通过 <strong>B+ 树</strong>实现，其原理是将<strong>所有数据存储在叶子节点</strong>，<strong>非叶子节点仅存储索引键</strong>。这种结构使得<strong>树的高度较低</strong>，<strong>减少磁盘 I/O 次数</strong>，提高查询效率。此外，<strong>叶子节点</strong>之间通过<strong>链表连接</strong>，支持高效的<strong>范围查询和顺序访问</strong>。由于<strong>非叶子节点不存储实际数据</strong>，<strong>每个节点可以容纳更多的索引键</strong>，<strong>从而进一步降低树的高度</strong>。这种设计充分利用磁盘预读特性，适合存储在磁盘上的大规模数据，提高了查询性能。</p>
+<h4 id="怎么优化sql语句查询效率">怎么优化SQL语句查询效率？<a hidden class="anchor" aria-hidden="true" href="#怎么优化sql语句查询效率">#</a></h4>
+<p>可以分为<strong>预防</strong>和<strong>解决慢查询</strong>两种方案。</p>
+<p><strong>【预防】</strong></p>
+<ul>
+<li><strong>创建合适的索引</strong>：对需要频繁查询、数据分布一致性低、 <code>group by</code> 分组、<code>order by</code> 排序的列建立单列索引或者联合索引。</li>
+<li><strong>避免索引失效</strong>：联合索引最左前缀匹配原则、单列索引避免使用函数、计算、<code>like %xx%</code> 等</li>
+<li><strong>减少回表和I/O次数</strong>：避免 <code>select *</code> 操作。因为正常情况下，部分字段是没有二次索引的，它会用主键id或者<code>rowid</code> 进行回表查询，会增加系统的I/O。</li>
+</ul>
+<p><strong>【解决慢查询】</strong></p>
+<ul>
+<li><strong>开启慢SQL日志记录功能</strong>：使用<code>set global slow_query_log = &quot;ON&quot;</code>， 默认是关闭的。设置一个查询延迟的阈值，把超过规定时间的SQL查询找出来。</li>
+<li><strong>分析慢SQL</strong>：利用<code>explain</code>关键字分析慢SQL的原因，比如看看是否有索引失效、<code>select *</code>等情况</li>
+</ul>
+<h4 id="mysql用了哪些优化方式">MySQL用了哪些优化方式？<a hidden class="anchor" aria-hidden="true" href="#mysql用了哪些优化方式">#</a></h4>
+<ul>
+<li><strong>存储引擎优化</strong>：默认使用 InnoDB，支持事务、行级锁和崩溃恢复。</li>
+<li><strong>索引优化</strong>：使用 B+ 树索引，支持复合索引和覆盖索引，提升查询效率。</li>
+<li><strong>查询优化</strong>：利用查询优化器选择最佳执行计划，避免全表扫描。</li>
+<li><strong>缓存机制</strong>：通过调整 <code>innodb_buffer_pool_size</code> 等参数，提高数据和索引的缓存命中率。</li>
+<li><strong>连接管理</strong>：使用连接池减少连接开销，提升并发处理能力。</li>
+<li><strong>配置调整</strong>：根据负载调整参数，如 <code>max_connections</code>、<code>query_cache_size</code> 等，优化资源使用。</li>
+<li><strong>分库分表</strong>：对大数据量进行水平或垂直拆分，减小单表压力。</li>
+<li><strong>读写分离</strong>：主从复制架构中，主库负责写操作，从库负责读操作，提升整体性能。</li>
+</ul>
+<h4 id="mysql是左优先还是右优先">MySQL是左优先还是右优先？<a hidden class="anchor" aria-hidden="true" href="#mysql是左优先还是右优先">#</a></h4>
+<p>MySQL 使用 <strong>“最左前缀匹配原则”</strong>，即索引匹配从最左列开始，必须连续匹配。例如，联合索引 <code>(a, b, c)</code> 中，查询条件必须包含 <code>a</code>，才能利用索引。如果查询条件是 <code>b=1</code> 或 <code>c=1</code>，索引将不会被使用。此外，遇到范围查询（如 <code>&gt;</code>、<code>&lt;</code>、<code>BETWEEN</code>、<code>LIKE</code>）时，匹配会停止，后续列无法利用索引。查询优化器会尝试重排条件顺序，但必须包含最左列才能命中索引。</p>
+<h4 id="聊一下mysql隔离级别-">聊一下MySQL隔离级别 ？<a hidden class="anchor" aria-hidden="true" href="#聊一下mysql隔离级别-">#</a></h4>
+<p>MySQL的隔离级别有四种：<strong>读未提交 RU、读已提交 RC、可重复读 RR、串行化</strong>
+MySQL的默认隔离级别为 <strong>可重复度 RR</strong></p>
+<table>
+  <thead>
+      <tr>
+          <th>隔离性</th>
+          <th>读未提交 RU</th>
+          <th>读已提交 RC</th>
+          <th>可重复读 RR</th>
+          <th>串行读</th>
+      </tr>
+  </thead>
+  <tbody>
+      <tr>
+          <td>脏读</td>
+          <td>❌</td>
+          <td>✅</td>
+          <td>✅</td>
+          <td>✅</td>
+      </tr>
+      <tr>
+          <td>不可重复读</td>
+          <td>❌</td>
+          <td>❌</td>
+          <td>✅</td>
+          <td>✅</td>
+      </tr>
+      <tr>
+          <td>幻读</td>
+          <td>❌</td>
+          <td>❌</td>
+          <td>❌</td>
+          <td>✅</td>
+      </tr>
+  </tbody>
+</table>
+<ul>
+<li><strong>脏读</strong>：事务A开启事务准备查询 <code>name = SwimmingLiu</code> 的学生信息 (数据库当中 <code>age = 23</code> )，网络延迟还没开始执行。此时，事务B修改 <code>name = SwimmingLiu</code> 的 <code>age = 99</code>， 然后区执行其他的操作，还没提交事务。事务A读取到的数据为 <code>age = 99</code>， 但是此时数据库中的数据为 <code>age = 23</code>，出现数据不一致的情况。</li>
+<li><strong>不可重复读</strong>：事务A开启事务准备查询 <code>name = SwimmingLiu</code> 的学生信息  <code>age = 23</code> ，然后去执行其他的事务。此时，事务B修改 <code>name = SwimmingLiu</code> 的 <code>age = 99</code>，提交事务。事务A 第二次重新去读取 <code>name = SwimmingLiu</code> 的学生信息 (<code>age = 99</code>)， 第二次读取的数据和第一次读取的数据出现数据不一致的情况。</li>
+<li><strong>幻读</strong>：事务A最开始查询 <code>age = 23</code> 的学生人数，发现有 10 个人，然后去执行其他的操作。事务B 新增了一条<code>age = 23</code> 的学生信息数据，提交事务。事务A第二次去查询 <code>age = 23</code> 的学生人数的时候，发现学生人数变成了 11 个人，和第一次读取的数据总量相比不一样。</li>
+</ul>
+<h4 id="mysql的乐观锁悲观锁-">MySQL的乐观锁，悲观锁 ？<a hidden class="anchor" aria-hidden="true" href="#mysql的乐观锁悲观锁-">#</a></h4>
+<ul>
+<li>
+<p><strong>悲观锁</strong>：假设会发生并发冲突，操作前加锁。</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-sql" data-lang="sql"><span class="line"><span class="cl"><span class="c1">-- 悲观锁，使用SELECT ... FOR UPDATE
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="k">START</span><span class="w"> </span><span class="k">TRANSACTION</span><span class="p">;</span><span class="w"> </span><span class="c1">-- 开启事务
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="k">SELECT</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="k">FROM</span><span class="w"> </span><span class="n">products</span><span class="w"> </span><span class="k">WHERE</span><span class="w"> </span><span class="n">id</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="k">FOR</span><span class="w"> </span><span class="k">UPDATE</span><span class="p">;</span><span class="w"> </span><span class="c1">-- 上锁（排他锁）
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="k">UPDATE</span><span class="w"> </span><span class="n">products</span><span class="w"> </span><span class="k">SET</span><span class="w"> </span><span class="n">stock</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">stock</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="k">WHERE</span><span class="w"> </span><span class="n">id</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">1</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="k">COMMIT</span><span class="p">;</span><span class="w">
+</span></span></span></code></pre></div></li>
+<li>
+<p><strong>乐观锁</strong>：假设不会发生冲突，更新时校验版本号。</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-sql" data-lang="sql"><span class="line"><span class="cl"><span class="c1">-- 表结构添加version字段
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="k">ALTER</span><span class="w"> </span><span class="k">TABLE</span><span class="w"> </span><span class="n">products</span><span class="w"> </span><span class="k">ADD</span><span class="w"> </span><span class="k">COLUMN</span><span class="w"> </span><span class="k">version</span><span class="w"> </span><span class="nb">INT</span><span class="w"> </span><span class="k">DEFAULT</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="c1">-- 查询当前版本
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="k">SELECT</span><span class="w"> </span><span class="n">id</span><span class="p">,</span><span class="w"> </span><span class="n">stock</span><span class="p">,</span><span class="w"> </span><span class="k">version</span><span class="w"> </span><span class="k">FROM</span><span class="w"> </span><span class="n">products</span><span class="w"> </span><span class="k">WHERE</span><span class="w"> </span><span class="n">id</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">1</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="c1">-- 乐观锁更新，条件中包含版本号
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="k">UPDATE</span><span class="w"> </span><span class="n">products</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="k">SET</span><span class="w"> </span><span class="n">stock</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">stock</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="k">version</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">version</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">1</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="k">WHERE</span><span class="w"> </span><span class="n">id</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="k">AND</span><span class="w"> </span><span class="k">version</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="err">当前版本号</span><span class="p">;</span><span class="w">
+</span></span></span></code></pre></div></li>
+</ul>
+<h3 id="redis">Redis<a hidden class="anchor" aria-hidden="true" href="#redis">#</a></h3>
+<h4 id="聊一下redis的应用场景-">聊一下Redis的应用场景 ？<a hidden class="anchor" aria-hidden="true" href="#聊一下redis的应用场景-">#</a></h4>
+<ul>
+<li><strong>数据缓存</strong>：消息缓存、商品缓存预览</li>
+<li><strong>分布式锁</strong>：操作临界资源的时候，使用分布式锁进行上锁。</li>
+<li><strong>计数器（Counter）</strong>：适用于实现访问量统计、点赞数等功能，支持高并发下的原子自增操作。</li>
+<li><strong>排行榜（Leaderboard）</strong>：通过有序集合（Sorted Set）实现实时排名功能，如游戏积分榜等。</li>
+<li><strong>位图（Bitmap）</strong>：用于实现签到、活跃用户统计等功能，节省存储空间。</li>
+<li><strong>全局唯一 ID 生成（Unique ID Generation）</strong>：通过自增键生成全局唯一的标识符，适用于订单号等场景。</li>
+</ul>
+<h4 id="缓存三件套和对应的解决方案">缓存三件套和对应的解决方案？<a hidden class="anchor" aria-hidden="true" href="#缓存三件套和对应的解决方案">#</a></h4>
+<ul>
+<li><strong>穿透</strong>：客户端查询的数据在数据库中不存在，所有的请求都打到数据库上，导致数据库压力过大。解决方法有两种，一种是对数据库查询不到的数据，同样存入Redis当中，值设置为 <code>null</code>。另外一种方案是采用布隆过滤器的策略，过滤掉部分数据不存在的请求。</li>
+<li><strong>雪崩</strong>：Redis当中大量的key同时过期，导致大部分请求都打到数据库上。解决方法是设置随机的过期时间 <code>TTL</code> ，防止大量key同时过期。</li>
+<li><strong>击穿</strong>：Redis当中某个热点Key突然过期，大量的流量同一时间全部打到数据库上。可以采用互斥锁、逻辑过期两种方案。如果对数据一致性要求高，可以采用互斥锁。如果要求不高，可以采用逻辑过期的方案，可能返回的缓存数据和数据库不一致。</li>
+</ul>
+<p>另外，雪崩和击穿都可以采用限流+熔断的机制，暂停服务对于缓存服务的访问，直接返回错误。或者启用限流规则，只允许商家或指定类型的用户请求发送数据库进行处理，过多的请求就会拒接。一般会使用 <code>Hystrix</code> 或者 <code>Sentinel</code> 实现熔断或者限流。</p>
+<h4 id="为什么要用redis进行缓存">为什么要用Redis进行缓存？<a hidden class="anchor" aria-hidden="true" href="#为什么要用redis进行缓存">#</a></h4>
+<p>因为Redis是基于内存的，查询速度比MySQL数据库的速度要快很多倍。用Redis进行缓存，可以加速查询操作。</p>
+<h4 id="redis持久化机制有哪些各自的优缺点">Redis持久化机制有哪些？各自的优缺点？<a hidden class="anchor" aria-hidden="true" href="#redis持久化机制有哪些各自的优缺点">#</a></h4>
+<p>Redis的持久化机制主要有两种：<code>RDB</code> 和 <code>AOF</code></p>
+<ul>
+<li>
+<p><strong>RDB</strong>: Redis在指定的时间间隔内，生成数据库的快照并将其保存为<strong>二进制文件（dump.rdb）</strong>。</p>
+<p><strong>优点</strong>：</p>
+<ul>
+<li><strong>性能高</strong>：RDB是通过生成快照的方式进行持久化，不会阻塞客户端操作。</li>
+<li><strong>备份方便</strong>：可以通过RDB文件进行数据备份，且RDB文件较小。</li>
+<li><strong>恢复速度快</strong>：Redis重启时，加载RDB文件比AOF恢复速度要快。</li>
+</ul>
+<p><strong>缺点</strong>：</p>
+<ul>
+<li><strong>数据丢失</strong>：如果Redis在<strong>快照保存期间宕机</strong>，会<strong>丢失未持久化的数据</strong>。</li>
+<li><strong>持久化频率不灵活</strong>：需要根据业务需求手<strong>动设置持久化的间隔</strong>。</li>
+</ul>
+</li>
+<li>
+<p>**AOF: **Redis将每次写操作追加到AOF日志文件中，保存所有写命令。</p>
+<p>优点：</p>
+<ul>
+<li><strong>数据持久性高</strong>：AOF保证了所有写操作都会被记录，可以做到较高的数据可靠性。</li>
+<li><strong>灵活的持久化频率</strong>：AOF有三种同步策略：
+<ul>
+<li><strong>每次写入后同步</strong>：最安全，但性能最差。</li>
+<li><strong>每秒同步</strong>：安全与性能的折衷。</li>
+<li><strong>从不同步</strong>：性能最佳，但最容易丢失数据。</li>
+</ul>
+</li>
+</ul>
+<p>缺点：</p>
+<ul>
+<li><strong>性能开销大</strong>：<strong>频繁的文件追加和同步</strong>可能会<strong>影响性能</strong>。</li>
+<li><strong>恢复速度慢</strong>：<strong>AOF文件较大</strong>，恢复时需要<strong>重新执行所有写命令</strong>。</li>
+<li><strong>文件大小</strong>：<strong>AOF文件相较于RDB文件要大</strong>，且随着操作增多，AOF文件会变得越来越大。</li>
+</ul>
+</li>
+</ul>
+<h4 id="你刚刚说到的rdb和aof是怎么开启的呢你有修改过redis的配置文件吗开启的参数是什么">你刚刚说到的RDB和AOF，是怎么开启的呢？你有修改过Redis的配置文件吗？开启的参数是什么？<a hidden class="anchor" aria-hidden="true" href="#你刚刚说到的rdb和aof是怎么开启的呢你有修改过redis的配置文件吗开启的参数是什么">#</a></h4>
+<ul>
+<li>
+<p><strong>RDB</strong>：</p>
+<ul>
+<li>
+<p>redis.conf保留/添加 <code>save 900 1</code>, <code>save 300 10</code>, <code>save 60 10000</code> 等行即可（默认已启用 RDB）。</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-shell" data-lang="shell"><span class="line"><span class="cl">save <span class="m">900</span> <span class="m">1</span>      <span class="c1"># 15分钟至少1次修改触发</span>
+</span></span><span class="line"><span class="cl">save <span class="m">60</span> <span class="m">10000</span>   <span class="c1"># 1分钟至少10000次修改触发</span>
+</span></span><span class="line"><span class="cl">rdbcompression yes  <span class="c1"># 启用压缩减少磁盘占用</span>
+</span></span></code></pre></div></li>
+<li>
+<p>在线开启：<code>CONFIG SET save &quot;900 1 300 10 60 10000&quot;</code>，随后 <code>CONFIG REWRITE</code> 写回文件。</p>
+</li>
+</ul>
+</li>
+<li>
+<p><strong>AOF</strong></p>
+<ul>
+<li> redis.conf 设置 <code>appendonly yes</code>，通常配置 <code> appendfsync everysec</code>。</li>
+<li> 在线开启：<code>CONFIG SET appendonly yes</code>，Redis 会自动触发 AOF 重写；完成后执行 <code>CONFIG REWRITE</code> 。</li>
+<li> AOF 文件名默认 appendonly.aof，可用 appendfilename 自定义。</li>
+</ul>
+</li>
+</ul>
+<h4 id="聊一下redis集群-">聊一下Redis集群 ？<a hidden class="anchor" aria-hidden="true" href="#聊一下redis集群-">#</a></h4>
+<p>Redis集群有两种模式：一种是主从节点+ 哨兵机制 <code>Sential</code> 模式，另外一种是 <code>Redis Cluster</code> 模式
+<code>Cluster</code> 集群当中包含多个 哨兵机制 <code>Sential</code> 模式的主从节点</p>
+<ul>
+<li>
+<p><strong>Cluster集群模式</strong>：集群模式用于对数据进行分片，主要用于解决大数据、高吞吐量的场景。将数据自动分不到多个Redis实例上，支持自动故障转移（如果某个实例失效，集群会自动重写配置和平衡，不需要手动进行调整，因为内置了<strong>哨兵逻辑</strong>）</p>
+</li>
+<li>
+<p><strong>Sentinel哨兵模式</strong>: 哨兵模式用于保证主从节点的高可用，读写分离场景。如果主节点宕机，哨兵会将从节点升为主节点。</p>
+</li>
+</ul>
+<p><img alt="Cluster集群" loading="lazy" src="https://oss.swimmingliu.cn/acc54635-ef8d-11ef-971e-c858c0c1deba"></p>
+<h4 id="如果集群的redis中一台突然挂了此时有请求未处理怎么办">如果集群的Redis中一台突然挂了，此时有请求未处理怎么办？<a hidden class="anchor" aria-hidden="true" href="#如果集群的redis中一台突然挂了此时有请求未处理怎么办">#</a></h4>
+<ul>
+<li>
+<p><strong>选取新的主节点</strong>：从有效的从节点中选取一个从节点做为新的主节点（选取条件：优先级  &gt; 复制进度 <code>offset</code> &gt; 从节点 <code>id</code> 大小）</p>
+</li>
+<li>
+<p><strong>客户端重试与重定向</strong>：Redis集群的Smart客户端（如JedisCluster）内置路由表，当请求发送至故障节点时，客户端会收到 <code>MOVED</code> 或 <code>ASK</code> 重定向指令，自动将请求转发至新主节点。</p>
+</li>
+</ul>
+<h4 id="redis如何设置均衡负载的">Redis如何设置均衡负载的？<a hidden class="anchor" aria-hidden="true" href="#redis如何设置均衡负载的">#</a></h4>
+<h4 id="redis-缓存是如何更新的-数据一致性问题">Redis 缓存是如何更新的 （数据一致性问题）？<a hidden class="anchor" aria-hidden="true" href="#redis-缓存是如何更新的-数据一致性问题">#</a></h4>
+<ul>
+<li><strong>先写数据库，再删缓存</strong>：除了删除缓存操作失败以外，能确保数据一致性问题</li>
+<li><strong>延迟双删 (先删缓存，再写数据库，再延迟删除缓存)</strong>：除了删除缓存操作失败以外，能确保数据一致性问题，另外也不好确定延迟的时间（一般是手动设置的）</li>
+</ul>
+<p><strong>【强一致性】</strong></p>
+<ul>
+<li><code>binlog</code> + <code>Canal</code>：通过 <code>binlog</code> 检测数据库是否发生改动，如果出现改动，就触发删除缓存的机制。删除缓存操作使用消息队列的方式实现，之后当Redis消息被成功删除，才消费这条消息。</li>
+</ul>
+<h4 id="为什么redis是单线程的-">为什么Redis是单线程的 ？<a hidden class="anchor" aria-hidden="true" href="#为什么redis是单线程的-">#</a></h4>
+<ol>
+<li>基于内存操作，Redis的瓶颈主要是<strong>内存</strong>，多数操作的<strong>性能瓶颈不是CPU带来的</strong> (增加多线程也没啥用)</li>
+<li>单线程模型的<strong>代码简单</strong>，可以<strong>减少线程上下文切换</strong>的<strong>性能开销</strong>。</li>
+<li>单线程结合I/O多路复用模型，能提高I/O利用率</li>
+</ol>
+<p><strong>【注意】</strong> Redis的单线程是指<strong>网络请求</strong>模块和<strong>数据操作</strong>模块是<strong>单线程</strong>的, 但是<strong>持久化存储</strong>模块和<strong>集群支撑</strong>模块是<strong>多线程</strong>的。</p>
+<h3 id="spring">Spring<a hidden class="anchor" aria-hidden="true" href="#spring">#</a></h3>
+<h4 id="spring的两大特性ioc和aop">Spring的两大特性？IOC和AOP?<a hidden class="anchor" aria-hidden="true" href="#spring的两大特性ioc和aop">#</a></h4>
+<ul>
+<li>
+<p><strong>IoC（控制反转）</strong>：将对象的创建和依赖关系交由 Spring 容器管理，实现解耦和灵活配置。</p>
+</li>
+<li>
+<p><strong>AOP（面向切面编程）</strong>：将横切关注点（如日志、事务）从业务逻辑中抽离，集中管理，提高代码的模块化和可维护性。</p>
+</li>
+</ul>
+<h4 id="spring-的-bean-生命周期">Spring 的 bean 生命周期？<a hidden class="anchor" aria-hidden="true" href="#spring-的-bean-生命周期">#</a></h4>
+<p><code>Spring</code> 的 <code>Bean</code> 生命周期从容器启动开始，首先<strong>加载 <code>Bean</code> 定义并实例化 <code>Bean</code></strong>。然后 <code>Spring</code> 容器<strong>注入依赖</strong>，并调用初始化方法，如 <strong><code>@PostConstruct</code> 注解的方法</strong>或<strong>配置文件中指定的 init-method 方法</strong>。<code>Bean</code> 完成初始化后，准备好供应用程序使用。当容器关闭时，Spring 会调用销毁方法，如 <strong><code>@PreDestroy</code> 注解的方法</strong>或<strong>配置文件中指定的 destroy-method 方法</strong>，最后<strong>销毁 Bean 实例</strong>。</p>
+<h4 id="springmvc-中的bean作用域-">SpringMVC 中的Bean作用域 ?<a hidden class="anchor" aria-hidden="true" href="#springmvc-中的bean作用域-">#</a></h4>
+<ol>
+<li><strong>singleton（默认）</strong>：整个 Spring 容器中仅有一个实例，适用于无状态的共享组件。</li>
+<li><strong>prototype</strong>：每次请求都会创建一个新的实例，适用于有状态的组件。</li>
+<li><strong>request</strong>：每个 HTTP 请求创建一个新的实例，适用于每次请求需要独立状态的组件。</li>
+<li><strong>session</strong>：每个 HTTP 会话创建一个新的实例，适用于需要在用户会话中共享状态的组件。</li>
+<li><strong>application</strong>：整个 <code>ServletContext</code> 共享一个实例，适用于需要在整个应用中共享状态的组件。</li>
+</ol>
+<h4 id="springboot如何加载配置文件-">Springboot如何加载配置文件 ?<a hidden class="anchor" aria-hidden="true" href="#springboot如何加载配置文件-">#</a></h4>
+<p>Spring Boot通过多源层级化的配置加载机制，支持从多种来源（如属性文件、YAML文件、环境变量、命令行参数等）动态加载配置，并按优先级从高到低覆盖同名属性。默认情况下，它会<strong>优先加载命令行参数</strong>（如 <code>--server.port=8080</code>），<strong>其次是环境变量</strong>（如<code>SPRING_DATASOURCE_URL</code>）和<strong>外部配置文件</strong>（<code>application.yml</code> 或 <code>application.properties</code>），最后是项目内部资源目录下的默认配置文件。另外，可以通过<code>spring.profiles.active</code> 激活特定环境配置，比如<code>dev</code> 、<code>test</code> 、<code>prod</code> 环境</p>
+<p>【注意】<code>application.properties</code> 的优先级高于 <code>application.yml</code></p>
+<h4 id="springmvc的启动流程-">SpringMVC的启动流程 ?<a hidden class="anchor" aria-hidden="true" href="#springmvc的启动流程-">#</a></h4>
+<p>首先，启动时加载 <code>DispatcherServlet</code>，它是 <code>SpringMVC</code> 的<strong>核心控制器</strong>；</p>
+<p>其次，<code>DispatcherServlet</code> 通过 <code>web.xml</code> 配置文件读取相关配置，初始化Spring容器；</p>
+<p>然后，<code>DispatcherServlet</code> 根据 <strong>URL请求</strong> 通过 <code>HandlerMapping</code> 查找对应的处理器（Controller）；</p>
+<p>最后，执行处理器方法后，通过 <code>ViewResolver</code> 解析视图并返回给<strong>客户端</strong>。</p>
+<p>整个过程实现了请求的分发、处理和响应。</p>
+<h3 id="其他">其他<a hidden class="anchor" aria-hidden="true" href="#其他">#</a></h3>
+<h4 id="你自己在部署项目的时候有排查过问题没有简单描述一下查询日志的linux命令">你自己在部署项目的时候有排查过问题没有？简单描述一下查询日志的linux命令<a hidden class="anchor" aria-hidden="true" href="#你自己在部署项目的时候有排查过问题没有简单描述一下查询日志的linux命令">#</a></h4>
+<p>排查过问题, 我使用的是 <code>tail -n 20 -f xxx.log</code></p>
+<h4 id="linux中pwd命令以及如何查找指定文件命令">Linux中pwd命令，以及如何查找指定文件命令<a hidden class="anchor" aria-hidden="true" href="#linux中pwd命令以及如何查找指定文件命令">#</a></h4>
+<ul>
+<li><code>pwd</code> 命令：这个命令是用来显示当前路径的绝对路径的</li>
+<li>查找指定文件命令：<code>find /home -name xxx.txt</code></li>
+</ul>
+<h4 id="ai嵌入进idea中的底层原理是什么什么算法">AI嵌入进IDEA中的底层原理是什么？什么算法？<a hidden class="anchor" aria-hidden="true" href="#ai嵌入进idea中的底层原理是什么什么算法">#</a></h4>
+<p><code>copilot</code> : 大语言模型接口 + 当前文件 / 指定文件做为上下文</p>
+<h4 id="设计模式了解哪些设计模式有哪些原则">设计模式了解哪些，设计模式有哪些原则<a hidden class="anchor" aria-hidden="true" href="#设计模式了解哪些设计模式有哪些原则">#</a></h4>
+<p><strong>【设计模式】</strong></p>
+<p>设计模式是对软件设计中常见问题的通用可复用解决方案，分为三大类：</p>
+<ul>
+<li><strong>创建型模式</strong>：解决对象创建的复杂性，如 <strong>Singleton（单例）</strong>、<strong>Factory Method（工厂方法）</strong>、Abstract Factory（抽象工厂）、Builder（建造者）、Prototype（原型）。</li>
+<li><strong>结构型模式</strong>：处理类和对象的组合，简化结构，如 Adapter（适配器）、Bridge（桥接）、Composite（组合）、Decorator（装饰器）、Facade（外观）、Flyweight（享元）、Proxy（代理）。</li>
+<li><strong>行为型模式</strong>：关注对象之间的通信和职责分配，如 <strong>Chain of Responsibility（责任链）</strong>、Command（命令）、Iterator（迭代器）、Observer（观察者）、<strong>Strategy（策略）</strong>、Template Method（模板方法）、Visitor（访问者）。</li>
+</ul>
+<p><strong>【设计原则】</strong></p>
+<p>设计原则则是指导软件开发的高层次准则，帮助构建可维护、可扩展的系统。其中，<strong>SOLID</strong> 是五个核心面向对象设计原则的首字母缩写：</p>
+<ul>
+<li><strong>单一职责原则（SRP）</strong>：一个类应仅有一个引起其变化的原因，即只承担一个职责。</li>
+<li><strong>开闭原则（OCP）</strong>：软件实体应对扩展开放，对修改关闭，即可以在不修改现有代码的情况下扩展功能。</li>
+<li><strong>里氏替换原则（LSP）</strong>：子类型对象应能够替换任何父类型对象，并且程序行为不受影响。</li>
+<li><strong>接口隔离原则（ISP）</strong>：不应强迫客户依赖它们不使用的方法，建议为不同的客户提供专门的接口。</li>
+<li><strong>依赖倒置原则（DIP）</strong>：高层模块不应依赖低层模块，二者都应依赖于抽象；抽象不应依赖细节，细节应依赖抽象。</li>
+</ul>
+<h4 id="请求转发和重定向区别-">请求转发和重定向区别 ?<a hidden class="anchor" aria-hidden="true" href="#请求转发和重定向区别-">#</a></h4>
+<table>
+  <thead>
+      <tr>
+          <th><strong>特性</strong></th>
+          <th><strong>请求转发（Forward）</strong></th>
+          <th><strong>请求重定向（Redirect）</strong></th>
+      </tr>
+  </thead>
+  <tbody>
+      <tr>
+          <td>跳转方式</td>
+          <td>服务器端内部跳转</td>
+          <td>浏览器发起新请求</td>
+      </tr>
+      <tr>
+          <td>请求次数</td>
+          <td>一次请求</td>
+          <td>至少两次请求</td>
+      </tr>
+      <tr>
+          <td>URL 地址栏</td>
+          <td>不变</td>
+          <td>更新为新 URL</td>
+      </tr>
+      <tr>
+          <td>数据共享</td>
+          <td>同一请求对象，共享数据</td>
+          <td>不共享数据，需通过 session 或 URL 参数传递</td>
+      </tr>
+      <tr>
+          <td>性能</td>
+          <td>较快</td>
+          <td>较慢</td>
+      </tr>
+      <tr>
+          <td>使用场景</td>
+          <td>同一 Web 应用内部跳转</td>
+          <td>跨域、跨站点跳转，或避免重复提交等场景</td>
+      </tr>
+  </tbody>
+</table>
+<h4 id="tcp三次握手4次挥手">TCP三次握手，4次挥手<a hidden class="anchor" aria-hidden="true" href="#tcp三次握手4次挥手">#</a></h4>
+<h3 id="简历相关八股">简历相关八股<a hidden class="anchor" aria-hidden="true" href="#简历相关八股">#</a></h3>
+<h4 id="为什么要设置一人一单如何解决超卖问题和一人一单问题">为什么要设置一人一单？如何解决超卖问题和一人一单问题？<a hidden class="anchor" aria-hidden="true" href="#为什么要设置一人一单如何解决超卖问题和一人一单问题">#</a></h4>
+<ul>
+<li><strong>设置一人一单</strong>：防止顾客反复刷单</li>
+<li><strong>超卖问题</strong>：MySQL 乐观锁检测 <code>stock &gt; 0</code>  / Redis用 <code>lua</code> 脚本</li>
+<li><strong>一人一单问题</strong>：MySQL 统计是否存在该用户的订单 / Redis 用 <code>lua</code> 脚本</li>
+</ul>
+<h4 id="消息队列怎么保证数据可靠性-">消息队列怎么保证数据可靠性 ?<a hidden class="anchor" aria-hidden="true" href="#消息队列怎么保证数据可靠性-">#</a></h4>
+<p>消息队列（MQ）通过多种机制确保数据的可靠性，主要包括：</p>
+<ol>
+<li><strong>消息持久化</strong>：将消息存储到磁盘，确保在系统崩溃或重启后消息不会丢失。</li>
+<li><strong>消息确认机制</strong>：生产者在发送消息后，等待消息被消费者确认处理成功，未确认的消息会被重试发送。</li>
+<li><strong>重试机制</strong>：在消息发送或消费失败时，系统会按照预定策略进行重试，直至消息成功处理或达到最大重试次数。</li>
+<li><strong>幂等性处理</strong>：消费者在处理消息时，确保同一消息多次消费不会导致数据不一致。</li>
+<li><strong>死信队列</strong>：将无法成功消费的消息转移到专门的队列中，供后续人工或系统处理。</li>
+<li><strong>事务机制</strong>：在生产者和消费者之间实现事务，确保消息的发送和消费操作要么都成功，要么都失败。</li>
+</ol>
+<h4 id="websocketwebsocket-与-http-区别">Websocket，websocket 与 http 区别？<a hidden class="anchor" aria-hidden="true" href="#websocketwebsocket-与-http-区别">#</a></h4>
+<p><code>Websocket</code> 相当于全双工通信，例如直播聊天就是采用 <code>Websocket</code>  全双工通信，客户端和服务端可以双向发送消息</p>
+<p><strong>【websocket 和 http 区别】</strong></p>
+<p><code>HTTP</code> 是基于<strong>请求-响应模式</strong>的<strong>无状态短连接协议</strong>，客户端每次需主动发起请求，服务器返回响应后连接立即断开，适用于<strong>传统网页加载等低频交互场景</strong>；<code>WebSocket</code> 则通过一次 HTTP 握手升级为全双工长连接协议，支持<strong>客户端与服务器实时双向通信</strong>，数据以二进制帧高效传输，减少了头部冗余开销，适用于<strong>在线聊天</strong>、<strong>实时游戏</strong>等高频低延迟场景。此外，HTTP 默认无加密（HTTPS 需额外配置），而 WebSocket 天然支持 WSS 加密，安全性更优。</p>
+<h3 id="场景题">场景题<a hidden class="anchor" aria-hidden="true" href="#场景题">#</a></h3>
+<h4 id="我现在有两千万的客户数据但是我的redis中只能存储20万的高净值用户数据那么我该怎么确保每次拿出来的都是高净值的用户呢">我现在有两千万的客户数据，但是我的Redis中只能存储20万的高净值用户数据，那么我该怎么确保每次拿出来的都是高净值的用户呢？<a hidden class="anchor" aria-hidden="true" href="#我现在有两千万的客户数据但是我的redis中只能存储20万的高净值用户数据那么我该怎么确保每次拿出来的都是高净值的用户呢">#</a></h4>
+<p>筛选的步骤如图所示：</p>
+<ol>
+<li>
+<p><strong>高净值用户定义与数据建模</strong>：
+根据业务特征定义多维度评估模型，构建指标体系。例如，金融资产总额 (40%)、年消费频次 (30%)、最近活跃时间 (20%)、风险等级 (10%)</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="nd">@Data</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="kd">public</span><span class="w"> </span><span class="kd">class</span> <span class="nc">Customer</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kd">private</span><span class="w"> </span><span class="n">String</span><span class="w"> </span><span class="n">id</span><span class="p">;</span><span class="w">            </span><span class="c1">// 用户ID（唯一标识）</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kd">private</span><span class="w"> </span><span class="n">BigDecimal</span><span class="w"> </span><span class="n">assets</span><span class="p">;</span><span class="w">    </span><span class="c1">// 金融资产（精确计算）</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kd">private</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">annualPurchases</span><span class="p">;</span><span class="w">  </span><span class="c1">// 年消费次数</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kd">private</span><span class="w"> </span><span class="n">LocalDateTime</span><span class="w"> </span><span class="n">lastActive</span><span class="p">;</span><span class="w"> </span><span class="c1">// 最近活跃时间</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kd">private</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">riskLevel</span><span class="p">;</span><span class="w">        </span><span class="c1">// 风险等级（1-5级）</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="c1">// 计算综合得分（需缓存避免重复计算）</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kd">private</span><span class="w"> </span><span class="kd">transient</span><span class="w"> </span><span class="n">BigDecimal</span><span class="w"> </span><span class="n">score</span><span class="p">;</span><span class="w"> 
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="p">}</span><span class="w">
+</span></span></span></code></pre></div></li>
+<li>
+<p><strong>高效筛选2000万中的20万优质数据</strong>：</p>
+<ul>
+<li><strong>方案1：Stream API + 并行计算（适合全量筛选）</strong></li>
+</ul>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="n">List</span><span class="o">&lt;</span><span class="n">Customer</span><span class="o">&gt;</span><span class="w"> </span><span class="n">allCustomers</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">loadFromDatabase</span><span class="p">();</span><span class="w"> </span><span class="c1">// 从数据库加载2000万数据</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="n">Predicate</span><span class="o">&lt;</span><span class="n">Customer</span><span class="o">&gt;</span><span class="w"> </span><span class="n">highValueFilter</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">customer</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> 
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="n">customer</span><span class="p">.</span><span class="na">getRiskLevel</span><span class="p">()</span><span class="w"> </span><span class="o">&lt;=</span><span class="w"> </span><span class="n">3</span><span class="w"> </span><span class="o">&amp;&amp;</span><span class="w">  </span><span class="c1">// 风险等级≤3</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="n">customer</span><span class="p">.</span><span class="na">getLastActive</span><span class="p">().</span><span class="na">isAfter</span><span class="p">(</span><span class="n">LocalDateTime</span><span class="p">.</span><span class="na">now</span><span class="p">().</span><span class="na">minusMonths</span><span class="p">(</span><span class="n">3</span><span class="p">));</span><span class="w"> </span><span class="c1">// 近3个月活跃</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="n">List</span><span class="o">&lt;</span><span class="n">Customer</span><span class="o">&gt;</span><span class="w"> </span><span class="n">topCustomers</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">allCustomers</span><span class="p">.</span><span class="na">parallelStream</span><span class="p">()</span><span class="w">  </span><span class="c1">// 启用并行流</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="p">.</span><span class="na">filter</span><span class="p">(</span><span class="n">highValueFilter</span><span class="p">)</span><span class="w">  
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="p">.</span><span class="na">sorted</span><span class="p">(</span><span class="n">Comparator</span><span class="p">.</span><span class="na">comparing</span><span class="p">(</span><span class="n">Customer</span><span class="p">::</span><span class="n">getScore</span><span class="p">).</span><span class="na">reversed</span><span class="p">())</span><span class="w"> </span><span class="c1">// 按得分降序</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="p">.</span><span class="na">limit</span><span class="p">(</span><span class="n">200_000</span><span class="p">)</span><span class="w">  </span><span class="c1">// 取前20万</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="p">.</span><span class="na">collect</span><span class="p">(</span><span class="n">Collectors</span><span class="p">.</span><span class="na">toList</span><span class="p">());</span><span class="w">
+</span></span></span></code></pre></div><ul>
+<li><strong>方案2：数据库分页+实时计算（适合增量更新）</strong></li>
+</ul>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="c1">// 使用JPA/Hibernate分页查询（避免内存溢出）</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="kt">int</span><span class="w"> </span><span class="n">pageSize</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">5000</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="kt">int</span><span class="w"> </span><span class="n">page</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">0</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="n">List</span><span class="o">&lt;</span><span class="n">Customer</span><span class="o">&gt;</span><span class="w"> </span><span class="n">batchList</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="k">do</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="n">batchList</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">customerRepository</span><span class="p">.</span><span class="na">findHighValueCustomers</span><span class="p">(</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">PageRequest</span><span class="p">.</span><span class="na">of</span><span class="p">(</span><span class="n">page</span><span class="p">,</span><span class="w"> </span><span class="n">pageSize</span><span class="p">,</span><span class="w"> </span><span class="n">Sort</span><span class="p">.</span><span class="na">by</span><span class="p">(</span><span class="s">&#34;score&#34;</span><span class="p">).</span><span class="na">descending</span><span class="p">())</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="n">redisClient</span><span class="p">.</span><span class="na">batchInsert</span><span class="p">(</span><span class="n">batchList</span><span class="p">);</span><span class="w"> </span><span class="c1">// 批量写入Redis</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="n">page</span><span class="o">++</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="p">}</span><span class="w"> </span><span class="k">while</span><span class="w"> </span><span class="p">(</span><span class="o">!</span><span class="n">batchList</span><span class="p">.</span><span class="na">isEmpty</span><span class="p">());</span><span class="w">
+</span></span></span></code></pre></div></li>
+<li>
+<p><strong>Redis 存储数据</strong> (对应上面的批量写入Redis)：</p>
+<ul>
+<li>
+<p><strong>存储客户排名数据</strong>：采用 <strong>Sorted Set（ZSET)</strong> 以用户ID为 <code>member</code>，综合得分为<code>score</code>，自动按 <code>score</code> 排序，天然支持 <code>TOP N</code>查询。</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="n">Jedis</span><span class="w"> </span><span class="n">jedis</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">RedisPool</span><span class="p">.</span><span class="na">getResource</span><span class="p">();</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="n">Pipeline</span><span class="w"> </span><span class="n">pipeline</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">jedis</span><span class="p">.</span><span class="na">pipelined</span><span class="p">();</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="n">topCustomers</span><span class="p">.</span><span class="na">forEach</span><span class="p">(</span><span class="n">c</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> 
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="n">pipeline</span><span class="p">.</span><span class="na">zadd</span><span class="p">(</span><span class="s">&#34;high_value_users&#34;</span><span class="p">,</span><span class="w"> </span><span class="n">c</span><span class="p">.</span><span class="na">getScore</span><span class="p">().</span><span class="na">doubleValue</span><span class="p">(),</span><span class="w"> </span><span class="n">c</span><span class="p">.</span><span class="na">getId</span><span class="p">())</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="n">pipeline</span><span class="p">.</span><span class="na">sync</span><span class="p">();</span><span class="w">
+</span></span></span></code></pre></div></li>
+<li>
+<p><strong>存储客户信息数据</strong>：用Hash存储用户详细信息</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="n">topCustomers</span><span class="p">.</span><span class="na">forEach</span><span class="p">(</span><span class="n">c</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="n">pipeline</span><span class="p">.</span><span class="na">hset</span><span class="p">(</span><span class="s">&#34;user:&#34;</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">c</span><span class="p">.</span><span class="na">getId</span><span class="p">(),</span><span class="w"> 
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="s">&#34;assets&#34;</span><span class="p">,</span><span class="w"> </span><span class="n">c</span><span class="p">.</span><span class="na">getAssets</span><span class="p">().</span><span class="na">toString</span><span class="p">(),</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="s">&#34;lastActive&#34;</span><span class="p">,</span><span class="w"> </span><span class="n">c</span><span class="p">.</span><span class="na">getLastActive</span><span class="p">().</span><span class="na">toString</span><span class="p">()</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="p">});</span><span class="w">
+</span></span></span></code></pre></div></li>
+<li>
+<p><strong>容量控制 (只保留20万数据)</strong>：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="c1">// 保留前20万，自动淘汰低分用户</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="n">jedis</span><span class="p">.</span><span class="na">zremrangeByRank</span><span class="p">(</span><span class="s">&#34;high_value_users&#34;</span><span class="p">,</span><span class="w"> </span><span class="n">200_000</span><span class="p">,</span><span class="w"> </span><span class="o">-</span><span class="n">1</span><span class="p">);</span><span class="w"> 
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="c1">// 设置TTL避免数据过期（数据不一致）</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="n">jedis</span><span class="p">.</span><span class="na">expire</span><span class="p">(</span><span class="s">&#34;high_value_users&#34;</span><span class="p">,</span><span class="w"> </span><span class="n">86400</span><span class="p">);</span><span class="w"> 
+</span></span></span></code></pre></div></li>
+</ul>
+</li>
+<li>
+<p><strong>动态更新机制 (定时更新)</strong></p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="nd">@Scheduled</span><span class="p">(</span><span class="n">cron</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&#34;0 0 3 * * ?&#34;</span><span class="p">)</span><span class="w"> </span><span class="c1">// 每天凌晨3点执行</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="kd">public</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">refreshHighValueUsers</span><span class="p">()</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="n">List</span><span class="o">&lt;</span><span class="n">Customer</span><span class="o">&gt;</span><span class="w"> </span><span class="n">newHighValue</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">customerRepository</span><span class="p">.</span><span class="na">findNewHighValueUsers</span><span class="p">();</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="c1">// 使用Lua脚本保证原子性（网页6[6](@ref)）</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="n">String</span><span class="w"> </span><span class="n">luaScript</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&#34;redis.call(&#39;ZADD&#39;, KEYS[1], ARGV[1], ARGV[2]) &#34;</span><span class="w"> </span><span class="o">+</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">                      </span><span class="s">&#34;redis.call(&#39;ZREMRANGEBYRANK&#39;, KEYS[1], 200000, -1)&#34;</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="n">jedis</span><span class="p">.</span><span class="na">eval</span><span class="p">(</span><span class="n">luaScript</span><span class="p">,</span><span class="w"> </span><span class="n">1</span><span class="p">,</span><span class="w"> </span><span class="s">&#34;high_value_users&#34;</span><span class="p">,</span><span class="w"> 
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">newHighValue</span><span class="p">.</span><span class="na">getScore</span><span class="p">(),</span><span class="w"> </span><span class="n">newHighValue</span><span class="p">.</span><span class="na">getId</span><span class="p">());</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="p">}</span><span class="w">
+</span></span></span></code></pre></div></li>
+</ol>
+<p><img alt="image-20250505234704461" loading="lazy" src="https://oss.swimmingliu.cn/4636b538-2a42-11f0-aaed-caaeffceb345"></p>
+<h4 id="我们在实际部署过程中经常会遇到节点挂掉或者是整个redis挂掉的情况那么怎么才能保证redis挂掉之后能够让数据进行恢复呢">我们在实际部署过程中，经常会遇到节点挂掉或者是整个Redis挂掉的情况，那么怎么才能保证Redis挂掉之后能够让数据进行恢复呢?<a hidden class="anchor" aria-hidden="true" href="#我们在实际部署过程中经常会遇到节点挂掉或者是整个redis挂掉的情况那么怎么才能保证redis挂掉之后能够让数据进行恢复呢">#</a></h4>
+<ul>
+<li>打开 <strong>AOF (everysec)</strong> + <strong>RDB 双持久化</strong>；重启时<strong>先加载 RDB</strong> 再回放 <strong>AOF</strong>，几乎零丢数据。</li>
+<li>部署<strong>主从复制＋ 大于等于3 个 的哨兵Sentinel</strong> 或直接用 <strong>Redis Cluster</strong>，节点宕机秒级自动选主并切换客户端。</li>
+<li>定时把 <strong>AOF/RDB 备份到外部存储</strong>；灾难时拉回文件启动或 RESTORE 即可，注意多 TB 备份的加载时间并定期演练。</li>
+</ul>
+<p><strong>【AOF 和 RDB 如何打开？】</strong></p>
+<ul>
+<li>
+<p><strong>RDB</strong>：</p>
+<ul>
+<li>
+<p>redis.conf保留/添加 <code>save 900 1</code>, <code>save 300 10</code>, <code>save 60 10000</code> 等行即可（默认已启用 RDB）。</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-shell" data-lang="shell"><span class="line"><span class="cl">save <span class="m">900</span> <span class="m">1</span>      <span class="c1"># 15分钟至少1次修改触发</span>
+</span></span><span class="line"><span class="cl">save <span class="m">60</span> <span class="m">10000</span>   <span class="c1"># 1分钟至少10000次修改触发</span>
+</span></span><span class="line"><span class="cl">rdbcompression yes  <span class="c1"># 启用压缩减少磁盘占用</span>
+</span></span></code></pre></div></li>
+<li>
+<p>在线开启：<code>CONFIG SET save &quot;900 1 300 10 60 10000&quot;</code>，随后 <code>CONFIG REWRITE</code> 写回文件。</p>
+</li>
+</ul>
+</li>
+<li>
+<p><strong>AOF</strong></p>
+<ul>
+<li> redis.conf 设置 <code>appendonly yes</code>，通常配置 <code> appendfsync everysec</code>。</li>
+<li> 在线开启：<code>CONFIG SET appendonly yes</code>，Redis 会自动触发 AOF 重写；完成后执行 <code>CONFIG REWRITE</code> 。</li>
+<li> AOF 文件名默认 appendonly.aof，可用 appendfilename 自定义。</li>
+</ul>
+</li>
+</ul>
+<h4 id="我现在redis是个单机但是我现在有很多个系统同时对一个类进行操作那么我的一个key肯定会导致被多并发的去竞争怎么解决这样的竞争问题">我现在Redis是个单机，但是我现在有很多个系统，同时对一个类进行操作，那么我的一个key肯定会导致被多并发的去竞争？怎么解决这样的竞争问题？<a hidden class="anchor" aria-hidden="true" href="#我现在redis是个单机但是我现在有很多个系统同时对一个类进行操作那么我的一个key肯定会导致被多并发的去竞争怎么解决这样的竞争问题">#</a></h4>
+<ul>
+<li>
+<p><strong>分布式锁（SETNX）</strong>：使用Redis的 <code>SETNX</code> 命令或者<code>Redisson</code>实现分布式锁，确保同一时间只有一个系统实例操作该key。</p>
+</li>
+<li>
+<p><strong>消息队列串行化</strong>：将对同一 <code>key</code> 的操作放入消息队列，确保操作按顺序执行，避免并发冲突。例如，使用RabbitMQ或Kafka等消息中间件，将操作封装为消息，按顺序处理。</p>
+</li>
+<li>
+<p><strong>时间戳控制</strong>：在写入key时，携带时间戳，只有当<strong>新操作的时间戳</strong>晚于<strong>当前存储的时间戳</strong>时，才执行写入，确保数据的时序性。</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-shell" data-lang="shell"><span class="line"><span class="cl">HSET your_key value new_value timestamp new_timestamp
+</span></span></code></pre></div></li>
+</ul>
+<h4 id="高并发主要要考虑哪些问题">高并发主要要考虑哪些问题？<a hidden class="anchor" aria-hidden="true" href="#高并发主要要考虑哪些问题">#</a></h4>
+<ul>
+<li><strong>线程/连接池容量</strong>：<code>Tomcat workThreads</code>、<code>HikariCP max‑pool‑size</code> 必须按 <code>CPU×2+I/O</code> 负载估算，防止池耗尽和排队 </li>
+<li><strong>熔断‑限流‑隔离</strong>：用 <code>Hystrix/Sentinel/Gateway</code> 做线程池隔离、熔断与基于 Redis 的限流，阻断级联雪崩 </li>
+<li><strong>缓存策略</strong>：热点预加载、互斥锁、布隆过滤器，分散过期时间，解决穿透/击穿/雪崩 </li>
+<li><strong>数据一致性</strong>：幂等键＋<code>TCC/SAGA</code> 分布式事务，避免重复写与脏数据 </li>
+<li><strong>JVM GC停顿</strong>：<code>G1/ZGC + -XX:MaxGCPauseMillis=*</code>，持续压测、监控</li>
+<li><strong>超时/重试/背压</strong>：超时 &gt; 重试总时长；Reactive 流背压守护线程池 </li>
+<li><strong>可观测性</strong>：指标、日志、分布式 Tracing 持续审计性能瓶颈。</li>
+</ul>
+<h4 id="对一个字符串进行排序然后转换为大写怎么实现">对一个字符串进行排序然后转换为大写怎么实现？<a hidden class="anchor" aria-hidden="true" href="#对一个字符串进行排序然后转换为大写怎么实现">#</a></h4>
+<p>将字符串专程数组，然后调用 <code>Arrays.sort()</code> 函数，然后调用 <code>new String(chars).toUpperCase()</code> 将字符数组转成字符串，然后将所有的字母都转换成大小。</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="n">String</span><span class="w"> </span><span class="n">originalStr</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&#34;helloWorld&#34;</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="c1">// 1. 转换为字符数组并排序</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="kt">char</span><span class="o">[]</span><span class="w"> </span><span class="n">chars</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">originalStr</span><span class="p">.</span><span class="na">toCharArray</span><span class="p">();</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="n">Arrays</span><span class="p">.</span><span class="na">sort</span><span class="p">(</span><span class="n">chars</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="c1">// 2. 生成排序后的字符串并转大写</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="n">String</span><span class="w"> </span><span class="n">sortedUpperStr</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">String</span><span class="p">(</span><span class="n">chars</span><span class="p">).</span><span class="na">toUpperCase</span><span class="p">();</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="n">System</span><span class="p">.</span><span class="na">out</span><span class="p">.</span><span class="na">println</span><span class="p">(</span><span class="n">sortedUpperStr</span><span class="p">);</span><span class="w"> </span><span class="c1">// 输出: DEHLLLOORW</span><span class="w">
+</span></span></span></code></pre></div><h3 id="综合题--智力题">综合题 &amp; 智力题<a hidden class="anchor" aria-hidden="true" href="#综合题--智力题">#</a></h3>
+<h4 id="高考完学生投档到各个学校应该怎样设计算法">高考完学生投档到各个学校，应该怎样设计算法？<a hidden class="anchor" aria-hidden="true" href="#高考完学生投档到各个学校应该怎样设计算法">#</a></h4>
+<h4 id="求两支股票在一段时间内的最长同步上升时间">求两支股票在一段时间内的最长同步上升时间<a hidden class="anchor" aria-hidden="true" href="#求两支股票在一段时间内的最长同步上升时间">#</a></h4>
+
+
+  </div>
+
+
+
+  <footer class="post-footer">
+    <ul class="post-tags">
+      <li><a href="https://swimmingliu.cn/tags/java/">Java</a></li>
+    </ul>
+<nav class="paginav">
+  <a class="next" href="https://swimmingliu.cn/posts/job/java-jvm-interview-questions/">
+    <span class="title">Next »</span>
+    <br>
+    <span>JVM 面试题笔记</span>
+  </a>
+</nav>
+
+  </footer>
+</article>
+    </main>
+    
+<footer class="footer">
+        <span>&copy; 2023-2025 <a href="https://swimmingliu.cn/">SwimmingLiu&#39;s Blog</a></span> · 
+
+    <span>
+        Powered by
+        <a href="https://gohugo.io/" rel="noopener noreferrer" target="_blank">Hugo</a> &
+        <a href="https://github.com/adityatelange/hugo-PaperMod/" rel="noopener" target="_blank">PaperMod</a>
+    </span>
+    <span>
+        <a href="https://beian.miit.gov.cn/">浙ICP备2024056260号</a>
+    </span>
+</footer>
+<a href="#top" aria-label="go to top" title="Go to Top (Alt + G)" class="top-link" id="top-link" accesskey="g">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 6" fill="currentColor">
+        <path d="M12 6H0l6-6z" />
+    </svg>
+</a>
+
+<script>
+    let menu = document.getElementById('menu')
+    if (menu) {
+        menu.scrollLeft = localStorage.getItem("menu-scroll-position");
+        menu.onscroll = function () {
+            localStorage.setItem("menu-scroll-position", menu.scrollLeft);
+        }
+    }
+
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener("click", function (e) {
+            e.preventDefault();
+            var id = this.getAttribute("href").substr(1);
+            if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView({
+                    behavior: "smooth"
+                });
+            } else {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView();
+            }
+            if (id === "top") {
+                history.replaceState(null, null, " ");
+            } else {
+                history.pushState(null, null, `#${id}`);
+            }
+        });
+    });
+
+</script>
+<script>
+    var mybutton = document.getElementById("top-link");
+    window.onscroll = function () {
+        if (document.body.scrollTop > 800 || document.documentElement.scrollTop > 800) {
+            mybutton.style.visibility = "visible";
+            mybutton.style.opacity = "1";
+        } else {
+            mybutton.style.visibility = "hidden";
+            mybutton.style.opacity = "0";
+        }
+    };
+
+</script>
+<script>
+    document.getElementById("theme-toggle").addEventListener("click", () => {
+        if (document.body.className.includes("dark")) {
+            document.body.classList.remove('dark');
+            localStorage.setItem("pref-theme", 'light');
+        } else {
+            document.body.classList.add('dark');
+            localStorage.setItem("pref-theme", 'dark');
+        }
+    })
+
+</script>
+<script>
+    document.querySelectorAll('pre > code').forEach((codeblock) => {
+        const container = codeblock.parentNode.parentNode;
+
+        const copybutton = document.createElement('button');
+        copybutton.classList.add('copy-code');
+        copybutton.innerHTML = 'copy';
+
+        function copyingDone() {
+            copybutton.innerHTML = 'copied!';
+            setTimeout(() => {
+                copybutton.innerHTML = 'copy';
+            }, 2000);
+        }
+
+        copybutton.addEventListener('click', (cb) => {
+            if ('clipboard' in navigator) {
+                navigator.clipboard.writeText(codeblock.textContent);
+                copyingDone();
+                return;
+            }
+
+            const range = document.createRange();
+            range.selectNodeContents(codeblock);
+            const selection = window.getSelection();
+            selection.removeAllRanges();
+            selection.addRange(range);
+            try {
+                document.execCommand('copy');
+                copyingDone();
+            } catch (e) { };
+            selection.removeRange(range);
+        });
+
+        if (container.classList.contains("highlight")) {
+            container.appendChild(copybutton);
+        } else if (container.parentNode.firstChild == container) {
+            
+        } else if (codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.nodeName == "TABLE") {
+            
+            codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.appendChild(copybutton);
+        } else {
+            
+            codeblock.parentNode.appendChild(copybutton);
+        }
+    });
+</script>
+</body>
+
+</html>

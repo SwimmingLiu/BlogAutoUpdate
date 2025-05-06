@@ -11,8 +11,101 @@
     </image>
     <generator>Hugo -- 0.146.4</generator>
     <language>en</language>
-    <lastBuildDate>Sat, 22 Mar 2025 21:45:41 +0800</lastBuildDate>
+    <lastBuildDate>Tue, 06 May 2025 13:27:35 +0800</lastBuildDate>
     <atom:link href="https://swimmingliu.cn/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>恒生聚源面经记录</title>
+      <link>https://swimmingliu.cn/posts/job/hensheng-interview-questions/</link>
+      <pubDate>Tue, 06 May 2025 13:27:35 +0800</pubDate>
+      <guid>https://swimmingliu.cn/posts/job/hensheng-interview-questions/</guid>
+      <description>&lt;h2 id=&#34;八股题&#34;&gt;八股题&lt;/h2&gt;
+&lt;h3 id=&#34;java-基础--集合&#34;&gt;Java 基础 + 集合&lt;/h3&gt;
+&lt;h4 id=&#34;面向对象和面向过程的区别&#34;&gt;面向对象和面向过程的区别？&lt;/h4&gt;
+&lt;p&gt;&lt;strong&gt;面向对象&lt;/strong&gt;：将数据和方法封装成对象，作为程序的基本单元来组织代码，包含封装、继承、多态三大特性，方便代码复用和灵活性。&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;面向过程&lt;/strong&gt;：以过程做为基本单元来组织代码，过程对应到代码中就是函数，将函数和数据分离，比较关注步骤和流程。其实就是一条路走到底的思想，关注如何设计一系列顺序执行的过程实现。&lt;/p&gt;
+&lt;h4 id=&#34;封装继承多态&#34;&gt;封装、继承、多态?&lt;/h4&gt;
+&lt;p&gt;&lt;strong&gt;封装&lt;/strong&gt;（Encapsulation）：通过将&lt;strong&gt;对象的属性和方法结合为独立单元&lt;/strong&gt;，并利用访问修饰符（如&lt;code&gt;private&lt;/code&gt;）隐藏内部细节，仅通过&lt;strong&gt;公共接口（如&lt;code&gt;getter/setter&lt;/code&gt;）控制访问&lt;/strong&gt;，从而提升安全性和可维护性&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;继承&lt;/strong&gt;（Inheritance）：允许&lt;strong&gt;子类基于父类的属性和方法进行扩展&lt;/strong&gt;，实现代码复用，Java采用单继承机制（仅支持一个直接父类），但可通过接口实现多重继承的效果&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;多态&lt;/strong&gt;（Polymorphism）：同一方法调用因对象实际类型不同而产生不同行为，通常通过&lt;strong&gt;父类引用指向子类对象及方法重写实现&lt;/strong&gt;，依赖运行时动态绑定机制决定具体执行逻辑。（重写和重载）&lt;/p&gt;
+&lt;h4 id=&#34;常见排序算法时间复杂度&#34;&gt;常见排序算法？时间复杂度？&lt;/h4&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;直接插入排序：o(n^2)&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;冒泡排序：o(n^2)&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;快速排序: o(nlogn)&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;堆排序：o(nlogn)&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;归并排序：o(nlogn)&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;table&gt;
+  &lt;thead&gt;
+      &lt;tr&gt;
+          &lt;th style=&#34;text-align: center&#34;&gt;&lt;strong&gt;算法&lt;/strong&gt;&lt;/th&gt;
+          &lt;th style=&#34;text-align: center&#34;&gt;平均时间复杂度&lt;/th&gt;
+          &lt;th style=&#34;text-align: center&#34;&gt;最坏时间复杂度&lt;/th&gt;
+          &lt;th style=&#34;text-align: center&#34;&gt;空间复杂度&lt;/th&gt;
+          &lt;th style=&#34;text-align: center&#34;&gt;稳定性&lt;/th&gt;
+          &lt;th style=&#34;text-align: center&#34;&gt;适用场景&lt;/th&gt;
+      &lt;/tr&gt;
+  &lt;/thead&gt;
+  &lt;tbody&gt;
+      &lt;tr&gt;
+          &lt;td style=&#34;text-align: center&#34;&gt;插入排序&lt;/td&gt;
+          &lt;td style=&#34;text-align: center&#34;&gt;O(n²)&lt;/td&gt;
+          &lt;td style=&#34;text-align: center&#34;&gt;O(n²)&lt;/td&gt;
+          &lt;td style=&#34;text-align: center&#34;&gt;O(1)&lt;/td&gt;
+          &lt;td style=&#34;text-align: center&#34;&gt;稳定&lt;/td&gt;
+          &lt;td style=&#34;text-align: center&#34;&gt;部分有序数据&lt;/td&gt;
+      &lt;/tr&gt;
+      &lt;tr&gt;
+          &lt;td style=&#34;text-align: center&#34;&gt;冒泡排序&lt;/td&gt;
+          &lt;td style=&#34;text-align: center&#34;&gt;O(n²)&lt;/td&gt;
+          &lt;td style=&#34;text-align: center&#34;&gt;O(n²)&lt;/td&gt;
+          &lt;td style=&#34;text-align: center&#34;&gt;O(1)&lt;/td&gt;
+          &lt;td style=&#34;text-align: center&#34;&gt;稳定&lt;/td&gt;
+          &lt;td style=&#34;text-align: center&#34;&gt;教学示例、小数据&lt;/td&gt;
+      &lt;/tr&gt;
+      &lt;tr&gt;
+          &lt;td style=&#34;text-align: center&#34;&gt;快速排序&lt;/td&gt;
+          &lt;td style=&#34;text-align: center&#34;&gt;O(n log n)&lt;/td&gt;
+          &lt;td style=&#34;text-align: center&#34;&gt;O(n²)&lt;/td&gt;
+          &lt;td style=&#34;text-align: center&#34;&gt;O(log n)&lt;/td&gt;
+          &lt;td style=&#34;text-align: center&#34;&gt;不稳定&lt;/td&gt;
+          &lt;td style=&#34;text-align: center&#34;&gt;大规模随机数据&lt;/td&gt;
+      &lt;/tr&gt;
+      &lt;tr&gt;
+          &lt;td style=&#34;text-align: center&#34;&gt;归并排序&lt;/td&gt;
+          &lt;td style=&#34;text-align: center&#34;&gt;O(n log n)&lt;/td&gt;
+          &lt;td style=&#34;text-align: center&#34;&gt;O(n log n)&lt;/td&gt;
+          &lt;td style=&#34;text-align: center&#34;&gt;O(n)&lt;/td&gt;
+          &lt;td style=&#34;text-align: center&#34;&gt;稳定&lt;/td&gt;
+          &lt;td style=&#34;text-align: center&#34;&gt;大数据、外部排序&lt;/td&gt;
+      &lt;/tr&gt;
+      &lt;tr&gt;
+          &lt;td style=&#34;text-align: center&#34;&gt;堆排序&lt;/td&gt;
+          &lt;td style=&#34;text-align: center&#34;&gt;O(n log n)&lt;/td&gt;
+          &lt;td style=&#34;text-align: center&#34;&gt;O(n log n)&lt;/td&gt;
+          &lt;td style=&#34;text-align: center&#34;&gt;O(1)&lt;/td&gt;
+          &lt;td style=&#34;text-align: center&#34;&gt;不稳定&lt;/td&gt;
+          &lt;td style=&#34;text-align: center&#34;&gt;实时系统、内存受限场景&lt;/td&gt;
+      &lt;/tr&gt;
+  &lt;/tbody&gt;
+&lt;/table&gt;
+&lt;h4 id=&#34;arraylist-和-linkedlist-的区别&#34;&gt;ArrayList 和 LinkedList 的区别？&lt;/h4&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;ArrayList&lt;/strong&gt;：底层是动态数组，有扩容机制，内存连续，查询快，增删慢。&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;LinkedList&lt;/strong&gt;：底层是双向链表，内存不连续，查询慢，增删快。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;strong&gt;【注意】&lt;/strong&gt; 实际过程中，&lt;code&gt;ArrayList&lt;/code&gt; 的增删操作比 &lt;code&gt;LinkedList&lt;/code&gt; 快了进百倍。&lt;/p&gt;</description>
+    </item>
     <item>
       <title>JVM 面试题笔记</title>
       <link>https://swimmingliu.cn/posts/job/java-jvm-interview-questions/</link>

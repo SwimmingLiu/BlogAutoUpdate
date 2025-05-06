@@ -179,6 +179,29 @@
 
 <article class="post-entry tag-entry"> 
   <header class="entry-header">
+    <h2 class="entry-hint-parent">恒生聚源面经记录
+    </h2>
+  </header>
+  <div class="entry-content">
+    <p>八股题 Java 基础 &#43; 集合 面向对象和面向过程的区别？ 面向对象：将数据和方法封装成对象，作为程序的基本单元来组织代码，包含封装、继承、多态三大特性，方便代码复用和灵活性。
+面向过程：以过程做为基本单元来组织代码，过程对应到代码中就是函数，将函数和数据分离，比较关注步骤和流程。其实就是一条路走到底的思想，关注如何设计一系列顺序执行的过程实现。
+封装、继承、多态? 封装（Encapsulation）：通过将对象的属性和方法结合为独立单元，并利用访问修饰符（如private）隐藏内部细节，仅通过公共接口（如getter/setter）控制访问，从而提升安全性和可维护性
+继承（Inheritance）：允许子类基于父类的属性和方法进行扩展，实现代码复用，Java采用单继承机制（仅支持一个直接父类），但可通过接口实现多重继承的效果
+多态（Polymorphism）：同一方法调用因对象实际类型不同而产生不同行为，通常通过父类引用指向子类对象及方法重写实现，依赖运行时动态绑定机制决定具体执行逻辑。（重写和重载）
+常见排序算法？时间复杂度？ 直接插入排序：o(n^2)
+冒泡排序：o(n^2)
+快速排序: o(nlogn)
+堆排序：o(nlogn)
+归并排序：o(nlogn)
+算法 平均时间复杂度 最坏时间复杂度 空间复杂度 稳定性 适用场景 插入排序 O(n²) O(n²) O(1) 稳定 部分有序数据 冒泡排序 O(n²) O(n²) O(1) 稳定 教学示例、小数据 快速排序 O(n log n) O(n²) O(log n) 不稳定 大规模随机数据 归并排序 O(n log n) O(n log n) O(n) 稳定 大数据、外部排序 堆排序 O(n log n) O(n log n) O(1) 不稳定 实时系统、内存受限场景 ArrayList 和 LinkedList 的区别？ ArrayList：底层是动态数组，有扩容机制，内存连续，查询快，增删慢。 LinkedList：底层是双向链表，内存不连续，查询慢，增删快。 【注意】 实际过程中，ArrayList 的增删操作比 LinkedList 快了进百倍。
+...</p>
+  </div>
+  <footer class="entry-footer"><span title='2025-05-06 13:27:35 +0800 CST'>May 6, 2025</span>&nbsp;·&nbsp;7 min&nbsp;·&nbsp;SwimmingLiu</footer>
+  <a class="entry-link" aria-label="post link to 恒生聚源面经记录" href="https://swimmingliu.cn/posts/job/hensheng-interview-questions/"></a>
+</article>
+
+<article class="post-entry tag-entry"> 
+  <header class="entry-header">
     <h2 class="entry-hint-parent">JVM 面试题笔记
     </h2>
   </header>
@@ -365,36 +388,6 @@ public class Person { private String name; private int age; @Override public boo
   </div>
   <footer class="entry-footer"><span title='2025-02-19 15:18:58 +0800 CST'>February 19, 2025</span>&nbsp;·&nbsp;4 min&nbsp;·&nbsp;SwimmingLiu</footer>
   <a class="entry-link" aria-label="post link to Java基础题面试笔记" href="https://swimmingliu.cn/posts/job/java-basic-interview-questions/"></a>
-</article>
-
-<article class="post-entry tag-entry"> 
-  <header class="entry-header">
-    <h2 class="entry-hint-parent">MySQL面试题笔记
-    </h2>
-  </header>
-  <div class="entry-content">
-    <p>1.MySQL 中的数据排序是怎么实现的？ 1.排序方法：索引排序和文件排序 (filesort)
-2.索引排序：如果order by xxx的字段为索引字段，则利用索引进行排序。效率最高，索引默认有序。
-3.文件排序 (filesort)：内存排序(单路排序和双路排序)和磁盘排序，具体取决于排序数据的大小。其中，内存排序使用单路排序或双路排序，取决于max_length_for_sort_data(默认为4096个字节)
-4.双路排序：取row_id(如果有主键，则为主键)和select a,b,c order by xxx的xxx字段放入sort_buffer(排序缓存)中，将排序后的row_id回表查询a,b,c
-5.单路排序: 直接把要查的所有字段放入sort_buffer里，排序后直接得到结果集合
-6.磁盘排序（归并排序）:将数据分为多份文件，单独对文件进行排序，然后合并成一个有序的大文件
-2. MySQL 的 Change Buffer 是什么？它有什么作用？ 1.ChangeBuffer定义：Change Buffer是InnoDB缓冲当中的一块缓存区，用于暂存二级索引的修改，避免二级索引页修改产生的随机IO 2.ChangeBuffer注意事项：只能用于二级索引，不能用于其他任何索引，包括主键索引和唯一索引都不行。 3.如果ChangeBuffer挂了，更改操作未执行，是否会出现脏数据？ 首先，ChangeBuffer也会保存在磁盘空间里面，redo log会记录Change Buffer当中的修改操作，确保数据一致性。
-知识拓展1：一级索引和二级索引区别
-一级索引（聚簇索引）：数据表的主键索引，数据和索引存储在同一B&#43;树的叶子节点中。每个表只能有一个一级索引。
-二级索引（非聚簇索引）：除主键外的其他索引，叶子节点存储索引列的值和对应的主键值。通过二级索引查询时，需要先通过二级索引获取主键值，再通过主键值查询数据，这个过程称为“回表”。
-知识拓展2: MySQL中有哪些常见索引？都有什么区别？
-在MySQL中，索引是提高查询效率的关键工具。常见的索引类型包括主键索引、唯一索引、普通索引、全文索引和空间索引。
-1. 主键索引（Primary Key Index）
-定义：主键索引是一种特殊的唯一索引，用于唯一标识表中的每一行数据。每个表只能有一个主键索引，且主键列的值不能为空。 特点：主键索引的叶子节点存储完整的数据行，因此查询效率高。在InnoDB存储引擎中，主键索引是聚簇索引，数据存储与索引结构合并。 2. 唯一索引（Unique Index）
-定义：唯一索引确保索引列的每个值都是唯一的，但允许有空值。与主键索引类似，不同之处在于唯一索引允许列值为NULL。 特点：唯一索引的叶子节点存储索引列的值和对应的主键值。在InnoDB中，唯一索引是非聚簇索引，数据存储与索引结构分开。 3. 普通索引（Index）
-定义：普通索引是最基本的索引类型，没有任何限制。索引列的值可以重复，也可以为NULL。 特点：普通索引的叶子节点存储索引列的值和对应的主键值。在InnoDB中，普通索引是非聚簇索引，数据存储与索引结构分开。 4. 全文索引（Fulltext Index）
-定义：全文索引用于对文本数据进行全文搜索，适用于MyISAM存储引擎。它允许对文本字段进行复杂的搜索，如查找包含特定单词的记录。 特点：全文索引的叶子节点存储文档的词项信息。在MyISAM中，全文索引是非聚簇索引，数据存储与索引结构分开。 5. 空间索引（Spatial Index）
-定义：空间索引用于对地理空间数据进行索引，支持空间数据类型的快速查询。它适用于存储地理位置、地图等空间数据的表。 特点：空间索引的叶子节点存储空间数据的索引信息。在MyISAM中，空间索引是非聚簇索引，数据存储与索引结构分开。 总结：
-主键索引：用于唯一标识每一行数据，值不能为空。 唯一索引：确保索引列的值唯一，但允许有空值。 普通索引：最基本的索引类型，允许重复和空值。 全文索引：用于对文本数据进行全文搜索，适用于MyISAM存储引擎。 空间索引：用于对地理空间数据进行索引，支持空间数据类型的快速查询。 3. 详细描述一条 SQL 语句在 MySQL 中的执行过程。 连接器判断用户是否成功建立连接，数据库连接的权限校验 连接器会查询缓存，key 是 SQL 语句，value 是查询结果。如果命中，直接返回查询结果。(MySQL 8.0之后，就移除这个功能了)。 分析器分析SQL语法和词法是否有误 优化器生成SQL的执行计划，确定使用的索引和调整where的执行顺序（包括连表顺序） 执行器判断当前用户是否有权限查询该表，然后执行该SQL语句 ...</p>
-  </div>
-  <footer class="entry-footer"><span title='2025-02-19 15:16:42 +0800 CST'>February 19, 2025</span>&nbsp;·&nbsp;9 min&nbsp;·&nbsp;SwimmingLiu</footer>
-  <a class="entry-link" aria-label="post link to MySQL面试题笔记" href="https://swimmingliu.cn/posts/job/mysql-interview-questions/"></a>
 </article>
 <footer class="page-footer">
   <nav class="pagination">

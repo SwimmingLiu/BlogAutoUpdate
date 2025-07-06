@@ -200,6 +200,26 @@
 
 <article class="post-entry"> 
   <header class="entry-header">
+    <h2 class="entry-hint-parent">Java基础题面试笔记
+    </h2>
+  </header>
+  <div class="entry-content">
+    <p>1. 序列化和反序列化 1.序列化和反序列化：把对象转换为字节流，用于存储和传输；读取字节流数据，重新创建对象。 2.序列化不包括静态对象：序列化和反序列化的本质是调用对象的writeObject和readObject方法,来实现将对象写入输出流和读取输入流。但是，静态变量不属于对象，所以调用这两个方法就没法儿让静态变量参与。
+2. 什么是不可变类？ 1.不可变类：初始化之后，就不能修改的类。 2.修饰方法：final 和 private 修饰所有类和变量 3.不可修改：不暴露set方法，只能通过重新创建对象替代修改功能(String的replace方法) 4.优缺点： 优点：线程安全，缓存友好 缺点：频繁拼接和修改会浪费资源
+3. Exception和Error区别? 1.Exception和Error定义区别：Exception是可处理程序异常，Error是系统级不可回复错误 2.try-catch建议： 1.范围能小则小 2.Exception最好要写清楚具体是哪一个Exception(IOException) 3.null值等能用if判断的，不要用try-catch,因为异常比条件语句低效 4.finally不要直接return和处理返回值
+4. Java 中的 hashCode 和 equals 方法之间有什么关系？ 1、equals() 和 hashCode() 的关系
+如果两个对象euqals() 为 true， 则其 hashCode()一定相同 如果两个对象hashCode() 相同，其equals()结果不一定为true 2、为什么重写equals()之后，一定要重写hashCode()
+当重写equals() 之后，通常是重新定义了两个对象相等的逻辑。如果不重写hashCode()方法， 则在散列集合（HashMap 和 HashSet）中，可能无法正确存储和检索，因为两个相同的对象可能有不同的hash值。
+例如，下方Person类重写了equals() 方法，但是没有重新hashCode()
+public class Person { private String name; private int age; @Override public boolean equals(Object obj) { if (this == obj) return true; if (obj == null || getClass() != obj.getClass()) return false; Person person = (Person) obj; return age == person.age &amp;&amp; Objects.equals(name, person.name); } } 创建相同的对象，并添加到HashSet中
+...</p>
+  </div>
+  <footer class="entry-footer"><span title='2025-02-19 15:18:58 +0800 CST'>February 19, 2025</span>&nbsp;·&nbsp;4 min&nbsp;·&nbsp;SwimmingLiu</footer>
+  <a class="entry-link" aria-label="post link to Java基础题面试笔记" href="https://swimmingliu.cn/posts/job/java-basic-interview-questions/"></a>
+</article>
+
+<article class="post-entry"> 
+  <header class="entry-header">
     <h2 class="entry-hint-parent">MySQL面试题笔记
     </h2>
   </header>

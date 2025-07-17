@@ -552,7 +552,7 @@ public class GoodsController {
 
 下面从线程池的执行流程入手，优化并行查询问题
 
-![image-20240405093250650](assets/线程池执行流程.png)
+![image-20240405093250650](https://oss.swimmingliu.cn/536e392e-6313-11f0-99d8-caaeffceb345)
 
 **【解决方案】**
 
@@ -830,5 +830,184 @@ public class ThreadPoolManager {
 }
 ```
 
+# 分布式与微服务
 
+## 1. SpringBoot实现动态Job的实战
 
+相关代码：[https://github.com/SwimmingLiu/JavaSceneQuiz100/tree/main/lesson011](https://github.com/SwimmingLiu/JavaSceneQuiz100/tree/main/lesson011)
+
+### 1.1 Job表 - 表结构
+
+| 字段名      | 类型         | 可空 | 默认 | 备注                                        |
+| ----------- | ------------ | ---- | ---- | ------------------------------------------- |
+| id          | varchar(50)  | 否   | -    | id，主键                                    |
+| name        | varchar(100) | 否   | -    | job名称，可以定义一个有意义的名称           |
+| cron        | varchar(50)  | 否   | -    | job的执行周期，cron表达式                   |
+| bean_name   | varchar(100) | 否   | -    | job需要执行那个bean，对应spring中bean的名称 |
+| bean_method | varchar(100) | 否   | -    | job执行的bean的方法                         |
+| status      | smallint     | 否   | 0    | job的状态,0：停止，1：执行中                |
+
+### 1.2 Job执行管理器
+
+``` java
+@Component
+public class SpringJobRunManager implements CommandLineRunner {
+  	// applicationContext 主要用于在任务执行时动态获取和调用指定的 Bean 和方法，实现灵活的任务调度。
+    // 可以把它理解为“Spring 管理的对象工厂和服务总线”
+    @Autowired
+    private ApplicationContext applicationContext;
+		// threadPoolTaskScheduler 是 Spring 提供的线程池定时任务调度器，主要用于在应用中以多线程方式执行定时任务（如定时执行、Cron表达式调度等）
+    @Autowired
+    private ThreadPoolTaskScheduler threadPoolTaskScheduler;
+    // job表相关服务
+    @Autowired
+    private JobService jobService;
+    /**
+     * 系统重正在运行中的job列表
+     */
+    private Map<String, SpringJobTask> runningJobMap = new ConcurrentHashMap<>();
+    /**
+     * springboot应用启动后会回调
+     *
+     * @param args incoming main method arguments
+     * @throws Exception
+     */
+    @Override
+    public void run(String... args) throws Exception {
+        //1、启动job
+        this.startAllJob();
+        //2、监控db中job的变化（job增、删、改），然后同步给job执行器去执行
+        this.monitorDbJobChange();
+    }
+}
+```
+
+Springboot应用启动之后会回调 `CommandLineRunner` 中的 `run` 方法，依次启动job，并监控job中的变化。
+
+#### 1.2.1 启动job
+
+启动job的方式比较简单，就是从数据库中找出所有需要启动的job（状态为start），然后循环启动。
+
+启动job具体方式如下：
+
+```java 
+private void startAllJob() {
+    List<Job> jobList = this.jobService.getStartJobList();
+    for (Job job : jobList) {
+        this.startJob(job);
+    }
+}
+/**
+ * 启动一个定时任务（job）
+ *
+ * @param job 需要启动的任务对象
+ */
+private void startJob(Job job) {
+    // 1. 创建任务执行体，注入Spring上下文，便于任务内获取Bean对象
+    SpringJobTask springJobTask = new SpringJobTask(job, this.applicationContext);
+    // 2. 根据job的cron表达式创建调度触发器
+    CronTrigger trigger = new CronTrigger(job.getCron());
+    // 3. 使用线程池调度器注册任务，返回调度句柄
+    ScheduledFuture<?> scheduledFuture = this.threadPoolTaskScheduler.schedule(springJobTask, trigger);
+    // 4. 记录调度句柄到任务对象，便于后续取消 -> 
+    springJobTask.setScheduledFuture(scheduledFuture);
+    // 5. 将任务放入运行中的任务Map，方便管理和查找
+    runningJobMap.put(job.getId(), springJobTask);
+    // 6. 记录日志，方便追踪
+    logger.info("启动 job 成功:{}", JSONUtil.toJsonStr(job));
+}
+/**
+ * 删除（停止）一个定时任务
+ * @param job 需要删除的任务对象
+ */
+private void deleteJob(Job job) {
+    if (job == null) {
+        return;
+    }
+    // 1. 从运行中的任务Map获取任务
+    SpringJobTask springJobTask = this.runningJobMap.get(job.getId());
+    if (springJobTask == null) { return;}
+    // 2. 取消任务调度（停止定时执行）
+    springJobTask.getScheduledFuture().cancel(false);
+    // 3. 从Map中移除该任务
+    runningJobMap.remove(job.getId());
+    // 4. 记录日志
+    logger.info("移除 job 成功:{}", JSONUtil.toJsonStr(job));
+}
+/**
+ * 更新一个定时任务（先删除再启动）
+ * @param job 需要更新的任务对象
+ */
+public void updateJob(Job job) {
+    // 1. 先删除旧的任务
+    this.deleteJob(job);
+    // 2. 再启动新的任务
+    this.startJob(job);
+    // 3. 记录日志
+    logger.info("更新 job 成功:{}", JSONUtil.toJsonStr(job));
+}
+```
+
+#### 1.2.2 动态监控DB中job的变化
+
+```java
+/**
+ * 监控db中job的变化，每5秒监控一次，这个频率大家使用的时候可以稍微调大点
+ */
+private void monitorDbJobChange() {
+    this.threadPoolTaskScheduler.scheduleWithFixedDelay(this::jobChangeDispose, Duration.ofSeconds(5));
+}
+// 任务变化处理
+private void jobChangeDispose() {
+    //1、从db中拿到所有job，和目前内存中正在运行的所有job对比，可得到本次新增的job、删除的job、更新的job
+    JobChange jobChange = this.getJobChange();
+    //2、处理新增的job
+    for (Job job : jobChange.getAddJobList()) { this.startJob(job);}
+    //3、处理删除的job
+    for (Job job : jobChange.getDeleteJobList()) { this.deleteJob(job);}
+    //4、处理变化的job
+    for (Job job : jobChange.getUpdateJobList()) { this.updateJob(job);}
+}
+private JobChange getJobChange() {
+    //新增的job
+    List<Job> addJobList = new ArrayList<>();
+    //删除的job
+    List<Job> deleteJobList = new ArrayList<>();
+    //更新的job
+    List<Job> updateJobList = new ArrayList<>();
+    //从db中拿到所有job，和目前内存中正在运行的所有job对比，可得到本次新增的job、删除的job、更新的job
+    List<Job> startJobList = this.jobService.getStartJobList();
+    for (Job job : startJobList) {
+        SpringJobTask springJobTask = runningJobMap.get(job.getId());
+        if (springJobTask == null) {
+            addJobList.add(job);
+        } else {
+            //job的执行规则变了
+            if (jobIsChange(job, springJobTask.getJob())) {
+                updateJobList.add(job);
+            }
+        }
+    }
+    //获取被删除的job，springJobTaskMap中存在的，而startJobList不存在的，则是需要从当前运行列表中停止移除的
+    Set<String> startJobIdList = CollUtils.convertSet(startJobList, Job::getId);
+    for (Map.Entry<String, SpringJobTask> springJobTaskEntry : runningJobMap.entrySet()) {
+        if (!startJobIdList.contains(springJobTaskEntry.getKey())) {
+            deleteJobList.add(springJobTaskEntry.getValue().getJob());
+        }
+    }
+    //返回job变更结果
+    return new JobChange(addJobList, updateJobList, deleteJobList);
+}
+/**
+ * 检测两个job是否发生了变化，（cron、beanName、beanMethod）中有任意一项变动了，则返回true
+ *
+ * @param job1
+ * @param job2
+ * @return
+ */
+private boolean jobIsChange(Job job1, Job job2) {
+    return !(Objects.equals(job1.getCron(), job2.getCron()) &&
+            Objects.equals(job1.getBeanName(), job2.getBeanName()) &&
+            Objects.equals(job1.getBeanMethod(), job2.getBeanMethod()));
+}
+```

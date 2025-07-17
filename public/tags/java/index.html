@@ -192,7 +192,7 @@ create table if not exists t_shard_upload( id varchar(32) primary key, file_name
 create table if not exists t_shard_upload_part( id varchar(32) primary key, shard_upload_id varchar(32) not null comment &#39;分片任务id（t_shard_upload.id）&#39;, part_order int not null comment &#39;第几个分片，从1开始&#39;, file_full_path varchar(512) comment &#39;文件完整路径&#39;, UNIQUE KEY `uq_part_order` (`shard_upload_id`,`part_order`) ) comment = &#39;分片文件表，每个分片文件对应一条记录&#39;; 分块文件表和分块上传表是 1 to M 的关系，假如当前文件分为10块。则会出现1个分片上传任务，和10个分片文件记录。
 ...</p>
   </div>
-  <footer class="entry-footer"><span title='2025-07-06 13:27:35 +0800 CST'>July 6, 2025</span>&nbsp;·&nbsp;9 min&nbsp;·&nbsp;SwimmingLiu</footer>
+  <footer class="entry-footer"><span title='2025-07-06 13:27:35 +0800 CST'>July 6, 2025</span>&nbsp;·&nbsp;11 min&nbsp;·&nbsp;SwimmingLiu</footer>
   <a class="entry-link" aria-label="post link to Java场景100题" href="https://swimmingliu.cn/posts/job/java-scene-quiz-100/"></a>
 </article>
 

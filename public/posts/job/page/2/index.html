@@ -200,6 +200,27 @@
 
 <article class="post-entry"> 
   <header class="entry-header">
+    <h2 class="entry-hint-parent">Java集合面试题笔记
+    </h2>
+  </header>
+  <div class="entry-content">
+    <p>1. 说说 Java 中 HashMap 的原理？ 【HashMap定义】
+结构：数组 &#43; 链表 &#43; 红黑树 (JDK 1.8 之后)
+默认值：初始容量为16 (数组长度)，负载因子为 0.75。当存储的元素为 16 * 0.75 = 12个时，会触发Resize() 扩容操作，容量 x 2 并重新分配位置。但是扩容是有一定开销的，频繁扩容会影响性能。另外，TREEIFY_THRESHOLD 转换为红黑树的默认链表长度阈值为 8, UNTREEIFY_THRESHOLD 从红黑树转换为链表的阈值为 6。 两个阈值采用不同值的原因是防止刚转换为红黑树，又变成链表，反复横跳，消耗资源。
+数组下标位置计算方法：首先使用key的hashCode()方法计算下标位置，然后通过 indexFor() (JDK 1.7 以前) 计算下标值。 JDK 1.7后，为了提高计算效率采用 (len - 1) &amp; hash 来确定下标值。
+【注】数组的长度len 是2的幂次方时，(len - 1) &amp; hash 等价于 hash % len。 这也是为什么数组长度必须是2的幂次方。
+【HashMap线程不安全】
+为了保证HashMap的读写效率高，它的操作是非同步的，也就是说读写操作没有锁保护。所以多线程场景下是线程不安全的。
+【HashMap不同版本区别】
+JDK 1.7: 数组 &#43; 链表，链表部分采用头插法，多线程会导致出现环形链表。扩容会计算每个元素hash值，并分配到新的位置，开销大。 JDK 1.8：数组 &#43; 链表 &#43; 红黑树，采用高低位置来分配位置，即判断(e.hash &amp; oldCap) == 0， 减少了计算hash的次数 【HashMap的PUT方法】
+...</p>
+  </div>
+  <footer class="entry-footer"><span title='2025-02-20 21:20:50 +0800 CST'>February 20, 2025</span>&nbsp;·&nbsp;5 min&nbsp;·&nbsp;SwimmingLiu</footer>
+  <a class="entry-link" aria-label="post link to Java集合面试题笔记" href="https://swimmingliu.cn/posts/job/java-set-interview-questions/"></a>
+</article>
+
+<article class="post-entry"> 
+  <header class="entry-header">
     <h2 class="entry-hint-parent">Java基础题面试笔记
     </h2>
   </header>

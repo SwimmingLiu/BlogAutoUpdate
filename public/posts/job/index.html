@@ -200,6 +200,24 @@
 
 <article class="post-entry"> 
   <header class="entry-header">
+    <h2 class="entry-hint-parent">Leetcode Hot100 刷题笔记
+    </h2>
+  </header>
+  <div class="entry-content">
+    <p>链表 1. 两数相加 题目链接：两数相加
+【思路】
+引入一个临时变量 carry 记录进位的值，默认是0。开一个新的链表 l ，同时遍历两个链表的值。l1.val &#43; l2.val &#43; carry = l.val。注意，最后有多余的进位时，要新增一个节点。
+整个过程可以用递归来实现，递归的边界条件是当 l1 、l2 为 null 且 carry 为 0 的时候 。然后，返回值是 new ListNode(carry % 10, addTwo(l1, l2, carry / 10)) 。其中, carry % 10 表示当前值， carry / 10 表示进位值。计算过程是l1 和 l2 都获取 val 和 carry 相加，并且向前遍历。
+【伪代码】
+// l1 和 l2 为当前遍历的节点，carry 为进位， 默认为0 private ListNode addTwo(ListNode l1, ListNode l2, int carry) { if (l1 == null &amp;&amp; l2 == null &amp;&amp; carry == 0) { // 递归边界 return null; } int s = carry; if (l1 != null) { s &#43;= l1.val; // 累加进位与节点值 l1 = l1.next; } if (l2 != null) { s &#43;= l2.val; l2 = l2.next; } // s 除以 10 的余数为当前节点值，商为进位 return new ListNode(s % 10, addTwo(l1, l2, s / 10)); } 2. 删除链表的倒数第 N 个结点 题目链接：删除链表的倒数第 N 个结点
+...</p>
+  </div>
+  <footer class="entry-footer"><span title='2025-07-20 23:27:35 +0800 CST'>July 20, 2025</span>&nbsp;·&nbsp;4 min&nbsp;·&nbsp;SwimmingLiu</footer>
+  <a class="entry-link" aria-label="post link to Leetcode Hot100 刷题笔记" href="https://swimmingliu.cn/posts/job/leetcode-hot100-notes/"></a>
+</article>
+
+<article class="post-entry"> 
+  <header class="entry-header">
     <h2 class="entry-hint-parent">Java场景100题
     </h2>
   </header>
@@ -387,27 +405,6 @@ DMA（直接内存访问）是一种不经过CPU直接在网络适配器（网�
   </div>
   <footer class="entry-footer"><span title='2025-02-20 21:21:45 +0800 CST'>February 20, 2025</span>&nbsp;·&nbsp;9 min&nbsp;·&nbsp;SwimmingLiu</footer>
   <a class="entry-link" aria-label="post link to Redis面试题笔记" href="https://swimmingliu.cn/posts/job/redis-interview-questions/"></a>
-</article>
-
-<article class="post-entry"> 
-  <header class="entry-header">
-    <h2 class="entry-hint-parent">Java集合面试题笔记
-    </h2>
-  </header>
-  <div class="entry-content">
-    <p>1. 说说 Java 中 HashMap 的原理？ 【HashMap定义】
-结构：数组 &#43; 链表 &#43; 红黑树 (JDK 1.8 之后)
-默认值：初始容量为16 (数组长度)，负载因子为 0.75。当存储的元素为 16 * 0.75 = 12个时，会触发Resize() 扩容操作，容量 x 2 并重新分配位置。但是扩容是有一定开销的，频繁扩容会影响性能。另外，TREEIFY_THRESHOLD 转换为红黑树的默认链表长度阈值为 8, UNTREEIFY_THRESHOLD 从红黑树转换为链表的阈值为 6。 两个阈值采用不同值的原因是防止刚转换为红黑树，又变成链表，反复横跳，消耗资源。
-数组下标位置计算方法：首先使用key的hashCode()方法计算下标位置，然后通过 indexFor() (JDK 1.7 以前) 计算下标值。 JDK 1.7后，为了提高计算效率采用 (len - 1) &amp; hash 来确定下标值。
-【注】数组的长度len 是2的幂次方时，(len - 1) &amp; hash 等价于 hash % len。 这也是为什么数组长度必须是2的幂次方。
-【HashMap线程不安全】
-为了保证HashMap的读写效率高，它的操作是非同步的，也就是说读写操作没有锁保护。所以多线程场景下是线程不安全的。
-【HashMap不同版本区别】
-JDK 1.7: 数组 &#43; 链表，链表部分采用头插法，多线程会导致出现环形链表。扩容会计算每个元素hash值，并分配到新的位置，开销大。 JDK 1.8：数组 &#43; 链表 &#43; 红黑树，采用高低位置来分配位置，即判断(e.hash &amp; oldCap) == 0， 减少了计算hash的次数 【HashMap的PUT方法】
-...</p>
-  </div>
-  <footer class="entry-footer"><span title='2025-02-20 21:20:50 +0800 CST'>February 20, 2025</span>&nbsp;·&nbsp;5 min&nbsp;·&nbsp;SwimmingLiu</footer>
-  <a class="entry-link" aria-label="post link to Java集合面试题笔记" href="https://swimmingliu.cn/posts/job/java-set-interview-questions/"></a>
 </article>
 <footer class="page-footer">
   <nav class="pagination">

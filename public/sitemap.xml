@@ -2,28 +2,31 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url>
+    <loc>https://swimmingliu.cn/categories/-job/</loc>
+    <lastmod>2025-07-20T23:27:35+08:00</lastmod>
+  </url><url>
     <loc>https://swimmingliu.cn/posts/job/</loc>
     <lastmod>2025-07-20T23:27:35+08:00</lastmod>
   </url><url>
     <loc>https://swimmingliu.cn/posts/</loc>
     <lastmod>2025-07-20T23:27:35+08:00</lastmod>
   </url><url>
+    <loc>https://swimmingliu.cn/categories/</loc>
+    <lastmod>2025-07-20T23:27:35+08:00</lastmod>
+  </url><url>
+    <loc>https://swimmingliu.cn/tags/java/</loc>
+    <lastmod>2025-07-20T23:27:35+08:00</lastmod>
+  </url><url>
+    <loc>https://swimmingliu.cn/posts/job/leetcode-hot100-notes/</loc>
+    <lastmod>2025-07-20T23:27:35+08:00</lastmod>
+  </url><url>
+    <loc>https://swimmingliu.cn/tags/</loc>
+    <lastmod>2025-07-20T23:27:35+08:00</lastmod>
+  </url><url>
     <loc>https://swimmingliu.cn/</loc>
     <lastmod>2025-07-20T23:27:35+08:00</lastmod>
   </url><url>
-    <loc>https://swimmingliu.cn/categories/-job/</loc>
-    <lastmod>2025-07-06T13:27:35+08:00</lastmod>
-  </url><url>
-    <loc>https://swimmingliu.cn/categories/</loc>
-    <lastmod>2025-07-06T13:27:35+08:00</lastmod>
-  </url><url>
-    <loc>https://swimmingliu.cn/tags/java/</loc>
-    <lastmod>2025-07-06T13:27:35+08:00</lastmod>
-  </url><url>
     <loc>https://swimmingliu.cn/posts/job/java-scene-quiz-100/</loc>
-    <lastmod>2025-07-06T13:27:35+08:00</lastmod>
-  </url><url>
-    <loc>https://swimmingliu.cn/tags/</loc>
     <lastmod>2025-07-06T13:27:35+08:00</lastmod>
   </url><url>
     <loc>https://swimmingliu.cn/posts/job/hensheng-interview-questions/</loc>

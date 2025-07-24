@@ -189,3 +189,76 @@ public boolean hasCycle(ListNode head) {
 }
 ```
 
+
+
+## 6. 环形链表 II
+
+题目链接：[环形链表 II](https://leetcode.cn/problems/linked-list-cycle-ii/description/?favorite=2cktkvj)
+
+【口诀记忆】**快慢相遇，头慢同步。** **再会之处，便是环口。**
+
+【思路】
+
+二级结论：环形链表的入环位置就是快慢指针相遇后，慢指针和头指针相遇的位置。	
+
+分析：假设快慢指针相遇的时候，慢指针走了 `b` 步，快指针走了 `2b` 步，再设入环的位置需要走 `a` 步，环的长度为 `c` 。 因为快指针和慢指针都会走入环的这段距离 ( `a` 步)，剩下的路程都是在环内绕圈。则他们相差的距离 `2b - b = kc` （龟兔赛跑中，兔子一定比乌龟多跑 `k` 圈，才会相遇）->  `b = kc`。又因为 `b - a = kc - a` -> `(b - a) + a = (kc - a) + a = kc`，其中 `b - a` 是快慢指针第一次相遇，慢指针在环中走的步数。走 `kc`步，刚好回到起点。 说明从相遇位置再走 `a` 步就是入环的位置。 
+
+![图解环形链表](https://oss.swimmingliu.cn/12784a00-6894-11f0-bd98-caaeffceb345)
+
+注 1：因为 `(kc − a) + a = kc`，从 `kc − a` 开始，再走 `a` 步，就可以走满 `k` 圈。想象你在操场上跑步，从入环口开始跑，跑满 k 圈，你现在人在哪？刚好在入环口。
+
+注 2：慢指针从相遇点开始，移动 a 步后恰好走到入环口，但在这个过程中，可能会多次经过入环口。
+
+【伪代码】
+
+``` java
+public ListNode detectCycle(ListNode head) {
+    ListNode slow = head, fast = head;
+    while (fast != null && fast.next != null) {
+        slow = slow.next;
+        fast = fast.next.next;
+        if (fast == slow) { // 相遇
+            while (slow != head) { // 再走 a 步 (头指针走a步 = 慢指针从相遇位置走a步)
+                slow = slow.next;
+                head = head.next;
+            }
+            return slow;
+        }
+    }
+    return null;
+}
+```
+
+## 7. 排序链表
+
+题目链接：[排序链表](https://leetcode.cn/problems/sort-list/description/)
+
+【思路】
+
+1. 按照分而治之的思想，将链表从中间分为两段，确保左右两段都有序。再合并两个有序链表即可。对于两段链表进行排序，可以再采取这个思路，将链表分为两段有序链表，再进行合并。一直划分到只有一个节点或者链表没有节点（奇数个）为止
+2. 链表找中点：快慢指针一起走，快指针结束，慢指针刚好在中点
+3. 合并两个有序链表：双指针比较大小
+
+【复杂度分析】
+
+- 时间复杂度：`O(nlogn)`，其中 n 是链表长度。递归式 `T(n) = 2T(n/2) + O(n)`，由主定理可得时间复杂度为 `O(nlogn)`。
+- 空间复杂度：`O(logn)`。递归需要 `O(logn)` 的栈开销。
+
+【伪代码】
+
+``` java
+public ListNode sortList(ListNode head) {
+    // 如果链表为空或者只有一个节点，无需排序
+    if (head == null || head.next == null) {
+        return head;
+    }
+    // 找到中间节点 head2，并断开 head2 与其前一个节点的连接
+    // 比如 head=[4,2,1,3]，那么 middleNode 调用结束后 head=[4,2] head2=[1,3]
+    ListNode head2 = middleNode(head);
+    // 分别排序左边和右边
+    head = sortList(head);
+    head2 = sortList(head2);
+    // 合并 -> 双指针 + 比较大小
+    return mergeTwoLists(head, head2);
+}
+```

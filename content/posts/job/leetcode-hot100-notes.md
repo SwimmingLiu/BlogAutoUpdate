@@ -127,7 +127,7 @@ public ListNode mergeTwoLists(ListNode list1, ListNode list2) {
 
 
 
-## 4. 合并K个升序链表
+### 4. 合并K个升序链表
 
 题目链接：[合并K个升序链表](https://leetcode.cn/problems/merge-k-sorted-lists/description/?favorite=2cktkvj)
 
@@ -165,7 +165,7 @@ public ListNode mergeKLists(ListNode[] lists) {
 }
 ```
 
-## 5. 环形链表
+### 5. 环形链表
 
 题目链接：[环形链表](https://leetcode.cn/problems/linked-list-cycle/?favorite=2cktkvj)
 
@@ -191,7 +191,7 @@ public boolean hasCycle(ListNode head) {
 
 
 
-## 6. 环形链表 II
+### 6. 环形链表 II
 
 题目链接：[环形链表 II](https://leetcode.cn/problems/linked-list-cycle-ii/description/?favorite=2cktkvj)
 
@@ -229,7 +229,7 @@ public ListNode detectCycle(ListNode head) {
 }
 ```
 
-## 7. 排序链表
+### 7. 排序链表
 
 题目链接：[排序链表](https://leetcode.cn/problems/sort-list/description/)
 
@@ -260,5 +260,413 @@ public ListNode sortList(ListNode head) {
     head2 = sortList(head2);
     // 合并 -> 双指针 + 比较大小
     return mergeTwoLists(head, head2);
+}
+```
+
+### 8. 相交链表
+
+题目链接：[相交链表](https://leetcode.cn/problems/intersection-of-two-linked-lists/?favorite=2cktkvj)
+
+【思路】
+
+简单总结：两个人从不同的地方来，同时走过一段旅程之后，从另外一个人的源头再走一遍，一定会重逢。如果没有重逢说明，他们没有一起走过的旅程。
+
+![相交链表](https://oss.swimmingliu.cn/69eb28b2-6aeb-11f0-96f8-caaeffceb345)
+
+【伪代码】
+
+``` java
+public ListNode getIntersectionNode(ListNode headA, ListNode headB) {
+        ListNode p = headA;
+        ListNode q = headB;
+        while (p != q) {
+            p = p != null ? p.next : headB;
+            q = q != null ? q.next : headA;
+        }
+        return p;
+    }
+```
+
+### 9. 反转链表
+
+题目链接：[反转链表](https://leetcode.cn/problems/reverse-linked-list/description/)
+
+【思路】
+
+使用头节点的头插法，创建一个新的 `dummy` 节点，然后采用头插法将元素插入`dummy` 后面，最后`dummpy.next` 就是逆序后的头节点
+
+【伪代码】
+
+```java
+public ListNode reverseList(ListNode head) {
+      ListNode dummy = new ListNode();
+      ListNode cur = head;
+      while (cur != null) {
+          ListNode nxt = cur.next;
+          cur.next = dummy.next;
+        	dummy.next = cur;
+          cur = nxt;
+      }
+      return dummy.next;
+  }
+```
+
+【第二种思路】
+
+直接使用头插法，将后面一个节点放到当前节点的前面，同时将当前节点的下一个节点替换为上一个节点。
+
+【为代码】
+
+``` java
+public ListNode reverseList(ListNode head) {
+      ListNode pre = null;
+      ListNode cur = head;
+      while (cur != null) {
+          ListNode nxt = cur.next;
+          cur.next = pre;
+        	pre = cur;
+          cur = nxt;
+      }
+      return pre;
+  }
+```
+
+
+
+### 10. 回文链表
+
+题目链接：[回文链表](https://leetcode.cn/problems/palindrome-linked-list/description/)
+
+【思路】
+
+这道题应该拆分为两道题来做，一个是找中间节点（快慢指针） + 后半部分链表反转。然后从中间节点开始比较，如果有某一处不相同就返回 `false`， 否则最后返回 `true`
+
+【伪代码】
+
+``` java
+public boolean isPalindrome(ListNode head) {
+      ListNode mid = middleNode(head); // 寻找中间节点
+      ListNode head2 = reverseList(mid); // 反转链表
+      while (head2 != null) {
+          if (head.val != head2.val) { // 不是回文链表
+              return false;
+          }
+          head = head.next;
+          head2 = head2.next;
+      }
+      return true;
+  }
+```
+
+## 二叉树
+
+### 1. 二叉树的中序遍历
+
+题目链接：[二叉树的中序遍历](https://leetcode.cn/problems/binary-tree-inorder-traversal/?favorite=2cktkvj)
+
+【思路】
+
+中序遍历：左根右，遍历过程：上下递归，中间输出，边界条件是空
+
+【伪代码】
+
+``` java
+void dfs(List<Integer> res, TreeNode root) {
+		if(root==null) {
+			return;
+		}
+		//按照 左-打印-右的方式遍历
+		dfs(res,root.left);
+		res.add(root.val);
+		dfs(res,root.right);
+	}
+```
+
+### 2. 验证二叉搜索树
+
+题目链接：[验证二叉搜索树](https://leetcode.cn/problems/validate-binary-search-tree/?favorite=2cktkvj)
+
+【思路】
+
+二叉搜索树就是根比左边大，比右边小。所以可以采用先序遍历的方式，传入左边合右边的值。递归遍历当前节点和左边节点、右边节点是否都符合规则。如果不符合，则输出 `fasle`。
+
+【伪代码】
+
+``` java
+public boolean isValidBST(TreeNode root) {
+    return isValidBST(root, Long.MIN_VALUE, Long.MAX_VALUE);
+}
+
+private boolean isValidBST(TreeNode node, long left, long right) {
+    if (node == null) {
+        return true;
+    }
+    long x = node.val;
+    return left < x && x < right &&
+           isValidBST(node.left, left, x) &&
+           isValidBST(node.right, x, right);
+}
+```
+
+### 3. 对称二叉树
+
+题目链接：[对称二叉树](https://leetcode.cn/problems/symmetric-tree/description/)
+
+【思路】
+
+对称二叉树：二叉树相对轴是对称的
+
+判断方法是递归判断当前节点的左右节点是否满足轴对称条件。两个节点左右对称的条件是 `l.left = r.right && l.right == r.left` 。边界判断条件为左右节点是否均为空，如果为空说明父节点是叶子节点，表明 满足轴对称。如果只有一个节点为空，或者两个节点的值不同，则说明他们不是轴堆成的。如果左右节点都有值且相同，则继续往下递归。
+
+【伪代码】
+
+``` java
+public boolean isSymmetric(TreeNode root) {
+    return root == null || recur(root.left, root.right);
+}
+boolean recur(TreeNode L, TreeNode R) {
+    if (L == null && R == null) return true;
+    if (L == null || R == null || L.val != R.val) return false;
+    return recur(L.left, R.right) && recur(L.right, R.left);
+}
+```
+
+### 4. 二叉树的层序遍历
+
+题目链接：[二叉树的层序遍历](https://leetcode.cn/problems/binary-tree-level-order-traversal/description/?favorite=2cktkvj)
+
+【思路】
+
+二叉树的层序遍历就是用队列的方式实现，具体可以使用 `ArrayDeque` 来存储节点。每次循环都统计队列的大小 (表示有多少个同级的节点)，然后将这些节点放入数组中，并且将他们的左右子节点放入队列中，循环直到队列为空才结束。
+
+【伪代码】
+
+``` java
+public List<List<Integer>> levelOrder(TreeNode root) {
+    if (root == null) {
+        return List.of();
+    }
+    List<List<Integer>> ans = new ArrayList<>();
+    Queue<TreeNode> q = new ArrayDeque<>();
+    q.add(root);
+    while (!q.isEmpty()) {
+        int n = q.size();
+        List<Integer> vals = new ArrayList<>(n); // 预分配空间
+        while (n-- > 0) {
+            TreeNode node = q.poll();
+            vals.add(node.val);
+            if (node.left != null)  q.add(node.left);
+            if (node.right != null) q.add(node.right);
+        }
+        ans.add(vals);
+    }
+    return ans;
+}
+```
+
+### 5. 二叉树的最大深度
+
+题目链接：[二叉树的最大深度](https://leetcode.cn/problems/maximum-depth-of-binary-tree/description/)
+
+【思路】
+
+最大深度可以采用后序遍历、先序遍历或者层序遍历，不过一般都使用后序遍历或者先序遍历来做。可以按照先序遍历和后序遍历分为两种方案，一种是自顶向下，一种是自底向上的方式。
+
+- 自顶向下 (先序遍历)：先设置 `depth` 为 0，用一个全局的 `answer` 来记录答案。按照后序遍历的顺序，一定能遍历到最下面的一层，每次讲 `answer` 更新为最大深度即可。
+- 自底向上 (后序遍历)：采用后序遍历递归获取左右节点的最长深度，加上当前层的深度就是二叉树的最大深度
+
+【伪代码】
+
+``` java
+// 自顶向下：先序遍历，ans是全局变量
+public int maxDepth(TreeNode root) {
+    dfs(root, 0);
+    return ans;
+}
+
+private void dfs(TreeNode node, int depth) {
+    if (node == null) {
+        return;
+    }
+    depth++;
+    ans = Math.max(ans, depth);
+    dfs(node.left, depth);
+    dfs(node.right, depth);
+}
+// 自底向上：后序遍历
+public int maxDepth(TreeNode root) {
+    if (root == null) {
+        return 0;
+    }
+    int lDepth = maxDepth(root.left);
+    int rDepth = maxDepth(root.right);
+    return Math.max(lDepth, rDepth) + 1;
+}
+```
+
+### 6. 从前序与中序遍历序列构造二叉树
+
+题目链接：[从前序与中序遍历序列构造二叉树](https://leetcode.cn/problems/construct-binary-tree-from-preorder-and-inorder-traversal/description/)
+
+【思路】
+
+手推：先按照手推的方式思考，用先序和中序构成二叉树的方法：先序列表用于确定根节点，中序列表用于确定左右子树。然后逐个确定每一层的根节点，及其左右子树。
+
+程序：分析手推的方式可以发现确定每一层根节点及其左右子树的方法是重复的，可以采用递归的方式完成。所以我们可以先通过先序找到根节点的位置，再按照根节点的位置将先序列表和中序列表一分为二。然后分别将先序和中序的两个左子树数组进行递归构建，再将两个右子树数组进行递归构建。
+
+![从先序和中序构建二叉树](https://oss.swimmingliu.cn/6a8af4e6-6aeb-11f0-96f8-caaeffceb345)
+
+【伪代码】
+
+``` java
+public TreeNode buildTree(int[] preorder, int[] inorder) {
+    int n = preorder.length;
+    if (n == 0) { // 空节点
+        return null;
+    }
+    int leftSize = indexOf(inorder, preorder[0]); // 左子树的大小
+    int[] pre1 = Arrays.copyOfRange(preorder, 1, 1 + leftSize); // 先序左子树
+    int[] pre2 = Arrays.copyOfRange(preorder, 1 + leftSize, n); // 先序右子树
+    int[] in1 = Arrays.copyOfRange(inorder, 0, leftSize);       // 中序左子树
+    int[] in2 = Arrays.copyOfRange(inorder, 1 + leftSize, n);   // 中序右子树
+    TreeNode left = buildTree(pre1, in1);
+    TreeNode right = buildTree(pre2, in2);
+    return new TreeNode(preorder[0], left, right);
+}
+
+// 获取左子树大小：返回 x 在 a 中的下标，保证 x 一定在 a 中
+private int indexOf(int[] a, int x) {
+    for (int i = 0; ; i++) {
+        if (a[i] == x) {
+            return i;
+        }
+    }
+}
+```
+
+
+
+### 7. 将有序数组转换为二叉搜索树
+
+题目链接：[将有序数组转换为二叉搜索树](https://leetcode.cn/problems/convert-sorted-array-to-binary-search-tree/description/)
+
+【思路】
+
+有序数组其实是二叉搜索树的中序遍历，则说明中间的位置就是根节点，左右两边的区间分别为左子树和右子树。从根节点开始，循环递归的构建左子树和右子树，就可以的到二叉搜索树。
+【注】当数组长度 `n` 为偶数的时候，可以去中间左边的节点，也可以取中间右边的结果，所以答案不唯一。下面的伪代码是取得中间右边的节点。
+
+【伪代码】
+
+``` java
+public TreeNode sortedArrayToBST(int[] nums) {
+    return dfs(nums, 0, nums.length);
+}
+
+// 把 nums[left] 到 nums[right-1] 转成平衡二叉搜索树
+private TreeNode dfs(int[] nums, int left, int right) {
+    if (left == right) {
+        return null;
+    }
+    int m = (left + right) >>> 1;
+    return new TreeNode(nums[m], dfs(nums, left, m), dfs(nums, m + 1, right));
+}
+```
+
+### 8. 二叉树展开为链表
+
+题目链接：[二叉树展开为链表](https://leetcode.cn/problems/flatten-binary-tree-to-linked-list/?favorite=2cktkvj)
+
+【思路】
+
+将二叉树展开为链表（还是二叉树结构），其实是按照二叉树的先序遍历顺序进行展开(根-左-右)。如果要构建这个展开后的链表，可以按照相反的方向(右-左-根)的方向进行构建。
+
+只需要采用头插法，从相反方向(右-左-根)的第一个元素开始，用 `pre` 记录上一个节点，递归构建展开后的链表即可。
+
+【伪代码】
+
+``` java
+public void flatten(TreeNode root) {
+    if (root == null) {
+        return;
+    }
+    flatten(root.right); // 右节点
+    flatten(root.left);  // 左节点
+    root.left = null;  // 左子树置空
+    root.right = pre; // 头插法，相当于链表的 root.next = head
+    pre = root; // 现在链表头节点是 root
+}
+```
+
+### 9. 翻转二叉树
+
+题目链接：[翻转二叉树](https://leetcode.cn/problems/invert-binary-tree/description/?favorite=2cktkvj)
+
+【思路】
+
+翻转二叉树：翻转每个节点的左子树和右子树。所以，可以从根节点开始，递归翻转左子树和右子树，直到子树为空为止。
+
+【伪代码】
+
+``` java 
+ public TreeNode invertTree(TreeNode root) {
+ 		if (root == null){
+      	return null;
+    }
+    TreeNode left = invertTree(root.left);
+   	TreeNode right = invertTree(root.right);
+   	root.left = right; // 交换左右子树的值
+    root.right = left;
+    return root;
+ }
+```
+
+### 10. 二叉树的最近公共祖先
+
+题目链接：[二叉树的最近公共祖先](https://leetcode.cn/problems/lowest-common-ancestor-of-a-binary-tree/description/)
+
+> 对于有根树 T 的两个节点 p、q，最近公共祖先表示为一个节点 x，满足 x 是 p、q 的祖先且 x 的深度尽可能大（**一个节点也可以是它自己的祖先**）。
+
+【思路】
+
+分析：该题目需要找到两个节点的公共祖先，应该是一个从下往上找的过程，所以应该选择后序遍历的方式。
+
+首先基于某个节点，分析二叉树最近公共祖先可能出现的位置：
+
+1. 当 `p` 和 `q` 位于当前节点的左右子树，则说明最近公共祖先就是当前节点
+2. 当 `p` 和 `q` 均位于当前节点的某一个子树，则说明最近公共祖先就在这个子树中
+3. 如果当前节点是 `p` 和 `q` 中的某一个，并且另外一个节点在当前子树中，则说明当前节点是最近公共祖先节点。
+
+解决方案：对于从底向上的某一个节点，应该判断下面的几个条件：
+
+1. 如果当前节点为 `null` 或者为 `p` 和 `q` 中的某一个，则可以直接返回节点。 因为是自底向上的，如果子树存在另外一个节点，说明当前节点是最近公共祖先。如果不存在，则也没有必要去探寻一遍。
+2. 如果当前节点的左右子树分别包含 `p`  和  `q` ，则说明当前节点就是最近公共祖先，直接返回当前节点。
+3. 如果当前节点的左右子树中，某一个子树包含 `p` 和 `q` ，则说明当前节点不是最近公共祖先，返回该子树中的结果值。因为可能他的子树中，同时包含 `p` 和 `q` ，则向上传递的节点就是最新公共祖先。如果不是，则还需要向上继续判断。
+
+【伪代码】
+
+``` java 
+public TreeNode lowestCommonAncestor(TreeNode root, TreeNode p, TreeNode q) {
+    // 基本情况处理：
+    // 1.如果当前节点为空，返回null
+    // 2.如果当前节点是p或q中的任一个，直接返回该节点
+    if (root == null || root == p || root == q) {
+        return root;
+    }
+    // 递归搜索左子树 
+    TreeNode findInLeftTree = lowestCommonAncestor(root.left, p, q);
+    // 递归搜索右子树
+    TreeNode findInRightTree = lowestCommonAncestor(root.right, p, q);
+    // 情况1: p和q分别位于当前节点的左右子树
+    // 此时当前节点就是最近公共祖先
+    if (findInLeftTree != null && findInRightTree != null) {
+        return root;
+    }
+    // 情况2: p和q都在左子树中
+    if (findInLeftTree != null) {
+        return findInLeftTree;
+    }
+    // 情况3: p和q都在右子树中
+    // 情况4: p和q都不在当前子树中(此时right为null)
+    return findInRightTree;
 }
 ```

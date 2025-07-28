@@ -670,3 +670,85 @@ public TreeNode lowestCommonAncestor(TreeNode root, TreeNode p, TreeNode q) {
     return findInRightTree;
 }
 ```
+
+
+### 11. 把二叉搜索树转换为累加树
+
+题目链接：[把二叉搜索树转换为累加树](https://leetcode.cn/problems/convert-bst-to-greater-tree/description/)
+
+【思路】
+
+题目的意思是在每个节点上计算累加和，从最大的节点开始进行递归计算。因为原来的树为二叉搜索树，所以最大的节点在最右下方。二叉搜索树中，右子树节点 > 根节点 > 左子树节点。所以可以按照 `右-根-左` 的遍历方式进行遍历，用一个全局变量来记录累加值。
+
+【伪代码】
+
+``` java
+private int s = 0; // 全局变量记录累加值
+public TreeNode convertBST(TreeNode root) {
+    dfs(root);
+    return root;
+}
+
+private void dfs(TreeNode node) {
+    if (node == null) {
+        return;
+    }
+    dfs(node.right); // 递归右子树
+    s += node.val;
+    node.val = s; // 此时 s 就是 >= node.val 的所有数之和
+    dfs(node.left); // 递归左子树
+}
+```
+
+### 12. 二叉树的直径
+
+题目链接：[二叉树的直径](https://leetcode.cn/problems/diameter-of-binary-tree/description/)
+
+【思路】
+
+链长：定义从最底的叶子节点到当前节点的距离为链长，则空节点的链长为 `-1`，因为它还在叶子节点下面。
+
+当前节点的直径：当前节点的左子树链长+当前节点的右子树链长
+
+所以，只需要设置一个全局的变量 `ans` ，然后从根节点递归计算每一个节点的左右子树链长，然后获取 `ans` 和当前节点直径的最大值，每次返回左右子树的最大链长即可。边界条件是当节点为空的时候，返回的链长为 `-1`。
+
+【伪代码】
+
+``` java
+private int ans; // 全局变量记录结果
+public int diameterOfBinaryTree(TreeNode root) {
+    dfs(root);
+    return ans;
+}
+
+private int dfs(TreeNode node) {
+    if (node == null) {
+        return -1; // 对于叶子来说，链长就是 -1+1=0
+    }
+    int lLen = dfs(node.left) + 1; // 左子树最大链长+1
+    int rLen = dfs(node.right) + 1; // 右子树最大链长+1
+    ans = Math.max(ans, lLen + rLen); // 两条链拼成路径
+    return Math.max(lLen, rLen); // 当前子树最大链长
+}
+```
+
+### 13. 合并二叉树
+
+题目链接：[合并二叉树](https://leetcode.cn/problems/merge-two-binary-trees/?favorite=2cktkvj)
+
+【思路】
+
+如果 `root1` 为空，则直接返回 `root2` 。如果 `root2` 为空，则直接返回 `root1`。如果都不为空，则返回一个新的节点，并递归合并他的左右子树。 
+
+【伪代码】
+
+``` java 
+public TreeNode mergeTrees(TreeNode root1, TreeNode root2) {
+    if (root1 == null) return root2;
+    if (root2 == null) return root1;
+    return new TreeNode(root1.val + root2.val,
+        mergeTrees(root1.left, root2.left),    // 合并左子树
+        mergeTrees(root1.right, root2.right)); // 合并右子树
+}
+```
+

@@ -752,3 +752,149 @@ public TreeNode mergeTrees(TreeNode root1, TreeNode root2) {
 }
 ```
 
+## DFS/BFS
+
+### 1. 单词搜索
+
+题目链接：[单词搜索](https://leetcode.cn/problems/word-search/description/)
+
+【思路】
+
+遍历 `board` 网格中的所有字符，对每个字符进行递归遍历 `dfs(i, j, k)` ，其中 `i` 和 `j` 分别表示 `board` 网格中的位置，`k` 表示当前需要验证的 `word[k]` 。判断 `board[i][j] == word[k]`， 如果不相等，则直接返回 `false`。如果相等，则查询四周是否存在 `word [k + 1]`，即遍历 `dfs (x, y, k + 1)` 。遍历 `dfs(x, y, k + 1)` 前，将 `board[i][j]` 标记为 `-1`， 遍历后再恢复现场，用于表示标识 `board[i][j]` 是否被使用。最后返回当 `k == word.size() - 1` ，则返回 `true`。
+
+- 优化点1: 可以先统计 `word` 中所有字符出现的次数，以及 `board` 网格所有字符出现的次数。如果 `word` 中某个字符出现的次数大于 `board` 网格中出现的次数，则直接返回 `false`
+
+- 优化点2:  判断 `word` 中首尾单词出现的次数，从次数较少的一头开始比较，可以减少比较次数。注意，如果要用末尾的开始，需要将 `word` 数组进行逆序。 
+
+【伪代码】
+
+``` java
+private static final int[][] DIRS = {{0, -1}, {0, 1}, {-1, 0}, {1, 0}}; // 四个方向
+public boolean exist(char[][] board, String word) {
+    // 为了方便，直接用数组代替哈希表
+    int[] cnt = new int[128];
+    for (char[] row : board) {
+        for (char c : row) {
+            cnt[c]++;
+        }
+    }
+
+    // 优化一
+    char[] w = word.toCharArray();
+    int[] wordCnt = new int[128];
+    for (char c : w) {
+        if (++wordCnt[c] > cnt[c]) {
+            return false;
+        }
+    }
+
+    // 优化二
+    if (cnt[w[w.length - 1]] < cnt[w[0]]) {
+        w = new StringBuilder(word).reverse().toString().toCharArray();
+    }
+
+    for (int i = 0; i < board.length; i++) {
+        for (int j = 0; j < board[i].length; j++) {
+            if (dfs(i, j, 0, board, w)) {
+                return true; // 搜到了！
+            }
+        }
+    }
+    return false; // 没搜到
+}
+
+private boolean dfs(int i, int j, int k, char[][] board, char[] word) {
+    if (board[i][j] != word[k]) { // 匹配失败
+        return false;
+    }
+    if (k == word.length - 1) { // 匹配成功！
+        return true;
+    }
+    board[i][j] = 0; // 标记访问过
+    for (int[] d : DIRS) {
+        int x = i + d[0];
+        int y = j + d[1]; // 相邻格子
+        if (0 <= x && x < board.length && 0 <= y && y < board[x].length && dfs(x, y, k + 1, board, word)) {
+            return true; // 搜到了！
+        }
+    }
+    board[i][j] = word[k]; // 恢复现场
+    return false; // 没搜到
+}
+```
+
+### 2. 岛屿数量
+
+题目链接：[岛屿数量](https://leetcode.cn/problems/number-of-islands/description/)
+
+【思路】
+
+遍历网格中所有为 `1` 的位置，递归判断上、下、左、右是否有为 `1` 的格子。如果没有，则直接返回。如果有，则标记当前的格子，并且继续往后递归判断。每遍历完一次，说明发现了一个完整的岛屿，则答案加 1。然后继续找下一个为 `1` 的位置，继续递归判断。
+【注】 递归有回退的操作，案例1里面是会回退回来遍历所有部分的，不是最后一个不满足条件就直接结束了。
+
+【伪代码】
+
+``` java 
+public int numIslands(char[][] grid) {
+    int ans = 0;
+    for (int i = 0; i < grid.length; i++) {
+        for (int j = 0; j < grid[i].length; j++) {
+            if (grid[i][j] == '1') { // 找到了一个新的岛
+                dfs(grid, i, j); // 把这个岛插满旗子，这样后面遍历到的 '1' 一定是新的岛
+                ans++;
+            }
+        }
+    }
+    return ans;
+}
+
+private void dfs(char[][] grid, int i, int j) {
+    // 出界，或者不是 '1'，就不再往下递归
+    if (i < 0 || i >= grid.length || j < 0 || j >= grid[0].length || grid[i][j] != '1') {
+        return;
+    }
+    grid[i][j] = '2'; // 插旗！避免来回横跳无限递归
+    dfs(grid, i, j - 1); // 往左走
+    dfs(grid, i, j + 1); // 往右走
+    dfs(grid, i - 1, j); // 往上走
+    dfs(grid, i + 1, j); // 往下走
+}
+```
+
+### 3. 路径总和 III
+
+题目链接：[路径总和 III](https://leetcode.cn/problems/path-sum-iii/description/)
+
+【思路】
+
+首先，要找到一条路径的总合为 `targetNum`， 可以利用前缀和的特性。例如，当 `targetNum = 8`， 三个节点的前缀和数组为 `10, 15, 18` ，因为 `18 - 10 = 8 = targetNum`， 说明后面两个节点可以组成一条路径和为 `targetNum`。其次，判断的时候，以第三个节点为终点，判断存在多少条路径的前缀和为 `18 - targetNum = 10`，就说明有多少条路径和为 `targetNum` 。所以，按照先序遍历的顺序，用 `cnt` 的 Map对象记录前缀和的个数。遍历的过程中，将当前前缀和的值放入 `cnt` 中。
+
+注意，为了防止出现 `targetNum = 8`， 第一个节点刚好为 `8`，导致漏算的情况。可以初始化 `cnt(0, 1)`，也就是 `8 - targeNum = 0`，本身也是一条路径。
+
+【伪代码】
+
+``` java
+private int ans; // 全局记录答案
+public int pathSum(TreeNode root, int targetSum) {
+    Map<Long, Integer> cnt = new HashMap<>();
+    cnt.put(0L, 1);
+    dfs(root, 0, targetSum, cnt);
+    return ans;
+}
+private void dfs(TreeNode node, long s, int targetSum, Map<Long, Integer> cnt) {
+    if (node == null) {
+        return;
+    }
+
+    s += node.val;
+    // 把 node 当作路径的终点，统计有多少个起点
+    ans += cnt.getOrDefault(s - targetSum, 0);
+
+    cnt.merge(s, 1, Integer::sum); // cnt[s]++
+    dfs(node.left, s, targetSum, cnt);
+    dfs(node.right, s, targetSum, cnt);
+    cnt.merge(s, -1, Integer::sum); // cnt[s]-- 恢复现场，防止遍历完左子树，遍历右子树的时候出现前缀合多加上左子树值的情况。
+}
+```
+
+

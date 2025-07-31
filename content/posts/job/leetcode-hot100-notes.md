@@ -315,7 +315,7 @@ public ListNode reverseList(ListNode head) {
 
 直接使用头插法，将后面一个节点放到当前节点的前面，同时将当前节点的下一个节点替换为上一个节点。
 
-【为代码】
+【伪代码】
 
 ``` java
 public ListNode reverseList(ListNode head) {
@@ -472,7 +472,7 @@ public List<List<Integer>> levelOrder(TreeNode root) {
 
 最大深度可以采用后序遍历、先序遍历或者层序遍历，不过一般都使用后序遍历或者先序遍历来做。可以按照先序遍历和后序遍历分为两种方案，一种是自顶向下，一种是自底向上的方式。
 
-- 自顶向下 (先序遍历)：先设置 `depth` 为 0，用一个全局的 `answer` 来记录答案。按照后序遍历的顺序，一定能遍历到最下面的一层，每次讲 `answer` 更新为最大深度即可。
+- 自顶向下 (先序遍历)：先设置 `depth` 为 0，用一个全局的 `answer` 来记录答案。按照后序遍历的顺序，一定能遍历到最下面的一层，每次将 `answer` 更新为最大深度即可。
 - 自底向上 (后序遍历)：采用后序遍历递归获取左右节点的最长深度，加上当前层的深度就是二叉树的最大深度
 
 【伪代码】
@@ -670,7 +670,6 @@ public TreeNode lowestCommonAncestor(TreeNode root, TreeNode p, TreeNode q) {
     return findInRightTree;
 }
 ```
-
 
 ### 11. 把二叉搜索树转换为累加树
 
@@ -898,3 +897,190 @@ private void dfs(TreeNode node, long s, int targetSum, Map<Long, Integer> cnt) {
 ```
 
 
+
+## 递归/回溯
+
+### 1. 电话号码的字母组合
+
+题目链接：[电话号码的字母组合](https://leetcode.cn/problems/letter-combinations-of-a-phone-number/description/)
+
+【思路】
+
+用一个字符串数组 `MAP` 记录每个数字对应的多个字符，用 `path` 数组记录组合的字符串，长度等于 `digits` 的长度。从 `0` 开始，`dfs(i)`递归获取每个数字的可能性，递归的过程中循环递归  `MAP` 中的多种组合 `dfs(i + 1)`（需要恢复现场）。边界条件为 `i == len`， 直接将 `path` 中的结果添加到 `ans` 中。
+
+【伪代码】
+
+``` java
+private static final String[] MAPPING = new String[]{"", "", "abc", "def", "ghi", "jkl", "mno", "pqrs", "tuv", "wxyz"};
+
+public List<String> letterCombinations(String digits) {
+    int n = digits.length();
+    if (n == 0) {
+        return List.of();
+    }
+    List<String> ans = new ArrayList<>();
+    char[] path = new char[n]; // 注意 path 长度一开始就是 n，不是空数组
+    dfs(0, ans, path, digits.toCharArray());
+    return ans;
+}
+
+private void dfs(int i, List<String> ans, char[] path, char[] digits) {
+    if (i == digits.length) {
+        ans.add(new String(path));
+        return;
+    }
+    String letters = MAPPING[digits[i] - '0'];
+    for (char c : letters.toCharArray()) {
+        path[i] = c; // 直接覆盖 (相当于赋值+恢复现场一体)
+        dfs(i + 1, ans, path, digits);
+    }
+}
+```
+
+### 2. 括号生成
+
+题目链接：[括号生成](https://leetcode.cn/problems/generate-parentheses/description/)
+
+【思路】
+
+`dfs(i)` 递归枚举 `n` 个位置中的每个位置，应该填左括号还是右括号, 用 `path` 数组记录括号的组成结果。根据括号的特性，对于每个位置，可以确定下面两个特性：
+
+1. 左括号的数或者右括号的数都小于 `n`，当前位置才可以填左括号/右括号 
+2. 右括号的个数一定小于左括号的个数，当前位置才可以填右括号
+
+分别用 `left` 和 `right` 记录 `path` 数组中左括号和右括号的个数，如果满足上面的连个特性，就向下递归 `dfs(i + 1)`。边界条件为 `i == n` , 说明当前 `path` 符合括号的特性，则加入最终的 `ans` 数组 
+
+【伪代码】
+
+``` java
+public List<String> generateParenthesis(int n) {
+        List<String> ans = new ArrayList<>();
+        char[] path = new char[n * 2]; // 所有括号长度都是一样的 2n
+        dfs(0, 0, n, path, ans); // 一开始没有填括号
+        return ans;
+    }
+
+// 目前填了 left 个左括号，right 个右括号
+private void dfs(int left, int right, int n, char[] path, List<String> ans) {
+    if (right == n) { // 填完 2n 个括号
+        ans.add(new String(path));
+        return;
+    }
+    if (left < n) { // 可以填左括号
+        path[left + right] = '('; // 直接覆盖
+        dfs(left + 1, right, n, path, ans);
+    }
+    if (right < left) { // 可以填右括号
+        path[left + right] = ')'; // 直接覆盖
+        dfs(left, right + 1, n, path, ans);
+    }
+}
+```
+
+【第二种思路】
+
+递归枚举左括号的位置，假设当前的位置，已填写的括号为 `i` ，其中 `左括号 - 右括号` 的个数为 `balance` 。 说明后面还可以填写 `balance` 个右括号。那么，我们可以根据右括号出现的情况，来确定左括号的位置。例如从当前位置填写 `k` 个右括号，则左括号的位置为 `i + k`  ( `0 <= k <= balance`)。那么下一个需要确定的左括号的位置就是 `i + k + 1`。此时， `左括号 - 右括号` 的个数为 `balance - k + 1`  ，这里的 ` + 1` 表示 `i + k` 位置的左括号多了一个。 
+
+用 `path` 数组记录每一个左括号的位置，每次递归之后恢复现场，移除最后一个元素 (上一个左括号的位置)。当 `path.size() == n` ，说明已经枚举完所有左括号的位置，则可以将结果添加到 `ans` 里面。 
+
+【第二种伪代码】
+
+``` java
+public List<String> generateParenthesis(int n) {
+        List<String> ans = new ArrayList<>();
+        List<Integer> path = new ArrayList<>();
+        dfs(0, 0, n, path, ans);
+        return ans;
+    }
+// 目前填了 i 个括号
+// 这 i 个括号中的左括号个数 - 右括号个数 = balance
+private void dfs(int i, int balance, int n, List<Integer> path, List<String> ans) {
+    if (path.size() == n) {
+        char[] s = new char[n * 2];
+        Arrays.fill(s, ')');
+        for (int j : path) {
+            s[j] = '(';
+        }
+        ans.add(new String(s));
+        return;
+    }
+    // 枚举填 right=0,1,2,...,balance 个右括号
+    for (int right = 0; right <= balance; right++) {
+        // 先填 right 个右括号，然后填 1 个左括号，记录左括号的下标 i+right
+        path.add(i + right);
+        dfs(i + right + 1, balance - right + 1, n, path, ans);
+        path.removeLast(); // path.remove(path.size() - 1);
+    }
+}
+```
+
+### 3. 组合总和
+
+题目链接：[组合总和](https://leetcode.cn/problems/combination-sum/description/)
+
+【思路】
+
+按照 `candidate` 中的元素进行递归枚举，``dfs(i, left)` 递归枚举当前位置的数选还是不选，如果不选则直接 `dfs(i + 1, left)`。如果选，则将 `candidates[i]` 加入 `path` 数组中，继续递归 `dfs(i , left - candidates[i])`，递归后恢复现场，将 `path` 数组最后一个元素移除。边界条件为 `left == 0`，则将 `path` 数组中的结果加入 `ans` 数组中。如果 `i == candidates.size() || left < 0` ，则说明当前组合的和不可能为 `targetNum` ，直接返回。 其中， `left` 表示剩余需要判断的值，初始值为 `targetNum`。
+
+优化点：可以将 `candidates` 数组先进行快速排序，然后判断 `left < candidates[i]` 。则说明后面的数，不可能满足条件。
+
+【伪代码】
+
+``` java 
+public List<List<Integer>> combinationSum(int[] candidates, int target) {
+        Arrays.sort(candidates);
+        List<List<Integer>> ans = new ArrayList<>();
+        List<Integer> path = new ArrayList<>();
+        dfs(0, target, candidates, ans, path);
+        return ans;
+    }
+private void dfs(int i, int left, int[] candidates, List<List<Integer>> ans, List<Integer> path) {
+    if (left == 0) {
+        // 找到一个合法组合
+        ans.add(new ArrayList<>(path));
+        return;
+    }
+    if (i == candidates.length || left < candidates[i]) {
+        // 如果candidates[i] > left，说明后面的数都比 left 要大，path数组的和不可能为left
+        return;
+    }
+
+    // 不选
+    dfs(i + 1, left, candidates, ans, path);
+
+    // 选
+    path.add(candidates[i]);
+    dfs(i, left - candidates[i], candidates, ans, path);
+    path.remove(path.size() - 1); // 恢复现场
+}
+```
+
+【第二种思路】
+
+按照位置进行枚举，递归枚举当前位置应该选哪一个数，从第 `i` 个位置开始，循环枚举 `candidates` 数组的所有元素。边界条件是 `left == 0`， 则说明找到了一个 `path` 组合能够组成 `targetNum`。
+
+【第二种伪代码】
+
+``` java
+public List<List<Integer>> combinationSum(int[] candidates, int target) {
+        Arrays.sort(candidates);
+        List<List<Integer>> ans = new ArrayList<>();
+        List<Integer> path = new ArrayList<>();
+        dfs(0, target, candidates, ans, path);
+        return ans;
+    }
+private void dfs(int i, int left, int[] candidates, List<List<Integer>> ans, List<Integer> path) {
+    if (left == 0) {
+        // 找到一个合法组合
+        ans.add(new ArrayList<>(path));
+        return;
+    }
+
+    // 枚举当前位置，选哪个元素
+    for (int k = i; k < candidates.length && candidates[k] <= left; k++) {
+        path.add(candidates[k]);
+        dfs(k, left - candidates[k], candidates, ans, path);
+        path.remove(path.size() - 1); // 恢复现场
+    }
+}
+```

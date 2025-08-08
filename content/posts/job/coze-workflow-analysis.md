@@ -45,7 +45,50 @@ cover:
 
 > 节点类型可以分为：开始和结束节点 （默认）、LLM节点、子工作流 (嵌套)、插件 (外部工具-例如MCP、OCR)、业务逻辑节点 (选择、循环、分类、批处理(并发)、变量聚合)、数据库节点(SQL、CRUD)、知识库节点(RAG、增删、变量赋值)、图像处理节点、音视频处理节点、组件(JSON序列化、HTTP请求)、定时触发器节点(定时触发任务)
 
-### 1.1 如何从画布转成一个类？
+工作流大体执行流程如下
+
+```mermaid
+graph TD
+    subgraph "前端Canvas层"
+        A[Canvas画布<br/>用户可视化配置] --> B[Node节点<br/>vo.Node结构体]
+        A --> C[Edge连接<br/>节点间关系]
+        B --> D[节点样式：哪些固定字段？<br/>表单形式？]
+    end
+    
+    subgraph "验证层"
+        E[Canvas结构验证<br/>CanvasValidator] --> F{验证通过?}
+        F -->|失败| G[返回错误信息]
+        G --> H[前端显示错误提示]
+    end
+    
+    subgraph "转换层"
+        I[后端保存，workflow运行<br/>CanvasToWorkflowSchema] --> J[NodeType -> 节点Config<br/>通过NodeAdaptor接口]
+        J --> K[前端schema -> 后端schema<br/>schema.NodeSchema]
+    end
+    
+    subgraph "实例化层"
+        L[节点实例化<br/>NodeBuilder接口] --> M[NodeSchema.Configs<br/>实现NodeBuilder接口]
+        M --> N[后端schema -> 节点实例<br/>具体节点对象]
+    end
+    
+    subgraph "执行层"
+        O[节点运行<br/>InvokableNode等接口] --> P[业务逻辑<br/>具体执行逻辑]
+        P --> Q[结果输出<br/>返回执行结果]
+    end
+    
+    A --> E
+    F -->|通过| I
+    K --> L
+    N --> O
+    
+    style A fill:#e3f2fd
+    style E fill:#ffebee
+    style I fill:#fff3e0
+    style L fill:#e8f5e8
+    style O fill:#f3e5f5
+```
+
+### 1.1 画布和后端结构
 
 前端的画布采用DSL (JSON) 形式存储，每次更新画布都是将DSL传给后端。DSL的后端结构如下所示，主要包含节点 (node)、 边 (edge)、 版本
 
@@ -621,7 +664,7 @@ type BlockInput struct {
 ```
 
 3.   对象引用
-
+    
 
 ```go
 {
@@ -797,6 +840,7 @@ graph TD
 
 *   倒排索引：将文档切分成独立的词汇单元，建立从词汇到文档的映射索引
     
+
 *   TF-IDF (词频-逆文档频率)：TF（词频）： 计算一个词在文档中出现的词次数， 用于衡量词汇的重要性。IDF （逆文档频率）：衡量词汇在整个语料库中的重要性。 
     
 
@@ -812,6 +856,96 @@ TF-IDF = sigmoid (TF(t,d) * IDF(t))
     
 
 ##### ReRank 规则
+
+Rerank就是根据多个检索方式得到的结果进行整合，然后根据RRF算法重新排序的过程
+
+```python
+RRF: score = 1/(rank + k) # 默认 k = 60 
+```
+
+rerank模型的时序图
+
+```mermaid
+sequenceDiagram
+    participant User as 用户
+    participant RS as 检索服务<br/>RetrieveService
+    participant QR as 查询重写<br/>QueryRewriter
+    participant VS as 向量检索<br/>VectorStore
+    participant ES as 全文检索<br/>ElasticSearch
+    participant NL as NL2SQL检索<br/>NL2SQLEngine
+    participant RK as 重排序器<br/>Reranker
+    participant API as Rerank API<br/>VikingDB
+
+    Note over User, API: 1. 初始化检索请求
+    User->>RS: 发起检索请求<br/>(query, knowledgeIDs, strategy)
+    RS->>RS: 构建检索上下文<br/>(RetrieveContext)
+
+    Note over User, API: 2. 查询重写 (可选)
+    alt 启用查询重写 && 有对话历史
+        RS->>QR: 基于对话历史重写查询
+        QR-->>RS: 返回重写后的查询
+    end
+
+    Note over User, API: 3. 并行多通道检索
+    par 向量检索
+        alt 语义检索 || 混合检索
+            RS->>VS: 向量相似度检索
+            VS->>VS: 1. 查询文本向量化
+            VS->>VS: 2. 计算余弦相似度
+            VS->>VS: 3. 返回TopK相似文档
+            VS-->>RS: 向量检索结果<br/>(score: 0.0-1.0)
+        end
+    and 全文检索
+        alt 全文检索 || 混合检索
+            RS->>ES: 关键词匹配检索
+            ES->>ES: 1. 分词和索引匹配
+            ES->>ES: 2. 计算BM25分数
+            ES->>ES: 3. 返回匹配文档
+            ES-->>RS: ES检索结果<br/>(score: BM25)
+        end
+    and NL2SQL检索
+        alt 启用NL2SQL
+            RS->>NL: 自然语言转SQL查询
+            NL->>NL: 1. 解析查询意图
+            NL->>NL: 2. 生成SQL语句
+            NL->>NL: 3. 执行结构化查询
+            NL-->>RS: NL2SQL结果<br/>(score: 相关性分数)
+        end
+    end
+
+    Note over User, API: 4. Rerank重排序
+    RS->>RS: 整合多通道检索结果
+    Note right of RS: 根据检索策略收集结果:<br/>- SearchTypeSemantic: 仅向量结果<br/>- SearchTypeFullText: 仅ES结果<br/>- SearchTypeHybrid: 向量+ES结果<br/>- 如启用NL2SQL: 额外添加NL2SQL结果
+
+    RS->>RK: 调用Rerank服务
+    Note right of RK: 传入参数:<br/>- Query: 原始查询或重写后查询<br/>- Data: 多通道检索结果数组<br/>- TopN: 最终返回数量
+
+    alt VikingDB Reranker (深度学习模型)
+        RK->>RK: 1. 扁平化所有检索结果
+        RK->>RK: 2. 构造rerank请求<br/>{query, content, title}
+        RK->>API: HTTP POST请求<br/>/api/knowledge/service/rerank
+        API->>API: 1. 使用base-multilingual-rerank模型
+        API->>API: 2. 计算query-document相关性分数
+        API-->>RK: 返回每个文档的新分数<br/>{scores: [0.8, 0.6, 0.9, ...]}
+        RK->>RK: 3. 按新分数降序排序
+        RK->>RK: 4. 截取TopN结果
+    else RRF Reranker (排名融合算法)
+        RK->>RK: 1. 为每个通道的结果按排名计算分数
+        Note right of RK: RRF公式: score = 1/(rank + k)<br/>其中k=60为默认参数
+        RK->>RK: 2. 同一文档取最高分数
+        RK->>RK: 3. 按分数降序排序
+        RK->>RK: 4. 截取TopN结果
+    end
+
+    RK-->>RS: 返回重排序结果<br/>{sortedData, tokenUsage}
+
+    Note over User, API: 5. 结果过滤与封装
+    RS->>RS: 1. 应用最小分数阈值过滤<br/>(score < minScore的文档被移除)
+    RS->>RS: 2. 更新文档分数为rerank分数
+    RS->>RS: 3. 封装最终检索结果
+
+    RS-->>User: 返回最终检索结果<br/>(按相关性排序的文档列表)
+```
 
 ##### 知识库节点结构
 
@@ -881,3 +1015,471 @@ type StrategyParam struct {
 	IndexStrategy any `json:"indexStrategy"`
 }
 ```
+
+### 1.2 如何从画布转换为后端类？如何转换为执行态？
+
+前端传入画布的 DSL语言（JSON）给后端之后，会解析为上方的后端结构。画布中的每个节点都会变成 `canvas.go`中的 `Node`结构体。但是转换后的 `Node`结构体只是一个存储态，如果需要执行工作流还需要将 `Node`结构体从存储态转为运行态。后端 schema 的 `NodeSchema`结构体就是 针对用于表达工作流的运行态的
+
+#### 1.2.1 转换流程图
+
+```mermaid
+graph TD
+    A[Canvas画布] --> B[CanvasToWorkflowSchema]
+    B --> C[移除孤立节点]
+    C --> D[遍历Canvas Nodes]
+    
+    D --> E{节点类型判断}
+    E -->|子工作流| F[toSubWorkflowNodeSchema]
+    E -->|普通节点| G[获取NodeAdaptor]
+    
+    G --> H[调用Adaptor.Adapt方法]
+    H --> I{节点有子节点?}
+    I -->|是| J[递归转换子节点]
+    I -->|否| K[转换输入输出类型]
+    
+    J --> L[设置层次关系]
+    L --> K
+    K --> M[设置异常处理配置]
+    M --> N[生成NodeSchema]
+    
+    F --> N
+    N --> O[收集所有NodeSchema]
+    O --> P[转换连接边]
+    P --> Q[标准化端口]
+    Q --> R[构建分支信息]
+    R --> S[WorkflowSchema]
+    
+    subgraph "NodeAdaptor转换细节"
+        H1[解析节点配置] --> H2[转换输入参数]
+        H2 --> H3[转换输出定义]
+        H3 --> H4[设置节点特定Config]
+        H4 --> H5[调用SetInputsForNodeSchema]
+        H5 --> H6[调用SetOutputTypesForNodeSchema]
+    end
+    
+    H --> H1
+    
+    subgraph "类型转换细节"
+        T1[CanvasBlockInputToTypeInfo] --> T2[解析基础类型]
+        T2 --> T3[处理复杂对象类型]
+        T3 --> T4[处理数组类型]
+        T4 --> T5[处理文件类型]
+        T5 --> T6[生成TypeInfo]
+        
+        U1[CanvasBlockInputToFieldInfo] --> U2[分析数据来源]
+        U2 --> U3{来源类型}
+        U3 -->|静态值| U4[创建LiteralFieldInfo]
+        U3 -->|节点引用| U5[创建ReferenceFieldInfo]
+        U3 -->|模板字符串| U6[创建TemplateFieldInfo]
+        U4 --> U7[生成FieldInfo]
+        U5 --> U7
+        U6 --> U7
+    end
+    
+    K --> T1
+    K --> U1
+    
+    style A fill:#e1f5fe
+    style S fill:#c8e6c9
+    style H fill:#fff3e0
+    style N fill:#fce4ec
+```
+
+#### 1.2.2 转换后的NodeSchema结构
+
+```go
+// NodeSchema 工作流节点的统一描述和配置结构
+// 包含实例化一个节点所需的所有信息，是Canvas Node转换后的后端执行结构
+type NodeSchema struct {
+	// Key 节点在Eino图中的唯一标识符
+	// 节点在执行过程中可能需要这个信息，例如：
+	// - 使用此Key查询工作流状态中属于当前节点的数据
+	Key vo.NodeKey `json:"key"`
+
+	// Name 节点在Canvas画布上指定的显示名称
+	// 节点可能会在Canvas上显示这个名称作为输入/输出的一部分
+	Name string `json:"name"`
+
+	// Type 节点的类型标识
+	// 对应entity.NodeType枚举，决定节点的具体行为和功能
+	Type entity.NodeType `json:"type"`
+
+	// Configs 节点特定的配置信息
+	// 每个节点类型定义自己的配置结构体，不包含字段映射或静态值信息
+	// 这些配置是节点实现的内部配置，与工作流编排无关
+	// 实际类型应该实现两个接口：
+	// - NodeAdaptor: 提供从vo.Node到NodeSchema的转换
+	// - NodeBuilder: 提供从NodeSchema到实际节点实例的实例化
+	Configs any `json:"configs,omitempty"`
+
+	// InputTypes 节点输入字段的类型信息映射
+	// 键为字段名，值为对应的类型信息，用于类型检查和验证
+	InputTypes map[string]*vo.TypeInfo `json:"input_types,omitempty"`
+	// InputSources 节点输入字段的映射信息
+	// 定义每个输入字段的数据来源，如来自其他节点的输出或静态值
+	InputSources []*vo.FieldInfo `json:"input_sources,omitempty"`
+
+	// OutputTypes 节点输出字段的类型信息映射
+	// 键为字段名，值为对应的类型信息，用于下游节点的类型推导
+	OutputTypes map[string]*vo.TypeInfo `json:"output_types,omitempty"`
+	// OutputSources 节点输出字段的映射信息
+	// 注意：仅适用于复合节点，如NodeTypeBatch或NodeTypeLoop
+	OutputSources []*vo.FieldInfo `json:"output_sources,omitempty"`
+
+	// ExceptionConfigs 节点的异常处理策略配置
+	// 包含超时、重试、错误处理类型等异常处理相关设置
+	ExceptionConfigs *ExceptionConfig `json:"exception_configs,omitempty"`
+	// StreamConfigs 节点的流式处理特性配置
+	// 定义节点是否支持流式输入/输出等流处理能力
+	StreamConfigs *StreamConfig `json:"stream_configs,omitempty"`
+
+	// SubWorkflowBasic 子工作流的基本信息
+	// 仅当节点类型为NodeTypeSubWorkflow时使用
+	SubWorkflowBasic *entity.WorkflowBasic `json:"sub_workflow_basic,omitempty"`
+	// SubWorkflowSchema 子工作流的完整Schema信息
+	// 仅当节点类型为NodeTypeSubWorkflow时使用，包含子工作流的完整定义
+	SubWorkflowSchema *WorkflowSchema `json:"sub_workflow_schema,omitempty"`
+
+	// FullSources 节点输入字段映射来源的完整信息
+	// 包含更详细的信息，如字段是否为流式字段，或字段是否为包含子字段映射的对象
+	// 用于需要处理流式输入的节点
+	// 在NodeMeta中设置InputSourceAware = true来启用此功能
+	FullSources map[string]*SourceInfo
+
+	// Lambda 直接设置节点为Eino Lambda
+	// 注意：不可序列化，仅用于内部测试
+	Lambda *compose.Lambda
+}
+```
+
+#### 1.2.3 转换结构前后对比
+
+```mermaid
+graph LR
+    subgraph "前端Canvas结构"
+        A[Canvas画布]
+        A --> B[Node节点]
+        A --> C[Edge连接]
+        
+        B --> D[ID: string]
+        B --> E[Type: string]
+        B --> F[Data配置]
+        
+        F --> G[Meta元数据]
+        F --> H[Inputs输入]
+        F --> I[Outputs输出]
+        
+        H --> J[InputParameters参数列表]
+        H --> K[LLMParam模型参数]
+        H --> L[SettingOnError错误处理]
+        
+        J --> M[Param参数]
+        M --> N[Name: string]
+        M --> O[Input: BlockInput]
+        
+        O --> P[Type: VariableType]
+        O --> Q[Value: BlockInputValue]
+        
+        Q --> R[Type: literal/ref/object_ref]
+        Q --> S[Content: any]
+        
+        I --> T[Variable变量]
+        T --> U[Name: string]
+        T --> V[Type: VariableType]
+        T --> W[Schema: any]
+    end
+    
+    subgraph "转换过程"
+        X[CanvasToWorkflowSchema] --> Y[NodeToNodeSchema]
+        Y --> Z[NodeAdaptor.Adapt]
+        Z --> AA[SetInputsForNodeSchema]
+        Z --> BB[SetOutputTypesForNodeSchema]
+        AA --> CC[CanvasBlockInputToTypeInfo]
+        AA --> DD[CanvasBlockInputToFieldInfo]
+        BB --> EE[CanvasVariableToTypeInfo]
+    end
+    
+    subgraph "后端NodeSchema结构"
+        FF[WorkflowSchema工作流]
+        FF --> GG[NodeSchema节点]
+        FF --> HH[Connection连接]
+        FF --> II[Branch分支]
+        
+        GG --> JJ[Key: NodeKey]
+        GG --> KK[Type: NodeType枚举]
+        GG --> LL[Configs: 节点配置]
+        
+        GG --> MM[InputTypes类型映射]
+        GG --> NN[InputSources来源映射]
+        GG --> OO[OutputTypes输出类型]
+        
+        MM --> PP["map[string]*TypeInfo"]
+        NN --> QQ["[]*FieldInfo"]
+        OO --> RR["map[string]*TypeInfo"]
+        
+        QQ --> SS[FieldInfo字段信息]
+        SS --> TT[Path: FieldPath]
+        SS --> UU[Source: 数据来源]
+        SS --> VV[Type: Literal/Reference/Template]
+        
+        PP --> WW[TypeInfo类型信息]
+        WW --> XX[Type: DataType枚举]
+        WW --> YY[Properties: 对象属性]
+        WW --> ZZ[ElemTypeInfo: 数组元素类型]
+        
+        GG --> AAA[ExceptionConfigs异常配置]
+        AAA --> BBB[TimeoutMS: 超时时间]
+        AAA --> CCC[MaxRetry: 重试次数]
+        AAA --> DDD[ProcessType: 处理类型]
+    end
+    
+    A -.转换.-> FF
+    B -.适配器转换.-> GG
+    C -.标准化.-> HH
+    O -.类型转换.-> WW
+    Q -.来源分析.-> SS
+    
+    style A fill:#e3f2fd
+    style FF fill:#e8f5e8
+    style X fill:#fff3e0
+    style Y fill:#fff3e0
+    style Z fill:#fff3e0
+```
+
+【转换过程】
+
+`canvas`到 `NodeSchema`的转换过程是Coze Studio工作流系统中的核心架构设计，它通过适配器模式将前端面向用户的可视化画布结构转换为后端面向执行的标准化 `Schema`结构。在这个过程中，前端的 `Canvas`包含了用户在画布上拖拽配置的 `Node`节点和 `Edge`连接，每个`Node`节点包含字符串类型的`ID`和`Type`、用户配置的`Data`数据（包括输入参数、输出定义、元数据等），这些数据以灵活的 \`any \`类型和嵌套结构存储以适应前端的动态配置需求；而转换后的`NodeSchema`则采用强类型的结构化设计，将**节点类型**转换为**枚举**、将**输入输出**转换为 `TypeInfo`和`FieldInfo`的映射关系、将**数据来源分析**为**具体的引用路径**，并添加了执行时需要的 **异常处理配置**、**流式处理配置**等运行时信息。这个转换过程之所以必要，是因为前端Canvas需要保持高度的灵活性和可扩展性来支持用户的各种配置操作和UI交互，而后端执行引擎则需要严格的类型安全、明确的数据流向和优化的执行性能，两者的设计目标和约束条件完全不同，因此需要通过这个转换层来实现前后端的解耦，同时确保用户在画布上的每一个配置都能准确无误地转换为可执行的工作流逻辑，并且这种转换过程还支持复杂的节点类型（如子工作流、批处理节点）、数据类型推导、字段映射分析等高级特性，为整个工作流系统的稳定运行和功能扩展提供了坚实的基础。
+
+### 1.3 工作流执行过程分析
+
+##### 工作流执行图 (细节)
+
+```mermaid
+graph TD
+    A[Canvas画布] --> B{保存/运行工作流}
+    
+    B --> C[画布结构验证]
+    C --> D[连接关系验证]
+    C --> E[闭环检测]
+    C --> F[节点配置验证]
+    C --> G[变量引用验证]
+    C --> H[嵌套流程验证]
+    C --> I[全局变量验证]
+    C --> J[子工作流终止计划验证]
+    
+    D --> K{验证通过?}
+    E --> K
+    F --> K
+    G --> K
+    H --> K
+    I --> K
+    J --> K
+    
+    K -->|否| L[返回验证错误]
+    L --> M[前端显示错误信息]
+    
+    K -->|是| N[Canvas转换为WorkflowSchema]
+    N --> O[移除孤立节点]
+    O --> P[遍历Canvas Nodes]
+    
+    P --> Q{节点类型判断}
+    Q -->|子工作流| R[递归解析子工作流Canvas]
+    Q -->|批处理节点| S[解析批处理模式]
+    Q -->|普通节点| T[获取NodeAdaptor]
+    
+    R --> U[toSubWorkflowNodeSchema]
+    S --> V[parseBatchMode生成批处理结构]
+    T --> W[调用Adaptor.Adapt方法]
+    
+    U --> X[设置异常处理配置]
+    V --> X
+    W --> X
+    
+    X --> Y{节点有子节点?}
+    Y -->|是| Z[递归转换子节点]
+    Y -->|否| AA[转换输入输出类型]
+    
+    Z --> BB[设置层次关系映射]
+    BB --> AA
+    
+    AA --> CC[SetInputsForNodeSchema]
+    AA --> DD[SetOutputTypesForNodeSchema]
+    
+    CC --> EE[CanvasBlockInputToTypeInfo]
+    CC --> FF[CanvasBlockInputToFieldInfo]
+    DD --> GG[CanvasVariableToTypeInfo]
+    
+    EE --> HH[解析基础类型]
+    EE --> II[处理复杂对象类型]
+    EE --> JJ[处理数组类型]
+    EE --> KK[处理文件类型]
+    
+    FF --> LL[分析数据来源]
+    LL --> MM{来源类型}
+    MM -->|静态值| NN[创建LiteralFieldInfo]
+    MM -->|节点引用| OO[创建ReferenceFieldInfo]
+    MM -->|模板字符串| PP[创建TemplateFieldInfo]
+    
+    HH --> QQ[生成NodeSchema]
+    II --> QQ
+    JJ --> QQ
+    KK --> QQ
+    NN --> QQ
+    OO --> QQ
+    PP --> QQ
+    GG --> QQ
+    
+    QQ --> RR[收集所有NodeSchema]
+    RR --> SS[转换连接边EdgeToConnection]
+    SS --> TT[标准化端口normalizePorts]
+    TT --> UU[构建分支信息BuildBranches]
+    UU --> VV[生成完整WorkflowSchema]
+    
+    VV --> WW[节点实例化]
+    WW --> XX[NodeBuilder.Build]
+    XX --> YY[创建具体节点实例]
+    YY --> ZZ[工作流执行引擎]
+    
+    subgraph "验证器详细功能"
+        D1[ValidateConnections<br/>检查节点连接完整性]
+        E1[DetectCycles<br/>检测工作流中的循环依赖]
+        F1[节点配置验证<br/>检查必填字段和参数合法性]
+        G1[CheckRefVariable<br/>验证变量引用的有效性]
+        H1[ValidateNestedFlows<br/>检查批处理/循环嵌套限制]
+        I1[CheckGlobalVariables<br/>验证全局变量类型匹配]
+        J1[CheckSubWorkFlowTerminatePlan<br/>验证子工作流终止策略]
+    end
+    
+    D -.-> D1
+    E -.-> E1
+    F -.-> F1
+    G -.-> G1
+    H -.-> H1
+    I -.-> I1
+    J -.-> J1
+    
+    subgraph "NodeAdaptor转换细节"
+        W1[解析节点特定配置] --> W2[转换输入参数类型]
+        W2 --> W3[转换输出定义类型]
+        W3 --> W4[设置节点内部Config]
+        W4 --> W5[调用通用类型转换函数]
+    end
+    
+    W -.-> W1
+    
+    subgraph "执行时节点类型"
+        YY1[InvokableNode<br/>普通执行节点]
+        YY2[StreamableNode<br/>流式处理节点]
+        YY3[TransformableNode<br/>数据转换节点]
+        YY4[CollectableNode<br/>数据收集节点]
+    end
+    
+    YY -.-> YY1
+    YY -.-> YY2
+    YY -.-> YY3
+    YY -.-> YY4
+    
+    style A fill:#e3f2fd
+    style C fill:#ffebee
+    style K fill:#fff3e0
+    style VV fill:#e8f5e8
+    style ZZ fill:#f3e5f5
+    style L fill:#ffcdd2
+```
+
+*   **前端交互层**：前端 `Canvas`层是用户交互的起点，`Canvas`画布承载着用户的可视化配置，其中包含 `Node`（以`vo.Node`结构体表示）和`Edge`连接关系，这里的关键问题是"节点样式：哪些固定字段？表单形式？"，实际上每个节点都有标准化的元数据定义（如节点类型、显示名称、图标等固定字段）和动态的配置表单（根据节点类型展示不同的参数配置界面），前端`schema`采用灵活的JSON结构来适应各种节点类型的配置需求。
+    
+*   **验证层**：验证层通过`CanvasValidator`对画布结构进行全面检查，包括节点连接完整性、循环依赖检测、配置合法性验证等多个维度，确保只有结构正确的工作流才能进入后续的转换和执行阶段，如果验证失败，系统会返回具体的错误信息给前端，帮助用户快速定位和修正问题。
+    
+*   **转换层**：转换层是整个架构的核心枢纽，负责"后端保存，workflow运行"的关键转换过程，通过`CanvasToWorkflowSchema`函数协调整个转换流程，其中最重要的是`NodeType`到节点`Config`的转换，这通过`NodeAdaptor`接口实现，每个节点类型都有对应的适配器负责将前端的灵活配置转换为后端的强类型`NodeSchema`结构，实现了"前端schema -> 后端schema"的标准化转换。
+    
+*   **节点实例化层**：实例化层通过`NodeBuilder`接口将抽象的`NodeSchema`转换为具体的可执行节点实例，这里的关键是`NodeSchema.Configs`字段必须实现`NodeBuilder`接口，从而能够根据配置信息创建实际的节点对象，实现了"后端schema -> 节点实例"的最终转换，为执行层提供了统一的节点实例接口。
+    
+*   **执行层**：执行层是整个流程的最终目标，节点实例通过实现`InvokableNode`等执行接口来提供具体的业务逻辑处理能力，工作流引擎负责按照既定的执行顺序调度各个节点，处理数据流转和状态管理，最终产生业务执行结果并返回给用户。
+    
+
+## 工作流校验
+
+### 2.1 工作流验证流程
+
+#### 2.1.1 核心验证流程
+
+```mermaid
+graph LR
+    A[画布预处理] --> B[连接验证] --> C[循环检测] --> D[嵌套验证] --> E[变量检查] --> F[全局变量] --> G[终止策略]
+```
+
+#### 2.1.2 完整验证流程
+
+```mermaid
+%% 点击 “绘图” 按钮即可预览
+graph LR
+    A["1. 画布预处理<br/>• JSON反序列化<br/>• 清理孤立节点<br/>• 创建验证器实例"] --> H["2. 连接关系验证<br/>ValidateConnections"]
+    H --> H1["• 检查节点连接完整性<br/>• 验证端口连接正确性<br/>• 检查分支节点完整性"]
+    H1 --> I{发现问题?}
+    I -->|是| Z["返回验证错误"]
+    I -->|否| J["3. 循环依赖检测<br/>DetectCycles"]
+    
+    J --> J1["• 构建依赖关系图<br/>• DFS算法检测环<br/>• 标识循环路径"]
+    J1 --> K{发现循环?}
+    K -->|是| Z
+    K -->|否| L["4. 嵌套流程验证<br/>ValidateNestedFlows"]
+    
+    L --> L1["• 检查批处理节点嵌套<br/>• 验证循环节点嵌套<br/>• 防止过深嵌套"]
+    L1 --> M{嵌套违规?}
+    M -->|是| Z
+    M -->|否| N["5. 引用变量检查<br/>CheckRefVariable"]
+    
+    N --> N1["• 验证变量可达性<br/>• 检查参数名规范<br/>• 验证作用域正确性"]
+    N1 --> O{变量引用错误?}
+    O -->|是| Z
+    O -->|否| P["6. 全局变量验证<br/>CheckGlobalVariables"]
+    
+    P --> P1["• 验证变量类型匹配<br/>• 检查数组元素类型<br/>• 验证变量声明"]
+    P1 --> Q{全局变量错误?}
+    Q -->|是| Z
+    Q -->|否| R["7. 子工作流终止策略<br/>CheckSubWorkFlowTerminatePlanType"]
+    
+    R --> R1["• 验证终止计划配置<br/>• 检查版本一致性<br/>• 验证子工作流存在性"]
+    R1 --> S{终止策略错误?}
+    S -->|是| Z
+    S -->|否| T["主工作流验证完成"]
+    
+    T --> U["子工作流递归验证"]
+    U --> U1["• 解析画布获取子工作流<br/>• 筛选项目级工作流<br/>• 批量获取工作流信息"]
+    U1 --> U2["对每个子工作流<br/>重复验证流程"]
+    U2 --> V["汇总所有验证结果"]
+    
+    V --> W["错误信息转换<br/>• Issue -> ValidateErrorData<br/>• 节点错误/路径错误分类"]
+    W --> X["返回验证结果<br/>ValidateTreeResponse"]
+    
+    style A fill:#e1f5fe
+    style H fill:#e8f5e8
+    style J fill:#e8f5e8
+    style L fill:#e8f5e8
+    style N fill:#e8f5e8
+    style P fill:#e8f5e8
+    style R fill:#e8f5e8
+    style U fill:#fff8e1
+    style Z fill:#ffebee
+```
+
+#### 2.1.3 工作流验证流程技术实现总结
+
+Coze Studio 的工作流验证采用**分层递进式验证架构**，从 API 层的 `ValidateTree` 接口开始，经过应用服务层的参数预处理，最终调用领域服务层的核心验证引擎 `validateWorkflowTree`。验证流程包含七个关键步骤：
+
+**1. 画布预处理阶段** - 首先将 JSON 格式的画布结构反序列化为内存对象，然后调用 `adaptor.PruneIsolatedNodes` 清理没有连接关系的孤立节点，最后创建配置完整的 `CanvasValidator` 验证器实例并执行可达性分析，构建节点间的连通关系图。
+
+**2. 连接关系验证** - `ValidateConnections` 方法通过遍历所有节点和边，构建出度映射表和端口映射表来实现。对于每个节点，检查其输出端口是否正确连接，特别是分支节点（如条件判断、错误处理）必须确保所有期望的端口都有连接。算法会递归验证嵌套节点的连接关系，确保数据流的完整性。
+
+**3. 循环依赖检测** - `DetectCycles` 使用深度优先搜索（DFS）算法实现。首先构建反向依赖关系图（`controlSuccessors`），然后对每个未访问的节点启动 DFS 遍历。在遍历过程中维护当前路径栈，当发现路径中已存在的节点时，即检测到循环依赖，算法会提取并返回完整的循环路径。
+
+**4. 嵌套流程验证** - `ValidateNestedFlows` 通过检查可达性分析结果中的 `nestedReachability` 结构实现。如果一个节点既有嵌套结构，又在其嵌套结构中还有更深层的嵌套（即 `len(nestedReachableNodes.nestedReachability) > 0`），则判定为违反嵌套规则，防止批处理和循环节点的过度嵌套导致执行异常。
+
+**5. 引用变量检查** - `CheckRefVariable` 采用递归作用域分析算法。定义内部函数 `inputBlockVerify` 解析每个输入参数的引用信息，检查引用的节点是否在当前或父级作用域的可达范围内。通过 `combinedReachable` 映射表合并当前层级和父级可达节点，实现作用域继承机制。同时验证参数名称的规范性（必须以字母开头，只能包含字母数字下划线）。
+
+**6. 全局变量验证** - `CheckGlobalVariables` 首先收集所有变量分配节点（`NodeTypeVariableAssigner`）的变量定义，然后通过 `VariablesMetaGetter` 获取应用或智能体的变量元数据进行对比。验证包括基础类型匹配和数组元素类型的深度检查，确保工作流中使用的全局变量与系统定义一致。
+
+**7. 子工作流终止策略验证** - `CheckSubWorkFlowTerminatePlanType` 通过递归收集所有子工作流节点，分别获取草稿版本和已发布版本的画布信息。对每个子工作流，查找其结束节点的终止计划配置，与当前节点的终止类型进行匹配验证，确保子工作流的输出处理策略与调用方期望一致。
+
+整个验证过程采用**快速失败策略**，任何步骤发现问题立即返回错误信息，同时支持**递归子工作流验证**，通过 `getAllSubWorkflowIdentities` 提取所有子工作流标识，对每个子工作流重复执行完整的验证流程，最终汇总所有验证结果，确保整个工作流树的结构完整性、逻辑正确性和执行安全性。

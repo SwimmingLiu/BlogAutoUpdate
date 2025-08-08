@@ -179,6 +179,25 @@
 
 <article class="post-entry tag-entry"> 
   <header class="entry-header">
+    <h2 class="entry-hint-parent">Coze工作流分析
+    </h2>
+  </header>
+  <div class="entry-content">
+    <p>Coze工作流-QA 工作流可以分为三个大板块：工作流管理 (前后端交互-画布存储)、工作流校验、工作流执行
+工作流管理 对于前端来讲，工作流就是一张canvas画布。用户可以在画布中，创建不同功能的节点。
+节点类型可以分为：开始和结束节点 （默认）、LLM节点、子工作流 (嵌套)、插件 (外部工具-例如MCP、OCR)、业务逻辑节点 (选择、循环、分类、批处理(并发)、变量聚合)、数据库节点(SQL、CRUD)、知识库节点(RAG、增删、变量赋值)、图像处理节点、音视频处理节点、组件(JSON序列化、HTTP请求)、定时触发器节点(定时触发任务)
+1.1 如何从画布转成一个类？ 前端的画布采用DSL (JSON) 形式存储，每次更新画布都是将DSL传给后端。DSL的后端结构如下所示，主要包含节点 (node)、 边 (edge)、 版本
+type Canvas struct { Nodes []*Node `json:&#34;nodes&#34;` Edges []*Edge `json:&#34;edges&#34;` Versions any `json:&#34;versions&#34;` } 1.1.1 节点数据 画布中的节点会转换为后端中 backend/domain/workflow/entity/vo/canvas.go 中的 Node 结构体， 后端存储的结构体如下
+// Node 工作流节点的完整定义 // 节点是工作流的基本执行单元，每个节点代表一个特定的功能或操作 type Node struct { // 节点的唯一标识符，用于在画布中定位和引用节点 ID string `json:&#34;id&#34;` // 节点类型，决定节点的功能和行为（如LLM、API调用、条件判断等） Type BlockType `json:&#34;type&#34;` // 节点的元数据信息，包含前端显示相关的配置 (前端的一些extendInfo) Meta any `json:&#34;meta&#34;` // 节点的核心数据，包含输入输出配置和具体参数，例如LLM的配置、MCP的配置、异常处理 Data *Data `json:&#34;data&#34;` // 子节点列表，用于复合节点（如循环、条件分支）的嵌套结构 Blocks []*Node `json:&#34;blocks,omitempty&#34;` // 节点内部的连线，用于复杂节点的内部逻辑连接 Edges []*Edge `json:&#34;edges,omitempty&#34;` // 节点的版本号，用于节点定义的版本控制 Version string `json:&#34;version,omitempty&#34;` // 父节点引用，不序列化到JSON，用于内存中的树形结构导航 parent *Node } 节点的核心数据Data如下所示
+type Data struct { // 节点的显示元数据，如标题、icon等 Meta *NodeMeta `json:&#34;nodeMeta,omitempty&#34;` // 节点的输出定义，可以是 []*Variable 或 []*Param 类型 Outputs []any `json:&#34;outputs,omitempty&#34;` // 节点的输入配置，包含所有输入参数和设置 Inputs *Inputs `json:&#34;inputs,omitempty&#34;` // 节点在画布上的尺寸信息，用于前端显示 Size any `json:&#34;size,omitempty&#34;` } 节点的输入参数 inputs
+...</p>
+  </div>
+  <footer class="entry-footer"><span title='2025-08-07 23:27:35 +0800 CST'>August 7, 2025</span>&nbsp;·&nbsp;9 min&nbsp;·&nbsp;SwimmingLiu</footer>
+  <a class="entry-link" aria-label="post link to Coze工作流分析" href="https://swimmingliu.cn/posts/job/coze-workflow-analysis/"></a>
+</article>
+
+<article class="post-entry tag-entry"> 
+  <header class="entry-header">
     <h2 class="entry-hint-parent">Leetcode Hot100 刷题笔记
     </h2>
   </header>
@@ -363,28 +382,6 @@ DMA（直接内存访问）是一种不经过CPU直接在网络适配器（网�
   <footer class="entry-footer"><span title='2025-02-27 10:52:54 +0800 CST'>February 27, 2025</span>&nbsp;·&nbsp;1 min&nbsp;·&nbsp;SwimmingLiu</footer>
   <a class="entry-link" aria-label="post link to 个人简历常问问题" href="https://swimmingliu.cn/posts/job/personal-interview-hot-question/"></a>
 </article>
-
-<article class="post-entry tag-entry"> 
-  <header class="entry-header">
-    <h2 class="entry-hint-parent">Redis面试题笔记
-    </h2>
-  </header>
-  <div class="entry-content">
-    <p>1. Redis主从复制的原理 【主从复制的原理】
-同步：从节点向主节点发送psync命令进行同步，从节点保存主节点返回的 runid 和 offset 全量复制：如果是第一次连接或者连接失败且repl_backlog_buffer 缓存区不包含slave_repl_offset， 则生成主节点的数据快照(RDB文件)发给从节点 增量复制：全量复制完毕后，主从节点之间会保持长连接。如果连接没有断开或者slave_repl_offset仍然在repl_backlog_buffer中，则将后续的写操作传递给从节点，让数据保持一致。 【全量复制细节】
-全量复制的过程是基于TCP长连接的，主要流程如下
-从节点发送psync ? -1表示需要建立连接进行同步，主节点返回主节点ID runid 和 复制进度offset (第一次同步用 -1 表示)。从节点接受之后，保存主节点的信息。 主节点执行bgsave命令生成数据快照RDB文件，然后将RDB文件发送给从节点。从节点接受文件后，清除现有的所有数据，然后加载RDB文件 如果在制作数据快照RDB文件的过程当中，主节点接收到了新的写操作，主节点会将其记录在repl buffer 里面。然后将repl buffer当中的写操作发给从节点，让其数据保持一致。 【增量复制细节】
-如果主从节点意外断开连接，为了保持数据的一致性，必须重新同步数据。如果使用全量复制来保持一致性的话，开销太大，所以采用增量复制。
-增量复制的具体流程如下：
-连接恢复后，从节点会发送psync {runid} {offset}， 其中主节点ID runid 和 复制进度offset用于标识是哪一个服务器主机和复制进度。 主节点收到psync 命令之后，会用conitnue响应告知从节点，采用增量复制同步数据 最后，主节点根据offset查找对应的进度，将断线期间未同步的写命令，发送给从节点。同时，主节点将所有的写命令写入repl_backlog_buffer， 用于后续判断是采用增量复制还是全量复制。 【注意】从节点 psync 携带的 offset 为 slave_repl_offset。如果 repl_backlog_buffer包含slave_repl_offset 对应的部分，则采用增量复制，否则采用全量复制。repl_backlog_buffer的默认缓冲区大小为1M
-【为什么要主从复制】
-备份数据：主从复制实现了数据的热备份，是持久化之外的数据冗余方式 故障恢复：当主节点宕机之后，可以采用从节点提供服务。 负载均衡: 主从复制实现了读写分离，只有主节点支持读写操作，从节点只有读操作。在读多写少的场景下，可以提高Redis服务器的并发量。 2. Redis集群的实现原理是什么? 【Redis集群基本知识】
-定义: Redis集群由多个实例组成，每个实例存储部分数据 (每个实例之间的数据不重复) 。 【注】集群和主从节点不是一个东西，集群的某一个实例当中可能包含一个主节点 &#43; 多个从节点
-为什么用 问题 解决方案 容量不足 数据分片，将数据分散不存到不同的主节点 高并发写入 数据分片，将写入请求分摊到多个主节点 主机宕机问题 自动切换主从节点，避免影响服务， 不需要手动修改客户端配置 节点通信协议：Redis集群采用Gossip协议, 支持分布式信息传播、延迟低、效率高。采用去中心化思想，任意实例(主节点)都可以作为请求入口，节点间相互通信。 分片原理： 采用哈希槽(Hash Slot)机制来分配数据，整个空间可以划分为16384 (16 * 1024)个槽。 每个Redis负责一定范围的哈希槽,数据的key经过哈希函数计算之后对16384取余可定位到对应的节点。 ...</p>
-  </div>
-  <footer class="entry-footer"><span title='2025-02-20 21:21:45 +0800 CST'>February 20, 2025</span>&nbsp;·&nbsp;9 min&nbsp;·&nbsp;SwimmingLiu</footer>
-  <a class="entry-link" aria-label="post link to Redis面试题笔记" href="https://swimmingliu.cn/posts/job/redis-interview-questions/"></a>
-</article>
 <footer class="page-footer">
   <nav class="pagination">
     <a class="next" href="https://swimmingliu.cn/categories/-job/page/2/">Next&nbsp;&nbsp;»
@@ -468,3 +465,5 @@ DMA（直接内存访问）是一种不经过CPU直接在网络适配器（网�
 </body>
 
 </html>
+
+

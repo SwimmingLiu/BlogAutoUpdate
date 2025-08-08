@@ -1,0 +1,1338 @@
+<!DOCTYPE html>
+<html lang="en" dir="auto">
+
+<head><meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta name="robots" content="index, follow">
+<title>Coze工作流分析 | SwimmingLiu&#39;s Blog</title>
+<meta name="keywords" content="Java">
+<meta name="description" content="Coze工作流-QA
+
+工作流可以分为三个大板块：工作流管理 (前后端交互-画布存储)、工作流校验、工作流执行
+工作流管理
+
+对于前端来讲，工作流就是一张canvas画布。用户可以在画布中，创建不同功能的节点。
+
+节点类型可以分为：开始和结束节点 （默认）、LLM节点、子工作流 (嵌套)、插件 (外部工具-例如MCP、OCR)、业务逻辑节点 (选择、循环、分类、批处理(并发)、变量聚合)、数据库节点(SQL、CRUD)、知识库节点(RAG、增删、变量赋值)、图像处理节点、音视频处理节点、组件(JSON序列化、HTTP请求)、定时触发器节点(定时触发任务)
+1.1 如何从画布转成一个类？
+前端的画布采用DSL (JSON) 形式存储，每次更新画布都是将DSL传给后端。DSL的后端结构如下所示，主要包含节点 (node)、 边 (edge)、 版本
+type Canvas struct {
+	Nodes    []*Node `json:&#34;nodes&#34;`
+	Edges    []*Edge `json:&#34;edges&#34;`
+	Versions any     `json:&#34;versions&#34;`
+}
+1.1.1 节点数据
+画布中的节点会转换为后端中 backend/domain/workflow/entity/vo/canvas.go 中的 Node 结构体， 后端存储的结构体如下
+// Node 工作流节点的完整定义
+// 节点是工作流的基本执行单元，每个节点代表一个特定的功能或操作
+type Node struct {
+    // 节点的唯一标识符，用于在画布中定位和引用节点
+	ID      string    `json:&#34;id&#34;` 
+    // 节点类型，决定节点的功能和行为（如LLM、API调用、条件判断等）
+	Type    BlockType `json:&#34;type&#34;`
+    // 节点的元数据信息，包含前端显示相关的配置 (前端的一些extendInfo)
+	Meta    any       `json:&#34;meta&#34;`
+    // 节点的核心数据，包含输入输出配置和具体参数，例如LLM的配置、MCP的配置、异常处理
+	Data    *Data     `json:&#34;data&#34;`
+    // 子节点列表，用于复合节点（如循环、条件分支）的嵌套结构
+	Blocks  []*Node   `json:&#34;blocks,omitempty&#34;`
+    // 节点内部的连线，用于复杂节点的内部逻辑连接
+	Edges   []*Edge   `json:&#34;edges,omitempty&#34;`
+    // 节点的版本号，用于节点定义的版本控制
+	Version string    `json:&#34;version,omitempty&#34;` 
+    // 父节点引用，不序列化到JSON，用于内存中的树形结构导航
+	parent *Node 
+}
+节点的核心数据Data如下所示
+type Data struct {
+    // 节点的显示元数据，如标题、icon等
+	Meta    *NodeMeta `json:&#34;nodeMeta,omitempty&#34;`
+    // 节点的输出定义，可以是 []*Variable 或 []*Param 类型
+	Outputs []any     `json:&#34;outputs,omitempty&#34;`
+    // 节点的输入配置，包含所有输入参数和设置
+	Inputs  *Inputs   `json:&#34;inputs,omitempty&#34;`
+    // 节点在画布上的尺寸信息，用于前端显示
+	Size    any       `json:&#34;size,omitempty&#34;`     
+}
+节点的输入参数 inputs">
+<meta name="author" content="SwimmingLiu">
+<link rel="canonical" href="https://swimmingliu.cn/posts/job/coze-workflow-analysis/">
+<link crossorigin="anonymous" href="/assets/css/stylesheet.6ecbb0040febd20e47edd88a662c19f1ea945bf7427774b86594271d18f88faf.css" integrity="sha256-bsuwBA/r0g5H7diKZiwZ8eqUW/dCd3S4ZZQnHRj4j68=" rel="preload stylesheet" as="style">
+<link rel="icon" href="https://swimmingliu.cn/images/swimmingliu_icon.png">
+<link rel="icon" type="image/png" sizes="16x16" href="https://swimmingliu.cn/images/swimmingliu_icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="https://swimmingliu.cn/images/swimmingliu_icon.png">
+<link rel="apple-touch-icon" href="https://swimmingliu.cn/images/swimmingliu_icon.png">
+<link rel="mask-icon" href="https://swimmingliu.cn/images/swimmingliu_icon.png">
+<meta name="theme-color" content="#2e2e33">
+<meta name="msapplication-TileColor" content="#2e2e33">
+<link rel="alternate" hreflang="en" href="https://swimmingliu.cn/posts/job/coze-workflow-analysis/">
+<noscript>
+    <style>
+        #theme-toggle,
+        .top-link {
+            display: none;
+        }
+
+    </style>
+    <style>
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --theme: rgb(29, 30, 32);
+                --entry: rgb(46, 46, 51);
+                --primary: rgb(218, 218, 219);
+                --secondary: rgb(155, 156, 157);
+                --tertiary: rgb(65, 66, 68);
+                --content: rgb(196, 196, 197);
+                --code-block-bg: rgb(46, 46, 51);
+                --code-bg: rgb(55, 56, 62);
+                --border: rgb(51, 51, 51);
+            }
+
+            .list {
+                background: var(--theme);
+            }
+
+            .list:not(.dark)::-webkit-scrollbar-track {
+                background: 0 0;
+            }
+
+            .list:not(.dark)::-webkit-scrollbar-thumb {
+                border-color: var(--theme);
+            }
+        }
+
+    </style>
+</noscript>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css" integrity="sha384-n8MVd4RsNIU0tAv4ct0nTaAbDJwPJzDEaqSD1odI+WdtXRGWt2kTvGFasHpSy3SV" crossorigin="anonymous">
+
+
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js" integrity="sha384-XjKyOOlGwcjNTAIQHIpgOno0Hl1YQqzUOEleOLALmuqehneUG+vnGctmUb0ZY0l8" crossorigin="anonymous"></script>
+
+
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js" integrity="sha384-+VBxd3r6XgURycqtZ117nYw44OOcIax56Z4dCRWbxyPt0Koah1uHoK0o4+/RRE05" crossorigin="anonymous"
+    onload="renderMathInElement(document.body);"></script>
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        renderMathInElement(document.body, {
+            
+            
+            delimiters: [
+                { left: '$$', right: '$$', display: true },
+                { left: '$', right: '$', display: false },
+                { left: '\\(', right: '\\)', display: false },
+                { left: '\\[', right: '\\]', display: true }
+            ],
+            
+            throwOnError: false
+        });
+    });
+</script>
+
+<meta property="og:url" content="https://swimmingliu.cn/posts/job/coze-workflow-analysis/">
+  <meta property="og:site_name" content="SwimmingLiu&#39;s Blog">
+  <meta property="og:title" content="Coze工作流分析">
+  <meta property="og:description" content="Coze工作流-QA 工作流可以分为三个大板块：工作流管理 (前后端交互-画布存储)、工作流校验、工作流执行
+工作流管理 对于前端来讲，工作流就是一张canvas画布。用户可以在画布中，创建不同功能的节点。
+节点类型可以分为：开始和结束节点 （默认）、LLM节点、子工作流 (嵌套)、插件 (外部工具-例如MCP、OCR)、业务逻辑节点 (选择、循环、分类、批处理(并发)、变量聚合)、数据库节点(SQL、CRUD)、知识库节点(RAG、增删、变量赋值)、图像处理节点、音视频处理节点、组件(JSON序列化、HTTP请求)、定时触发器节点(定时触发任务)
+1.1 如何从画布转成一个类？ 前端的画布采用DSL (JSON) 形式存储，每次更新画布都是将DSL传给后端。DSL的后端结构如下所示，主要包含节点 (node)、 边 (edge)、 版本
+type Canvas struct { Nodes []*Node `json:&#34;nodes&#34;` Edges []*Edge `json:&#34;edges&#34;` Versions any `json:&#34;versions&#34;` } 1.1.1 节点数据 画布中的节点会转换为后端中 backend/domain/workflow/entity/vo/canvas.go 中的 Node 结构体， 后端存储的结构体如下
+// Node 工作流节点的完整定义 // 节点是工作流的基本执行单元，每个节点代表一个特定的功能或操作 type Node struct { // 节点的唯一标识符，用于在画布中定位和引用节点 ID string `json:&#34;id&#34;` // 节点类型，决定节点的功能和行为（如LLM、API调用、条件判断等） Type BlockType `json:&#34;type&#34;` // 节点的元数据信息，包含前端显示相关的配置 (前端的一些extendInfo) Meta any `json:&#34;meta&#34;` // 节点的核心数据，包含输入输出配置和具体参数，例如LLM的配置、MCP的配置、异常处理 Data *Data `json:&#34;data&#34;` // 子节点列表，用于复合节点（如循环、条件分支）的嵌套结构 Blocks []*Node `json:&#34;blocks,omitempty&#34;` // 节点内部的连线，用于复杂节点的内部逻辑连接 Edges []*Edge `json:&#34;edges,omitempty&#34;` // 节点的版本号，用于节点定义的版本控制 Version string `json:&#34;version,omitempty&#34;` // 父节点引用，不序列化到JSON，用于内存中的树形结构导航 parent *Node } 节点的核心数据Data如下所示
+type Data struct { // 节点的显示元数据，如标题、icon等 Meta *NodeMeta `json:&#34;nodeMeta,omitempty&#34;` // 节点的输出定义，可以是 []*Variable 或 []*Param 类型 Outputs []any `json:&#34;outputs,omitempty&#34;` // 节点的输入配置，包含所有输入参数和设置 Inputs *Inputs `json:&#34;inputs,omitempty&#34;` // 节点在画布上的尺寸信息，用于前端显示 Size any `json:&#34;size,omitempty&#34;` } 节点的输入参数 inputs">
+  <meta property="og:locale" content="en">
+  <meta property="og:type" content="article">
+    <meta property="article:section" content="posts">
+    <meta property="article:published_time" content="2025-08-07T23:27:35+08:00">
+    <meta property="article:modified_time" content="2025-08-07T23:27:35+08:00">
+    <meta property="article:tag" content="Java">
+      <meta property="og:image" content="https://swimmingliu.cn/papermod-cover.png">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://swimmingliu.cn/papermod-cover.png">
+<meta name="twitter:title" content="Coze工作流分析">
+<meta name="twitter:description" content="Coze工作流-QA
+
+工作流可以分为三个大板块：工作流管理 (前后端交互-画布存储)、工作流校验、工作流执行
+工作流管理
+
+对于前端来讲，工作流就是一张canvas画布。用户可以在画布中，创建不同功能的节点。
+
+节点类型可以分为：开始和结束节点 （默认）、LLM节点、子工作流 (嵌套)、插件 (外部工具-例如MCP、OCR)、业务逻辑节点 (选择、循环、分类、批处理(并发)、变量聚合)、数据库节点(SQL、CRUD)、知识库节点(RAG、增删、变量赋值)、图像处理节点、音视频处理节点、组件(JSON序列化、HTTP请求)、定时触发器节点(定时触发任务)
+1.1 如何从画布转成一个类？
+前端的画布采用DSL (JSON) 形式存储，每次更新画布都是将DSL传给后端。DSL的后端结构如下所示，主要包含节点 (node)、 边 (edge)、 版本
+type Canvas struct {
+	Nodes    []*Node `json:&#34;nodes&#34;`
+	Edges    []*Edge `json:&#34;edges&#34;`
+	Versions any     `json:&#34;versions&#34;`
+}
+1.1.1 节点数据
+画布中的节点会转换为后端中 backend/domain/workflow/entity/vo/canvas.go 中的 Node 结构体， 后端存储的结构体如下
+// Node 工作流节点的完整定义
+// 节点是工作流的基本执行单元，每个节点代表一个特定的功能或操作
+type Node struct {
+    // 节点的唯一标识符，用于在画布中定位和引用节点
+	ID      string    `json:&#34;id&#34;` 
+    // 节点类型，决定节点的功能和行为（如LLM、API调用、条件判断等）
+	Type    BlockType `json:&#34;type&#34;`
+    // 节点的元数据信息，包含前端显示相关的配置 (前端的一些extendInfo)
+	Meta    any       `json:&#34;meta&#34;`
+    // 节点的核心数据，包含输入输出配置和具体参数，例如LLM的配置、MCP的配置、异常处理
+	Data    *Data     `json:&#34;data&#34;`
+    // 子节点列表，用于复合节点（如循环、条件分支）的嵌套结构
+	Blocks  []*Node   `json:&#34;blocks,omitempty&#34;`
+    // 节点内部的连线，用于复杂节点的内部逻辑连接
+	Edges   []*Edge   `json:&#34;edges,omitempty&#34;`
+    // 节点的版本号，用于节点定义的版本控制
+	Version string    `json:&#34;version,omitempty&#34;` 
+    // 父节点引用，不序列化到JSON，用于内存中的树形结构导航
+	parent *Node 
+}
+节点的核心数据Data如下所示
+type Data struct {
+    // 节点的显示元数据，如标题、icon等
+	Meta    *NodeMeta `json:&#34;nodeMeta,omitempty&#34;`
+    // 节点的输出定义，可以是 []*Variable 或 []*Param 类型
+	Outputs []any     `json:&#34;outputs,omitempty&#34;`
+    // 节点的输入配置，包含所有输入参数和设置
+	Inputs  *Inputs   `json:&#34;inputs,omitempty&#34;`
+    // 节点在画布上的尺寸信息，用于前端显示
+	Size    any       `json:&#34;size,omitempty&#34;`     
+}
+节点的输入参数 inputs">
+
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position":  1 ,
+      "name": "📚 Posts",
+      "item": "https://swimmingliu.cn/posts/"
+    }, 
+    {
+      "@type": "ListItem",
+      "position":  2 ,
+      "name": "💻 Job",
+      "item": "https://swimmingliu.cn/posts/job/"
+    }, 
+    {
+      "@type": "ListItem",
+      "position":  3 ,
+      "name": "Coze工作流分析",
+      "item": "https://swimmingliu.cn/posts/job/coze-workflow-analysis/"
+    }
+  ]
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "Coze工作流分析",
+  "name": "Coze工作流分析",
+  "description": "Coze工作流-QA 工作流可以分为三个大板块：工作流管理 (前后端交互-画布存储)、工作流校验、工作流执行\n工作流管理 对于前端来讲，工作流就是一张canvas画布。用户可以在画布中，创建不同功能的节点。\n节点类型可以分为：开始和结束节点 （默认）、LLM节点、子工作流 (嵌套)、插件 (外部工具-例如MCP、OCR)、业务逻辑节点 (选择、循环、分类、批处理(并发)、变量聚合)、数据库节点(SQL、CRUD)、知识库节点(RAG、增删、变量赋值)、图像处理节点、音视频处理节点、组件(JSON序列化、HTTP请求)、定时触发器节点(定时触发任务)\n1.1 如何从画布转成一个类？ 前端的画布采用DSL (JSON) 形式存储，每次更新画布都是将DSL传给后端。DSL的后端结构如下所示，主要包含节点 (node)、 边 (edge)、 版本\ntype Canvas struct { Nodes []*Node `json:\u0026#34;nodes\u0026#34;` Edges []*Edge `json:\u0026#34;edges\u0026#34;` Versions any `json:\u0026#34;versions\u0026#34;` } 1.1.1 节点数据 画布中的节点会转换为后端中 backend/domain/workflow/entity/vo/canvas.go 中的 Node 结构体， 后端存储的结构体如下\n// Node 工作流节点的完整定义 // 节点是工作流的基本执行单元，每个节点代表一个特定的功能或操作 type Node struct { // 节点的唯一标识符，用于在画布中定位和引用节点 ID string `json:\u0026#34;id\u0026#34;` // 节点类型，决定节点的功能和行为（如LLM、API调用、条件判断等） Type BlockType `json:\u0026#34;type\u0026#34;` // 节点的元数据信息，包含前端显示相关的配置 (前端的一些extendInfo) Meta any `json:\u0026#34;meta\u0026#34;` // 节点的核心数据，包含输入输出配置和具体参数，例如LLM的配置、MCP的配置、异常处理 Data *Data `json:\u0026#34;data\u0026#34;` // 子节点列表，用于复合节点（如循环、条件分支）的嵌套结构 Blocks []*Node `json:\u0026#34;blocks,omitempty\u0026#34;` // 节点内部的连线，用于复杂节点的内部逻辑连接 Edges []*Edge `json:\u0026#34;edges,omitempty\u0026#34;` // 节点的版本号，用于节点定义的版本控制 Version string `json:\u0026#34;version,omitempty\u0026#34;` // 父节点引用，不序列化到JSON，用于内存中的树形结构导航 parent *Node } 节点的核心数据Data如下所示\ntype Data struct { // 节点的显示元数据，如标题、icon等 Meta *NodeMeta `json:\u0026#34;nodeMeta,omitempty\u0026#34;` // 节点的输出定义，可以是 []*Variable 或 []*Param 类型 Outputs []any `json:\u0026#34;outputs,omitempty\u0026#34;` // 节点的输入配置，包含所有输入参数和设置 Inputs *Inputs `json:\u0026#34;inputs,omitempty\u0026#34;` // 节点在画布上的尺寸信息，用于前端显示 Size any `json:\u0026#34;size,omitempty\u0026#34;` } 节点的输入参数 inputs\n",
+  "keywords": [
+    "Java"
+  ],
+  "articleBody": "Coze工作流-QA 工作流可以分为三个大板块：工作流管理 (前后端交互-画布存储)、工作流校验、工作流执行\n工作流管理 对于前端来讲，工作流就是一张canvas画布。用户可以在画布中，创建不同功能的节点。\n节点类型可以分为：开始和结束节点 （默认）、LLM节点、子工作流 (嵌套)、插件 (外部工具-例如MCP、OCR)、业务逻辑节点 (选择、循环、分类、批处理(并发)、变量聚合)、数据库节点(SQL、CRUD)、知识库节点(RAG、增删、变量赋值)、图像处理节点、音视频处理节点、组件(JSON序列化、HTTP请求)、定时触发器节点(定时触发任务)\n1.1 如何从画布转成一个类？ 前端的画布采用DSL (JSON) 形式存储，每次更新画布都是将DSL传给后端。DSL的后端结构如下所示，主要包含节点 (node)、 边 (edge)、 版本\ntype Canvas struct { Nodes []*Node `json:\"nodes\"` Edges []*Edge `json:\"edges\"` Versions any `json:\"versions\"` } 1.1.1 节点数据 画布中的节点会转换为后端中 backend/domain/workflow/entity/vo/canvas.go 中的 Node 结构体， 后端存储的结构体如下\n// Node 工作流节点的完整定义 // 节点是工作流的基本执行单元，每个节点代表一个特定的功能或操作 type Node struct { // 节点的唯一标识符，用于在画布中定位和引用节点 ID string `json:\"id\"` // 节点类型，决定节点的功能和行为（如LLM、API调用、条件判断等） Type BlockType `json:\"type\"` // 节点的元数据信息，包含前端显示相关的配置 (前端的一些extendInfo) Meta any `json:\"meta\"` // 节点的核心数据，包含输入输出配置和具体参数，例如LLM的配置、MCP的配置、异常处理 Data *Data `json:\"data\"` // 子节点列表，用于复合节点（如循环、条件分支）的嵌套结构 Blocks []*Node `json:\"blocks,omitempty\"` // 节点内部的连线，用于复杂节点的内部逻辑连接 Edges []*Edge `json:\"edges,omitempty\"` // 节点的版本号，用于节点定义的版本控制 Version string `json:\"version,omitempty\"` // 父节点引用，不序列化到JSON，用于内存中的树形结构导航 parent *Node } 节点的核心数据Data如下所示\ntype Data struct { // 节点的显示元数据，如标题、icon等 Meta *NodeMeta `json:\"nodeMeta,omitempty\"` // 节点的输出定义，可以是 []*Variable 或 []*Param 类型 Outputs []any `json:\"outputs,omitempty\"` // 节点的输入配置，包含所有输入参数和设置 Inputs *Inputs `json:\"inputs,omitempty\"` // 节点在画布上的尺寸信息，用于前端显示 Size any `json:\"size,omitempty\"` } 节点的输入参数 inputs\n// Inputs 节点输入配置的综合结构 // 这是一个联合结构，包含了所有可能的节点输入配置，不同类型的节点使用不同的字段子集 type Inputs struct { // 通用输入配置 InputParameters []*Param `json:\"inputParameters\"` // 节点的输入参数列表，定义节点需要的数据输入 Content *BlockInput `json:\"content\"` // 节点的主要内容输入，通常用于文本处理或提示词 TerminatePlan *TerminatePlan `json:\"terminatePlan,omitempty\"` // 终止计划，定义节点完成后的行为 StreamingOutput bool `json:\"streamingOutput,omitempty\"` // 是否启用流式输出，用于实时返回处理结果 CallTransferVoice bool `json:\"callTransferVoice,omitempty\"` // 语音通话转接设置，用于语音相关节点 ChatHistoryWriting string `json:\"chatHistoryWriting,omitempty\"` // 聊天历史记录写入配置 LLMParam any `json:\"llmParam,omitempty\"` // LLM参数，可能是LLMParam、IntentDetectorLLMParam或QALLMParam类型 FCParam *FCParam `json:\"fcParam,omitempty\"` // 功能调用参数，用于配置工作流、插件或知识库的调用 SettingOnError *SettingOnError `json:\"settingOnError,omitempty\"` // 错误处理配置，定义节点出错时的处理策略 // 循环控制相关 LoopType LoopType `json:\"loopType,omitempty\"` // 循环类型：数组循环、计数循环或无限循环 LoopCount *BlockInput `json:\"loopCount,omitempty\"` // 循环次数，用于计数循环 VariableParameters []*Param `json:\"variableParameters,omitempty\"` // 循环变量参数 // 条件分支相关 Branches []*struct { Condition struct { Logic LogicType `json:\"logic\"` // 条件逻辑：AND或OR Conditions []*Condition `json:\"conditions\"` // 具体的条件列表 } `json:\"condition\"` } `json:\"branches,omitempty\"` // 分支条件配置，用于条件判断节点 // 批处理配置 NodeBatchInfo *NodeBatch `json:\"batch,omitempty\"` // 节点批处理模式配置 // 特定节点类型的配置（使用嵌入结构体实现类型多态） *TextProcessor // 文本处理器配置：拼接、分割等操作 *SubWorkflow // 子工作流配置：调用其他工作流 *IntentDetector // 意图检测配置：识别用户意图 *DatabaseNode // 数据库操作配置：增删改查 *HttpRequestNode // HTTP请求配置：API调用 *KnowledgeIndexer // 知识库索引配置：文档处理和索引 *CodeRunner // 代码执行器配置：运行自定义代码 *PluginAPIParam // 插件API参数配置 *VariableAggregator // 变量聚合器配置：合并多个变量 *VariableAssigner // 变量赋值器配置：设置变量值 *QA // 问答节点配置：处理问题和答案 *Batch // 批处理配置：批量处理数据 *Comment // 注释节点配置：添加说明文字 OutputSchema string `json:\"outputSchema,omitempty\"` // 输出模式定义，描述节点输出数据的结构 } 1.1.2 边数据 边主要是包含输入节点、输出节点的ID，还有输入的端口和输出的端口 （输入输出端口都是只存在于业务逻辑节点中）\n// Edge 工作流连线定义 // 连线定义了节点之间的连接关系，确定工作流的执行顺序和数据流向 type Edge struct { // 源节点ID，连线的起始节点 SourceNodeID string `json:\"sourceNodeID\"` // 目标节点ID，连线的终止节点 TargetNodeID string `json:\"targetNodeID\"` // 源端口ID，用于多输出端口的节点，指定具体的输出端口 SourcePortID string `json:\"sourcePortID,omitempty\"` // 目标端口ID，用于多输入端口的节点，指定具体的输入端口 TargetPortID string `json:\"targetPortID,omitempty\"` } 1.1.3 大语言模型节点 (NoteTypeLLM) LLM节点类图如下图所示 classDiagram class Inputs { +Param[] inputParameters +SettingOnError settingOnError +NodeBatch nodeBatchInfo +any llmParam +LLM llmSpecificConfig } class LLM { +FCParam fcParam } class LLMParam { +Param[] parameters } class SimpleLLMParam { +string generationDiversity +int maxTokens +string modelName +int64 modelType +ResponseFormat responseFormat +string systemPrompt +float64 temperature +float64 topP } class Param { +string name +BlockInput input +BlockInput left +BlockInput right +BlockInput[] variables } class BlockInput { +VariableType type +AssistType assistType +any schema +BlockInputValue value } class BlockInputValue { +BlockInputValueType type +any content +any rawMeta } class BlockInputReference { +string blockID +string name +string[] path +RefSourceType source } class FCParam { +WorkflowFCParam workflowFCParam +PluginFCParam pluginFCParam +KnowledgeFCParam knowledgeFCParam } class SettingOnError { +ErrorHandlingStrategy strategy +string customMessage } class NodeBatch { +int batchSize +int concurrentSize } Inputs --\u003e LLM : \"contains\" Inputs --\u003e LLMParam : \"llmParam as\" Inputs --\u003e SimpleLLMParam : \"llmParam as\" Inputs --\u003e Param : \"contains\" Inputs --\u003e SettingOnError : \"contains\" Inputs --\u003e NodeBatch : \"contains\" LLM --\u003e FCParam : \"contains\" LLMParam --\u003e Param : \"contains\" Param --\u003e BlockInput : \"contains\" BlockInput --\u003e BlockInputValue : \"contains\" BlockInputValue --\u003e BlockInputReference : \"content as\" note for Inputs \"LLM节点的所有输入配置包含通用输入和LLM专用配置\" note for LLMParam \"标准LLM参数列表每个参数都是Param类型\" note for SimpleLLMParam \"简化的LLM参数结构直接包含所有LLM配置字段\" note for FCParam \"函数调用能力配置LLM可调用的外部工具\" LLM参数 - SimpleLLMParam SimpleLLMParam如下所示，主要包含多样性程度、最大Token、模型名称、模型类型、响应格式、系统提示词、Temperature温度、TopP 核采样参数\n【注意】generationDiversity多样性程度 是高层的预设策略（如\"创意/平衡/精确\"模式），而 temperature和 topP是底层的具体算法参数，前者通过内置的参数组合来简化配置，后者则提供精确的随机性控制（temperature调节概率分布平滑度，topP限制候选词汇范围）。\n简单说：generationDiversity = “我要什么风格”，temperature = “要多随机”，topP = “考虑多少词汇”。\n// SimpleLLMParam 简化的大语言模型参数配置 // 提供直接的字段映射方式配置LLM参数，适用于简单的模型调用场景 type SimpleLLMParam struct { // GenerationDiversity 生成多样性配置 // 控制模型输出的多样性程度，影响生成内容的创新性 GenerationDiversity string `json:\"generationDiversity\"` // MaxTokens 最大生成令牌数 // 限制模型单次生成的最大token数量，控制输出长度 MaxTokens int `json:\"maxTokens\"` // ModelName 模型名称 // 指定要使用的具体模型名称，如gpt-3.5-turbo、gpt-4等 ModelName string `json:\"modelName\"` // ModelType 模型类型标识 // 用于区分不同类型的模型，如聊天模型、补全模型等 ModelType int64 `json:\"modelType\"` // ResponseFormat 响应格式配置 // 指定模型输出的格式，支持文本、JSON、Markdown等格式 ResponseFormat model.ResponseFormat `json:\"responseFormat\"` // SystemPrompt 系统提示词 // 定义模型的系统级指令，设定模型的角色和行为规范 SystemPrompt string `json:\"systemPrompt\"` // Temperature 温度参数 // 控制模型输出的随机性，范围通常为0.0-1.0，值越高输出越随机 // 通过调整softmax概率分布的平滑度来影响词汇选择的确定性 Temperature float64 `json:\"temperature\"` // TopP 核采样参数 // 控制模型生成时考虑的词汇概率质量，影响输出的多样性和质量 // 通过设置概率累积阈值来限制候选词汇的范围，范围通常为0.0-1.0 TopP float64 `json:\"topP\"` } LLM中的函数调用参数 **FcParam** functionCalling （大语言模型节点的“技能”）中需要用到的参数\ngraph TD A[用户输入问题] --\u003e B[LLM节点接收] B --\u003e C{LLM分析是否需要调用工具} C --\u003e|需要调用| D[FCParam 工具配置] C --\u003e|不需要| E[直接生成回答] D --\u003e F[WorkflowFCParam子工作流调用] D --\u003e G[PluginFCParam插件API调用] D --\u003e H[KnowledgeFCParam知识库检索] F --\u003e F1[配置可调用的子工作流列表] F --\u003e F2[定义请求/响应参数] F --\u003e F3[执行子工作流] G --\u003e G1[配置可调用的插件API列表] G --\u003e G2[定义API参数和响应格式] G --\u003e G3[调用第三方插件服务] H --\u003e H1[配置知识库列表] H --\u003e H2[设置检索策略TopK/MinScore/搜索模式] H --\u003e H3[执行知识库检索] F3 --\u003e I[工具执行结果] G3 --\u003e I H3 --\u003e I I --\u003e J[LLM整合工具结果] J --\u003e K[生成最终回答] E --\u003e K K --\u003e L[返回给用户] style A fill:#e1f5fe style D fill:#fff3e0 style F fill:#f3e5f5 style G fill:#e8f5e8 style H fill:#fce4ec style K fill:#e0f2f1 函数调用参数 FcParam主要包含三种模式：子工作流调用、插件API调用、知识库检索\n// FCParam 函数调用参数配置 // 用于配置工作流中不同类型的函数调用能力，包括子工作流调用、插件API调用和知识库检索调用 type FCParam struct { // WorkflowFCParam 工作流函数调用参数配置 // 配置当前工作流可以调用的子工作流列表及其参数设置 WorkflowFCParam *struct { // WorkflowList 可调用的工作流列表 // 每个工作流项包含工作流标识、版本信息和函数调用设置 WorkflowList []struct { // WorkflowID 工作流唯一标识符 WorkflowID string `json:\"workflow_id\"` // WorkflowVersion 工作流版本号 WorkflowVersion string `json:\"workflow_version\"` // PluginID 关联的插件ID（如果工作流基于插件） PluginID string `json:\"plugin_id\"` // PluginVersion 插件版本号 PluginVersion string `json:\"plugin_version\"` // IsDraft 是否为草稿版本 IsDraft bool `json:\"is_draft\"` // FCSetting 函数调用设置 // 定义调用该工作流时的请求和响应参数结构 FCSetting *struct { // RequestParameters 请求参数列表 // 定义调用工作流时需要传入的参数 RequestParameters []*workflow.APIParameter `json:\"request_params\"` // ResponseParameters 响应参数列表 // 定义工作流执行完成后返回的参数 ResponseParameters []*workflow.APIParameter `json:\"response_params\"` } `json:\"fc_setting,omitempty\"` } `json:\"workflowList,omitempty\"` } `json:\"workflowFCParam,omitempty\"` // PluginFCParam 插件函数调用参数配置 // 配置当前工作流可以调用的插件API列表及其参数设置 PluginFCParam *struct { // PluginList 可调用的插件列表 // 每个插件项包含插件标识、API信息和函数调用设置 PluginList []struct { // PluginID 插件唯一标识符 PluginID string `json:\"plugin_id\"` // ApiId API接口唯一标识符 ApiId string `json:\"api_id\"` // ApiName API接口名称 ApiName string `json:\"api_name\"` // PluginVersion 插件版本号 PluginVersion string `json:\"plugin_version\"` // IsDraft 是否为草稿版本 IsDraft bool `json:\"is_draft\"` // FCSetting 函数调用设置 // 定义调用该插件API时的请求和响应参数结构 FCSetting *struct { // RequestParameters 请求参数列表 // 定义调用插件API时需要传入的参数 RequestParameters []*workflow.APIParameter `json:\"request_params\"` // ResponseParameters 响应参数列表 // 定义插件API执行完成后返回的参数 ResponseParameters []*workflow.APIParameter `json:\"response_params\"` } `json:\"fc_setting,omitempty\"` } } `json:\"pluginFCParam,omitempty\"` // KnowledgeFCParam 知识库函数调用参数配置 // 配置当前工作流的知识库检索功能及其全局设置 KnowledgeFCParam *struct { // GlobalSetting 知识库检索全局设置 // 定义知识库检索的通用配置参数 GlobalSetting *struct { // SearchMode 搜索模式 // 定义知识库检索使用的搜索算法模式 SearchMode int64 `json:\"search_mode\"` // TopK 返回结果数量 // 定义知识库检索返回的最大结果数量 TopK int64 `json:\"top_k\"` // MinScore 最小相似度分数 // 定义知识库检索结果的最小相似度阈值 MinScore float64 `json:\"min_score\"` // UseNL2SQL 是否启用自然语言转SQL功能 UseNL2SQL bool `json:\"use_nl2_sql\"` // UseRewrite 是否启用查询重写功能 UseRewrite bool `json:\"use_rewrite\"` // UseRerank 是否启用结果重排序功能 UseRerank bool `json:\"use_rerank\"` // NoRecallReplyCustomizePrompt 无召回结果时的自定义回复提示词 NoRecallReplyCustomizePrompt string `json:\"no_recall_reply_customize_prompt\"` // NoRecallReplyMode 无召回结果时的回复模式 NoRecallReplyMode int64 `json:\"no_recall_reply_mode\"` } `json:\"global_setting,omitempty\"` // KnowledgeList 可检索的知识库列表 // 定义当前工作流可以检索的知识库集合 KnowledgeList []*struct { // ID 知识库唯一标识符 ID string `json:\"id\"` } `json:\"knowledgeList,omitempty\"` } `json:\"knowledgeFCParam,omitempty\"` } 子工作流调用 { \"workflowFCParam\": { \"workflowList\": [ { \"workflow_id\": \"7509120431183544356\", \"workflow_version\": \"v0.0.1\", \"plugin_id\": \"7509121334769795126\", \"is_draft\": false, \"fc_setting\": { \"request_params\": [...], // 调用参数 \"response_params\": [...] // 返回参数 } } ] } } 插件API调用 { \"pluginFCParam\": { \"pluginList\": [ { \"plugin_id\": \"7509353177339133952\", \"api_id\": \"7509353598782816256\", \"api_name\": \"周公解梦\", \"plugin_version\": \"0\", \"fc_setting\": { \"request_params\": [ { \"name\": \"title\", \"desc\": \"查询解梦标题，例如：梦见蛇\", \"type\": 1, \"is_required\": true } ], \"response_params\": [...] } } ] } } 知识库检索 { \"knowledgeFCParam\": { \"knowledgeList\": [ { \"id\": \"7512369185624686592\", \"name\": \"旅游景点\" } ], \"global_setting\": { \"top_k\": 3, // \"min_score\": 0.5, \"search_mode\": 0, \"use_rerank\": true, \"use_rewrite\": true, \"use_nl2_sql\": true, \"no_recall_reply_mode\": 0, \"no_recall_reply_customize_prompt\": \"抱歉，您的问题超出了我的知识范围\" } } 1.1.4 BlockInput结构 BlockInput是工作流系统中的数据绑定核心，它解决了一个关键问题：如何在工作流节点之间传递和配置数据。BlockInput = \"这个输入框里放什么数据，从哪里来\"\ngraph TD A[BlockInput 块输入配置] --\u003e B[Type: 数据类型] A --\u003e C[AssistType: 辅助类型] A --\u003e D[Schema: 结构定义] A --\u003e E[Value: 输入值配置] E --\u003e F[BlockInputValue] F --\u003e G[Type: 值类型] F --\u003e H[Content: 具体内容] F --\u003e I[RawMeta: 元数据] G --\u003e G1[literal: 字面值] G --\u003e G2[ref: 节点引用] G --\u003e G3[object_ref: 对象引用] H --\u003e H1[静态文本/数值] H --\u003e H2[BlockInputReference] H2 --\u003e J[BlockID: 源节点ID] H2 --\u003e K[Name: 字段名称] H2 --\u003e L[Path: 访问路径] H2 --\u003e M[Source: 引用源类型] M --\u003e M1[block-output: 节点输出] M --\u003e M2[global_variable_app: 应用变量] M --\u003e M3[global_variable_system: 系统变量] M --\u003e M4[global_variable_user: 用户变量] N[实际使用场景] --\u003e N1[静态配置: 固定值] N --\u003e N2[动态绑定: 引用其他节点] N --\u003e N3[模板渲染: 变量替换] N --\u003e N4[复杂对象: 嵌套结构] style A fill:#e1f5fe style F fill:#fff3e0 style H2 fill:#f3e5f5 style N fill:#e8f5e8 BlockInput结构如下所示\ntype BlockInput struct { Type VariableType // 数据类型：string、number、object等 AssistType AssistType // 辅助类型：更具体的类型描述 Schema any // 结构定义：复杂对象的内部结构 Value *BlockInputValue // 值配置：具体的数据来源 } 三种数据流来源：常量literal、节点引用ref、对象引用 Object Ref\n常量literal { \"type\": \"string\", \"value\": { \"type\": \"literal\", \"content\": \"Hello World\", \"rawMeta\": {\"type\": 1} } } 节点引用ref (最常用的) { \"type\": \"string\", \"value\": { \"type\": \"ref\", \"content\": { \"blockID\": \"100001\", \"name\": \"output\", \"source\": \"block-output\" } } } 对象引用 { \"type\": \"object\", \"schema\": [{\"name\": \"name\", \"type\": \"string\"}], \"value\": { \"type\": \"object_ref\", \"content\": { \"blockID\": \"100001\", \"name\": \"person\", \"source\": \"block-output\" } } } 1.1.5 知识库节点 (RAG) RAG完整流程图 一个完整的RAG流程如下：\n查询重写优化 （小模型）-\u003e 自然语言转SQL （NL2SQL）-\u003e 向量检索 (语义搜索/混合搜索/全量搜索) -\u003e 相似度过滤 (最小相似度阈值) -\u003e 结果重排序 (Rerank) -\u003e TopK结果截取 -\u003e 构建新的上下文提示词\ngraph LR A[用户输入查询] --\u003e B[查询预处理] B --\u003e B1[UseRewrite: 查询重写] B1 --\u003e B2[优化查询语义] B2 --\u003e B3[UseNL2SQL: 自然语言转SQL] B3 --\u003e C[向量检索阶段] C --\u003e C1[文档向量化] C --\u003e C2[查询向量化] C1 --\u003e C3[向量相似度计算] C2 --\u003e C3 C3 --\u003e D[SearchMode: 搜索策略] D --\u003e D1[0: 语义搜索Semantic Search] D --\u003e D2[1: 混合搜索Hybrid Search] D --\u003e D3[20: 全文搜索Full-text Search] D1 --\u003e E[初步结果筛选] D2 --\u003e E D3 --\u003e E E --\u003e E1[MinScore: 相似度过滤] E1 --\u003e E2[过滤低质量结果] E2 --\u003e F[UseRerank: 结果重排序] F --\u003e F1[深度语义匹配] F1 --\u003e F2[重新排序结果] F2 --\u003e G[TopK: 结果截取] G --\u003e G1[选择前K个最佳结果] G1 --\u003e H{是否有合适结果?} H --\u003e|有| I[构建增强上下文] H --\u003e|无| J[NoRecallReplyMode处理] J --\u003e J1[0: 使用自定义提示词] J --\u003e J2[1: 其他处理模式] J1 --\u003e K[返回无结果回复] J2 --\u003e K I --\u003e L[RAG生成阶段] L --\u003e L1[组合查询+检索内容] L1 --\u003e L2[LLM生成增强回答] L2 --\u003e M[返回最终答案] K --\u003e M style A fill:#e1f5fe style B fill:#fff3e0 style C fill:#f3e5f5 style D fill:#e8f5e8 style F fill:#fce4ec style L fill:#e0f2f1 向量检索规则 graph TD A[用户查询] --\u003e B{SearchMode选择} B --\u003e|0: 语义搜索| C[Semantic Search] B --\u003e|1: 混合搜索| D[Hybrid Search] B --\u003e|20: 全文搜索| E[Full-text Search] C --\u003e C1[Step1: 查询向量化] C1 --\u003e C2[Embedding Model] C2 --\u003e C3[Query Vector] C3 --\u003e C4[Step2: 文档向量匹配] C4 --\u003e C5[向量数据库] C5 --\u003e C6[余弦相似度计算] D --\u003e D1[Step1: 向量搜索路径] D --\u003e D2[Step2: 关键词搜索路径] D1 --\u003e D3[Embedding检索] D2 --\u003e D4[BM25算法] D3 --\u003e D5[结果融合算法] D4 --\u003e D5 E --\u003e E1[Step1: 分词处理] E1 --\u003e E2[分词器] E2 --\u003e E3[Step2: 倒排索引] E3 --\u003e E4[搜索引擎] E4 --\u003e E5[TF-IDF评分] C6 --\u003e F[语义理解强] D5 --\u003e G[平衡精确性和语义] E5 --\u003e H[关键词精确匹配] F --\u003e I[最终检索结果] G --\u003e I H --\u003e I style C fill:#e1f5fe style D fill:#fff3e0 style E fill:#f3e5f5 style I fill:#e8f5e8 语义搜索 （准）: 使用 Embedding 模型计算向量相似度，理解深层语义，处理同义词和概念匹配。\n混合搜索 （全面）: 结合向量搜索 + BM25 关键词搜索，平衡语义理解和精确匹配。\n全文搜索 （快）: 传统的倒排索引和TF-IDF，精确的关键词匹配，速度快\n【算法说明】\nEmbedding向量检索：将文本通过编码器转为向量和DB中的向量计算cos相似度最后返回TopK的结果 graph TD A[文本输入] --\u003e B[Embedding检索流程] B --\u003e C[第一阶段: 向量化] C --\u003e C1[分词和预处理] C1 --\u003e C2[Transformer编码器] C2 --\u003e C3[池化操作] C3 --\u003e C4[归一化处理] C4 --\u003e C5[生成向量表示] B --\u003e D[第二阶段: 索引构建] D --\u003e D1[向量维度优化] D1 --\u003e D2[索引结构选择] D2 --\u003e D3[HNSW/IVF/LSH] D3 --\u003e D4[分布式存储] B --\u003e E[第三阶段: 相似度检索] E --\u003e E1[查询向量化] E1 --\u003e E2[近似最近邻搜索] E2 --\u003e E3[相似度计算] E3 --\u003e E4[TopK结果返回] F[技术栈] --\u003e F1[模型: BERT/Sentence-BERT] F --\u003e F2[向量DB: Pinecone/Milvus/ElasticSearch] F --\u003e F3[相似度: 余弦/点积/欧氏] F --\u003e F4[索引: HNSW/IVF] style C fill:#e1f5fe style D fill:#fff3e0 style E fill:#f3e5f5 style F fill:#e8f5e8 倒排索引：将文档切分成独立的词汇单元，建立从词汇到文档的映射索引\nTF-IDF (词频-逆文档频率)：TF（词频）： 计算一个词在文档中出现的词次数， 用于衡量词汇的重要性。IDF （逆文档频率）：衡量词汇在整个语料库中的重要性。 TF(t,d) = 词汇t在文档d中出现的次数 / 文档d的总词数 IDF(t) = log(文档总数 / 包含词汇t的文档数) TF-IDF = sigmoid (TF(t,d) * IDF(t)) 缺点：不能考虑词汇的位置，忽略了词汇的相关性；不利于稀疏性 （短文档很多词汇 TF-IDF=0）\nBM25 算法：在 TF-IDF (词频-逆文档频率) 基础上，解决了词频饱和问题和文档长度归一化问题。 ReRank 规则 知识库节点结构 // Knowledge 知识库节点配置 // 用于配置独立的知识库检索节点，定义数据源参数和处理策略 // 与LLM节点中的KnowledgeFCParam不同，这是专门的知识库检索步骤 type Knowledge struct { // DatasetParam 数据集参数配置 // 定义知识库的数据源配置，包括数据库连接、文件路径等信息 // 每个Param包含具体的数据源配置项 DatasetParam []*Param `json:\"datasetParam,omitempty\"` // StrategyParam 知识库处理策略参数 // 定义文档解析、分块、索引等各个环节的处理策略和参数 StrategyParam StrategyParam `json:\"strategyParam,omitempty\"` } // StrategyParam 知识库处理策略参数配置 // 定义知识库从文档解析到向量索引的完整处理流程策略 type StrategyParam struct { // ParsingStrategy 文档解析策略配置 // 定义如何解析和提取不同类型文档的内容 ParsingStrategy struct { // ParsingType 解析类型 // 定义文档解析的方式，如自动识别、手动指定等 // 常见值：auto（自动识别）、manual（手动指定）、custom（自定义） ParsingType string `json:\"parsingType,omitempty\"` // ImageExtraction 是否提取图片 // 控制是否从文档中提取图片内容进行处理 // true表示提取图片，false表示忽略图片内容 ImageExtraction bool `json:\"imageExtraction\"` // TableExtraction 是否提取表格 // 控制是否从文档中提取表格结构和数据 // true表示解析表格结构，false表示将表格视为普通文本 TableExtraction bool `json:\"tableExtraction\"` // ImageOcr 是否启用图片OCR识别 // 控制是否对提取的图片进行光学字符识别 // true表示对图片进行OCR文字识别，false表示忽略图片中的文字 ImageOcr bool `json:\"imageOcr\"` } `json:\"parsingStrategy,omitempty\"` // ChunkStrategy 文档分块策略配置 // 定义如何将长文档切分成适合向量化的小块 ChunkStrategy struct { // ChunkType 分块类型 // 定义文档分块的策略类型 // 常见值：fixed（固定长度）、semantic（语义分块）、sentence（句子分块） ChunkType string `json:\"chunkType,omitempty\"` // SeparatorType 分隔符类型 // 定义用于分块的分隔符类型 // 常见值：auto（自动选择）、newline（换行符）、paragraph（段落）、custom（自定义） SeparatorType string `json:\"separatorType,omitempty\"` // Separator 自定义分隔符 // 当SeparatorType为custom时，指定具体的分隔符字符串 Separator string `json:\"separator,omitempty\"` // MaxToken 最大令牌数 // 定义每个文档块的最大token数量，控制块的大小 // 通常设置为模型的上下文窗口大小，如512、1024等 MaxToken int64 `json:\"maxToken,omitempty\"` // Overlap 重叠比例 // 定义相邻文档块之间的重叠比例，避免语义信息在边界处丢失 // 取值范围0.0-1.0，常见值为0.1-0.2（10%-20%重叠） Overlap float64 `json:\"overlap,omitempty\"` } `json:\"chunkStrategy,omitempty\"` // IndexStrategy 索引策略配置 // 定义向量索引的构建策略，如索引类型、参数等 // 具体结构依赖于使用的向量数据库类型（如HNSW、IVF等） IndexStrategy any `json:\"indexStrategy\"` } ",
+  "wordCount" : "1812",
+  "inLanguage": "en",
+  "image": "https://swimmingliu.cn/papermod-cover.png","datePublished": "2025-08-07T23:27:35+08:00",
+  "dateModified": "2025-08-07T23:27:35+08:00",
+  "author":[{
+    "@type": "Person",
+    "name": "SwimmingLiu"
+  }],
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": "https://swimmingliu.cn/posts/job/coze-workflow-analysis/"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "SwimmingLiu's Blog",
+    "logo": {
+      "@type": "ImageObject",
+      "url": "https://swimmingliu.cn/images/swimmingliu_icon.png"
+    }
+  }
+}
+</script>
+</head>
+
+<body class="" id="top">
+<script>
+    if (localStorage.getItem("pref-theme") === "dark") {
+        document.body.classList.add('dark');
+    } else if (localStorage.getItem("pref-theme") === "light") {
+        document.body.classList.remove('dark')
+    } else if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+        document.body.classList.add('dark');
+    }
+
+</script>
+
+<header class="header">
+    <nav class="nav">
+        <div class="logo">
+            <a href="https://swimmingliu.cn/" accesskey="h" title="𝓢𝔀𝓲𝓶𝓶𝓲𝓷𝓰𝓛𝓲𝓾&#39;𝓼 𝓑𝓵𝓸𝓰 (Alt + H)">
+                <img src="https://swimmingliu.cn/images/swimmingliu_icon.png" alt="" aria-label="logo"
+                    height="30">𝓢𝔀𝓲𝓶𝓶𝓲𝓷𝓰𝓛𝓲𝓾&#39;𝓼 𝓑𝓵𝓸𝓰</a>
+            <div class="logo-switches">
+                <button id="theme-toggle" accesskey="t" title="(Alt + T)">
+                    <svg id="moon" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                    </svg>
+                    <svg id="sun" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="5"></circle>
+                        <line x1="12" y1="1" x2="12" y2="3"></line>
+                        <line x1="12" y1="21" x2="12" y2="23"></line>
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                        <line x1="1" y1="12" x2="3" y2="12"></line>
+                        <line x1="21" y1="12" x2="23" y2="12"></line>
+                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                    </svg>
+                </button>
+            </div>
+        </div>
+        <ul id="menu">
+            <li>
+                <a href="https://swimmingliu.cn/index.html" title="🏡 Home">
+                    <span>🏡 Home</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://swimmingliu.cn/search/" title="🔍 Search">
+                    <span>🔍 Search</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://swimmingliu.cn/posts/" title="🗒️ Posts">
+                    <span>🗒️ Posts</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://swimmingliu.cn/archives/" title="📃 Archive">
+                    <span>📃 Archive</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://swimmingliu.cn/tags/" title="📑 Tags">
+                    <span>📑 Tags</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://bento.me/swimmingliu" title="👨🏻‍🎓 About Me">
+                    <span>👨🏻‍🎓 About Me</span>&nbsp;
+                    <svg fill="none" shape-rendering="geometricPrecision" stroke="currentColor" stroke-linecap="round"
+                        stroke-linejoin="round" stroke-width="2.5" viewBox="0 0 24 24" height="12" width="12">
+                        <path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"></path>
+                        <path d="M15 3h6v6"></path>
+                        <path d="M10 14L21 3"></path>
+                    </svg>
+                </a>
+            </li>
+            <li>
+                <a href="https://www.emojisearch.app/" title="Emoji">
+                    <span>Emoji</span>&nbsp;
+                    <svg fill="none" shape-rendering="geometricPrecision" stroke="currentColor" stroke-linecap="round"
+                        stroke-linejoin="round" stroke-width="2.5" viewBox="0 0 24 24" height="12" width="12">
+                        <path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"></path>
+                        <path d="M15 3h6v6"></path>
+                        <path d="M10 14L21 3"></path>
+                    </svg>
+                </a>
+            </li>
+        </ul>
+    </nav>
+</header>
+<main class="main">
+
+<article class="post-single">
+  <header class="post-header">
+    <div class="breadcrumbs"><a href="https://swimmingliu.cn/">Home</a>&nbsp;»&nbsp;<a href="https://swimmingliu.cn/posts/">📚 Posts</a>&nbsp;»&nbsp;<a href="https://swimmingliu.cn/posts/job/">💻 Job</a></div>
+    <h1 class="post-title entry-hint-parent">
+      Coze工作流分析
+    </h1>
+    <div class="post-meta"><span title='2025-08-07 23:27:35 +0800 CST'>August 7, 2025</span>&nbsp;·&nbsp;9 min&nbsp;·&nbsp;SwimmingLiu
+
+</div>
+  </header> <div class="toc">
+    <details >
+        <summary accesskey="c" title="(Alt + C)">
+            <span class="details">Table of Contents</span>
+        </summary>
+
+        <div class="inner"><ul>
+                <li>
+                    <a href="#coze%e5%b7%a5%e4%bd%9c%e6%b5%81-qa" aria-label="Coze工作流-QA">Coze工作流-QA</a><ul>
+                        
+                <li>
+                    <a href="#%e5%b7%a5%e4%bd%9c%e6%b5%81%e7%ae%a1%e7%90%86" aria-label="工作流管理">工作流管理</a><ul>
+                        
+                <li>
+                    <a href="#11%e5%a6%82%e4%bd%95%e4%bb%8e%e7%94%bb%e5%b8%83%e8%bd%ac%e6%88%90%e4%b8%80%e4%b8%aa%e7%b1%bb" aria-label="1.1 如何从画布转成一个类？">1.1 如何从画布转成一个类？</a><ul>
+                        
+                <li>
+                    <a href="#111%e8%8a%82%e7%82%b9%e6%95%b0%e6%8d%ae" aria-label="1.1.1 节点数据">1.1.1 节点数据</a></li>
+                <li>
+                    <a href="#112%e8%be%b9%e6%95%b0%e6%8d%ae" aria-label="1.1.2 边数据">1.1.2 边数据</a></li>
+                <li>
+                    <a href="#113%e5%a4%a7%e8%af%ad%e8%a8%80%e6%a8%a1%e5%9e%8b%e8%8a%82%e7%82%b9notetypellm" aria-label="1.1.3 大语言模型节点 (NoteTypeLLM)">1.1.3 大语言模型节点 (NoteTypeLLM)</a><ul>
+                        
+                <li>
+                    <a href="#llm%e8%8a%82%e7%82%b9%e7%b1%bb%e5%9b%be%e5%a6%82%e4%b8%8b%e5%9b%be%e6%89%80%e7%a4%ba" aria-label="LLM节点类图如下图所示">LLM节点类图如下图所示</a></li>
+                <li>
+                    <a href="#llm%e5%8f%82%e6%95%b0-simplellmparam" aria-label="LLM参数 - SimpleLLMParam">LLM参数 - SimpleLLMParam</a></li>
+                <li>
+                    <a href="#llm%e4%b8%ad%e7%9a%84%e5%87%bd%e6%95%b0%e8%b0%83%e7%94%a8%e5%8f%82%e6%95%b0fcparam" aria-label="LLM中的函数调用参数 **FcParam**">LLM中的函数调用参数 **FcParam**</a></li></ul>
+                </li>
+                <li>
+                    <a href="#114blockinput%e7%bb%93%e6%9e%84" aria-label="1.1.4 BlockInput结构">1.1.4 BlockInput结构</a></li>
+                <li>
+                    <a href="#115%e7%9f%a5%e8%af%86%e5%ba%93%e8%8a%82%e7%82%b9rag" aria-label="1.1.5 知识库节点 (RAG)">1.1.5 知识库节点 (RAG)</a><ul>
+                        
+                <li>
+                    <a href="#rag%e5%ae%8c%e6%95%b4%e6%b5%81%e7%a8%8b%e5%9b%be" aria-label="RAG完整流程图">RAG完整流程图</a></li>
+                <li>
+                    <a href="#%e5%90%91%e9%87%8f%e6%a3%80%e7%b4%a2%e8%a7%84%e5%88%99" aria-label="向量检索规则">向量检索规则</a></li>
+                <li>
+                    <a href="#rerank%e8%a7%84%e5%88%99" aria-label="ReRank 规则">ReRank 规则</a></li>
+                <li>
+                    <a href="#%e7%9f%a5%e8%af%86%e5%ba%93%e8%8a%82%e7%82%b9%e7%bb%93%e6%9e%84" aria-label="知识库节点结构">知识库节点结构</a>
+                </li>
+            </ul>
+            </li>
+            </ul>
+            </li>
+            </ul>
+            </li>
+            </ul>
+            </li>
+            </ul>
+        </div>
+    </details>
+</div>
+  <div class="post-content"><h1 id="coze工作流-qa">Coze工作流-QA<a hidden class="anchor" aria-hidden="true" href="#coze工作流-qa">#</a></h1>
+<blockquote>
+<p>工作流可以分为三个大板块：工作流管理 (前后端交互-画布存储)、工作流校验、工作流执行</p></blockquote>
+<h2 id="工作流管理">工作流管理<a hidden class="anchor" aria-hidden="true" href="#工作流管理">#</a></h2>
+<blockquote>
+<p>对于前端来讲，工作流就是一张canvas画布。用户可以在画布中，创建不同功能的节点。</p></blockquote>
+<blockquote>
+<p>节点类型可以分为：开始和结束节点 （默认）、LLM节点、子工作流 (嵌套)、插件 (外部工具-例如MCP、OCR)、业务逻辑节点 (选择、循环、分类、批处理(并发)、变量聚合)、数据库节点(SQL、CRUD)、知识库节点(RAG、增删、变量赋值)、图像处理节点、音视频处理节点、组件(JSON序列化、HTTP请求)、定时触发器节点(定时触发任务)</p></blockquote>
+<h3 id="11如何从画布转成一个类">1.1 如何从画布转成一个类？<a hidden class="anchor" aria-hidden="true" href="#11如何从画布转成一个类">#</a></h3>
+<p>前端的画布采用DSL (JSON) 形式存储，每次更新画布都是将DSL传给后端。DSL的后端结构如下所示，主要包含节点 (node)、 边 (edge)、 版本</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="line"><span class="cl"><span class="kd">type</span> <span class="nx">Canvas</span> <span class="kd">struct</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">	<span class="nx">Nodes</span>    <span class="p">[]</span><span class="o">*</span><span class="nx">Node</span> <span class="s">`json:&#34;nodes&#34;`</span>
+</span></span><span class="line"><span class="cl">	<span class="nx">Edges</span>    <span class="p">[]</span><span class="o">*</span><span class="nx">Edge</span> <span class="s">`json:&#34;edges&#34;`</span>
+</span></span><span class="line"><span class="cl">	<span class="nx">Versions</span> <span class="kt">any</span>     <span class="s">`json:&#34;versions&#34;`</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></div><h4 id="111节点数据">1.1.1 节点数据<a hidden class="anchor" aria-hidden="true" href="#111节点数据">#</a></h4>
+<p>画布中的节点会转换为后端中 <code>backend/domain/workflow/entity/vo/canvas.go</code> 中的 Node 结构体， 后端存储的结构体如下</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="line"><span class="cl"><span class="c1">// Node 工作流节点的完整定义</span>
+</span></span><span class="line"><span class="cl"><span class="c1">// 节点是工作流的基本执行单元，每个节点代表一个特定的功能或操作</span>
+</span></span><span class="line"><span class="cl"><span class="kd">type</span> <span class="nx">Node</span> <span class="kd">struct</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="c1">// 节点的唯一标识符，用于在画布中定位和引用节点</span>
+</span></span><span class="line"><span class="cl">	<span class="nx">ID</span>      <span class="kt">string</span>    <span class="s">`json:&#34;id&#34;`</span> 
+</span></span><span class="line"><span class="cl">    <span class="c1">// 节点类型，决定节点的功能和行为（如LLM、API调用、条件判断等）</span>
+</span></span><span class="line"><span class="cl">	<span class="nx">Type</span>    <span class="nx">BlockType</span> <span class="s">`json:&#34;type&#34;`</span>
+</span></span><span class="line"><span class="cl">    <span class="c1">// 节点的元数据信息，包含前端显示相关的配置 (前端的一些extendInfo)</span>
+</span></span><span class="line"><span class="cl">	<span class="nx">Meta</span>    <span class="kt">any</span>       <span class="s">`json:&#34;meta&#34;`</span>
+</span></span><span class="line"><span class="cl">    <span class="c1">// 节点的核心数据，包含输入输出配置和具体参数，例如LLM的配置、MCP的配置、异常处理</span>
+</span></span><span class="line"><span class="cl">	<span class="nx">Data</span>    <span class="o">*</span><span class="nx">Data</span>     <span class="s">`json:&#34;data&#34;`</span>
+</span></span><span class="line"><span class="cl">    <span class="c1">// 子节点列表，用于复合节点（如循环、条件分支）的嵌套结构</span>
+</span></span><span class="line"><span class="cl">	<span class="nx">Blocks</span>  <span class="p">[]</span><span class="o">*</span><span class="nx">Node</span>   <span class="s">`json:&#34;blocks,omitempty&#34;`</span>
+</span></span><span class="line"><span class="cl">    <span class="c1">// 节点内部的连线，用于复杂节点的内部逻辑连接</span>
+</span></span><span class="line"><span class="cl">	<span class="nx">Edges</span>   <span class="p">[]</span><span class="o">*</span><span class="nx">Edge</span>   <span class="s">`json:&#34;edges,omitempty&#34;`</span>
+</span></span><span class="line"><span class="cl">    <span class="c1">// 节点的版本号，用于节点定义的版本控制</span>
+</span></span><span class="line"><span class="cl">	<span class="nx">Version</span> <span class="kt">string</span>    <span class="s">`json:&#34;version,omitempty&#34;`</span> 
+</span></span><span class="line"><span class="cl">    <span class="c1">// 父节点引用，不序列化到JSON，用于内存中的树形结构导航</span>
+</span></span><span class="line"><span class="cl">	<span class="nx">parent</span> <span class="o">*</span><span class="nx">Node</span> 
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></div><p>节点的核心数据<code>Data</code>如下所示</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="line"><span class="cl"><span class="kd">type</span> <span class="nx">Data</span> <span class="kd">struct</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="c1">// 节点的显示元数据，如标题、icon等</span>
+</span></span><span class="line"><span class="cl">	<span class="nx">Meta</span>    <span class="o">*</span><span class="nx">NodeMeta</span> <span class="s">`json:&#34;nodeMeta,omitempty&#34;`</span>
+</span></span><span class="line"><span class="cl">    <span class="c1">// 节点的输出定义，可以是 []*Variable 或 []*Param 类型</span>
+</span></span><span class="line"><span class="cl">	<span class="nx">Outputs</span> <span class="p">[]</span><span class="kt">any</span>     <span class="s">`json:&#34;outputs,omitempty&#34;`</span>
+</span></span><span class="line"><span class="cl">    <span class="c1">// 节点的输入配置，包含所有输入参数和设置</span>
+</span></span><span class="line"><span class="cl">	<span class="nx">Inputs</span>  <span class="o">*</span><span class="nx">Inputs</span>   <span class="s">`json:&#34;inputs,omitempty&#34;`</span>
+</span></span><span class="line"><span class="cl">    <span class="c1">// 节点在画布上的尺寸信息，用于前端显示</span>
+</span></span><span class="line"><span class="cl">	<span class="nx">Size</span>    <span class="kt">any</span>       <span class="s">`json:&#34;size,omitempty&#34;`</span>     
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></div><p>节点的输入参数 <code>inputs</code></p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="line"><span class="cl"><span class="c1">// Inputs 节点输入配置的综合结构</span>
+</span></span><span class="line"><span class="cl"><span class="c1">// 这是一个联合结构，包含了所有可能的节点输入配置，不同类型的节点使用不同的字段子集</span>
+</span></span><span class="line"><span class="cl"><span class="kd">type</span> <span class="nx">Inputs</span> <span class="kd">struct</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">	<span class="c1">// 通用输入配置</span>
+</span></span><span class="line"><span class="cl">	<span class="nx">InputParameters</span>    <span class="p">[]</span><span class="o">*</span><span class="nx">Param</span>        <span class="s">`json:&#34;inputParameters&#34;`</span>              <span class="c1">// 节点的输入参数列表，定义节点需要的数据输入</span>
+</span></span><span class="line"><span class="cl">	<span class="nx">Content</span>            <span class="o">*</span><span class="nx">BlockInput</span>     <span class="s">`json:&#34;content&#34;`</span>                      <span class="c1">// 节点的主要内容输入，通常用于文本处理或提示词</span>
+</span></span><span class="line"><span class="cl">	<span class="nx">TerminatePlan</span>      <span class="o">*</span><span class="nx">TerminatePlan</span>  <span class="s">`json:&#34;terminatePlan,omitempty&#34;`</span>      <span class="c1">// 终止计划，定义节点完成后的行为</span>
+</span></span><span class="line"><span class="cl">	<span class="nx">StreamingOutput</span>    <span class="kt">bool</span>            <span class="s">`json:&#34;streamingOutput,omitempty&#34;`</span>    <span class="c1">// 是否启用流式输出，用于实时返回处理结果</span>
+</span></span><span class="line"><span class="cl">	<span class="nx">CallTransferVoice</span>  <span class="kt">bool</span>            <span class="s">`json:&#34;callTransferVoice,omitempty&#34;`</span>  <span class="c1">// 语音通话转接设置，用于语音相关节点</span>
+</span></span><span class="line"><span class="cl">	<span class="nx">ChatHistoryWriting</span> <span class="kt">string</span>          <span class="s">`json:&#34;chatHistoryWriting,omitempty&#34;`</span> <span class="c1">// 聊天历史记录写入配置</span>
+</span></span><span class="line"><span class="cl">	<span class="nx">LLMParam</span>           <span class="kt">any</span>             <span class="s">`json:&#34;llmParam,omitempty&#34;`</span>           <span class="c1">// LLM参数，可能是LLMParam、IntentDetectorLLMParam或QALLMParam类型</span>
+</span></span><span class="line"><span class="cl">	<span class="nx">FCParam</span>            <span class="o">*</span><span class="nx">FCParam</span>        <span class="s">`json:&#34;fcParam,omitempty&#34;`</span>            <span class="c1">// 功能调用参数，用于配置工作流、插件或知识库的调用</span>
+</span></span><span class="line"><span class="cl">	<span class="nx">SettingOnError</span>     <span class="o">*</span><span class="nx">SettingOnError</span> <span class="s">`json:&#34;settingOnError,omitempty&#34;`</span>     <span class="c1">// 错误处理配置，定义节点出错时的处理策略</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">	<span class="c1">// 循环控制相关</span>
+</span></span><span class="line"><span class="cl">	<span class="nx">LoopType</span>           <span class="nx">LoopType</span>    <span class="s">`json:&#34;loopType,omitempty&#34;`</span>           <span class="c1">// 循环类型：数组循环、计数循环或无限循环</span>
+</span></span><span class="line"><span class="cl">	<span class="nx">LoopCount</span>          <span class="o">*</span><span class="nx">BlockInput</span> <span class="s">`json:&#34;loopCount,omitempty&#34;`</span>          <span class="c1">// 循环次数，用于计数循环</span>
+</span></span><span class="line"><span class="cl">	<span class="nx">VariableParameters</span> <span class="p">[]</span><span class="o">*</span><span class="nx">Param</span>    <span class="s">`json:&#34;variableParameters,omitempty&#34;`</span> <span class="c1">// 循环变量参数</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">	<span class="c1">// 条件分支相关</span>
+</span></span><span class="line"><span class="cl">	<span class="nx">Branches</span> <span class="p">[]</span><span class="o">*</span><span class="kd">struct</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">		<span class="nx">Condition</span> <span class="kd">struct</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">			<span class="nx">Logic</span>      <span class="nx">LogicType</span>    <span class="s">`json:&#34;logic&#34;`</span>      <span class="c1">// 条件逻辑：AND或OR</span>
+</span></span><span class="line"><span class="cl">			<span class="nx">Conditions</span> <span class="p">[]</span><span class="o">*</span><span class="nx">Condition</span> <span class="s">`json:&#34;conditions&#34;`</span> <span class="c1">// 具体的条件列表</span>
+</span></span><span class="line"><span class="cl">		<span class="p">}</span> <span class="s">`json:&#34;condition&#34;`</span>
+</span></span><span class="line"><span class="cl">	<span class="p">}</span> <span class="s">`json:&#34;branches,omitempty&#34;`</span> <span class="c1">// 分支条件配置，用于条件判断节点</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">	<span class="c1">// 批处理配置</span>
+</span></span><span class="line"><span class="cl">	<span class="nx">NodeBatchInfo</span> <span class="o">*</span><span class="nx">NodeBatch</span> <span class="s">`json:&#34;batch,omitempty&#34;`</span> <span class="c1">// 节点批处理模式配置</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">	<span class="c1">// 特定节点类型的配置（使用嵌入结构体实现类型多态）</span>
+</span></span><span class="line"><span class="cl">	<span class="o">*</span><span class="nx">TextProcessor</span>      <span class="c1">// 文本处理器配置：拼接、分割等操作</span>
+</span></span><span class="line"><span class="cl">	<span class="o">*</span><span class="nx">SubWorkflow</span>        <span class="c1">// 子工作流配置：调用其他工作流</span>
+</span></span><span class="line"><span class="cl">	<span class="o">*</span><span class="nx">IntentDetector</span>     <span class="c1">// 意图检测配置：识别用户意图</span>
+</span></span><span class="line"><span class="cl">	<span class="o">*</span><span class="nx">DatabaseNode</span>       <span class="c1">// 数据库操作配置：增删改查</span>
+</span></span><span class="line"><span class="cl">	<span class="o">*</span><span class="nx">HttpRequestNode</span>    <span class="c1">// HTTP请求配置：API调用</span>
+</span></span><span class="line"><span class="cl">	<span class="o">*</span><span class="nx">KnowledgeIndexer</span>   <span class="c1">// 知识库索引配置：文档处理和索引</span>
+</span></span><span class="line"><span class="cl">	<span class="o">*</span><span class="nx">CodeRunner</span>         <span class="c1">// 代码执行器配置：运行自定义代码</span>
+</span></span><span class="line"><span class="cl">	<span class="o">*</span><span class="nx">PluginAPIParam</span>     <span class="c1">// 插件API参数配置</span>
+</span></span><span class="line"><span class="cl">	<span class="o">*</span><span class="nx">VariableAggregator</span> <span class="c1">// 变量聚合器配置：合并多个变量</span>
+</span></span><span class="line"><span class="cl">	<span class="o">*</span><span class="nx">VariableAssigner</span>   <span class="c1">// 变量赋值器配置：设置变量值</span>
+</span></span><span class="line"><span class="cl">	<span class="o">*</span><span class="nx">QA</span>                 <span class="c1">// 问答节点配置：处理问题和答案</span>
+</span></span><span class="line"><span class="cl">	<span class="o">*</span><span class="nx">Batch</span>              <span class="c1">// 批处理配置：批量处理数据</span>
+</span></span><span class="line"><span class="cl">	<span class="o">*</span><span class="nx">Comment</span>            <span class="c1">// 注释节点配置：添加说明文字</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">	<span class="nx">OutputSchema</span> <span class="kt">string</span> <span class="s">`json:&#34;outputSchema,omitempty&#34;`</span> <span class="c1">// 输出模式定义，描述节点输出数据的结构</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></div><h4 id="112边数据">1.1.2 边数据<a hidden class="anchor" aria-hidden="true" href="#112边数据">#</a></h4>
+<p>边主要是包含输入节点、输出节点的ID，还有输入的端口和输出的端口 （输入输出端口都是只存在于<code>业务逻辑节点</code>中）</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="line"><span class="cl"><span class="c1">// Edge 工作流连线定义</span>
+</span></span><span class="line"><span class="cl"><span class="c1">// 连线定义了节点之间的连接关系，确定工作流的执行顺序和数据流向</span>
+</span></span><span class="line"><span class="cl"><span class="kd">type</span> <span class="nx">Edge</span> <span class="kd">struct</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="c1">// 源节点ID，连线的起始节点</span>
+</span></span><span class="line"><span class="cl">	<span class="nx">SourceNodeID</span> <span class="kt">string</span> <span class="s">`json:&#34;sourceNodeID&#34;`</span> 
+</span></span><span class="line"><span class="cl">    <span class="c1">// 目标节点ID，连线的终止节点</span>
+</span></span><span class="line"><span class="cl">	<span class="nx">TargetNodeID</span> <span class="kt">string</span> <span class="s">`json:&#34;targetNodeID&#34;`</span>
+</span></span><span class="line"><span class="cl">    <span class="c1">// 源端口ID，用于多输出端口的节点，指定具体的输出端口</span>
+</span></span><span class="line"><span class="cl">	<span class="nx">SourcePortID</span> <span class="kt">string</span> <span class="s">`json:&#34;sourcePortID,omitempty&#34;`</span>
+</span></span><span class="line"><span class="cl">    <span class="c1">// 目标端口ID，用于多输入端口的节点，指定具体的输入端口</span>
+</span></span><span class="line"><span class="cl">	<span class="nx">TargetPortID</span> <span class="kt">string</span> <span class="s">`json:&#34;targetPortID,omitempty&#34;`</span> 
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></div><h4 id="113大语言模型节点notetypellm">1.1.3 大语言模型节点 (NoteTypeLLM)<a hidden class="anchor" aria-hidden="true" href="#113大语言模型节点notetypellm">#</a></h4>
+<h5 id="llm节点类图如下图所示">LLM节点类图如下图所示<a hidden class="anchor" aria-hidden="true" href="#llm节点类图如下图所示">#</a></h5>
+<pre class="mermaid">classDiagram
+    class Inputs {
+        +Param[] inputParameters
+        +SettingOnError settingOnError
+        +NodeBatch nodeBatchInfo
+        +any llmParam
+        +LLM llmSpecificConfig
+    }
+
+    class LLM {
+        +FCParam fcParam
+    }
+
+    class LLMParam {
+        +Param[] parameters
+    }
+
+    class SimpleLLMParam {
+        +string generationDiversity
+        +int maxTokens
+        +string modelName
+        +int64 modelType
+        +ResponseFormat responseFormat
+        +string systemPrompt
+        +float64 temperature
+        +float64 topP
+    }
+
+    class Param {
+        +string name
+        +BlockInput input
+        +BlockInput left
+        +BlockInput right
+        +BlockInput[] variables
+    }
+
+    class BlockInput {
+        +VariableType type
+        +AssistType assistType
+        +any schema
+        +BlockInputValue value
+    }
+
+    class BlockInputValue {
+        +BlockInputValueType type
+        +any content
+        +any rawMeta
+    }
+
+    class BlockInputReference {
+        +string blockID
+        +string name
+        +string[] path
+        +RefSourceType source
+    }
+
+    class FCParam {
+        +WorkflowFCParam workflowFCParam
+        +PluginFCParam pluginFCParam
+        +KnowledgeFCParam knowledgeFCParam
+    }
+
+    class SettingOnError {
+        +ErrorHandlingStrategy strategy
+        +string customMessage
+    }
+
+    class NodeBatch {
+        +int batchSize
+        +int concurrentSize
+    }
+
+    Inputs --> LLM : "contains"
+    Inputs --> LLMParam : "llmParam as"
+    Inputs --> SimpleLLMParam : "llmParam as"
+    Inputs --> Param : "contains"
+    Inputs --> SettingOnError : "contains"
+    Inputs --> NodeBatch : "contains"
+    
+    LLM --> FCParam : "contains"
+    LLMParam --> Param : "contains"
+    Param --> BlockInput : "contains"
+    BlockInput --> BlockInputValue : "contains"
+    BlockInputValue --> BlockInputReference : "content as"
+
+    note for Inputs "LLM节点的所有输入配置<br/>包含通用输入和LLM专用配置"
+    note for LLMParam "标准LLM参数列表<br/>每个参数都是Param类型"
+    note for SimpleLLMParam "简化的LLM参数结构<br/>直接包含所有LLM配置字段"
+    note for FCParam "函数调用能力配置<br/>LLM可调用的外部工具"
+</pre>
+
+<h5 id="llm参数-simplellmparam">LLM参数 - <code>SimpleLLMParam</code><a hidden class="anchor" aria-hidden="true" href="#llm参数-simplellmparam">#</a></h5>
+<p><code>SimpleLLMParam</code>如下所示，主要包含多样性程度、最大Token、模型名称、模型类型、响应格式、系统提示词、<code>Temperature</code>温度、<code>TopP</code> 核采样参数</p>
+<p>【注意】<code>generationDiversity</code>多样性程度 是高层的预设策略（如&quot;创意/平衡/精确&quot;模式），而 <code>temperature</code>和 <code>topP</code>是底层的具体算法参数，前者通过内置的参数组合来简化配置，后者则提供精确的随机性控制（temperature调节概率分布平滑度，topP限制候选词汇范围）。</p>
+<p>简单说：generationDiversity = &ldquo;我要什么风格&rdquo;，temperature = &ldquo;要多随机&rdquo;，topP = &ldquo;考虑多少词汇&rdquo;。</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="line"><span class="cl"><span class="c1">// SimpleLLMParam 简化的大语言模型参数配置</span>
+</span></span><span class="line"><span class="cl"><span class="c1">// 提供直接的字段映射方式配置LLM参数，适用于简单的模型调用场景</span>
+</span></span><span class="line"><span class="cl"><span class="kd">type</span> <span class="nx">SimpleLLMParam</span> <span class="kd">struct</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">	<span class="c1">// GenerationDiversity 生成多样性配置</span>
+</span></span><span class="line"><span class="cl">	<span class="c1">// 控制模型输出的多样性程度，影响生成内容的创新性</span>
+</span></span><span class="line"><span class="cl">	<span class="nx">GenerationDiversity</span> <span class="kt">string</span> <span class="s">`json:&#34;generationDiversity&#34;`</span>
+</span></span><span class="line"><span class="cl">	<span class="c1">// MaxTokens 最大生成令牌数</span>
+</span></span><span class="line"><span class="cl">	<span class="c1">// 限制模型单次生成的最大token数量，控制输出长度</span>
+</span></span><span class="line"><span class="cl">	<span class="nx">MaxTokens</span> <span class="kt">int</span> <span class="s">`json:&#34;maxTokens&#34;`</span>
+</span></span><span class="line"><span class="cl">	<span class="c1">// ModelName 模型名称</span>
+</span></span><span class="line"><span class="cl">	<span class="c1">// 指定要使用的具体模型名称，如gpt-3.5-turbo、gpt-4等</span>
+</span></span><span class="line"><span class="cl">	<span class="nx">ModelName</span> <span class="kt">string</span> <span class="s">`json:&#34;modelName&#34;`</span>
+</span></span><span class="line"><span class="cl">	<span class="c1">// ModelType 模型类型标识</span>
+</span></span><span class="line"><span class="cl">	<span class="c1">// 用于区分不同类型的模型，如聊天模型、补全模型等</span>
+</span></span><span class="line"><span class="cl">	<span class="nx">ModelType</span> <span class="kt">int64</span> <span class="s">`json:&#34;modelType&#34;`</span>
+</span></span><span class="line"><span class="cl">	<span class="c1">// ResponseFormat 响应格式配置</span>
+</span></span><span class="line"><span class="cl">	<span class="c1">// 指定模型输出的格式，支持文本、JSON、Markdown等格式</span>
+</span></span><span class="line"><span class="cl">	<span class="nx">ResponseFormat</span> <span class="nx">model</span><span class="p">.</span><span class="nx">ResponseFormat</span> <span class="s">`json:&#34;responseFormat&#34;`</span>
+</span></span><span class="line"><span class="cl">	<span class="c1">// SystemPrompt 系统提示词</span>
+</span></span><span class="line"><span class="cl">	<span class="c1">// 定义模型的系统级指令，设定模型的角色和行为规范</span>
+</span></span><span class="line"><span class="cl">	<span class="nx">SystemPrompt</span> <span class="kt">string</span> <span class="s">`json:&#34;systemPrompt&#34;`</span>
+</span></span><span class="line"><span class="cl">	<span class="c1">// Temperature 温度参数</span>
+</span></span><span class="line"><span class="cl">	<span class="c1">// 控制模型输出的随机性，范围通常为0.0-1.0，值越高输出越随机</span>
+</span></span><span class="line"><span class="cl">	<span class="c1">// 通过调整softmax概率分布的平滑度来影响词汇选择的确定性</span>
+</span></span><span class="line"><span class="cl">	<span class="nx">Temperature</span> <span class="kt">float64</span> <span class="s">`json:&#34;temperature&#34;`</span>
+</span></span><span class="line"><span class="cl">	<span class="c1">// TopP 核采样参数</span>
+</span></span><span class="line"><span class="cl">	<span class="c1">// 控制模型生成时考虑的词汇概率质量，影响输出的多样性和质量</span>
+</span></span><span class="line"><span class="cl">	<span class="c1">// 通过设置概率累积阈值来限制候选词汇的范围，范围通常为0.0-1.0</span>
+</span></span><span class="line"><span class="cl">	<span class="nx">TopP</span> <span class="kt">float64</span> <span class="s">`json:&#34;topP&#34;`</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></div><h5 id="llm中的函数调用参数fcparam">LLM中的函数调用参数 <code>**FcParam**</code><a hidden class="anchor" aria-hidden="true" href="#llm中的函数调用参数fcparam">#</a></h5>
+<p>functionCalling （大语言模型节点的“技能”）中需要用到的参数</p>
+<pre class="mermaid">graph TD
+    A[用户输入问题] --> B[LLM节点接收]
+    B --> C{LLM分析是否需要调用工具}
+    
+    C -->|需要调用| D[FCParam 工具配置]
+    C -->|不需要| E[直接生成回答]
+    
+    D --> F[WorkflowFCParam<br/>子工作流调用]
+    D --> G[PluginFCParam<br/>插件API调用]  
+    D --> H[KnowledgeFCParam<br/>知识库检索]
+    
+    F --> F1[配置可调用的子工作流列表]
+    F --> F2[定义请求/响应参数]
+    F --> F3[执行子工作流]
+    
+    G --> G1[配置可调用的插件API列表]
+    G --> G2[定义API参数和响应格式]
+    G --> G3[调用第三方插件服务]
+    
+    H --> H1[配置知识库列表]
+    H --> H2[设置检索策略<br/>TopK/MinScore/搜索模式]
+    H --> H3[执行知识库检索]
+    
+    F3 --> I[工具执行结果]
+    G3 --> I
+    H3 --> I
+    
+    I --> J[LLM整合工具结果]
+    J --> K[生成最终回答]
+    E --> K
+    
+    K --> L[返回给用户]
+    
+    style A fill:#e1f5fe
+    style D fill:#fff3e0
+    style F fill:#f3e5f5
+    style G fill:#e8f5e8
+    style H fill:#fce4ec
+    style K fill:#e0f2f1
+</pre>
+
+<p>函数调用参数 <code>FcParam</code>主要包含三种模式：子工作流调用、插件API调用、知识库检索</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="line"><span class="cl"><span class="c1">// FCParam 函数调用参数配置</span>
+</span></span><span class="line"><span class="cl"><span class="c1">// 用于配置工作流中不同类型的函数调用能力，包括子工作流调用、插件API调用和知识库检索调用</span>
+</span></span><span class="line"><span class="cl"><span class="kd">type</span> <span class="nx">FCParam</span> <span class="kd">struct</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">	<span class="c1">// WorkflowFCParam 工作流函数调用参数配置</span>
+</span></span><span class="line"><span class="cl">	<span class="c1">// 配置当前工作流可以调用的子工作流列表及其参数设置</span>
+</span></span><span class="line"><span class="cl">	<span class="nx">WorkflowFCParam</span> <span class="o">*</span><span class="kd">struct</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">		<span class="c1">// WorkflowList 可调用的工作流列表</span>
+</span></span><span class="line"><span class="cl">		<span class="c1">// 每个工作流项包含工作流标识、版本信息和函数调用设置</span>
+</span></span><span class="line"><span class="cl">		<span class="nx">WorkflowList</span> <span class="p">[]</span><span class="kd">struct</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">			<span class="c1">// WorkflowID 工作流唯一标识符</span>
+</span></span><span class="line"><span class="cl">			<span class="nx">WorkflowID</span> <span class="kt">string</span> <span class="s">`json:&#34;workflow_id&#34;`</span>
+</span></span><span class="line"><span class="cl">			<span class="c1">// WorkflowVersion 工作流版本号</span>
+</span></span><span class="line"><span class="cl">			<span class="nx">WorkflowVersion</span> <span class="kt">string</span> <span class="s">`json:&#34;workflow_version&#34;`</span>
+</span></span><span class="line"><span class="cl">			<span class="c1">// PluginID 关联的插件ID（如果工作流基于插件）</span>
+</span></span><span class="line"><span class="cl">			<span class="nx">PluginID</span> <span class="kt">string</span> <span class="s">`json:&#34;plugin_id&#34;`</span>
+</span></span><span class="line"><span class="cl">			<span class="c1">// PluginVersion 插件版本号</span>
+</span></span><span class="line"><span class="cl">			<span class="nx">PluginVersion</span> <span class="kt">string</span> <span class="s">`json:&#34;plugin_version&#34;`</span>
+</span></span><span class="line"><span class="cl">			<span class="c1">// IsDraft 是否为草稿版本</span>
+</span></span><span class="line"><span class="cl">			<span class="nx">IsDraft</span> <span class="kt">bool</span> <span class="s">`json:&#34;is_draft&#34;`</span>
+</span></span><span class="line"><span class="cl">			<span class="c1">// FCSetting 函数调用设置</span>
+</span></span><span class="line"><span class="cl">			<span class="c1">// 定义调用该工作流时的请求和响应参数结构</span>
+</span></span><span class="line"><span class="cl">			<span class="nx">FCSetting</span> <span class="o">*</span><span class="kd">struct</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">				<span class="c1">// RequestParameters 请求参数列表</span>
+</span></span><span class="line"><span class="cl">				<span class="c1">// 定义调用工作流时需要传入的参数</span>
+</span></span><span class="line"><span class="cl">				<span class="nx">RequestParameters</span> <span class="p">[]</span><span class="o">*</span><span class="nx">workflow</span><span class="p">.</span><span class="nx">APIParameter</span> <span class="s">`json:&#34;request_params&#34;`</span>
+</span></span><span class="line"><span class="cl">				<span class="c1">// ResponseParameters 响应参数列表</span>
+</span></span><span class="line"><span class="cl">				<span class="c1">// 定义工作流执行完成后返回的参数</span>
+</span></span><span class="line"><span class="cl">				<span class="nx">ResponseParameters</span> <span class="p">[]</span><span class="o">*</span><span class="nx">workflow</span><span class="p">.</span><span class="nx">APIParameter</span> <span class="s">`json:&#34;response_params&#34;`</span>
+</span></span><span class="line"><span class="cl">			<span class="p">}</span> <span class="s">`json:&#34;fc_setting,omitempty&#34;`</span>
+</span></span><span class="line"><span class="cl">		<span class="p">}</span> <span class="s">`json:&#34;workflowList,omitempty&#34;`</span>
+</span></span><span class="line"><span class="cl">	<span class="p">}</span> <span class="s">`json:&#34;workflowFCParam,omitempty&#34;`</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">	<span class="c1">// PluginFCParam 插件函数调用参数配置</span>
+</span></span><span class="line"><span class="cl">	<span class="c1">// 配置当前工作流可以调用的插件API列表及其参数设置</span>
+</span></span><span class="line"><span class="cl">	<span class="nx">PluginFCParam</span> <span class="o">*</span><span class="kd">struct</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">		<span class="c1">// PluginList 可调用的插件列表</span>
+</span></span><span class="line"><span class="cl">		<span class="c1">// 每个插件项包含插件标识、API信息和函数调用设置</span>
+</span></span><span class="line"><span class="cl">		<span class="nx">PluginList</span> <span class="p">[]</span><span class="kd">struct</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">			<span class="c1">// PluginID 插件唯一标识符</span>
+</span></span><span class="line"><span class="cl">			<span class="nx">PluginID</span> <span class="kt">string</span> <span class="s">`json:&#34;plugin_id&#34;`</span>
+</span></span><span class="line"><span class="cl">			<span class="c1">// ApiId API接口唯一标识符</span>
+</span></span><span class="line"><span class="cl">			<span class="nx">ApiId</span> <span class="kt">string</span> <span class="s">`json:&#34;api_id&#34;`</span>
+</span></span><span class="line"><span class="cl">			<span class="c1">// ApiName API接口名称</span>
+</span></span><span class="line"><span class="cl">			<span class="nx">ApiName</span> <span class="kt">string</span> <span class="s">`json:&#34;api_name&#34;`</span>
+</span></span><span class="line"><span class="cl">			<span class="c1">// PluginVersion 插件版本号</span>
+</span></span><span class="line"><span class="cl">			<span class="nx">PluginVersion</span> <span class="kt">string</span> <span class="s">`json:&#34;plugin_version&#34;`</span>
+</span></span><span class="line"><span class="cl">			<span class="c1">// IsDraft 是否为草稿版本</span>
+</span></span><span class="line"><span class="cl">			<span class="nx">IsDraft</span> <span class="kt">bool</span> <span class="s">`json:&#34;is_draft&#34;`</span>
+</span></span><span class="line"><span class="cl">			<span class="c1">// FCSetting 函数调用设置</span>
+</span></span><span class="line"><span class="cl">			<span class="c1">// 定义调用该插件API时的请求和响应参数结构</span>
+</span></span><span class="line"><span class="cl">			<span class="nx">FCSetting</span> <span class="o">*</span><span class="kd">struct</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">				<span class="c1">// RequestParameters 请求参数列表</span>
+</span></span><span class="line"><span class="cl">				<span class="c1">// 定义调用插件API时需要传入的参数</span>
+</span></span><span class="line"><span class="cl">				<span class="nx">RequestParameters</span> <span class="p">[]</span><span class="o">*</span><span class="nx">workflow</span><span class="p">.</span><span class="nx">APIParameter</span> <span class="s">`json:&#34;request_params&#34;`</span>
+</span></span><span class="line"><span class="cl">				<span class="c1">// ResponseParameters 响应参数列表</span>
+</span></span><span class="line"><span class="cl">				<span class="c1">// 定义插件API执行完成后返回的参数</span>
+</span></span><span class="line"><span class="cl">				<span class="nx">ResponseParameters</span> <span class="p">[]</span><span class="o">*</span><span class="nx">workflow</span><span class="p">.</span><span class="nx">APIParameter</span> <span class="s">`json:&#34;response_params&#34;`</span>
+</span></span><span class="line"><span class="cl">			<span class="p">}</span> <span class="s">`json:&#34;fc_setting,omitempty&#34;`</span>
+</span></span><span class="line"><span class="cl">		<span class="p">}</span>
+</span></span><span class="line"><span class="cl">	<span class="p">}</span> <span class="s">`json:&#34;pluginFCParam,omitempty&#34;`</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">	<span class="c1">// KnowledgeFCParam 知识库函数调用参数配置</span>
+</span></span><span class="line"><span class="cl">	<span class="c1">// 配置当前工作流的知识库检索功能及其全局设置</span>
+</span></span><span class="line"><span class="cl">	<span class="nx">KnowledgeFCParam</span> <span class="o">*</span><span class="kd">struct</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">		<span class="c1">// GlobalSetting 知识库检索全局设置</span>
+</span></span><span class="line"><span class="cl">		<span class="c1">// 定义知识库检索的通用配置参数</span>
+</span></span><span class="line"><span class="cl">		<span class="nx">GlobalSetting</span> <span class="o">*</span><span class="kd">struct</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">			<span class="c1">// SearchMode 搜索模式</span>
+</span></span><span class="line"><span class="cl">			<span class="c1">// 定义知识库检索使用的搜索算法模式</span>
+</span></span><span class="line"><span class="cl">			<span class="nx">SearchMode</span> <span class="kt">int64</span> <span class="s">`json:&#34;search_mode&#34;`</span>
+</span></span><span class="line"><span class="cl">			<span class="c1">// TopK 返回结果数量</span>
+</span></span><span class="line"><span class="cl">			<span class="c1">// 定义知识库检索返回的最大结果数量</span>
+</span></span><span class="line"><span class="cl">			<span class="nx">TopK</span> <span class="kt">int64</span> <span class="s">`json:&#34;top_k&#34;`</span>
+</span></span><span class="line"><span class="cl">			<span class="c1">// MinScore 最小相似度分数</span>
+</span></span><span class="line"><span class="cl">			<span class="c1">// 定义知识库检索结果的最小相似度阈值</span>
+</span></span><span class="line"><span class="cl">			<span class="nx">MinScore</span> <span class="kt">float64</span> <span class="s">`json:&#34;min_score&#34;`</span>
+</span></span><span class="line"><span class="cl">			<span class="c1">// UseNL2SQL 是否启用自然语言转SQL功能</span>
+</span></span><span class="line"><span class="cl">			<span class="nx">UseNL2SQL</span> <span class="kt">bool</span> <span class="s">`json:&#34;use_nl2_sql&#34;`</span>
+</span></span><span class="line"><span class="cl">			<span class="c1">// UseRewrite 是否启用查询重写功能</span>
+</span></span><span class="line"><span class="cl">			<span class="nx">UseRewrite</span> <span class="kt">bool</span> <span class="s">`json:&#34;use_rewrite&#34;`</span>
+</span></span><span class="line"><span class="cl">			<span class="c1">// UseRerank 是否启用结果重排序功能</span>
+</span></span><span class="line"><span class="cl">			<span class="nx">UseRerank</span> <span class="kt">bool</span> <span class="s">`json:&#34;use_rerank&#34;`</span>
+</span></span><span class="line"><span class="cl">			<span class="c1">// NoRecallReplyCustomizePrompt 无召回结果时的自定义回复提示词</span>
+</span></span><span class="line"><span class="cl">			<span class="nx">NoRecallReplyCustomizePrompt</span> <span class="kt">string</span> <span class="s">`json:&#34;no_recall_reply_customize_prompt&#34;`</span>
+</span></span><span class="line"><span class="cl">			<span class="c1">// NoRecallReplyMode 无召回结果时的回复模式</span>
+</span></span><span class="line"><span class="cl">			<span class="nx">NoRecallReplyMode</span> <span class="kt">int64</span> <span class="s">`json:&#34;no_recall_reply_mode&#34;`</span>
+</span></span><span class="line"><span class="cl">		<span class="p">}</span> <span class="s">`json:&#34;global_setting,omitempty&#34;`</span>
+</span></span><span class="line"><span class="cl">		<span class="c1">// KnowledgeList 可检索的知识库列表</span>
+</span></span><span class="line"><span class="cl">		<span class="c1">// 定义当前工作流可以检索的知识库集合</span>
+</span></span><span class="line"><span class="cl">		<span class="nx">KnowledgeList</span> <span class="p">[]</span><span class="o">*</span><span class="kd">struct</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">			<span class="c1">// ID 知识库唯一标识符</span>
+</span></span><span class="line"><span class="cl">			<span class="nx">ID</span> <span class="kt">string</span> <span class="s">`json:&#34;id&#34;`</span>
+</span></span><span class="line"><span class="cl">		<span class="p">}</span> <span class="s">`json:&#34;knowledgeList,omitempty&#34;`</span>
+</span></span><span class="line"><span class="cl">	<span class="p">}</span> <span class="s">`json:&#34;knowledgeFCParam,omitempty&#34;`</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></div><ol>
+<li>子工作流调用</li>
+</ol>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-json" data-lang="json"><span class="line"><span class="cl"><span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="nt">&#34;workflowFCParam&#34;</span><span class="p">:</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="nt">&#34;workflowList&#34;</span><span class="p">:</span> <span class="p">[</span>
+</span></span><span class="line"><span class="cl">      <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="nt">&#34;workflow_id&#34;</span><span class="p">:</span> <span class="s2">&#34;7509120431183544356&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">        <span class="nt">&#34;workflow_version&#34;</span><span class="p">:</span> <span class="s2">&#34;v0.0.1&#34;</span><span class="p">,</span> 
+</span></span><span class="line"><span class="cl">        <span class="nt">&#34;plugin_id&#34;</span><span class="p">:</span> <span class="s2">&#34;7509121334769795126&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">        <span class="nt">&#34;is_draft&#34;</span><span class="p">:</span> <span class="kc">false</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">        <span class="nt">&#34;fc_setting&#34;</span><span class="p">:</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">          <span class="nt">&#34;request_params&#34;</span><span class="p">:</span> <span class="p">[</span><span class="err">...</span><span class="p">],</span>  <span class="c1">// 调用参数
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>          <span class="nt">&#34;response_params&#34;</span><span class="p">:</span> <span class="p">[</span><span class="err">...</span><span class="p">]</span>  <span class="c1">// 返回参数
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>        <span class="p">}</span>
+</span></span><span class="line"><span class="cl">      <span class="p">}</span>
+</span></span><span class="line"><span class="cl">    <span class="p">]</span>
+</span></span><span class="line"><span class="cl">  <span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></div><ol start="2">
+<li>插件API调用</li>
+</ol>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-json" data-lang="json"><span class="line"><span class="cl"><span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="nt">&#34;pluginFCParam&#34;</span><span class="p">:</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="nt">&#34;pluginList&#34;</span><span class="p">:</span> <span class="p">[</span>
+</span></span><span class="line"><span class="cl">      <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="nt">&#34;plugin_id&#34;</span><span class="p">:</span> <span class="s2">&#34;7509353177339133952&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">        <span class="nt">&#34;api_id&#34;</span><span class="p">:</span> <span class="s2">&#34;7509353598782816256&#34;</span><span class="p">,</span> 
+</span></span><span class="line"><span class="cl">        <span class="nt">&#34;api_name&#34;</span><span class="p">:</span> <span class="s2">&#34;周公解梦&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">        <span class="nt">&#34;plugin_version&#34;</span><span class="p">:</span> <span class="s2">&#34;0&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">        <span class="nt">&#34;fc_setting&#34;</span><span class="p">:</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">          <span class="nt">&#34;request_params&#34;</span><span class="p">:</span> <span class="p">[</span>
+</span></span><span class="line"><span class="cl">            <span class="p">{</span>
+</span></span><span class="line"><span class="cl">              <span class="nt">&#34;name&#34;</span><span class="p">:</span> <span class="s2">&#34;title&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">              <span class="nt">&#34;desc&#34;</span><span class="p">:</span> <span class="s2">&#34;查询解梦标题，例如：梦见蛇&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">              <span class="nt">&#34;type&#34;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">              <span class="nt">&#34;is_required&#34;</span><span class="p">:</span> <span class="kc">true</span>
+</span></span><span class="line"><span class="cl">            <span class="p">}</span>
+</span></span><span class="line"><span class="cl">          <span class="p">],</span>
+</span></span><span class="line"><span class="cl">          <span class="nt">&#34;response_params&#34;</span><span class="p">:</span> <span class="p">[</span><span class="err">...</span><span class="p">]</span>
+</span></span><span class="line"><span class="cl">        <span class="p">}</span>
+</span></span><span class="line"><span class="cl">      <span class="p">}</span>
+</span></span><span class="line"><span class="cl">    <span class="p">]</span>
+</span></span><span class="line"><span class="cl">  <span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></div><ol start="3">
+<li>知识库检索</li>
+</ol>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-json" data-lang="json"><span class="line"><span class="cl"><span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="nt">&#34;knowledgeFCParam&#34;</span><span class="p">:</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="nt">&#34;knowledgeList&#34;</span><span class="p">:</span> <span class="p">[</span>
+</span></span><span class="line"><span class="cl">      <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="nt">&#34;id&#34;</span><span class="p">:</span> <span class="s2">&#34;7512369185624686592&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">        <span class="nt">&#34;name&#34;</span><span class="p">:</span> <span class="s2">&#34;旅游景点&#34;</span>
+</span></span><span class="line"><span class="cl">      <span class="p">}</span>
+</span></span><span class="line"><span class="cl">    <span class="p">],</span>
+</span></span><span class="line"><span class="cl">    <span class="nt">&#34;global_setting&#34;</span><span class="p">:</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">      <span class="nt">&#34;top_k&#34;</span><span class="p">:</span> <span class="mi">3</span><span class="p">,</span> <span class="c1">// 
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>      <span class="nt">&#34;min_score&#34;</span><span class="p">:</span> <span class="mf">0.5</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">      <span class="nt">&#34;search_mode&#34;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">      <span class="nt">&#34;use_rerank&#34;</span><span class="p">:</span> <span class="kc">true</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">      <span class="nt">&#34;use_rewrite&#34;</span><span class="p">:</span> <span class="kc">true</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">      <span class="nt">&#34;use_nl2_sql&#34;</span><span class="p">:</span> <span class="kc">true</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">      <span class="nt">&#34;no_recall_reply_mode&#34;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">      <span class="nt">&#34;no_recall_reply_customize_prompt&#34;</span><span class="p">:</span> <span class="s2">&#34;抱歉，您的问题超出了我的知识范围&#34;</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl">  <span class="p">}</span>
+</span></span></code></pre></div><h4 id="114blockinput结构">1.1.4 BlockInput结构<a hidden class="anchor" aria-hidden="true" href="#114blockinput结构">#</a></h4>
+<p><code>BlockInput</code>是工作流系统中的数据绑定核心，它解决了一个关键问题：如何在工作流节点之间传递和配置数据。<code>BlockInput = &quot;这个输入框里放什么数据，从哪里来&quot;</code></p>
+<pre class="mermaid">graph TD
+    A[BlockInput 块输入配置] --> B[Type: 数据类型]
+    A --> C[AssistType: 辅助类型]
+    A --> D[Schema: 结构定义]
+    A --> E[Value: 输入值配置]
+    
+    E --> F[BlockInputValue]
+    F --> G[Type: 值类型]
+    F --> H[Content: 具体内容]
+    F --> I[RawMeta: 元数据]
+    
+    G --> G1[literal: 字面值]
+    G --> G2[ref: 节点引用]
+    G --> G3[object_ref: 对象引用]
+    
+    H --> H1[静态文本/数值]
+    H --> H2[BlockInputReference]
+    
+    H2 --> J[BlockID: 源节点ID]
+    H2 --> K[Name: 字段名称]
+    H2 --> L[Path: 访问路径]
+    H2 --> M[Source: 引用源类型]
+    
+    M --> M1[block-output: 节点输出]
+    M --> M2[global_variable_app: 应用变量]
+    M --> M3[global_variable_system: 系统变量]
+    M --> M4[global_variable_user: 用户变量]
+    
+    N[实际使用场景] --> N1[静态配置: 固定值]
+    N --> N2[动态绑定: 引用其他节点]
+    N --> N3[模板渲染: 变量替换]
+    N --> N4[复杂对象: 嵌套结构]
+    
+    style A fill:#e1f5fe
+    style F fill:#fff3e0
+    style H2 fill:#f3e5f5
+    style N fill:#e8f5e8
+</pre>
+
+<p><code>BlockInput</code>结构如下所示</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="line"><span class="cl"><span class="kd">type</span> <span class="nx">BlockInput</span> <span class="kd">struct</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">Type</span>       <span class="nx">VariableType</span>     <span class="c1">// 数据类型：string、number、object等</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">AssistType</span> <span class="nx">AssistType</span>       <span class="c1">// 辅助类型：更具体的类型描述</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">Schema</span>     <span class="kt">any</span>              <span class="c1">// 结构定义：复杂对象的内部结构</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">Value</span>      <span class="o">*</span><span class="nx">BlockInputValue</span> <span class="c1">// 值配置：具体的数据来源</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></div><p>三种数据流来源：常量<code>literal</code>、节点引用<code>ref</code>、对象引用 <code>Object Ref</code></p>
+<ol>
+<li>常量<code>literal</code></li>
+</ol>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="line"><span class="cl"><span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="s">&#34;type&#34;</span><span class="p">:</span> <span class="s">&#34;string&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">  <span class="s">&#34;value&#34;</span><span class="p">:</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="s">&#34;type&#34;</span><span class="p">:</span> <span class="s">&#34;literal&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="s">&#34;content&#34;</span><span class="p">:</span> <span class="s">&#34;Hello World&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="s">&#34;rawMeta&#34;</span><span class="p">:</span> <span class="p">{</span><span class="s">&#34;type&#34;</span><span class="p">:</span> <span class="mi">1</span><span class="p">}</span>
+</span></span><span class="line"><span class="cl">  <span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></div><ol start="2">
+<li>节点引用<code>ref</code> (最常用的)</li>
+</ol>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="line"><span class="cl"><span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="s">&#34;type&#34;</span><span class="p">:</span> <span class="s">&#34;string&#34;</span><span class="p">,</span> 
+</span></span><span class="line"><span class="cl">  <span class="s">&#34;value&#34;</span><span class="p">:</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="s">&#34;type&#34;</span><span class="p">:</span> <span class="s">&#34;ref&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="s">&#34;content&#34;</span><span class="p">:</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">      <span class="s">&#34;blockID&#34;</span><span class="p">:</span> <span class="s">&#34;100001&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">      <span class="s">&#34;name&#34;</span><span class="p">:</span> <span class="s">&#34;output&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">      <span class="s">&#34;source&#34;</span><span class="p">:</span> <span class="s">&#34;block-output&#34;</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl">  <span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></div><ol start="3">
+<li> 对象引用</li>
+</ol>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="line"><span class="cl"><span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="s">&#34;type&#34;</span><span class="p">:</span> <span class="s">&#34;object&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">  <span class="s">&#34;schema&#34;</span><span class="p">:</span> <span class="p">[{</span><span class="s">&#34;name&#34;</span><span class="p">:</span> <span class="s">&#34;name&#34;</span><span class="p">,</span> <span class="s">&#34;type&#34;</span><span class="p">:</span> <span class="s">&#34;string&#34;</span><span class="p">}],</span>
+</span></span><span class="line"><span class="cl">  <span class="s">&#34;value&#34;</span><span class="p">:</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="s">&#34;type&#34;</span><span class="p">:</span> <span class="s">&#34;object_ref&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="s">&#34;content&#34;</span><span class="p">:</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">      <span class="s">&#34;blockID&#34;</span><span class="p">:</span> <span class="s">&#34;100001&#34;</span><span class="p">,</span> 
+</span></span><span class="line"><span class="cl">      <span class="s">&#34;name&#34;</span><span class="p">:</span> <span class="s">&#34;person&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">      <span class="s">&#34;source&#34;</span><span class="p">:</span> <span class="s">&#34;block-output&#34;</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl">  <span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></div><h4 id="115知识库节点rag">1.1.5 知识库节点 (RAG)<a hidden class="anchor" aria-hidden="true" href="#115知识库节点rag">#</a></h4>
+<h5 id="rag完整流程图">RAG完整流程图<a hidden class="anchor" aria-hidden="true" href="#rag完整流程图">#</a></h5>
+<p>一个完整的RAG流程如下：</p>
+<p>查询重写优化 （小模型）-&gt; 自然语言转SQL （NL2SQL）-&gt; 向量检索 (语义搜索/混合搜索/全量搜索) -&gt; 相似度过滤 (最小相似度阈值) -&gt; 结果重排序 (Rerank) -&gt; TopK结果截取 -&gt; 构建新的上下文提示词</p>
+<pre class="mermaid">graph LR
+    A[用户输入查询] --> B[查询预处理]
+    
+    B --> B1[UseRewrite: 查询重写]
+    B1 --> B2[优化查询语义]
+    B2 --> B3[UseNL2SQL: 自然语言转SQL]
+    
+    B3 --> C[向量检索阶段]
+    C --> C1[文档向量化]
+    C --> C2[查询向量化] 
+    C1 --> C3[向量相似度计算]
+    C2 --> C3
+    
+    C3 --> D[SearchMode: 搜索策略]
+    D --> D1[0: 语义搜索<br/>Semantic Search]
+    D --> D2[1: 混合搜索<br/>Hybrid Search]
+    D --> D3[20: 全文搜索<br/>Full-text Search]
+    
+    D1 --> E[初步结果筛选]
+    D2 --> E
+    D3 --> E
+    
+    E --> E1[MinScore: 相似度过滤]
+    E1 --> E2[过滤低质量结果]
+    
+    E2 --> F[UseRerank: 结果重排序]
+    F --> F1[深度语义匹配]
+    F1 --> F2[重新排序结果]
+    
+    F2 --> G[TopK: 结果截取]
+    G --> G1[选择前K个最佳结果]
+    
+    G1 --> H{是否有合适结果?}
+    H -->|有| I[构建增强上下文]
+    H -->|无| J[NoRecallReplyMode处理]
+    
+    J --> J1[0: 使用自定义提示词]
+    J --> J2[1: 其他处理模式]
+    J1 --> K[返回无结果回复]
+    J2 --> K
+    
+    I --> L[RAG生成阶段]
+    L --> L1[组合查询+检索内容]
+    L1 --> L2[LLM生成增强回答]
+    
+    L2 --> M[返回最终答案]
+    K --> M
+    
+    style A fill:#e1f5fe
+    style B fill:#fff3e0
+    style C fill:#f3e5f5
+    style D fill:#e8f5e8
+    style F fill:#fce4ec
+    style L fill:#e0f2f1
+</pre>
+
+<h5 id="向量检索规则">向量检索规则<a hidden class="anchor" aria-hidden="true" href="#向量检索规则">#</a></h5>
+<pre class="mermaid">graph TD
+    A[用户查询] --> B{SearchMode选择}
+    
+    B -->|0: 语义搜索| C[Semantic Search]
+    B -->|1: 混合搜索| D[Hybrid Search]  
+    B -->|20: 全文搜索| E[Full-text Search]
+    
+    C --> C1[Step1: 查询向量化]
+    C1 --> C2[Embedding Model]
+    C2 --> C3[Query Vector]
+    
+    C3 --> C4[Step2: 文档向量匹配]
+    C4 --> C5[向量数据库]
+    C5 --> C6[余弦相似度计算]
+    
+    D --> D1[Step1: 向量搜索路径]
+    D --> D2[Step2: 关键词搜索路径]
+    
+    D1 --> D3[Embedding检索]
+    D2 --> D4[BM25算法]
+    D3 --> D5[结果融合算法]
+    D4 --> D5
+    
+    E --> E1[Step1: 分词处理]
+    E1 --> E2[分词器]
+    E2 --> E3[Step2: 倒排索引]
+    E3 --> E4[搜索引擎]
+    E4 --> E5[TF-IDF评分]
+    
+    C6 --> F[语义理解强]
+    D5 --> G[平衡精确性和语义]
+    E5 --> H[关键词精确匹配]
+    
+    F --> I[最终检索结果]
+    G --> I
+    H --> I
+    
+    style C fill:#e1f5fe
+    style D fill:#fff3e0
+    style E fill:#f3e5f5
+    style I fill:#e8f5e8
+</pre>
+
+<ol>
+<li>
+<p>语义搜索 （准）: 使用 Embedding 模型计算向量相似度，理解深层语义，处理同义词和概念匹配。</p>
+</li>
+<li>
+<p>混合搜索 （全面）: 结合向量搜索 + BM25 关键词搜索，平衡语义理解和精确匹配。</p>
+</li>
+<li>
+<p>全文搜索 （快）: 传统的倒排索引和TF-IDF，精确的关键词匹配，速度快</p>
+</li>
+</ol>
+<p>【算法说明】</p>
+<ul>
+<li>Embedding向量检索：将文本通过编码器转为向量和DB中的向量计算cos相似度最后返回TopK的结果</li>
+</ul>
+<pre class="mermaid">graph TD
+    A[文本输入] --> B[Embedding检索流程]
+    
+    B --> C[第一阶段: 向量化]
+    C --> C1[分词和预处理]
+    C1 --> C2[Transformer编码器]
+    C2 --> C3[池化操作]
+    C3 --> C4[归一化处理]
+    C4 --> C5[生成向量表示]
+    
+    B --> D[第二阶段: 索引构建]
+    D --> D1[向量维度优化]
+    D1 --> D2[索引结构选择]
+    D2 --> D3[HNSW/IVF/LSH]
+    D3 --> D4[分布式存储]
+    
+    B --> E[第三阶段: 相似度检索]
+    E --> E1[查询向量化]
+    E1 --> E2[近似最近邻搜索]
+    E2 --> E3[相似度计算]
+    E3 --> E4[TopK结果返回]
+    
+    F[技术栈] --> F1[模型: BERT/Sentence-BERT]
+    F --> F2[向量DB: Pinecone/Milvus/ElasticSearch]
+    F --> F3[相似度: 余弦/点积/欧氏]
+    F --> F4[索引: HNSW/IVF]
+    
+    style C fill:#e1f5fe
+    style D fill:#fff3e0
+    style E fill:#f3e5f5
+    style F fill:#e8f5e8
+</pre>
+
+<ul>
+<li>
+<p>倒排索引：将文档切分成独立的词汇单元，建立从词汇到文档的映射索引</p>
+</li>
+<li>
+<p>TF-IDF (词频-逆文档频率)：TF（词频）： 计算一个词在文档中出现的词次数， 用于衡量词汇的重要性。IDF （逆文档频率）：衡量词汇在整个语料库中的重要性。 </p>
+</li>
+</ul>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="n">TF</span><span class="p">(</span><span class="n">t</span><span class="p">,</span><span class="n">d</span><span class="p">)</span> <span class="o">=</span> <span class="n">词汇t在文档d中出现的次数</span> <span class="o">/</span> <span class="n">文档d的总词数</span>
+</span></span><span class="line"><span class="cl"><span class="n">IDF</span><span class="p">(</span><span class="n">t</span><span class="p">)</span> <span class="o">=</span> <span class="n">log</span><span class="p">(</span><span class="n">文档总数</span> <span class="o">/</span> <span class="n">包含词汇t的文档数</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="n">TF</span><span class="o">-</span><span class="n">IDF</span> <span class="o">=</span> <span class="n">sigmoid</span> <span class="p">(</span><span class="n">TF</span><span class="p">(</span><span class="n">t</span><span class="p">,</span><span class="n">d</span><span class="p">)</span> <span class="o">*</span> <span class="n">IDF</span><span class="p">(</span><span class="n">t</span><span class="p">))</span>
+</span></span></code></pre></div><p>缺点：不能考虑词汇的位置，忽略了词汇的相关性；不利于稀疏性 （短文档很多词汇 <code>TF-IDF=0</code>）</p>
+<ul>
+<li>BM25 算法：在 <code>TF-IDF</code> (词频-逆文档频率) 基础上，解决了词频饱和问题和文档长度归一化问题。</li>
+</ul>
+<h5 id="rerank规则">ReRank 规则<a hidden class="anchor" aria-hidden="true" href="#rerank规则">#</a></h5>
+<h5 id="知识库节点结构">知识库节点结构<a hidden class="anchor" aria-hidden="true" href="#知识库节点结构">#</a></h5>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="line"><span class="cl"><span class="c1">// Knowledge 知识库节点配置</span>
+</span></span><span class="line"><span class="cl"><span class="c1">// 用于配置独立的知识库检索节点，定义数据源参数和处理策略</span>
+</span></span><span class="line"><span class="cl"><span class="c1">// 与LLM节点中的KnowledgeFCParam不同，这是专门的知识库检索步骤</span>
+</span></span><span class="line"><span class="cl"><span class="kd">type</span> <span class="nx">Knowledge</span> <span class="kd">struct</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">	<span class="c1">// DatasetParam 数据集参数配置</span>
+</span></span><span class="line"><span class="cl">	<span class="c1">// 定义知识库的数据源配置，包括数据库连接、文件路径等信息</span>
+</span></span><span class="line"><span class="cl">	<span class="c1">// 每个Param包含具体的数据源配置项</span>
+</span></span><span class="line"><span class="cl">	<span class="nx">DatasetParam</span> <span class="p">[]</span><span class="o">*</span><span class="nx">Param</span> <span class="s">`json:&#34;datasetParam,omitempty&#34;`</span>
+</span></span><span class="line"><span class="cl">	<span class="c1">// StrategyParam 知识库处理策略参数</span>
+</span></span><span class="line"><span class="cl">	<span class="c1">// 定义文档解析、分块、索引等各个环节的处理策略和参数</span>
+</span></span><span class="line"><span class="cl">	<span class="nx">StrategyParam</span> <span class="nx">StrategyParam</span> <span class="s">`json:&#34;strategyParam,omitempty&#34;`</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1">// StrategyParam 知识库处理策略参数配置</span>
+</span></span><span class="line"><span class="cl"><span class="c1">// 定义知识库从文档解析到向量索引的完整处理流程策略</span>
+</span></span><span class="line"><span class="cl"><span class="kd">type</span> <span class="nx">StrategyParam</span> <span class="kd">struct</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">	<span class="c1">// ParsingStrategy 文档解析策略配置</span>
+</span></span><span class="line"><span class="cl">	<span class="c1">// 定义如何解析和提取不同类型文档的内容</span>
+</span></span><span class="line"><span class="cl">	<span class="nx">ParsingStrategy</span> <span class="kd">struct</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">		<span class="c1">// ParsingType 解析类型</span>
+</span></span><span class="line"><span class="cl">		<span class="c1">// 定义文档解析的方式，如自动识别、手动指定等</span>
+</span></span><span class="line"><span class="cl">		<span class="c1">// 常见值：auto（自动识别）、manual（手动指定）、custom（自定义）</span>
+</span></span><span class="line"><span class="cl">		<span class="nx">ParsingType</span> <span class="kt">string</span> <span class="s">`json:&#34;parsingType,omitempty&#34;`</span>
+</span></span><span class="line"><span class="cl">		<span class="c1">// ImageExtraction 是否提取图片</span>
+</span></span><span class="line"><span class="cl">		<span class="c1">// 控制是否从文档中提取图片内容进行处理</span>
+</span></span><span class="line"><span class="cl">		<span class="c1">// true表示提取图片，false表示忽略图片内容</span>
+</span></span><span class="line"><span class="cl">		<span class="nx">ImageExtraction</span> <span class="kt">bool</span> <span class="s">`json:&#34;imageExtraction&#34;`</span>
+</span></span><span class="line"><span class="cl">		<span class="c1">// TableExtraction 是否提取表格</span>
+</span></span><span class="line"><span class="cl">		<span class="c1">// 控制是否从文档中提取表格结构和数据</span>
+</span></span><span class="line"><span class="cl">		<span class="c1">// true表示解析表格结构，false表示将表格视为普通文本</span>
+</span></span><span class="line"><span class="cl">		<span class="nx">TableExtraction</span> <span class="kt">bool</span> <span class="s">`json:&#34;tableExtraction&#34;`</span>
+</span></span><span class="line"><span class="cl">		<span class="c1">// ImageOcr 是否启用图片OCR识别</span>
+</span></span><span class="line"><span class="cl">		<span class="c1">// 控制是否对提取的图片进行光学字符识别</span>
+</span></span><span class="line"><span class="cl">		<span class="c1">// true表示对图片进行OCR文字识别，false表示忽略图片中的文字</span>
+</span></span><span class="line"><span class="cl">		<span class="nx">ImageOcr</span> <span class="kt">bool</span> <span class="s">`json:&#34;imageOcr&#34;`</span>
+</span></span><span class="line"><span class="cl">	<span class="p">}</span> <span class="s">`json:&#34;parsingStrategy,omitempty&#34;`</span>
+</span></span><span class="line"><span class="cl">	<span class="c1">// ChunkStrategy 文档分块策略配置</span>
+</span></span><span class="line"><span class="cl">	<span class="c1">// 定义如何将长文档切分成适合向量化的小块</span>
+</span></span><span class="line"><span class="cl">	<span class="nx">ChunkStrategy</span> <span class="kd">struct</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">		<span class="c1">// ChunkType 分块类型</span>
+</span></span><span class="line"><span class="cl">		<span class="c1">// 定义文档分块的策略类型</span>
+</span></span><span class="line"><span class="cl">		<span class="c1">// 常见值：fixed（固定长度）、semantic（语义分块）、sentence（句子分块）</span>
+</span></span><span class="line"><span class="cl">		<span class="nx">ChunkType</span> <span class="kt">string</span> <span class="s">`json:&#34;chunkType,omitempty&#34;`</span>
+</span></span><span class="line"><span class="cl">		<span class="c1">// SeparatorType 分隔符类型</span>
+</span></span><span class="line"><span class="cl">		<span class="c1">// 定义用于分块的分隔符类型</span>
+</span></span><span class="line"><span class="cl">		<span class="c1">// 常见值：auto（自动选择）、newline（换行符）、paragraph（段落）、custom（自定义）</span>
+</span></span><span class="line"><span class="cl">		<span class="nx">SeparatorType</span> <span class="kt">string</span> <span class="s">`json:&#34;separatorType,omitempty&#34;`</span>
+</span></span><span class="line"><span class="cl">		<span class="c1">// Separator 自定义分隔符</span>
+</span></span><span class="line"><span class="cl">		<span class="c1">// 当SeparatorType为custom时，指定具体的分隔符字符串</span>
+</span></span><span class="line"><span class="cl">		<span class="nx">Separator</span> <span class="kt">string</span> <span class="s">`json:&#34;separator,omitempty&#34;`</span>
+</span></span><span class="line"><span class="cl">		<span class="c1">// MaxToken 最大令牌数</span>
+</span></span><span class="line"><span class="cl">		<span class="c1">// 定义每个文档块的最大token数量，控制块的大小</span>
+</span></span><span class="line"><span class="cl">		<span class="c1">// 通常设置为模型的上下文窗口大小，如512、1024等</span>
+</span></span><span class="line"><span class="cl">		<span class="nx">MaxToken</span> <span class="kt">int64</span> <span class="s">`json:&#34;maxToken,omitempty&#34;`</span>
+</span></span><span class="line"><span class="cl">		<span class="c1">// Overlap 重叠比例</span>
+</span></span><span class="line"><span class="cl">		<span class="c1">// 定义相邻文档块之间的重叠比例，避免语义信息在边界处丢失</span>
+</span></span><span class="line"><span class="cl">		<span class="c1">// 取值范围0.0-1.0，常见值为0.1-0.2（10%-20%重叠）</span>
+</span></span><span class="line"><span class="cl">		<span class="nx">Overlap</span> <span class="kt">float64</span> <span class="s">`json:&#34;overlap,omitempty&#34;`</span>
+</span></span><span class="line"><span class="cl">	<span class="p">}</span> <span class="s">`json:&#34;chunkStrategy,omitempty&#34;`</span>
+</span></span><span class="line"><span class="cl">	<span class="c1">// IndexStrategy 索引策略配置</span>
+</span></span><span class="line"><span class="cl">	<span class="c1">// 定义向量索引的构建策略，如索引类型、参数等</span>
+</span></span><span class="line"><span class="cl">	<span class="c1">// 具体结构依赖于使用的向量数据库类型（如HNSW、IVF等）</span>
+</span></span><span class="line"><span class="cl">	<span class="nx">IndexStrategy</span> <span class="kt">any</span> <span class="s">`json:&#34;indexStrategy&#34;`</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></div>
+
+  </div>
+
+
+
+  <footer class="post-footer">
+    <ul class="post-tags">
+      <li><a href="https://swimmingliu.cn/tags/java/">Java</a></li>
+    </ul>
+<nav class="paginav">
+  <a class="next" href="https://swimmingliu.cn/posts/job/leetcode-hot100-notes/">
+    <span class="title">Next »</span>
+    <br>
+    <span>Leetcode Hot100 刷题笔记</span>
+  </a>
+</nav>
+
+  </footer>
+</article>
+    </main>
+    
+<footer class="footer">
+        <span>&copy; 2023-2025 <a href="https://swimmingliu.cn/">SwimmingLiu&#39;s Blog</a></span> · 
+
+    <span>
+        Powered by
+        <a href="https://gohugo.io/" rel="noopener noreferrer" target="_blank">Hugo</a> &
+        <a href="https://github.com/adityatelange/hugo-PaperMod/" rel="noopener" target="_blank">PaperMod</a>
+    </span>
+    <span>
+        <a href="https://beian.miit.gov.cn/">浙ICP备2024056260号</a>
+    </span>
+</footer>
+<a href="#top" aria-label="go to top" title="Go to Top (Alt + G)" class="top-link" id="top-link" accesskey="g">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 6" fill="currentColor">
+        <path d="M12 6H0l6-6z" />
+    </svg>
+</a>
+
+<script>
+    let menu = document.getElementById('menu')
+    if (menu) {
+        menu.scrollLeft = localStorage.getItem("menu-scroll-position");
+        menu.onscroll = function () {
+            localStorage.setItem("menu-scroll-position", menu.scrollLeft);
+        }
+    }
+
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener("click", function (e) {
+            e.preventDefault();
+            var id = this.getAttribute("href").substr(1);
+            if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView({
+                    behavior: "smooth"
+                });
+            } else {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView();
+            }
+            if (id === "top") {
+                history.replaceState(null, null, " ");
+            } else {
+                history.pushState(null, null, `#${id}`);
+            }
+        });
+    });
+
+</script>
+<script>
+    var mybutton = document.getElementById("top-link");
+    window.onscroll = function () {
+        if (document.body.scrollTop > 800 || document.documentElement.scrollTop > 800) {
+            mybutton.style.visibility = "visible";
+            mybutton.style.opacity = "1";
+        } else {
+            mybutton.style.visibility = "hidden";
+            mybutton.style.opacity = "0";
+        }
+    };
+
+</script>
+<script>
+    document.getElementById("theme-toggle").addEventListener("click", () => {
+        if (document.body.className.includes("dark")) {
+            document.body.classList.remove('dark');
+            localStorage.setItem("pref-theme", 'light');
+        } else {
+            document.body.classList.add('dark');
+            localStorage.setItem("pref-theme", 'dark');
+        }
+    })
+
+</script>
+<script>
+    document.querySelectorAll('pre > code').forEach((codeblock) => {
+        const container = codeblock.parentNode.parentNode;
+
+        const copybutton = document.createElement('button');
+        copybutton.classList.add('copy-code');
+        copybutton.innerHTML = 'copy';
+
+        function copyingDone() {
+            copybutton.innerHTML = 'copied!';
+            setTimeout(() => {
+                copybutton.innerHTML = 'copy';
+            }, 2000);
+        }
+
+        copybutton.addEventListener('click', (cb) => {
+            if ('clipboard' in navigator) {
+                navigator.clipboard.writeText(codeblock.textContent);
+                copyingDone();
+                return;
+            }
+
+            const range = document.createRange();
+            range.selectNodeContents(codeblock);
+            const selection = window.getSelection();
+            selection.removeAllRanges();
+            selection.addRange(range);
+            try {
+                document.execCommand('copy');
+                copyingDone();
+            } catch (e) { };
+            selection.removeRange(range);
+        });
+
+        if (container.classList.contains("highlight")) {
+            container.appendChild(copybutton);
+        } else if (container.parentNode.firstChild == container) {
+            
+        } else if (codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.nodeName == "TABLE") {
+            
+            codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.appendChild(copybutton);
+        } else {
+            
+            codeblock.parentNode.appendChild(copybutton);
+        }
+    });
+</script>
+</body>
+
+</html>
+
+
+  <script type="module">
+    import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.esm.min.mjs';
+    mermaid.initialize({ startOnLoad: true });
+  </script>
+

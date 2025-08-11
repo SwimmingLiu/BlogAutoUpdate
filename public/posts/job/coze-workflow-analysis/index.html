@@ -238,8 +238,8 @@ graph TD
   "keywords": [
     "Java"
   ],
-  "articleBody": "Coze工作流-QA 工作流可以分为三个大板块：工作流管理 (前后端交互-画布存储)、工作流校验、工作流执行\n工作流管理 对于前端来讲，工作流就是一张canvas画布。用户可以在画布中，创建不同功能的节点。\n节点类型可以分为：开始和结束节点 （默认）、LLM节点、子工作流 (嵌套)、插件 (外部工具-例如MCP、OCR)、业务逻辑节点 (选择、循环、分类、批处理(并发)、变量聚合)、数据库节点(SQL、CRUD)、知识库节点(RAG、增删、变量赋值)、图像处理节点、音视频处理节点、组件(JSON序列化、HTTP请求)、定时触发器节点(定时触发任务)\n工作流大体执行流程如下\ngraph TD subgraph \"前端Canvas层\" A[Canvas画布用户可视化配置] --\u003e B[Node节点vo.Node结构体] A --\u003e C[Edge连接节点间关系] B --\u003e D[节点样式：哪些固定字段？表单形式？] end subgraph \"验证层\" E[Canvas结构验证CanvasValidator] --\u003e F{验证通过?} F --\u003e|失败| G[返回错误信息] G --\u003e H[前端显示错误提示] end subgraph \"转换层\" I[后端保存，workflow运行CanvasToWorkflowSchema] --\u003e J[NodeType -\u003e 节点Config通过NodeAdaptor接口] J --\u003e K[前端schema -\u003e 后端schemaschema.NodeSchema] end subgraph \"实例化层\" L[节点实例化NodeBuilder接口] --\u003e M[NodeSchema.Configs实现NodeBuilder接口] M --\u003e N[后端schema -\u003e 节点实例具体节点对象] end subgraph \"执行层\" O[节点运行InvokableNode等接口] --\u003e P[业务逻辑具体执行逻辑] P --\u003e Q[结果输出返回执行结果] end A --\u003e E F --\u003e|通过| I K --\u003e L N --\u003e O style A fill:#e3f2fd style E fill:#ffebee style I fill:#fff3e0 style L fill:#e8f5e8 style O fill:#f3e5f5 1.1 画布和后端结构 前端的画布采用DSL (JSON) 形式存储，每次更新画布都是将DSL传给后端。DSL的后端结构如下所示，主要包含节点 (node)、 边 (edge)、 版本\ntype Canvas struct { Nodes []*Node `json:\"nodes\"` Edges []*Edge `json:\"edges\"` Versions any `json:\"versions\"` } 1.1.1 节点数据 画布中的节点会转换为后端中 backend/domain/workflow/entity/vo/canvas.go 中的 Node 结构体， 后端存储的结构体如下\n// Node 工作流节点的完整定义 // 节点是工作流的基本执行单元，每个节点代表一个特定的功能或操作 type Node struct { // 节点的唯一标识符，用于在画布中定位和引用节点 ID string `json:\"id\"` // 节点类型，决定节点的功能和行为（如LLM、API调用、条件判断等） Type BlockType `json:\"type\"` // 节点的元数据信息，包含前端显示相关的配置 (前端的一些extendInfo) Meta any `json:\"meta\"` // 节点的核心数据，包含输入输出配置和具体参数，例如LLM的配置、MCP的配置、异常处理 Data *Data `json:\"data\"` // 子节点列表，用于复合节点（如循环、条件分支）的嵌套结构 Blocks []*Node `json:\"blocks,omitempty\"` // 节点内部的连线，用于复杂节点的内部逻辑连接 Edges []*Edge `json:\"edges,omitempty\"` // 节点的版本号，用于节点定义的版本控制 Version string `json:\"version,omitempty\"` // 父节点引用，不序列化到JSON，用于内存中的树形结构导航 parent *Node } 节点的核心数据Data如下所示\ntype Data struct { // 节点的显示元数据，如标题、icon等 Meta *NodeMeta `json:\"nodeMeta,omitempty\"` // 节点的输出定义，可以是 []*Variable 或 []*Param 类型 Outputs []any `json:\"outputs,omitempty\"` // 节点的输入配置，包含所有输入参数和设置 Inputs *Inputs `json:\"inputs,omitempty\"` // 节点在画布上的尺寸信息，用于前端显示 Size any `json:\"size,omitempty\"` } 节点的输入参数 inputs\n// Inputs 节点输入配置的综合结构 // 这是一个联合结构，包含了所有可能的节点输入配置，不同类型的节点使用不同的字段子集 type Inputs struct { // 通用输入配置 InputParameters []*Param `json:\"inputParameters\"` // 节点的输入参数列表，定义节点需要的数据输入 Content *BlockInput `json:\"content\"` // 节点的主要内容输入，通常用于文本处理或提示词 TerminatePlan *TerminatePlan `json:\"terminatePlan,omitempty\"` // 终止计划，定义节点完成后的行为 StreamingOutput bool `json:\"streamingOutput,omitempty\"` // 是否启用流式输出，用于实时返回处理结果 CallTransferVoice bool `json:\"callTransferVoice,omitempty\"` // 语音通话转接设置，用于语音相关节点 ChatHistoryWriting string `json:\"chatHistoryWriting,omitempty\"` // 聊天历史记录写入配置 LLMParam any `json:\"llmParam,omitempty\"` // LLM参数，可能是LLMParam、IntentDetectorLLMParam或QALLMParam类型 FCParam *FCParam `json:\"fcParam,omitempty\"` // 功能调用参数，用于配置工作流、插件或知识库的调用 SettingOnError *SettingOnError `json:\"settingOnError,omitempty\"` // 错误处理配置，定义节点出错时的处理策略 // 循环控制相关 LoopType LoopType `json:\"loopType,omitempty\"` // 循环类型：数组循环、计数循环或无限循环 LoopCount *BlockInput `json:\"loopCount,omitempty\"` // 循环次数，用于计数循环 VariableParameters []*Param `json:\"variableParameters,omitempty\"` // 循环变量参数 // 条件分支相关 Branches []*struct { Condition struct { Logic LogicType `json:\"logic\"` // 条件逻辑：AND或OR Conditions []*Condition `json:\"conditions\"` // 具体的条件列表 } `json:\"condition\"` } `json:\"branches,omitempty\"` // 分支条件配置，用于条件判断节点 // 批处理配置 NodeBatchInfo *NodeBatch `json:\"batch,omitempty\"` // 节点批处理模式配置 // 特定节点类型的配置（使用嵌入结构体实现类型多态） *TextProcessor // 文本处理器配置：拼接、分割等操作 *SubWorkflow // 子工作流配置：调用其他工作流 *IntentDetector // 意图检测配置：识别用户意图 *DatabaseNode // 数据库操作配置：增删改查 *HttpRequestNode // HTTP请求配置：API调用 *KnowledgeIndexer // 知识库索引配置：文档处理和索引 *CodeRunner // 代码执行器配置：运行自定义代码 *PluginAPIParam // 插件API参数配置 *VariableAggregator // 变量聚合器配置：合并多个变量 *VariableAssigner // 变量赋值器配置：设置变量值 *QA // 问答节点配置：处理问题和答案 *Batch // 批处理配置：批量处理数据 *Comment // 注释节点配置：添加说明文字 OutputSchema string `json:\"outputSchema,omitempty\"` // 输出模式定义，描述节点输出数据的结构 } 1.1.2 边数据 边主要是包含输入节点、输出节点的ID，还有输入的端口和输出的端口 （输入输出端口都是只存在于业务逻辑节点中）\n// Edge 工作流连线定义 // 连线定义了节点之间的连接关系，确定工作流的执行顺序和数据流向 type Edge struct { // 源节点ID，连线的起始节点 SourceNodeID string `json:\"sourceNodeID\"` // 目标节点ID，连线的终止节点 TargetNodeID string `json:\"targetNodeID\"` // 源端口ID，用于多输出端口的节点，指定具体的输出端口 SourcePortID string `json:\"sourcePortID,omitempty\"` // 目标端口ID，用于多输入端口的节点，指定具体的输入端口 TargetPortID string `json:\"targetPortID,omitempty\"` } 1.1.3 大语言模型节点 (NoteTypeLLM) LLM节点类图如下图所示 classDiagram class Inputs { +Param[] inputParameters +SettingOnError settingOnError +NodeBatch nodeBatchInfo +any llmParam +LLM llmSpecificConfig } class LLM { +FCParam fcParam } class LLMParam { +Param[] parameters } class SimpleLLMParam { +string generationDiversity +int maxTokens +string modelName +int64 modelType +ResponseFormat responseFormat +string systemPrompt +float64 temperature +float64 topP } class Param { +string name +BlockInput input +BlockInput left +BlockInput right +BlockInput[] variables } class BlockInput { +VariableType type +AssistType assistType +any schema +BlockInputValue value } class BlockInputValue { +BlockInputValueType type +any content +any rawMeta } class BlockInputReference { +string blockID +string name +string[] path +RefSourceType source } class FCParam { +WorkflowFCParam workflowFCParam +PluginFCParam pluginFCParam +KnowledgeFCParam knowledgeFCParam } class SettingOnError { +ErrorHandlingStrategy strategy +string customMessage } class NodeBatch { +int batchSize +int concurrentSize } Inputs --\u003e LLM : \"contains\" Inputs --\u003e LLMParam : \"llmParam as\" Inputs --\u003e SimpleLLMParam : \"llmParam as\" Inputs --\u003e Param : \"contains\" Inputs --\u003e SettingOnError : \"contains\" Inputs --\u003e NodeBatch : \"contains\" LLM --\u003e FCParam : \"contains\" LLMParam --\u003e Param : \"contains\" Param --\u003e BlockInput : \"contains\" BlockInput --\u003e BlockInputValue : \"contains\" BlockInputValue --\u003e BlockInputReference : \"content as\" note for Inputs \"LLM节点的所有输入配置包含通用输入和LLM专用配置\" note for LLMParam \"标准LLM参数列表每个参数都是Param类型\" note for SimpleLLMParam \"简化的LLM参数结构直接包含所有LLM配置字段\" note for FCParam \"函数调用能力配置LLM可调用的外部工具\" LLM参数 - SimpleLLMParam SimpleLLMParam如下所示，主要包含多样性程度、最大Token、模型名称、模型类型、响应格式、系统提示词、Temperature温度、TopP 核采样参数\n【注意】generationDiversity多样性程度 是高层的预设策略（如\"创意/平衡/精确\"模式），而 temperature和 topP是底层的具体算法参数，前者通过内置的参数组合来简化配置，后者则提供精确的随机性控制（temperature调节概率分布平滑度，topP限制候选词汇范围）。\n简单说：generationDiversity = “我要什么风格”，temperature = “要多随机”，topP = “考虑多少词汇”。\n// SimpleLLMParam 简化的大语言模型参数配置 // 提供直接的字段映射方式配置LLM参数，适用于简单的模型调用场景 type SimpleLLMParam struct { // GenerationDiversity 生成多样性配置 // 控制模型输出的多样性程度，影响生成内容的创新性 GenerationDiversity string `json:\"generationDiversity\"` // MaxTokens 最大生成令牌数 // 限制模型单次生成的最大token数量，控制输出长度 MaxTokens int `json:\"maxTokens\"` // ModelName 模型名称 // 指定要使用的具体模型名称，如gpt-3.5-turbo、gpt-4等 ModelName string `json:\"modelName\"` // ModelType 模型类型标识 // 用于区分不同类型的模型，如聊天模型、补全模型等 ModelType int64 `json:\"modelType\"` // ResponseFormat 响应格式配置 // 指定模型输出的格式，支持文本、JSON、Markdown等格式 ResponseFormat model.ResponseFormat `json:\"responseFormat\"` // SystemPrompt 系统提示词 // 定义模型的系统级指令，设定模型的角色和行为规范 SystemPrompt string `json:\"systemPrompt\"` // Temperature 温度参数 // 控制模型输出的随机性，范围通常为0.0-1.0，值越高输出越随机 // 通过调整softmax概率分布的平滑度来影响词汇选择的确定性 Temperature float64 `json:\"temperature\"` // TopP 核采样参数 // 控制模型生成时考虑的词汇概率质量，影响输出的多样性和质量 // 通过设置概率累积阈值来限制候选词汇的范围，范围通常为0.0-1.0 TopP float64 `json:\"topP\"` } LLM中的函数调用参数 **FcParam** functionCalling （大语言模型节点的“技能”）中需要用到的参数\ngraph TD A[用户输入问题] --\u003e B[LLM节点接收] B --\u003e C{LLM分析是否需要调用工具} C --\u003e|需要调用| D[FCParam 工具配置] C --\u003e|不需要| E[直接生成回答] D --\u003e F[WorkflowFCParam子工作流调用] D --\u003e G[PluginFCParam插件API调用] D --\u003e H[KnowledgeFCParam知识库检索] F --\u003e F1[配置可调用的子工作流列表] F --\u003e F2[定义请求/响应参数] F --\u003e F3[执行子工作流] G --\u003e G1[配置可调用的插件API列表] G --\u003e G2[定义API参数和响应格式] G --\u003e G3[调用第三方插件服务] H --\u003e H1[配置知识库列表] H --\u003e H2[设置检索策略TopK/MinScore/搜索模式] H --\u003e H3[执行知识库检索] F3 --\u003e I[工具执行结果] G3 --\u003e I H3 --\u003e I I --\u003e J[LLM整合工具结果] J --\u003e K[生成最终回答] E --\u003e K K --\u003e L[返回给用户] style A fill:#e1f5fe style D fill:#fff3e0 style F fill:#f3e5f5 style G fill:#e8f5e8 style H fill:#fce4ec style K fill:#e0f2f1 函数调用参数 FcParam主要包含三种模式：子工作流调用、插件API调用、知识库检索\n// FCParam 函数调用参数配置 // 用于配置工作流中不同类型的函数调用能力，包括子工作流调用、插件API调用和知识库检索调用 type FCParam struct { // WorkflowFCParam 工作流函数调用参数配置 // 配置当前工作流可以调用的子工作流列表及其参数设置 WorkflowFCParam *struct { // WorkflowList 可调用的工作流列表 // 每个工作流项包含工作流标识、版本信息和函数调用设置 WorkflowList []struct { // WorkflowID 工作流唯一标识符 WorkflowID string `json:\"workflow_id\"` // WorkflowVersion 工作流版本号 WorkflowVersion string `json:\"workflow_version\"` // PluginID 关联的插件ID（如果工作流基于插件） PluginID string `json:\"plugin_id\"` // PluginVersion 插件版本号 PluginVersion string `json:\"plugin_version\"` // IsDraft 是否为草稿版本 IsDraft bool `json:\"is_draft\"` // FCSetting 函数调用设置 // 定义调用该工作流时的请求和响应参数结构 FCSetting *struct { // RequestParameters 请求参数列表 // 定义调用工作流时需要传入的参数 RequestParameters []*workflow.APIParameter `json:\"request_params\"` // ResponseParameters 响应参数列表 // 定义工作流执行完成后返回的参数 ResponseParameters []*workflow.APIParameter `json:\"response_params\"` } `json:\"fc_setting,omitempty\"` } `json:\"workflowList,omitempty\"` } `json:\"workflowFCParam,omitempty\"` // PluginFCParam 插件函数调用参数配置 // 配置当前工作流可以调用的插件API列表及其参数设置 PluginFCParam *struct { // PluginList 可调用的插件列表 // 每个插件项包含插件标识、API信息和函数调用设置 PluginList []struct { // PluginID 插件唯一标识符 PluginID string `json:\"plugin_id\"` // ApiId API接口唯一标识符 ApiId string `json:\"api_id\"` // ApiName API接口名称 ApiName string `json:\"api_name\"` // PluginVersion 插件版本号 PluginVersion string `json:\"plugin_version\"` // IsDraft 是否为草稿版本 IsDraft bool `json:\"is_draft\"` // FCSetting 函数调用设置 // 定义调用该插件API时的请求和响应参数结构 FCSetting *struct { // RequestParameters 请求参数列表 // 定义调用插件API时需要传入的参数 RequestParameters []*workflow.APIParameter `json:\"request_params\"` // ResponseParameters 响应参数列表 // 定义插件API执行完成后返回的参数 ResponseParameters []*workflow.APIParameter `json:\"response_params\"` } `json:\"fc_setting,omitempty\"` } } `json:\"pluginFCParam,omitempty\"` // KnowledgeFCParam 知识库函数调用参数配置 // 配置当前工作流的知识库检索功能及其全局设置 KnowledgeFCParam *struct { // GlobalSetting 知识库检索全局设置 // 定义知识库检索的通用配置参数 GlobalSetting *struct { // SearchMode 搜索模式 // 定义知识库检索使用的搜索算法模式 SearchMode int64 `json:\"search_mode\"` // TopK 返回结果数量 // 定义知识库检索返回的最大结果数量 TopK int64 `json:\"top_k\"` // MinScore 最小相似度分数 // 定义知识库检索结果的最小相似度阈值 MinScore float64 `json:\"min_score\"` // UseNL2SQL 是否启用自然语言转SQL功能 UseNL2SQL bool `json:\"use_nl2_sql\"` // UseRewrite 是否启用查询重写功能 UseRewrite bool `json:\"use_rewrite\"` // UseRerank 是否启用结果重排序功能 UseRerank bool `json:\"use_rerank\"` // NoRecallReplyCustomizePrompt 无召回结果时的自定义回复提示词 NoRecallReplyCustomizePrompt string `json:\"no_recall_reply_customize_prompt\"` // NoRecallReplyMode 无召回结果时的回复模式 NoRecallReplyMode int64 `json:\"no_recall_reply_mode\"` } `json:\"global_setting,omitempty\"` // KnowledgeList 可检索的知识库列表 // 定义当前工作流可以检索的知识库集合 KnowledgeList []*struct { // ID 知识库唯一标识符 ID string `json:\"id\"` } `json:\"knowledgeList,omitempty\"` } `json:\"knowledgeFCParam,omitempty\"` } 子工作流调用 { \"workflowFCParam\": { \"workflowList\": [ { \"workflow_id\": \"7509120431183544356\", \"workflow_version\": \"v0.0.1\", \"plugin_id\": \"7509121334769795126\", \"is_draft\": false, \"fc_setting\": { \"request_params\": [...], // 调用参数 \"response_params\": [...] // 返回参数 } } ] } } 插件API调用 { \"pluginFCParam\": { \"pluginList\": [ { \"plugin_id\": \"7509353177339133952\", \"api_id\": \"7509353598782816256\", \"api_name\": \"周公解梦\", \"plugin_version\": \"0\", \"fc_setting\": { \"request_params\": [ { \"name\": \"title\", \"desc\": \"查询解梦标题，例如：梦见蛇\", \"type\": 1, \"is_required\": true } ], \"response_params\": [...] } } ] } } 知识库检索 { \"knowledgeFCParam\": { \"knowledgeList\": [ { \"id\": \"7512369185624686592\", \"name\": \"旅游景点\" } ], \"global_setting\": { \"top_k\": 3, // \"min_score\": 0.5, \"search_mode\": 0, \"use_rerank\": true, \"use_rewrite\": true, \"use_nl2_sql\": true, \"no_recall_reply_mode\": 0, \"no_recall_reply_customize_prompt\": \"抱歉，您的问题超出了我的知识范围\" } } 1.1.4 BlockInput结构 BlockInput是工作流系统中的数据绑定核心，它解决了一个关键问题：如何在工作流节点之间传递和配置数据。BlockInput = \"这个输入框里放什么数据，从哪里来\"\ngraph TD A[BlockInput 块输入配置] --\u003e B[Type: 数据类型] A --\u003e C[AssistType: 辅助类型] A --\u003e D[Schema: 结构定义] A --\u003e E[Value: 输入值配置] E --\u003e F[BlockInputValue] F --\u003e G[Type: 值类型] F --\u003e H[Content: 具体内容] F --\u003e I[RawMeta: 元数据] G --\u003e G1[literal: 字面值] G --\u003e G2[ref: 节点引用] G --\u003e G3[object_ref: 对象引用] H --\u003e H1[静态文本/数值] H --\u003e H2[BlockInputReference] H2 --\u003e J[BlockID: 源节点ID] H2 --\u003e K[Name: 字段名称] H2 --\u003e L[Path: 访问路径] H2 --\u003e M[Source: 引用源类型] M --\u003e M1[block-output: 节点输出] M --\u003e M2[global_variable_app: 应用变量] M --\u003e M3[global_variable_system: 系统变量] M --\u003e M4[global_variable_user: 用户变量] N[实际使用场景] --\u003e N1[静态配置: 固定值] N --\u003e N2[动态绑定: 引用其他节点] N --\u003e N3[模板渲染: 变量替换] N --\u003e N4[复杂对象: 嵌套结构] style A fill:#e1f5fe style F fill:#fff3e0 style H2 fill:#f3e5f5 style N fill:#e8f5e8 BlockInput结构如下所示\ntype BlockInput struct { Type VariableType // 数据类型：string、number、object等 AssistType AssistType // 辅助类型：更具体的类型描述 Schema any // 结构定义：复杂对象的内部结构 Value *BlockInputValue // 值配置：具体的数据来源 } 三种数据流来源：常量literal、节点引用ref、对象引用 Object Ref\n常量literal { \"type\": \"string\", \"value\": { \"type\": \"literal\", \"content\": \"Hello World\", \"rawMeta\": {\"type\": 1} } } 节点引用ref (最常用的) { \"type\": \"string\", \"value\": { \"type\": \"ref\", \"content\": { \"blockID\": \"100001\", \"name\": \"output\", \"source\": \"block-output\" } } } 对象引用 { \"type\": \"object\", \"schema\": [{\"name\": \"name\", \"type\": \"string\"}], \"value\": { \"type\": \"object_ref\", \"content\": { \"blockID\": \"100001\", \"name\": \"person\", \"source\": \"block-output\" } } } 1.1.5 知识库节点 (RAG) RAG完整流程图 一个完整的RAG流程如下：\n查询重写优化 （小模型）-\u003e 自然语言转SQL （NL2SQL）-\u003e 向量检索 (语义搜索/混合搜索/全量搜索) -\u003e 相似度过滤 (最小相似度阈值) -\u003e 结果重排序 (Rerank) -\u003e TopK结果截取 -\u003e 构建新的上下文提示词\ngraph LR A[用户输入查询] --\u003e B[查询预处理] B --\u003e B1[UseRewrite: 查询重写] B1 --\u003e B2[优化查询语义] B2 --\u003e B3[UseNL2SQL: 自然语言转SQL] B3 --\u003e C[向量检索阶段] C --\u003e C1[文档向量化] C --\u003e C2[查询向量化] C1 --\u003e C3[向量相似度计算] C2 --\u003e C3 C3 --\u003e D[SearchMode: 搜索策略] D --\u003e D1[0: 语义搜索Semantic Search] D --\u003e D2[1: 混合搜索Hybrid Search] D --\u003e D3[20: 全文搜索Full-text Search] D1 --\u003e E[初步结果筛选] D2 --\u003e E D3 --\u003e E E --\u003e E1[MinScore: 相似度过滤] E1 --\u003e E2[过滤低质量结果] E2 --\u003e F[UseRerank: 结果重排序] F --\u003e F1[深度语义匹配] F1 --\u003e F2[重新排序结果] F2 --\u003e G[TopK: 结果截取] G --\u003e G1[选择前K个最佳结果] G1 --\u003e H{是否有合适结果?} H --\u003e|有| I[构建增强上下文] H --\u003e|无| J[NoRecallReplyMode处理] J --\u003e J1[0: 使用自定义提示词] J --\u003e J2[1: 其他处理模式] J1 --\u003e K[返回无结果回复] J2 --\u003e K I --\u003e L[RAG生成阶段] L --\u003e L1[组合查询+检索内容] L1 --\u003e L2[LLM生成增强回答] L2 --\u003e M[返回最终答案] K --\u003e M style A fill:#e1f5fe style B fill:#fff3e0 style C fill:#f3e5f5 style D fill:#e8f5e8 style F fill:#fce4ec style L fill:#e0f2f1 向量检索规则 graph TD A[用户查询] --\u003e B{SearchMode选择} B --\u003e|0: 语义搜索| C[Semantic Search] B --\u003e|1: 混合搜索| D[Hybrid Search] B --\u003e|20: 全文搜索| E[Full-text Search] C --\u003e C1[Step1: 查询向量化] C1 --\u003e C2[Embedding Model] C2 --\u003e C3[Query Vector] C3 --\u003e C4[Step2: 文档向量匹配] C4 --\u003e C5[向量数据库] C5 --\u003e C6[余弦相似度计算] D --\u003e D1[Step1: 向量搜索路径] D --\u003e D2[Step2: 关键词搜索路径] D1 --\u003e D3[Embedding检索] D2 --\u003e D4[BM25算法] D3 --\u003e D5[结果融合算法] D4 --\u003e D5 E --\u003e E1[Step1: 分词处理] E1 --\u003e E2[分词器] E2 --\u003e E3[Step2: 倒排索引] E3 --\u003e E4[搜索引擎] E4 --\u003e E5[TF-IDF评分] C6 --\u003e F[语义理解强] D5 --\u003e G[平衡精确性和语义] E5 --\u003e H[关键词精确匹配] F --\u003e I[最终检索结果] G --\u003e I H --\u003e I style C fill:#e1f5fe style D fill:#fff3e0 style E fill:#f3e5f5 style I fill:#e8f5e8 语义搜索 （准）: 使用 Embedding 模型计算向量相似度，理解深层语义，处理同义词和概念匹配。\n混合搜索 （全面）: 结合向量搜索 + BM25 关键词搜索，平衡语义理解和精确匹配。\n全文搜索 （快）: 传统的倒排索引和TF-IDF，精确的关键词匹配，速度快\n【算法说明】\nEmbedding向量检索：将文本通过编码器转为向量和DB中的向量计算cos相似度最后返回TopK的结果 graph TD A[文本输入] --\u003e B[Embedding检索流程] B --\u003e C[第一阶段: 向量化] C --\u003e C1[分词和预处理] C1 --\u003e C2[Transformer编码器] C2 --\u003e C3[池化操作] C3 --\u003e C4[归一化处理] C4 --\u003e C5[生成向量表示] B --\u003e D[第二阶段: 索引构建] D --\u003e D1[向量维度优化] D1 --\u003e D2[索引结构选择] D2 --\u003e D3[HNSW/IVF/LSH] D3 --\u003e D4[分布式存储] B --\u003e E[第三阶段: 相似度检索] E --\u003e E1[查询向量化] E1 --\u003e E2[近似最近邻搜索] E2 --\u003e E3[相似度计算] E3 --\u003e E4[TopK结果返回] F[技术栈] --\u003e F1[模型: BERT/Sentence-BERT] F --\u003e F2[向量DB: Pinecone/Milvus/ElasticSearch] F --\u003e F3[相似度: 余弦/点积/欧氏] F --\u003e F4[索引: HNSW/IVF] style C fill:#e1f5fe style D fill:#fff3e0 style E fill:#f3e5f5 style F fill:#e8f5e8 倒排索引：将文档切分成独立的词汇单元，建立从词汇到文档的映射索引\nTF-IDF (词频-逆文档频率)：TF（词频）： 计算一个词在文档中出现的词次数， 用于衡量词汇的重要性。IDF （逆文档频率）：衡量词汇在整个语料库中的重要性。 TF(t,d) = 词汇t在文档d中出现的次数 / 文档d的总词数 IDF(t) = log(文档总数 / 包含词汇t的文档数) TF-IDF = sigmoid (TF(t,d) * IDF(t)) 缺点：不能考虑词汇的位置，忽略了词汇的相关性；不利于稀疏性 （短文档很多词汇 TF-IDF=0）\nBM25 算法：在 TF-IDF (词频-逆文档频率) 基础上，解决了词频饱和问题和文档长度归一化问题。 ReRank 规则 Rerank就是根据多个检索方式得到的结果进行整合，然后根据RRF算法重新排序的过程\nRRF: score = 1/(rank + k) # 默认 k = 60 rerank模型的时序图\nsequenceDiagram participant User as 用户 participant RS as 检索服务RetrieveService participant QR as 查询重写QueryRewriter participant VS as 向量检索VectorStore participant ES as 全文检索ElasticSearch participant NL as NL2SQL检索NL2SQLEngine participant RK as 重排序器Reranker participant API as Rerank APIVikingDB Note over User, API: 1. 初始化检索请求 User-\u003e\u003eRS: 发起检索请求(query, knowledgeIDs, strategy) RS-\u003e\u003eRS: 构建检索上下文(RetrieveContext) Note over User, API: 2. 查询重写 (可选) alt 启用查询重写 \u0026\u0026 有对话历史 RS-\u003e\u003eQR: 基于对话历史重写查询 QR--\u003e\u003eRS: 返回重写后的查询 end Note over User, API: 3. 并行多通道检索 par 向量检索 alt 语义检索 || 混合检索 RS-\u003e\u003eVS: 向量相似度检索 VS-\u003e\u003eVS: 1. 查询文本向量化 VS-\u003e\u003eVS: 2. 计算余弦相似度 VS-\u003e\u003eVS: 3. 返回TopK相似文档 VS--\u003e\u003eRS: 向量检索结果(score: 0.0-1.0) end and 全文检索 alt 全文检索 || 混合检索 RS-\u003e\u003eES: 关键词匹配检索 ES-\u003e\u003eES: 1. 分词和索引匹配 ES-\u003e\u003eES: 2. 计算BM25分数 ES-\u003e\u003eES: 3. 返回匹配文档 ES--\u003e\u003eRS: ES检索结果(score: BM25) end and NL2SQL检索 alt 启用NL2SQL RS-\u003e\u003eNL: 自然语言转SQL查询 NL-\u003e\u003eNL: 1. 解析查询意图 NL-\u003e\u003eNL: 2. 生成SQL语句 NL-\u003e\u003eNL: 3. 执行结构化查询 NL--\u003e\u003eRS: NL2SQL结果(score: 相关性分数) end end Note over User, API: 4. Rerank重排序 RS-\u003e\u003eRS: 整合多通道检索结果 Note right of RS: 根据检索策略收集结果:- SearchTypeSemantic: 仅向量结果- SearchTypeFullText: 仅ES结果- SearchTypeHybrid: 向量+ES结果- 如启用NL2SQL: 额外添加NL2SQL结果 RS-\u003e\u003eRK: 调用Rerank服务 Note right of RK: 传入参数:- Query: 原始查询或重写后查询- Data: 多通道检索结果数组- TopN: 最终返回数量 alt VikingDB Reranker (深度学习模型) RK-\u003e\u003eRK: 1. 扁平化所有检索结果 RK-\u003e\u003eRK: 2. 构造rerank请求{query, content, title} RK-\u003e\u003eAPI: HTTP POST请求/api/knowledge/service/rerank API-\u003e\u003eAPI: 1. 使用base-multilingual-rerank模型 API-\u003e\u003eAPI: 2. 计算query-document相关性分数 API--\u003e\u003eRK: 返回每个文档的新分数{scores: [0.8, 0.6, 0.9, ...]} RK-\u003e\u003eRK: 3. 按新分数降序排序 RK-\u003e\u003eRK: 4. 截取TopN结果 else RRF Reranker (排名融合算法) RK-\u003e\u003eRK: 1. 为每个通道的结果按排名计算分数 Note right of RK: RRF公式: score = 1/(rank + k)其中k=60为默认参数 RK-\u003e\u003eRK: 2. 同一文档取最高分数 RK-\u003e\u003eRK: 3. 按分数降序排序 RK-\u003e\u003eRK: 4. 截取TopN结果 end RK--\u003e\u003eRS: 返回重排序结果{sortedData, tokenUsage} Note over User, API: 5. 结果过滤与封装 RS-\u003e\u003eRS: 1. 应用最小分数阈值过滤(score \u003c minScore的文档被移除) RS-\u003e\u003eRS: 2. 更新文档分数为rerank分数 RS-\u003e\u003eRS: 3. 封装最终检索结果 RS--\u003e\u003eUser: 返回最终检索结果(按相关性排序的文档列表) 知识库节点结构 // Knowledge 知识库节点配置 // 用于配置独立的知识库检索节点，定义数据源参数和处理策略 // 与LLM节点中的KnowledgeFCParam不同，这是专门的知识库检索步骤 type Knowledge struct { // DatasetParam 数据集参数配置 // 定义知识库的数据源配置，包括数据库连接、文件路径等信息 // 每个Param包含具体的数据源配置项 DatasetParam []*Param `json:\"datasetParam,omitempty\"` // StrategyParam 知识库处理策略参数 // 定义文档解析、分块、索引等各个环节的处理策略和参数 StrategyParam StrategyParam `json:\"strategyParam,omitempty\"` } // StrategyParam 知识库处理策略参数配置 // 定义知识库从文档解析到向量索引的完整处理流程策略 type StrategyParam struct { // ParsingStrategy 文档解析策略配置 // 定义如何解析和提取不同类型文档的内容 ParsingStrategy struct { // ParsingType 解析类型 // 定义文档解析的方式，如自动识别、手动指定等 // 常见值：auto（自动识别）、manual（手动指定）、custom（自定义） ParsingType string `json:\"parsingType,omitempty\"` // ImageExtraction 是否提取图片 // 控制是否从文档中提取图片内容进行处理 // true表示提取图片，false表示忽略图片内容 ImageExtraction bool `json:\"imageExtraction\"` // TableExtraction 是否提取表格 // 控制是否从文档中提取表格结构和数据 // true表示解析表格结构，false表示将表格视为普通文本 TableExtraction bool `json:\"tableExtraction\"` // ImageOcr 是否启用图片OCR识别 // 控制是否对提取的图片进行光学字符识别 // true表示对图片进行OCR文字识别，false表示忽略图片中的文字 ImageOcr bool `json:\"imageOcr\"` } `json:\"parsingStrategy,omitempty\"` // ChunkStrategy 文档分块策略配置 // 定义如何将长文档切分成适合向量化的小块 ChunkStrategy struct { // ChunkType 分块类型 // 定义文档分块的策略类型 // 常见值：fixed（固定长度）、semantic（语义分块）、sentence（句子分块） ChunkType string `json:\"chunkType,omitempty\"` // SeparatorType 分隔符类型 // 定义用于分块的分隔符类型 // 常见值：auto（自动选择）、newline（换行符）、paragraph（段落）、custom（自定义） SeparatorType string `json:\"separatorType,omitempty\"` // Separator 自定义分隔符 // 当SeparatorType为custom时，指定具体的分隔符字符串 Separator string `json:\"separator,omitempty\"` // MaxToken 最大令牌数 // 定义每个文档块的最大token数量，控制块的大小 // 通常设置为模型的上下文窗口大小，如512、1024等 MaxToken int64 `json:\"maxToken,omitempty\"` // Overlap 重叠比例 // 定义相邻文档块之间的重叠比例，避免语义信息在边界处丢失 // 取值范围0.0-1.0，常见值为0.1-0.2（10%-20%重叠） Overlap float64 `json:\"overlap,omitempty\"` } `json:\"chunkStrategy,omitempty\"` // IndexStrategy 索引策略配置 // 定义向量索引的构建策略，如索引类型、参数等 // 具体结构依赖于使用的向量数据库类型（如HNSW、IVF等） IndexStrategy any `json:\"indexStrategy\"` } 1.2 如何从画布转换为后端类？如何转换为执行态？ 前端传入画布的 DSL语言（JSON）给后端之后，会解析为上方的后端结构。画布中的每个节点都会变成 canvas.go中的 Node结构体。但是转换后的 Node结构体只是一个存储态，如果需要执行工作流还需要将 Node结构体从存储态转为运行态。后端 schema 的 NodeSchema结构体就是 针对用于表达工作流的运行态的\n1.2.1 转换流程图 graph TD A[Canvas画布] --\u003e B[CanvasToWorkflowSchema] B --\u003e C[移除孤立节点] C --\u003e D[遍历Canvas Nodes] D --\u003e E{节点类型判断} E --\u003e|子工作流| F[toSubWorkflowNodeSchema] E --\u003e|普通节点| G[获取NodeAdaptor] G --\u003e H[调用Adaptor.Adapt方法] H --\u003e I{节点有子节点?} I --\u003e|是| J[递归转换子节点] I --\u003e|否| K[转换输入输出类型] J --\u003e L[设置层次关系] L --\u003e K K --\u003e M[设置异常处理配置] M --\u003e N[生成NodeSchema] F --\u003e N N --\u003e O[收集所有NodeSchema] O --\u003e P[转换连接边] P --\u003e Q[标准化端口] Q --\u003e R[构建分支信息] R --\u003e S[WorkflowSchema] subgraph \"NodeAdaptor转换细节\" H1[解析节点配置] --\u003e H2[转换输入参数] H2 --\u003e H3[转换输出定义] H3 --\u003e H4[设置节点特定Config] H4 --\u003e H5[调用SetInputsForNodeSchema] H5 --\u003e H6[调用SetOutputTypesForNodeSchema] end H --\u003e H1 subgraph \"类型转换细节\" T1[CanvasBlockInputToTypeInfo] --\u003e T2[解析基础类型] T2 --\u003e T3[处理复杂对象类型] T3 --\u003e T4[处理数组类型] T4 --\u003e T5[处理文件类型] T5 --\u003e T6[生成TypeInfo] U1[CanvasBlockInputToFieldInfo] --\u003e U2[分析数据来源] U2 --\u003e U3{来源类型} U3 --\u003e|静态值| U4[创建LiteralFieldInfo] U3 --\u003e|节点引用| U5[创建ReferenceFieldInfo] U3 --\u003e|模板字符串| U6[创建TemplateFieldInfo] U4 --\u003e U7[生成FieldInfo] U5 --\u003e U7 U6 --\u003e U7 end K --\u003e T1 K --\u003e U1 style A fill:#e1f5fe style S fill:#c8e6c9 style H fill:#fff3e0 style N fill:#fce4ec 1.2.2 转换后的NodeSchema结构 // NodeSchema 工作流节点的统一描述和配置结构 // 包含实例化一个节点所需的所有信息，是Canvas Node转换后的后端执行结构 type NodeSchema struct { // Key 节点在Eino图中的唯一标识符 // 节点在执行过程中可能需要这个信息，例如： // - 使用此Key查询工作流状态中属于当前节点的数据 Key vo.NodeKey `json:\"key\"` // Name 节点在Canvas画布上指定的显示名称 // 节点可能会在Canvas上显示这个名称作为输入/输出的一部分 Name string `json:\"name\"` // Type 节点的类型标识 // 对应entity.NodeType枚举，决定节点的具体行为和功能 Type entity.NodeType `json:\"type\"` // Configs 节点特定的配置信息 // 每个节点类型定义自己的配置结构体，不包含字段映射或静态值信息 // 这些配置是节点实现的内部配置，与工作流编排无关 // 实际类型应该实现两个接口： // - NodeAdaptor: 提供从vo.Node到NodeSchema的转换 // - NodeBuilder: 提供从NodeSchema到实际节点实例的实例化 Configs any `json:\"configs,omitempty\"` // InputTypes 节点输入字段的类型信息映射 // 键为字段名，值为对应的类型信息，用于类型检查和验证 InputTypes map[string]*vo.TypeInfo `json:\"input_types,omitempty\"` // InputSources 节点输入字段的映射信息 // 定义每个输入字段的数据来源，如来自其他节点的输出或静态值 InputSources []*vo.FieldInfo `json:\"input_sources,omitempty\"` // OutputTypes 节点输出字段的类型信息映射 // 键为字段名，值为对应的类型信息，用于下游节点的类型推导 OutputTypes map[string]*vo.TypeInfo `json:\"output_types,omitempty\"` // OutputSources 节点输出字段的映射信息 // 注意：仅适用于复合节点，如NodeTypeBatch或NodeTypeLoop OutputSources []*vo.FieldInfo `json:\"output_sources,omitempty\"` // ExceptionConfigs 节点的异常处理策略配置 // 包含超时、重试、错误处理类型等异常处理相关设置 ExceptionConfigs *ExceptionConfig `json:\"exception_configs,omitempty\"` // StreamConfigs 节点的流式处理特性配置 // 定义节点是否支持流式输入/输出等流处理能力 StreamConfigs *StreamConfig `json:\"stream_configs,omitempty\"` // SubWorkflowBasic 子工作流的基本信息 // 仅当节点类型为NodeTypeSubWorkflow时使用 SubWorkflowBasic *entity.WorkflowBasic `json:\"sub_workflow_basic,omitempty\"` // SubWorkflowSchema 子工作流的完整Schema信息 // 仅当节点类型为NodeTypeSubWorkflow时使用，包含子工作流的完整定义 SubWorkflowSchema *WorkflowSchema `json:\"sub_workflow_schema,omitempty\"` // FullSources 节点输入字段映射来源的完整信息 // 包含更详细的信息，如字段是否为流式字段，或字段是否为包含子字段映射的对象 // 用于需要处理流式输入的节点 // 在NodeMeta中设置InputSourceAware = true来启用此功能 FullSources map[string]*SourceInfo // Lambda 直接设置节点为Eino Lambda // 注意：不可序列化，仅用于内部测试 Lambda *compose.Lambda } 1.2.3 转换结构前后对比 graph LR subgraph \"前端Canvas结构\" A[Canvas画布] A --\u003e B[Node节点] A --\u003e C[Edge连接] B --\u003e D[ID: string] B --\u003e E[Type: string] B --\u003e F[Data配置] F --\u003e G[Meta元数据] F --\u003e H[Inputs输入] F --\u003e I[Outputs输出] H --\u003e J[InputParameters参数列表] H --\u003e K[LLMParam模型参数] H --\u003e L[SettingOnError错误处理] J --\u003e M[Param参数] M --\u003e N[Name: string] M --\u003e O[Input: BlockInput] O --\u003e P[Type: VariableType] O --\u003e Q[Value: BlockInputValue] Q --\u003e R[Type: literal/ref/object_ref] Q --\u003e S[Content: any] I --\u003e T[Variable变量] T --\u003e U[Name: string] T --\u003e V[Type: VariableType] T --\u003e W[Schema: any] end subgraph \"转换过程\" X[CanvasToWorkflowSchema] --\u003e Y[NodeToNodeSchema] Y --\u003e Z[NodeAdaptor.Adapt] Z --\u003e AA[SetInputsForNodeSchema] Z --\u003e BB[SetOutputTypesForNodeSchema] AA --\u003e CC[CanvasBlockInputToTypeInfo] AA --\u003e DD[CanvasBlockInputToFieldInfo] BB --\u003e EE[CanvasVariableToTypeInfo] end subgraph \"后端NodeSchema结构\" FF[WorkflowSchema工作流] FF --\u003e GG[NodeSchema节点] FF --\u003e HH[Connection连接] FF --\u003e II[Branch分支] GG --\u003e JJ[Key: NodeKey] GG --\u003e KK[Type: NodeType枚举] GG --\u003e LL[Configs: 节点配置] GG --\u003e MM[InputTypes类型映射] GG --\u003e NN[InputSources来源映射] GG --\u003e OO[OutputTypes输出类型] MM --\u003e PP[\"map[string]*TypeInfo\"] NN --\u003e QQ[\"[]*FieldInfo\"] OO --\u003e RR[\"map[string]*TypeInfo\"] QQ --\u003e SS[FieldInfo字段信息] SS --\u003e TT[Path: FieldPath] SS --\u003e UU[Source: 数据来源] SS --\u003e VV[Type: Literal/Reference/Template] PP --\u003e WW[TypeInfo类型信息] WW --\u003e XX[Type: DataType枚举] WW --\u003e YY[Properties: 对象属性] WW --\u003e ZZ[ElemTypeInfo: 数组元素类型] GG --\u003e AAA[ExceptionConfigs异常配置] AAA --\u003e BBB[TimeoutMS: 超时时间] AAA --\u003e CCC[MaxRetry: 重试次数] AAA --\u003e DDD[ProcessType: 处理类型] end A -.转换.-\u003e FF B -.适配器转换.-\u003e GG C -.标准化.-\u003e HH O -.类型转换.-\u003e WW Q -.来源分析.-\u003e SS style A fill:#e3f2fd style FF fill:#e8f5e8 style X fill:#fff3e0 style Y fill:#fff3e0 style Z fill:#fff3e0 【转换过程】\ncanvas到 NodeSchema的转换过程是Coze Studio工作流系统中的核心架构设计，它通过适配器模式将前端面向用户的可视化画布结构转换为后端面向执行的标准化 Schema结构。在这个过程中，前端的 Canvas包含了用户在画布上拖拽配置的 Node节点和 Edge连接，每个Node节点包含字符串类型的ID和Type、用户配置的Data数据（包括输入参数、输出定义、元数据等），这些数据以灵活的 `any `类型和嵌套结构存储以适应前端的动态配置需求；而转换后的NodeSchema则采用强类型的结构化设计，将节点类型转换为枚举、将输入输出转换为 TypeInfo和FieldInfo的映射关系、将数据来源分析为具体的引用路径，并添加了执行时需要的 异常处理配置、流式处理配置等运行时信息。这个转换过程之所以必要，是因为前端Canvas需要保持高度的灵活性和可扩展性来支持用户的各种配置操作和UI交互，而后端执行引擎则需要严格的类型安全、明确的数据流向和优化的执行性能，两者的设计目标和约束条件完全不同，因此需要通过这个转换层来实现前后端的解耦，同时确保用户在画布上的每一个配置都能准确无误地转换为可执行的工作流逻辑，并且这种转换过程还支持复杂的节点类型（如子工作流、批处理节点）、数据类型推导、字段映射分析等高级特性，为整个工作流系统的稳定运行和功能扩展提供了坚实的基础。\n1.3 工作流执行过程分析 工作流执行图 (细节) graph TD A[Canvas画布] --\u003e B{保存/运行工作流} B --\u003e C[画布结构验证] C --\u003e D[连接关系验证] C --\u003e E[闭环检测] C --\u003e F[节点配置验证] C --\u003e G[变量引用验证] C --\u003e H[嵌套流程验证] C --\u003e I[全局变量验证] C --\u003e J[子工作流终止计划验证] D --\u003e K{验证通过?} E --\u003e K F --\u003e K G --\u003e K H --\u003e K I --\u003e K J --\u003e K K --\u003e|否| L[返回验证错误] L --\u003e M[前端显示错误信息] K --\u003e|是| N[Canvas转换为WorkflowSchema] N --\u003e O[移除孤立节点] O --\u003e P[遍历Canvas Nodes] P --\u003e Q{节点类型判断} Q --\u003e|子工作流| R[递归解析子工作流Canvas] Q --\u003e|批处理节点| S[解析批处理模式] Q --\u003e|普通节点| T[获取NodeAdaptor] R --\u003e U[toSubWorkflowNodeSchema] S --\u003e V[parseBatchMode生成批处理结构] T --\u003e W[调用Adaptor.Adapt方法] U --\u003e X[设置异常处理配置] V --\u003e X W --\u003e X X --\u003e Y{节点有子节点?} Y --\u003e|是| Z[递归转换子节点] Y --\u003e|否| AA[转换输入输出类型] Z --\u003e BB[设置层次关系映射] BB --\u003e AA AA --\u003e CC[SetInputsForNodeSchema] AA --\u003e DD[SetOutputTypesForNodeSchema] CC --\u003e EE[CanvasBlockInputToTypeInfo] CC --\u003e FF[CanvasBlockInputToFieldInfo] DD --\u003e GG[CanvasVariableToTypeInfo] EE --\u003e HH[解析基础类型] EE --\u003e II[处理复杂对象类型] EE --\u003e JJ[处理数组类型] EE --\u003e KK[处理文件类型] FF --\u003e LL[分析数据来源] LL --\u003e MM{来源类型} MM --\u003e|静态值| NN[创建LiteralFieldInfo] MM --\u003e|节点引用| OO[创建ReferenceFieldInfo] MM --\u003e|模板字符串| PP[创建TemplateFieldInfo] HH --\u003e QQ[生成NodeSchema] II --\u003e QQ JJ --\u003e QQ KK --\u003e QQ NN --\u003e QQ OO --\u003e QQ PP --\u003e QQ GG --\u003e QQ QQ --\u003e RR[收集所有NodeSchema] RR --\u003e SS[转换连接边EdgeToConnection] SS --\u003e TT[标准化端口normalizePorts] TT --\u003e UU[构建分支信息BuildBranches] UU --\u003e VV[生成完整WorkflowSchema] VV --\u003e WW[节点实例化] WW --\u003e XX[NodeBuilder.Build] XX --\u003e YY[创建具体节点实例] YY --\u003e ZZ[工作流执行引擎] subgraph \"验证器详细功能\" D1[ValidateConnections检查节点连接完整性] E1[DetectCycles检测工作流中的循环依赖] F1[节点配置验证检查必填字段和参数合法性] G1[CheckRefVariable验证变量引用的有效性] H1[ValidateNestedFlows检查批处理/循环嵌套限制] I1[CheckGlobalVariables验证全局变量类型匹配] J1[CheckSubWorkFlowTerminatePlan验证子工作流终止策略] end D -.-\u003e D1 E -.-\u003e E1 F -.-\u003e F1 G -.-\u003e G1 H -.-\u003e H1 I -.-\u003e I1 J -.-\u003e J1 subgraph \"NodeAdaptor转换细节\" W1[解析节点特定配置] --\u003e W2[转换输入参数类型] W2 --\u003e W3[转换输出定义类型] W3 --\u003e W4[设置节点内部Config] W4 --\u003e W5[调用通用类型转换函数] end W -.-\u003e W1 subgraph \"执行时节点类型\" YY1[InvokableNode普通执行节点] YY2[StreamableNode流式处理节点] YY3[TransformableNode数据转换节点] YY4[CollectableNode数据收集节点] end YY -.-\u003e YY1 YY -.-\u003e YY2 YY -.-\u003e YY3 YY -.-\u003e YY4 style A fill:#e3f2fd style C fill:#ffebee style K fill:#fff3e0 style VV fill:#e8f5e8 style ZZ fill:#f3e5f5 style L fill:#ffcdd2 前端交互层：前端 Canvas层是用户交互的起点，Canvas画布承载着用户的可视化配置，其中包含 Node（以vo.Node结构体表示）和Edge连接关系，这里的关键问题是\"节点样式：哪些固定字段？表单形式？\"，实际上每个节点都有标准化的元数据定义（如节点类型、显示名称、图标等固定字段）和动态的配置表单（根据节点类型展示不同的参数配置界面），前端schema采用灵活的JSON结构来适应各种节点类型的配置需求。\n验证层：验证层通过CanvasValidator对画布结构进行全面检查，包括节点连接完整性、循环依赖检测、配置合法性验证等多个维度，确保只有结构正确的工作流才能进入后续的转换和执行阶段，如果验证失败，系统会返回具体的错误信息给前端，帮助用户快速定位和修正问题。\n转换层：转换层是整个架构的核心枢纽，负责\"后端保存，workflow运行\"的关键转换过程，通过CanvasToWorkflowSchema函数协调整个转换流程，其中最重要的是NodeType到节点Config的转换，这通过NodeAdaptor接口实现，每个节点类型都有对应的适配器负责将前端的灵活配置转换为后端的强类型NodeSchema结构，实现了\"前端schema -\u003e 后端schema\"的标准化转换。\n节点实例化层：实例化层通过NodeBuilder接口将抽象的NodeSchema转换为具体的可执行节点实例，这里的关键是NodeSchema.Configs字段必须实现NodeBuilder接口，从而能够根据配置信息创建实际的节点对象，实现了\"后端schema -\u003e 节点实例\"的最终转换，为执行层提供了统一的节点实例接口。\n执行层：执行层是整个流程的最终目标，节点实例通过实现InvokableNode等执行接口来提供具体的业务逻辑处理能力，工作流引擎负责按照既定的执行顺序调度各个节点，处理数据流转和状态管理，最终产生业务执行结果并返回给用户。\n工作流校验 2.1 工作流验证流程 2.1.1 核心验证流程 graph LR A[画布预处理] --\u003e B[连接验证] --\u003e C[循环检测] --\u003e D[嵌套验证] --\u003e E[变量检查] --\u003e F[全局变量] --\u003e G[终止策略] 2.1.2 完整验证流程 %% 点击 “绘图” 按钮即可预览 graph LR A[\"1. 画布预处理• JSON反序列化• 清理孤立节点• 创建验证器实例\"] --\u003e H[\"2. 连接关系验证ValidateConnections\"] H --\u003e H1[\"• 检查节点连接完整性• 验证端口连接正确性• 检查分支节点完整性\"] H1 --\u003e I{发现问题?} I --\u003e|是| Z[\"返回验证错误\"] I --\u003e|否| J[\"3. 循环依赖检测DetectCycles\"] J --\u003e J1[\"• 构建依赖关系图• DFS算法检测环• 标识循环路径\"] J1 --\u003e K{发现循环?} K --\u003e|是| Z K --\u003e|否| L[\"4. 嵌套流程验证ValidateNestedFlows\"] L --\u003e L1[\"• 检查批处理节点嵌套• 验证循环节点嵌套• 防止过深嵌套\"] L1 --\u003e M{嵌套违规?} M --\u003e|是| Z M --\u003e|否| N[\"5. 引用变量检查CheckRefVariable\"] N --\u003e N1[\"• 验证变量可达性• 检查参数名规范• 验证作用域正确性\"] N1 --\u003e O{变量引用错误?} O --\u003e|是| Z O --\u003e|否| P[\"6. 全局变量验证CheckGlobalVariables\"] P --\u003e P1[\"• 验证变量类型匹配• 检查数组元素类型• 验证变量声明\"] P1 --\u003e Q{全局变量错误?} Q --\u003e|是| Z Q --\u003e|否| R[\"7. 子工作流终止策略CheckSubWorkFlowTerminatePlanType\"] R --\u003e R1[\"• 验证终止计划配置• 检查版本一致性• 验证子工作流存在性\"] R1 --\u003e S{终止策略错误?} S --\u003e|是| Z S --\u003e|否| T[\"主工作流验证完成\"] T --\u003e U[\"子工作流递归验证\"] U --\u003e U1[\"• 解析画布获取子工作流• 筛选项目级工作流• 批量获取工作流信息\"] U1 --\u003e U2[\"对每个子工作流重复验证流程\"] U2 --\u003e V[\"汇总所有验证结果\"] V --\u003e W[\"错误信息转换• Issue -\u003e ValidateErrorData• 节点错误/路径错误分类\"] W --\u003e X[\"返回验证结果ValidateTreeResponse\"] style A fill:#e1f5fe style H fill:#e8f5e8 style J fill:#e8f5e8 style L fill:#e8f5e8 style N fill:#e8f5e8 style P fill:#e8f5e8 style R fill:#e8f5e8 style U fill:#fff8e1 style Z fill:#ffebee 2.1.3 工作流验证流程技术实现总结 Coze Studio 的工作流验证采用分层递进式验证架构，从 API 层的 ValidateTree 接口开始，经过应用服务层的参数预处理，最终调用领域服务层的核心验证引擎 validateWorkflowTree。验证流程包含七个关键步骤：\n1. 画布预处理阶段 - 首先将 JSON 格式的画布结构反序列化为内存对象，然后调用 adaptor.PruneIsolatedNodes 清理没有连接关系的孤立节点，最后创建配置完整的 CanvasValidator 验证器实例并执行可达性分析，构建节点间的连通关系图。\n2. 连接关系验证 - ValidateConnections 方法通过遍历所有节点和边，构建出度映射表和端口映射表来实现。对于每个节点，检查其输出端口是否正确连接，特别是分支节点（如条件判断、错误处理）必须确保所有期望的端口都有连接。算法会递归验证嵌套节点的连接关系，确保数据流的完整性。\n3. 循环依赖检测 - DetectCycles 使用深度优先搜索（DFS）算法实现。首先构建反向依赖关系图（controlSuccessors），然后对每个未访问的节点启动 DFS 遍历。在遍历过程中维护当前路径栈，当发现路径中已存在的节点时，即检测到循环依赖，算法会提取并返回完整的循环路径。\n4. 嵌套流程验证 - ValidateNestedFlows 通过检查可达性分析结果中的 nestedReachability 结构实现。如果一个节点既有嵌套结构，又在其嵌套结构中还有更深层的嵌套（即 len(nestedReachableNodes.nestedReachability) \u003e 0），则判定为违反嵌套规则，防止批处理和循环节点的过度嵌套导致执行异常。\n5. 引用变量检查 - CheckRefVariable 采用递归作用域分析算法。定义内部函数 inputBlockVerify 解析每个输入参数的引用信息，检查引用的节点是否在当前或父级作用域的可达范围内。通过 combinedReachable 映射表合并当前层级和父级可达节点，实现作用域继承机制。同时验证参数名称的规范性（必须以字母开头，只能包含字母数字下划线）。\n6. 全局变量验证 - CheckGlobalVariables 首先收集所有变量分配节点（NodeTypeVariableAssigner）的变量定义，然后通过 VariablesMetaGetter 获取应用或智能体的变量元数据进行对比。验证包括基础类型匹配和数组元素类型的深度检查，确保工作流中使用的全局变量与系统定义一致。\n7. 子工作流终止策略验证 - CheckSubWorkFlowTerminatePlanType 通过递归收集所有子工作流节点，分别获取草稿版本和已发布版本的画布信息。对每个子工作流，查找其结束节点的终止计划配置，与当前节点的终止类型进行匹配验证，确保子工作流的输出处理策略与调用方期望一致。\n整个验证过程采用快速失败策略，任何步骤发现问题立即返回错误信息，同时支持递归子工作流验证，通过 getAllSubWorkflowIdentities 提取所有子工作流标识，对每个子工作流重复执行完整的验证流程，最终汇总所有验证结果，确保整个工作流树的结构完整性、逻辑正确性和执行安全性。\n",
-  "wordCount" : "3254",
+  "articleBody": "Coze工作流-QA 工作流可以分为三个大板块：工作流管理 (前后端交互-画布存储)、工作流校验、工作流执行\n工作流管理 对于前端来讲，工作流就是一张canvas画布。用户可以在画布中，创建不同功能的节点。\n节点类型可以分为：开始和结束节点 （默认）、LLM节点、子工作流 (嵌套)、插件 (外部工具-例如MCP、OCR)、业务逻辑节点 (选择、循环、分类、批处理(并发)、变量聚合)、数据库节点(SQL、CRUD)、知识库节点(RAG、增删、变量赋值)、图像处理节点、音视频处理节点、组件(JSON序列化、HTTP请求)、定时触发器节点(定时触发任务)\n工作流大体执行流程如下\ngraph TD subgraph \"前端Canvas层\" A[Canvas画布用户可视化配置] --\u003e B[Node节点vo.Node结构体] A --\u003e C[Edge连接节点间关系] B --\u003e D[节点样式：哪些固定字段？表单形式？] end subgraph \"验证层\" E[Canvas结构验证CanvasValidator] --\u003e F{验证通过?} F --\u003e|失败| G[返回错误信息] G --\u003e H[前端显示错误提示] end subgraph \"转换层\" I[后端保存，workflow运行CanvasToWorkflowSchema] --\u003e J[NodeType -\u003e 节点Config通过NodeAdaptor接口] J --\u003e K[前端schema -\u003e 后端schemaschema.NodeSchema] end subgraph \"实例化层\" L[节点实例化NodeBuilder接口] --\u003e M[NodeSchema.Configs实现NodeBuilder接口] M --\u003e N[后端schema -\u003e 节点实例具体节点对象] end subgraph \"执行层\" O[节点运行InvokableNode等接口] --\u003e P[业务逻辑具体执行逻辑] P --\u003e Q[结果输出返回执行结果] end A --\u003e E F --\u003e|通过| I K --\u003e L N --\u003e O style A fill:#e3f2fd style E fill:#ffebee style I fill:#fff3e0 style L fill:#e8f5e8 style O fill:#f3e5f5 1.1 画布和后端结构 前端的画布采用DSL (JSON) 形式存储，每次更新画布都是将DSL传给后端。DSL的后端结构如下所示，主要包含节点 (node)、 边 (edge)、 版本\ntype Canvas struct { Nodes []*Node `json:\"nodes\"` Edges []*Edge `json:\"edges\"` Versions any `json:\"versions\"` } 1.1.1 节点数据 画布中的节点会转换为后端中 backend/domain/workflow/entity/vo/canvas.go 中的 Node 结构体， 后端存储的结构体如下\n// Node 工作流节点的完整定义 // 节点是工作流的基本执行单元，每个节点代表一个特定的功能或操作 type Node struct { // 节点的唯一标识符，用于在画布中定位和引用节点 ID string `json:\"id\"` // 节点类型，决定节点的功能和行为（如LLM、API调用、条件判断等） Type BlockType `json:\"type\"` // 节点的元数据信息，包含前端显示相关的配置 (前端的一些extendInfo) Meta any `json:\"meta\"` // 节点的核心数据，包含输入输出配置和具体参数，例如LLM的配置、MCP的配置、异常处理 Data *Data `json:\"data\"` // 子节点列表，用于复合节点（如循环、条件分支）的嵌套结构 Blocks []*Node `json:\"blocks,omitempty\"` // 节点内部的连线，用于复杂节点的内部逻辑连接 Edges []*Edge `json:\"edges,omitempty\"` // 节点的版本号，用于节点定义的版本控制 Version string `json:\"version,omitempty\"` // 父节点引用，不序列化到JSON，用于内存中的树形结构导航 parent *Node } 节点的核心数据Data如下所示\ntype Data struct { // 节点的显示元数据，如标题、icon等 Meta *NodeMeta `json:\"nodeMeta,omitempty\"` // 节点的输出定义，可以是 []*Variable 或 []*Param 类型 Outputs []any `json:\"outputs,omitempty\"` // 节点的输入配置，包含所有输入参数和设置 Inputs *Inputs `json:\"inputs,omitempty\"` // 节点在画布上的尺寸信息，用于前端显示 Size any `json:\"size,omitempty\"` } 节点的输入参数 inputs\n// Inputs 节点输入配置的综合结构 // 这是一个联合结构，包含了所有可能的节点输入配置，不同类型的节点使用不同的字段子集 type Inputs struct { // 通用输入配置 InputParameters []*Param `json:\"inputParameters\"` // 节点的输入参数列表，定义节点需要的数据输入 Content *BlockInput `json:\"content\"` // 节点的主要内容输入，通常用于文本处理或提示词 TerminatePlan *TerminatePlan `json:\"terminatePlan,omitempty\"` // 终止计划，定义节点完成后的行为 StreamingOutput bool `json:\"streamingOutput,omitempty\"` // 是否启用流式输出，用于实时返回处理结果 CallTransferVoice bool `json:\"callTransferVoice,omitempty\"` // 语音通话转接设置，用于语音相关节点 ChatHistoryWriting string `json:\"chatHistoryWriting,omitempty\"` // 聊天历史记录写入配置 LLMParam any `json:\"llmParam,omitempty\"` // LLM参数，可能是LLMParam、IntentDetectorLLMParam或QALLMParam类型 FCParam *FCParam `json:\"fcParam,omitempty\"` // 功能调用参数，用于配置工作流、插件或知识库的调用 SettingOnError *SettingOnError `json:\"settingOnError,omitempty\"` // 错误处理配置，定义节点出错时的处理策略 // 循环控制相关 LoopType LoopType `json:\"loopType,omitempty\"` // 循环类型：数组循环、计数循环或无限循环 LoopCount *BlockInput `json:\"loopCount,omitempty\"` // 循环次数，用于计数循环 VariableParameters []*Param `json:\"variableParameters,omitempty\"` // 循环变量参数 // 条件分支相关 Branches []*struct { Condition struct { Logic LogicType `json:\"logic\"` // 条件逻辑：AND或OR Conditions []*Condition `json:\"conditions\"` // 具体的条件列表 } `json:\"condition\"` } `json:\"branches,omitempty\"` // 分支条件配置，用于条件判断节点 // 批处理配置 NodeBatchInfo *NodeBatch `json:\"batch,omitempty\"` // 节点批处理模式配置 // 特定节点类型的配置（使用嵌入结构体实现类型多态） *TextProcessor // 文本处理器配置：拼接、分割等操作 *SubWorkflow // 子工作流配置：调用其他工作流 *IntentDetector // 意图检测配置：识别用户意图 *DatabaseNode // 数据库操作配置：增删改查 *HttpRequestNode // HTTP请求配置：API调用 *KnowledgeIndexer // 知识库索引配置：文档处理和索引 *CodeRunner // 代码执行器配置：运行自定义代码 *PluginAPIParam // 插件API参数配置 *VariableAggregator // 变量聚合器配置：合并多个变量 *VariableAssigner // 变量赋值器配置：设置变量值 *QA // 问答节点配置：处理问题和答案 *Batch // 批处理配置：批量处理数据 *Comment // 注释节点配置：添加说明文字 OutputSchema string `json:\"outputSchema,omitempty\"` // 输出模式定义，描述节点输出数据的结构 } 1.1.2 边数据 边主要是包含输入节点、输出节点的ID，还有输入的端口和输出的端口 （输入输出端口都是只存在于业务逻辑节点中）\n// Edge 工作流连线定义 // 连线定义了节点之间的连接关系，确定工作流的执行顺序和数据流向 type Edge struct { // 源节点ID，连线的起始节点 SourceNodeID string `json:\"sourceNodeID\"` // 目标节点ID，连线的终止节点 TargetNodeID string `json:\"targetNodeID\"` // 源端口ID，用于多输出端口的节点，指定具体的输出端口 SourcePortID string `json:\"sourcePortID,omitempty\"` // 目标端口ID，用于多输入端口的节点，指定具体的输入端口 TargetPortID string `json:\"targetPortID,omitempty\"` } 1.1.3 大语言模型节点 (NoteTypeLLM) LLM节点类图如下图所示 classDiagram class Inputs { +Param[] inputParameters +SettingOnError settingOnError +NodeBatch nodeBatchInfo +any llmParam +LLM llmSpecificConfig } class LLM { +FCParam fcParam } class LLMParam { +Param[] parameters } class SimpleLLMParam { +string generationDiversity +int maxTokens +string modelName +int64 modelType +ResponseFormat responseFormat +string systemPrompt +float64 temperature +float64 topP } class Param { +string name +BlockInput input +BlockInput left +BlockInput right +BlockInput[] variables } class BlockInput { +VariableType type +AssistType assistType +any schema +BlockInputValue value } class BlockInputValue { +BlockInputValueType type +any content +any rawMeta } class BlockInputReference { +string blockID +string name +string[] path +RefSourceType source } class FCParam { +WorkflowFCParam workflowFCParam +PluginFCParam pluginFCParam +KnowledgeFCParam knowledgeFCParam } class SettingOnError { +ErrorHandlingStrategy strategy +string customMessage } class NodeBatch { +int batchSize +int concurrentSize } Inputs --\u003e LLM : \"contains\" Inputs --\u003e LLMParam : \"llmParam as\" Inputs --\u003e SimpleLLMParam : \"llmParam as\" Inputs --\u003e Param : \"contains\" Inputs --\u003e SettingOnError : \"contains\" Inputs --\u003e NodeBatch : \"contains\" LLM --\u003e FCParam : \"contains\" LLMParam --\u003e Param : \"contains\" Param --\u003e BlockInput : \"contains\" BlockInput --\u003e BlockInputValue : \"contains\" BlockInputValue --\u003e BlockInputReference : \"content as\" note for Inputs \"LLM节点的所有输入配置包含通用输入和LLM专用配置\" note for LLMParam \"标准LLM参数列表每个参数都是Param类型\" note for SimpleLLMParam \"简化的LLM参数结构直接包含所有LLM配置字段\" note for FCParam \"函数调用能力配置LLM可调用的外部工具\" LLM参数 - SimpleLLMParam SimpleLLMParam如下所示，主要包含多样性程度、最大Token、模型名称、模型类型、响应格式、系统提示词、Temperature温度、TopP 核采样参数\n【注意】generationDiversity多样性程度 是高层的预设策略（如\"创意/平衡/精确\"模式），而 temperature和 topP是底层的具体算法参数，前者通过内置的参数组合来简化配置，后者则提供精确的随机性控制（temperature调节概率分布平滑度，topP限制候选词汇范围）。\n简单说：generationDiversity = “我要什么风格”，temperature = “要多随机”，topP = “考虑多少词汇”。\n// SimpleLLMParam 简化的大语言模型参数配置 // 提供直接的字段映射方式配置LLM参数，适用于简单的模型调用场景 type SimpleLLMParam struct { // GenerationDiversity 生成多样性配置 // 控制模型输出的多样性程度，影响生成内容的创新性 GenerationDiversity string `json:\"generationDiversity\"` // MaxTokens 最大生成令牌数 // 限制模型单次生成的最大token数量，控制输出长度 MaxTokens int `json:\"maxTokens\"` // ModelName 模型名称 // 指定要使用的具体模型名称，如gpt-3.5-turbo、gpt-4等 ModelName string `json:\"modelName\"` // ModelType 模型类型标识 // 用于区分不同类型的模型，如聊天模型、补全模型等 ModelType int64 `json:\"modelType\"` // ResponseFormat 响应格式配置 // 指定模型输出的格式，支持文本、JSON、Markdown等格式 ResponseFormat model.ResponseFormat `json:\"responseFormat\"` // SystemPrompt 系统提示词 // 定义模型的系统级指令，设定模型的角色和行为规范 SystemPrompt string `json:\"systemPrompt\"` // Temperature 温度参数 // 控制模型输出的随机性，范围通常为0.0-1.0，值越高输出越随机 // 通过调整softmax概率分布的平滑度来影响词汇选择的确定性 Temperature float64 `json:\"temperature\"` // TopP 核采样参数 // 控制模型生成时考虑的词汇概率质量，影响输出的多样性和质量 // 通过设置概率累积阈值来限制候选词汇的范围，范围通常为0.0-1.0 TopP float64 `json:\"topP\"` } LLM中的函数调用参数 **FcParam** functionCalling （大语言模型节点的“技能”）中需要用到的参数\ngraph TD A[用户输入问题] --\u003e B[LLM节点接收] B --\u003e C{LLM分析是否需要调用工具} C --\u003e|需要调用| D[FCParam 工具配置] C --\u003e|不需要| E[直接生成回答] D --\u003e F[WorkflowFCParam子工作流调用] D --\u003e G[PluginFCParam插件API调用] D --\u003e H[KnowledgeFCParam知识库检索] F --\u003e F1[配置可调用的子工作流列表] F --\u003e F2[定义请求/响应参数] F --\u003e F3[执行子工作流] G --\u003e G1[配置可调用的插件API列表] G --\u003e G2[定义API参数和响应格式] G --\u003e G3[调用第三方插件服务] H --\u003e H1[配置知识库列表] H --\u003e H2[设置检索策略TopK/MinScore/搜索模式] H --\u003e H3[执行知识库检索] F3 --\u003e I[工具执行结果] G3 --\u003e I H3 --\u003e I I --\u003e J[LLM整合工具结果] J --\u003e K[生成最终回答] E --\u003e K K --\u003e L[返回给用户] style A fill:#e1f5fe style D fill:#fff3e0 style F fill:#f3e5f5 style G fill:#e8f5e8 style H fill:#fce4ec style K fill:#e0f2f1 函数调用参数 FcParam主要包含三种模式：子工作流调用、插件API调用、知识库检索\n// FCParam 函数调用参数配置 // 用于配置工作流中不同类型的函数调用能力，包括子工作流调用、插件API调用和知识库检索调用 type FCParam struct { // WorkflowFCParam 工作流函数调用参数配置 // 配置当前工作流可以调用的子工作流列表及其参数设置 WorkflowFCParam *struct { // WorkflowList 可调用的工作流列表 // 每个工作流项包含工作流标识、版本信息和函数调用设置 WorkflowList []struct { // WorkflowID 工作流唯一标识符 WorkflowID string `json:\"workflow_id\"` // WorkflowVersion 工作流版本号 WorkflowVersion string `json:\"workflow_version\"` // PluginID 关联的插件ID（如果工作流基于插件） PluginID string `json:\"plugin_id\"` // PluginVersion 插件版本号 PluginVersion string `json:\"plugin_version\"` // IsDraft 是否为草稿版本 IsDraft bool `json:\"is_draft\"` // FCSetting 函数调用设置 // 定义调用该工作流时的请求和响应参数结构 FCSetting *struct { // RequestParameters 请求参数列表 // 定义调用工作流时需要传入的参数 RequestParameters []*workflow.APIParameter `json:\"request_params\"` // ResponseParameters 响应参数列表 // 定义工作流执行完成后返回的参数 ResponseParameters []*workflow.APIParameter `json:\"response_params\"` } `json:\"fc_setting,omitempty\"` } `json:\"workflowList,omitempty\"` } `json:\"workflowFCParam,omitempty\"` // PluginFCParam 插件函数调用参数配置 // 配置当前工作流可以调用的插件API列表及其参数设置 PluginFCParam *struct { // PluginList 可调用的插件列表 // 每个插件项包含插件标识、API信息和函数调用设置 PluginList []struct { // PluginID 插件唯一标识符 PluginID string `json:\"plugin_id\"` // ApiId API接口唯一标识符 ApiId string `json:\"api_id\"` // ApiName API接口名称 ApiName string `json:\"api_name\"` // PluginVersion 插件版本号 PluginVersion string `json:\"plugin_version\"` // IsDraft 是否为草稿版本 IsDraft bool `json:\"is_draft\"` // FCSetting 函数调用设置 // 定义调用该插件API时的请求和响应参数结构 FCSetting *struct { // RequestParameters 请求参数列表 // 定义调用插件API时需要传入的参数 RequestParameters []*workflow.APIParameter `json:\"request_params\"` // ResponseParameters 响应参数列表 // 定义插件API执行完成后返回的参数 ResponseParameters []*workflow.APIParameter `json:\"response_params\"` } `json:\"fc_setting,omitempty\"` } } `json:\"pluginFCParam,omitempty\"` // KnowledgeFCParam 知识库函数调用参数配置 // 配置当前工作流的知识库检索功能及其全局设置 KnowledgeFCParam *struct { // GlobalSetting 知识库检索全局设置 // 定义知识库检索的通用配置参数 GlobalSetting *struct { // SearchMode 搜索模式 // 定义知识库检索使用的搜索算法模式 SearchMode int64 `json:\"search_mode\"` // TopK 返回结果数量 // 定义知识库检索返回的最大结果数量 TopK int64 `json:\"top_k\"` // MinScore 最小相似度分数 // 定义知识库检索结果的最小相似度阈值 MinScore float64 `json:\"min_score\"` // UseNL2SQL 是否启用自然语言转SQL功能 UseNL2SQL bool `json:\"use_nl2_sql\"` // UseRewrite 是否启用查询重写功能 UseRewrite bool `json:\"use_rewrite\"` // UseRerank 是否启用结果重排序功能 UseRerank bool `json:\"use_rerank\"` // NoRecallReplyCustomizePrompt 无召回结果时的自定义回复提示词 NoRecallReplyCustomizePrompt string `json:\"no_recall_reply_customize_prompt\"` // NoRecallReplyMode 无召回结果时的回复模式 NoRecallReplyMode int64 `json:\"no_recall_reply_mode\"` } `json:\"global_setting,omitempty\"` // KnowledgeList 可检索的知识库列表 // 定义当前工作流可以检索的知识库集合 KnowledgeList []*struct { // ID 知识库唯一标识符 ID string `json:\"id\"` } `json:\"knowledgeList,omitempty\"` } `json:\"knowledgeFCParam,omitempty\"` } 子工作流调用 { \"workflowFCParam\": { \"workflowList\": [ { \"workflow_id\": \"7509120431183544356\", \"workflow_version\": \"v0.0.1\", \"plugin_id\": \"7509121334769795126\", \"is_draft\": false, \"fc_setting\": { \"request_params\": [...], // 调用参数 \"response_params\": [...] // 返回参数 } } ] } } 插件API调用 { \"pluginFCParam\": { \"pluginList\": [ { \"plugin_id\": \"7509353177339133952\", \"api_id\": \"7509353598782816256\", \"api_name\": \"周公解梦\", \"plugin_version\": \"0\", \"fc_setting\": { \"request_params\": [ { \"name\": \"title\", \"desc\": \"查询解梦标题，例如：梦见蛇\", \"type\": 1, \"is_required\": true } ], \"response_params\": [...] } } ] } } 知识库检索 { \"knowledgeFCParam\": { \"knowledgeList\": [ { \"id\": \"7512369185624686592\", \"name\": \"旅游景点\" } ], \"global_setting\": { \"top_k\": 3, // \"min_score\": 0.5, \"search_mode\": 0, \"use_rerank\": true, \"use_rewrite\": true, \"use_nl2_sql\": true, \"no_recall_reply_mode\": 0, \"no_recall_reply_customize_prompt\": \"抱歉，您的问题超出了我的知识范围\" } } 1.1.4 BlockInput结构 BlockInput是工作流系统中的数据绑定核心，它解决了一个关键问题：如何在工作流节点之间传递和配置数据。BlockInput = \"这个输入框里放什么数据，从哪里来\"\ngraph TD A[BlockInput 块输入配置] --\u003e B[Type: 数据类型] A --\u003e C[AssistType: 辅助类型] A --\u003e D[Schema: 结构定义] A --\u003e E[Value: 输入值配置] E --\u003e F[BlockInputValue] F --\u003e G[Type: 值类型] F --\u003e H[Content: 具体内容] F --\u003e I[RawMeta: 元数据] G --\u003e G1[literal: 字面值] G --\u003e G2[ref: 节点引用] G --\u003e G3[object_ref: 对象引用] H --\u003e H1[静态文本/数值] H --\u003e H2[BlockInputReference] H2 --\u003e J[BlockID: 源节点ID] H2 --\u003e K[Name: 字段名称] H2 --\u003e L[Path: 访问路径] H2 --\u003e M[Source: 引用源类型] M --\u003e M1[block-output: 节点输出] M --\u003e M2[global_variable_app: 应用变量] M --\u003e M3[global_variable_system: 系统变量] M --\u003e M4[global_variable_user: 用户变量] N[实际使用场景] --\u003e N1[静态配置: 固定值] N --\u003e N2[动态绑定: 引用其他节点] N --\u003e N3[模板渲染: 变量替换] N --\u003e N4[复杂对象: 嵌套结构] style A fill:#e1f5fe style F fill:#fff3e0 style H2 fill:#f3e5f5 style N fill:#e8f5e8 BlockInput结构如下所示\ntype BlockInput struct { Type VariableType // 数据类型：string、number、object等 AssistType AssistType // 辅助类型：更具体的类型描述 Schema any // 结构定义：复杂对象的内部结构 Value *BlockInputValue // 值配置：具体的数据来源 } 三种数据流来源：常量literal、节点引用ref、对象引用 Object Ref\n常量literal { \"type\": \"string\", \"value\": { \"type\": \"literal\", \"content\": \"Hello World\", \"rawMeta\": {\"type\": 1} } } 节点引用ref (最常用的) { \"type\": \"string\", \"value\": { \"type\": \"ref\", \"content\": { \"blockID\": \"100001\", \"name\": \"output\", \"source\": \"block-output\" } } } 对象引用 { \"type\": \"object\", \"schema\": [{\"name\": \"name\", \"type\": \"string\"}], \"value\": { \"type\": \"object_ref\", \"content\": { \"blockID\": \"100001\", \"name\": \"person\", \"source\": \"block-output\" } } } 1.1.5 知识库节点 (RAG) RAG完整流程图 一个完整的RAG流程如下：\n查询重写优化 （小模型）-\u003e 自然语言转SQL （NL2SQL）-\u003e 向量检索 (语义搜索/混合搜索/全量搜索) -\u003e 相似度过滤 (最小相似度阈值) -\u003e 结果重排序 (Rerank) -\u003e TopK结果截取 -\u003e 构建新的上下文提示词\ngraph LR A[用户输入查询] --\u003e B[查询预处理] B --\u003e B1[UseRewrite: 查询重写] B1 --\u003e B2[优化查询语义] B2 --\u003e B3[UseNL2SQL: 自然语言转SQL] B3 --\u003e C[向量检索阶段] C --\u003e C1[文档向量化] C --\u003e C2[查询向量化] C1 --\u003e C3[向量相似度计算] C2 --\u003e C3 C3 --\u003e D[SearchMode: 搜索策略] D --\u003e D1[0: 语义搜索Semantic Search] D --\u003e D2[1: 混合搜索Hybrid Search] D --\u003e D3[20: 全文搜索Full-text Search] D1 --\u003e E[初步结果筛选] D2 --\u003e E D3 --\u003e E E --\u003e E1[MinScore: 相似度过滤] E1 --\u003e E2[过滤低质量结果] E2 --\u003e F[UseRerank: 结果重排序] F --\u003e F1[深度语义匹配] F1 --\u003e F2[重新排序结果] F2 --\u003e G[TopK: 结果截取] G --\u003e G1[选择前K个最佳结果] G1 --\u003e H{是否有合适结果?} H --\u003e|有| I[构建增强上下文] H --\u003e|无| J[NoRecallReplyMode处理] J --\u003e J1[0: 使用自定义提示词] J --\u003e J2[1: 其他处理模式] J1 --\u003e K[返回无结果回复] J2 --\u003e K I --\u003e L[RAG生成阶段] L --\u003e L1[组合查询+检索内容] L1 --\u003e L2[LLM生成增强回答] L2 --\u003e M[返回最终答案] K --\u003e M style A fill:#e1f5fe style B fill:#fff3e0 style C fill:#f3e5f5 style D fill:#e8f5e8 style F fill:#fce4ec style L fill:#e0f2f1 向量检索规则 graph TD A[用户查询] --\u003e B{SearchMode选择} B --\u003e|0: 语义搜索| C[Semantic Search] B --\u003e|1: 混合搜索| D[Hybrid Search] B --\u003e|20: 全文搜索| E[Full-text Search] C --\u003e C1[Step1: 查询向量化] C1 --\u003e C2[Embedding Model] C2 --\u003e C3[Query Vector] C3 --\u003e C4[Step2: 文档向量匹配] C4 --\u003e C5[向量数据库] C5 --\u003e C6[余弦相似度计算] D --\u003e D1[Step1: 向量搜索路径] D --\u003e D2[Step2: 关键词搜索路径] D1 --\u003e D3[Embedding检索] D2 --\u003e D4[BM25算法] D3 --\u003e D5[结果融合算法] D4 --\u003e D5 E --\u003e E1[Step1: 分词处理] E1 --\u003e E2[分词器] E2 --\u003e E3[Step2: 倒排索引] E3 --\u003e E4[搜索引擎] E4 --\u003e E5[TF-IDF评分] C6 --\u003e F[语义理解强] D5 --\u003e G[平衡精确性和语义] E5 --\u003e H[关键词精确匹配] F --\u003e I[最终检索结果] G --\u003e I H --\u003e I style C fill:#e1f5fe style D fill:#fff3e0 style E fill:#f3e5f5 style I fill:#e8f5e8 语义搜索 （准）: 使用 Embedding 模型计算向量相似度，理解深层语义，处理同义词和概念匹配。\n混合搜索 （全面）: 结合向量搜索 + BM25 关键词搜索，平衡语义理解和精确匹配。\n全文搜索 （快）: 传统的倒排索引和TF-IDF，精确的关键词匹配，速度快\n【算法说明】\nEmbedding向量检索：将文本通过编码器转为向量和DB中的向量计算cos相似度最后返回TopK的结果 graph TD A[文本输入] --\u003e B[Embedding检索流程] B --\u003e C[第一阶段: 向量化] C --\u003e C1[分词和预处理] C1 --\u003e C2[Transformer编码器] C2 --\u003e C3[池化操作] C3 --\u003e C4[归一化处理] C4 --\u003e C5[生成向量表示] B --\u003e D[第二阶段: 索引构建] D --\u003e D1[向量维度优化] D1 --\u003e D2[索引结构选择] D2 --\u003e D3[HNSW/IVF/LSH] D3 --\u003e D4[分布式存储] B --\u003e E[第三阶段: 相似度检索] E --\u003e E1[查询向量化] E1 --\u003e E2[近似最近邻搜索] E2 --\u003e E3[相似度计算] E3 --\u003e E4[TopK结果返回] F[技术栈] --\u003e F1[模型: BERT/Sentence-BERT] F --\u003e F2[向量DB: Pinecone/Milvus/ElasticSearch] F --\u003e F3[相似度: 余弦/点积/欧氏] F --\u003e F4[索引: HNSW/IVF] style C fill:#e1f5fe style D fill:#fff3e0 style E fill:#f3e5f5 style F fill:#e8f5e8 倒排索引：将文档切分成独立的词汇单元，建立从词汇到文档的映射索引\nTF-IDF (词频-逆文档频率)：TF（词频）： 计算一个词在文档中出现的词次数， 用于衡量词汇的重要性。IDF （逆文档频率）：衡量词汇在整个语料库中的重要性。 TF(t,d) = 词汇t在文档d中出现的次数 / 文档d的总词数 IDF(t) = log(文档总数 / 包含词汇t的文档数) TF-IDF = sigmoid (TF(t,d) * IDF(t)) 缺点：不能考虑词汇的位置，忽略了词汇的相关性；不利于稀疏性 （短文档很多词汇 TF-IDF=0）\nBM25 算法：在 TF-IDF (词频-逆文档频率) 基础上，解决了词频饱和问题和文档长度归一化问题。 ReRank 规则 Rerank就是根据多个检索方式得到的结果进行整合，然后根据RRF算法重新排序的过程\nRRF: score = 1/(rank + k) # 默认 k = 60 rerank模型的时序图\nsequenceDiagram participant User as 用户 participant RS as 检索服务RetrieveService participant QR as 查询重写QueryRewriter participant VS as 向量检索VectorStore participant ES as 全文检索ElasticSearch participant NL as NL2SQL检索NL2SQLEngine participant RK as 重排序器Reranker participant API as Rerank APIVikingDB Note over User, API: 1. 初始化检索请求 User-\u003e\u003eRS: 发起检索请求(query, knowledgeIDs, strategy) RS-\u003e\u003eRS: 构建检索上下文(RetrieveContext) Note over User, API: 2. 查询重写 (可选) alt 启用查询重写 \u0026\u0026 有对话历史 RS-\u003e\u003eQR: 基于对话历史重写查询 QR--\u003e\u003eRS: 返回重写后的查询 end Note over User, API: 3. 并行多通道检索 par 向量检索 alt 语义检索 || 混合检索 RS-\u003e\u003eVS: 向量相似度检索 VS-\u003e\u003eVS: 1. 查询文本向量化 VS-\u003e\u003eVS: 2. 计算余弦相似度 VS-\u003e\u003eVS: 3. 返回TopK相似文档 VS--\u003e\u003eRS: 向量检索结果(score: 0.0-1.0) end and 全文检索 alt 全文检索 || 混合检索 RS-\u003e\u003eES: 关键词匹配检索 ES-\u003e\u003eES: 1. 分词和索引匹配 ES-\u003e\u003eES: 2. 计算BM25分数 ES-\u003e\u003eES: 3. 返回匹配文档 ES--\u003e\u003eRS: ES检索结果(score: BM25) end and NL2SQL检索 alt 启用NL2SQL RS-\u003e\u003eNL: 自然语言转SQL查询 NL-\u003e\u003eNL: 1. 解析查询意图 NL-\u003e\u003eNL: 2. 生成SQL语句 NL-\u003e\u003eNL: 3. 执行结构化查询 NL--\u003e\u003eRS: NL2SQL结果(score: 相关性分数) end end Note over User, API: 4. Rerank重排序 RS-\u003e\u003eRS: 整合多通道检索结果 Note right of RS: 根据检索策略收集结果:- SearchTypeSemantic: 仅向量结果- SearchTypeFullText: 仅ES结果- SearchTypeHybrid: 向量+ES结果- 如启用NL2SQL: 额外添加NL2SQL结果 RS-\u003e\u003eRK: 调用Rerank服务 Note right of RK: 传入参数:- Query: 原始查询或重写后查询- Data: 多通道检索结果数组- TopN: 最终返回数量 alt VikingDB Reranker (深度学习模型) RK-\u003e\u003eRK: 1. 扁平化所有检索结果 RK-\u003e\u003eRK: 2. 构造rerank请求{query, content, title} RK-\u003e\u003eAPI: HTTP POST请求/api/knowledge/service/rerank API-\u003e\u003eAPI: 1. 使用base-multilingual-rerank模型 API-\u003e\u003eAPI: 2. 计算query-document相关性分数 API--\u003e\u003eRK: 返回每个文档的新分数{scores: [0.8, 0.6, 0.9, ...]} RK-\u003e\u003eRK: 3. 按新分数降序排序 RK-\u003e\u003eRK: 4. 截取TopN结果 else RRF Reranker (排名融合算法) RK-\u003e\u003eRK: 1. 为每个通道的结果按排名计算分数 Note right of RK: RRF公式: score = 1/(rank + k)其中k=60为默认参数 RK-\u003e\u003eRK: 2. 同一文档取最高分数 RK-\u003e\u003eRK: 3. 按分数降序排序 RK-\u003e\u003eRK: 4. 截取TopN结果 end RK--\u003e\u003eRS: 返回重排序结果{sortedData, tokenUsage} Note over User, API: 5. 结果过滤与封装 RS-\u003e\u003eRS: 1. 应用最小分数阈值过滤(score \u003c minScore的文档被移除) RS-\u003e\u003eRS: 2. 更新文档分数为rerank分数 RS-\u003e\u003eRS: 3. 封装最终检索结果 RS--\u003e\u003eUser: 返回最终检索结果(按相关性排序的文档列表) 知识库节点结构 // Knowledge 知识库节点配置 // 用于配置独立的知识库检索节点，定义数据源参数和处理策略 // 与LLM节点中的KnowledgeFCParam不同，这是专门的知识库检索步骤 type Knowledge struct { // DatasetParam 数据集参数配置 // 定义知识库的数据源配置，包括数据库连接、文件路径等信息 // 每个Param包含具体的数据源配置项 DatasetParam []*Param `json:\"datasetParam,omitempty\"` // StrategyParam 知识库处理策略参数 // 定义文档解析、分块、索引等各个环节的处理策略和参数 StrategyParam StrategyParam `json:\"strategyParam,omitempty\"` } // StrategyParam 知识库处理策略参数配置 // 定义知识库从文档解析到向量索引的完整处理流程策略 type StrategyParam struct { // ParsingStrategy 文档解析策略配置 // 定义如何解析和提取不同类型文档的内容 ParsingStrategy struct { // ParsingType 解析类型 // 定义文档解析的方式，如自动识别、手动指定等 // 常见值：auto（自动识别）、manual（手动指定）、custom（自定义） ParsingType string `json:\"parsingType,omitempty\"` // ImageExtraction 是否提取图片 // 控制是否从文档中提取图片内容进行处理 // true表示提取图片，false表示忽略图片内容 ImageExtraction bool `json:\"imageExtraction\"` // TableExtraction 是否提取表格 // 控制是否从文档中提取表格结构和数据 // true表示解析表格结构，false表示将表格视为普通文本 TableExtraction bool `json:\"tableExtraction\"` // ImageOcr 是否启用图片OCR识别 // 控制是否对提取的图片进行光学字符识别 // true表示对图片进行OCR文字识别，false表示忽略图片中的文字 ImageOcr bool `json:\"imageOcr\"` } `json:\"parsingStrategy,omitempty\"` // ChunkStrategy 文档分块策略配置 // 定义如何将长文档切分成适合向量化的小块 ChunkStrategy struct { // ChunkType 分块类型 // 定义文档分块的策略类型 // 常见值：fixed（固定长度）、semantic（语义分块）、sentence（句子分块） ChunkType string `json:\"chunkType,omitempty\"` // SeparatorType 分隔符类型 // 定义用于分块的分隔符类型 // 常见值：auto（自动选择）、newline（换行符）、paragraph（段落）、custom（自定义） SeparatorType string `json:\"separatorType,omitempty\"` // Separator 自定义分隔符 // 当SeparatorType为custom时，指定具体的分隔符字符串 Separator string `json:\"separator,omitempty\"` // MaxToken 最大令牌数 // 定义每个文档块的最大token数量，控制块的大小 // 通常设置为模型的上下文窗口大小，如512、1024等 MaxToken int64 `json:\"maxToken,omitempty\"` // Overlap 重叠比例 // 定义相邻文档块之间的重叠比例，避免语义信息在边界处丢失 // 取值范围0.0-1.0，常见值为0.1-0.2（10%-20%重叠） Overlap float64 `json:\"overlap,omitempty\"` } `json:\"chunkStrategy,omitempty\"` // IndexStrategy 索引策略配置 // 定义向量索引的构建策略，如索引类型、参数等 // 具体结构依赖于使用的向量数据库类型（如HNSW、IVF等） IndexStrategy any `json:\"indexStrategy\"` } 1.2 如何从画布转换为后端类？如何转换为执行态？ 前端传入画布的 DSL语言（JSON）给后端之后，会解析为上方的后端结构。画布中的每个节点都会变成 canvas.go中的 Node结构体。但是转换后的 Node结构体只是一个存储态，如果需要执行工作流还需要将 Node结构体从存储态转为运行态。后端 schema 的 NodeSchema结构体就是 针对用于表达工作流的运行态的\n1.2.1 转换流程图 graph TD A[Canvas画布] --\u003e B[CanvasToWorkflowSchema] B --\u003e C[移除孤立节点] C --\u003e D[遍历Canvas Nodes] D --\u003e E{节点类型判断} E --\u003e|子工作流| F[toSubWorkflowNodeSchema] E --\u003e|普通节点| G[获取NodeAdaptor] G --\u003e H[调用Adaptor.Adapt方法] H --\u003e I{节点有子节点?} I --\u003e|是| J[递归转换子节点] I --\u003e|否| K[转换输入输出类型] J --\u003e L[设置层次关系] L --\u003e K K --\u003e M[设置异常处理配置] M --\u003e N[生成NodeSchema] F --\u003e N N --\u003e O[收集所有NodeSchema] O --\u003e P[转换连接边] P --\u003e Q[标准化端口] Q --\u003e R[构建分支信息] R --\u003e S[WorkflowSchema] subgraph \"NodeAdaptor转换细节\" H1[解析节点配置] --\u003e H2[转换输入参数] H2 --\u003e H3[转换输出定义] H3 --\u003e H4[设置节点特定Config] H4 --\u003e H5[调用SetInputsForNodeSchema] H5 --\u003e H6[调用SetOutputTypesForNodeSchema] end H --\u003e H1 subgraph \"类型转换细节\" T1[CanvasBlockInputToTypeInfo] --\u003e T2[解析基础类型] T2 --\u003e T3[处理复杂对象类型] T3 --\u003e T4[处理数组类型] T4 --\u003e T5[处理文件类型] T5 --\u003e T6[生成TypeInfo] U1[CanvasBlockInputToFieldInfo] --\u003e U2[分析数据来源] U2 --\u003e U3{来源类型} U3 --\u003e|静态值| U4[创建LiteralFieldInfo] U3 --\u003e|节点引用| U5[创建ReferenceFieldInfo] U3 --\u003e|模板字符串| U6[创建TemplateFieldInfo] U4 --\u003e U7[生成FieldInfo] U5 --\u003e U7 U6 --\u003e U7 end K --\u003e T1 K --\u003e U1 style A fill:#e1f5fe style S fill:#c8e6c9 style H fill:#fff3e0 style N fill:#fce4ec 1.2.2 转换后的NodeSchema结构 // NodeSchema 工作流节点的统一描述和配置结构 // 包含实例化一个节点所需的所有信息，是Canvas Node转换后的后端执行结构 type NodeSchema struct { // Key 节点在Eino图中的唯一标识符 // 节点在执行过程中可能需要这个信息，例如： // - 使用此Key查询工作流状态中属于当前节点的数据 Key vo.NodeKey `json:\"key\"` // Name 节点在Canvas画布上指定的显示名称 // 节点可能会在Canvas上显示这个名称作为输入/输出的一部分 Name string `json:\"name\"` // Type 节点的类型标识 // 对应entity.NodeType枚举，决定节点的具体行为和功能 Type entity.NodeType `json:\"type\"` // Configs 节点特定的配置信息 // 每个节点类型定义自己的配置结构体，不包含字段映射或静态值信息 // 这些配置是节点实现的内部配置，与工作流编排无关 // 实际类型应该实现两个接口： // - NodeAdaptor: 提供从vo.Node到NodeSchema的转换 // - NodeBuilder: 提供从NodeSchema到实际节点实例的实例化 Configs any `json:\"configs,omitempty\"` // InputTypes 节点输入字段的类型信息映射 // 键为字段名，值为对应的类型信息，用于类型检查和验证 InputTypes map[string]*vo.TypeInfo `json:\"input_types,omitempty\"` // InputSources 节点输入字段的映射信息 // 定义每个输入字段的数据来源，如来自其他节点的输出或静态值 InputSources []*vo.FieldInfo `json:\"input_sources,omitempty\"` // OutputTypes 节点输出字段的类型信息映射 // 键为字段名，值为对应的类型信息，用于下游节点的类型推导 OutputTypes map[string]*vo.TypeInfo `json:\"output_types,omitempty\"` // OutputSources 节点输出字段的映射信息 // 注意：仅适用于复合节点，如NodeTypeBatch或NodeTypeLoop OutputSources []*vo.FieldInfo `json:\"output_sources,omitempty\"` // ExceptionConfigs 节点的异常处理策略配置 // 包含超时、重试、错误处理类型等异常处理相关设置 ExceptionConfigs *ExceptionConfig `json:\"exception_configs,omitempty\"` // StreamConfigs 节点的流式处理特性配置 // 定义节点是否支持流式输入/输出等流处理能力 StreamConfigs *StreamConfig `json:\"stream_configs,omitempty\"` // SubWorkflowBasic 子工作流的基本信息 // 仅当节点类型为NodeTypeSubWorkflow时使用 SubWorkflowBasic *entity.WorkflowBasic `json:\"sub_workflow_basic,omitempty\"` // SubWorkflowSchema 子工作流的完整Schema信息 // 仅当节点类型为NodeTypeSubWorkflow时使用，包含子工作流的完整定义 SubWorkflowSchema *WorkflowSchema `json:\"sub_workflow_schema,omitempty\"` // FullSources 节点输入字段映射来源的完整信息 // 包含更详细的信息，如字段是否为流式字段，或字段是否为包含子字段映射的对象 // 用于需要处理流式输入的节点 // 在NodeMeta中设置InputSourceAware = true来启用此功能 FullSources map[string]*SourceInfo // Lambda 直接设置节点为Eino Lambda // 注意：不可序列化，仅用于内部测试 Lambda *compose.Lambda } 1.2.3 转换结构前后对比 graph LR subgraph \"前端Canvas结构\" A[Canvas画布] A --\u003e B[Node节点] A --\u003e C[Edge连接] B --\u003e D[ID: string] B --\u003e E[Type: string] B --\u003e F[Data配置] F --\u003e G[Meta元数据] F --\u003e H[Inputs输入] F --\u003e I[Outputs输出] H --\u003e J[InputParameters参数列表] H --\u003e K[LLMParam模型参数] H --\u003e L[SettingOnError错误处理] J --\u003e M[Param参数] M --\u003e N[Name: string] M --\u003e O[Input: BlockInput] O --\u003e P[Type: VariableType] O --\u003e Q[Value: BlockInputValue] Q --\u003e R[Type: literal/ref/object_ref] Q --\u003e S[Content: any] I --\u003e T[Variable变量] T --\u003e U[Name: string] T --\u003e V[Type: VariableType] T --\u003e W[Schema: any] end subgraph \"转换过程\" X[CanvasToWorkflowSchema] --\u003e Y[NodeToNodeSchema] Y --\u003e Z[NodeAdaptor.Adapt] Z --\u003e AA[SetInputsForNodeSchema] Z --\u003e BB[SetOutputTypesForNodeSchema] AA --\u003e CC[CanvasBlockInputToTypeInfo] AA --\u003e DD[CanvasBlockInputToFieldInfo] BB --\u003e EE[CanvasVariableToTypeInfo] end subgraph \"后端NodeSchema结构\" FF[WorkflowSchema工作流] FF --\u003e GG[NodeSchema节点] FF --\u003e HH[Connection连接] FF --\u003e II[Branch分支] GG --\u003e JJ[Key: NodeKey] GG --\u003e KK[Type: NodeType枚举] GG --\u003e LL[Configs: 节点配置] GG --\u003e MM[InputTypes类型映射] GG --\u003e NN[InputSources来源映射] GG --\u003e OO[OutputTypes输出类型] MM --\u003e PP[\"map[string]*TypeInfo\"] NN --\u003e QQ[\"[]*FieldInfo\"] OO --\u003e RR[\"map[string]*TypeInfo\"] QQ --\u003e SS[FieldInfo字段信息] SS --\u003e TT[Path: FieldPath] SS --\u003e UU[Source: 数据来源] SS --\u003e VV[Type: Literal/Reference/Template] PP --\u003e WW[TypeInfo类型信息] WW --\u003e XX[Type: DataType枚举] WW --\u003e YY[Properties: 对象属性] WW --\u003e ZZ[ElemTypeInfo: 数组元素类型] GG --\u003e AAA[ExceptionConfigs异常配置] AAA --\u003e BBB[TimeoutMS: 超时时间] AAA --\u003e CCC[MaxRetry: 重试次数] AAA --\u003e DDD[ProcessType: 处理类型] end A -.转换.-\u003e FF B -.适配器转换.-\u003e GG C -.标准化.-\u003e HH O -.类型转换.-\u003e WW Q -.来源分析.-\u003e SS style A fill:#e3f2fd style FF fill:#e8f5e8 style X fill:#fff3e0 style Y fill:#fff3e0 style Z fill:#fff3e0 【转换过程】\ncanvas到 NodeSchema的转换过程是Coze Studio工作流系统中的核心架构设计，它通过适配器模式将前端面向用户的可视化画布结构转换为后端面向执行的标准化 Schema结构。在这个过程中，前端的 Canvas包含了用户在画布上拖拽配置的 Node节点和 Edge连接，每个Node节点包含字符串类型的ID和Type、用户配置的Data数据（包括输入参数、输出定义、元数据等），这些数据以灵活的 `any `类型和嵌套结构存储以适应前端的动态配置需求；而转换后的NodeSchema则采用强类型的结构化设计，将节点类型转换为枚举、将输入输出转换为 TypeInfo和FieldInfo的映射关系、将数据来源分析为具体的引用路径，并添加了执行时需要的 异常处理配置、流式处理配置等运行时信息。这个转换过程之所以必要，是因为前端Canvas需要保持高度的灵活性和可扩展性来支持用户的各种配置操作和UI交互，而后端执行引擎则需要严格的类型安全、明确的数据流向和优化的执行性能，两者的设计目标和约束条件完全不同，因此需要通过这个转换层来实现前后端的解耦，同时确保用户在画布上的每一个配置都能准确无误地转换为可执行的工作流逻辑，并且这种转换过程还支持复杂的节点类型（如子工作流、批处理节点）、数据类型推导、字段映射分析等高级特性，为整个工作流系统的稳定运行和功能扩展提供了坚实的基础。\n1.3 工作流执行过程分析 工作流执行图 (细节) graph TD A[Canvas画布] --\u003e B{保存/运行工作流} B --\u003e C[画布结构验证] C --\u003e D[连接关系验证] C --\u003e E[闭环检测] C --\u003e F[节点配置验证] C --\u003e G[变量引用验证] C --\u003e H[嵌套流程验证] C --\u003e I[全局变量验证] C --\u003e J[子工作流终止计划验证] D --\u003e K{验证通过?} E --\u003e K F --\u003e K G --\u003e K H --\u003e K I --\u003e K J --\u003e K K --\u003e|否| L[返回验证错误] L --\u003e M[前端显示错误信息] K --\u003e|是| N[Canvas转换为WorkflowSchema] N --\u003e O[移除孤立节点] O --\u003e P[遍历Canvas Nodes] P --\u003e Q{节点类型判断} Q --\u003e|子工作流| R[递归解析子工作流Canvas] Q --\u003e|批处理节点| S[解析批处理模式] Q --\u003e|普通节点| T[获取NodeAdaptor] R --\u003e U[toSubWorkflowNodeSchema] S --\u003e V[parseBatchMode生成批处理结构] T --\u003e W[调用Adaptor.Adapt方法] U --\u003e X[设置异常处理配置] V --\u003e X W --\u003e X X --\u003e Y{节点有子节点?} Y --\u003e|是| Z[递归转换子节点] Y --\u003e|否| AA[转换输入输出类型] Z --\u003e BB[设置层次关系映射] BB --\u003e AA AA --\u003e CC[SetInputsForNodeSchema] AA --\u003e DD[SetOutputTypesForNodeSchema] CC --\u003e EE[CanvasBlockInputToTypeInfo] CC --\u003e FF[CanvasBlockInputToFieldInfo] DD --\u003e GG[CanvasVariableToTypeInfo] EE --\u003e HH[解析基础类型] EE --\u003e II[处理复杂对象类型] EE --\u003e JJ[处理数组类型] EE --\u003e KK[处理文件类型] FF --\u003e LL[分析数据来源] LL --\u003e MM{来源类型} MM --\u003e|静态值| NN[创建LiteralFieldInfo] MM --\u003e|节点引用| OO[创建ReferenceFieldInfo] MM --\u003e|模板字符串| PP[创建TemplateFieldInfo] HH --\u003e QQ[生成NodeSchema] II --\u003e QQ JJ --\u003e QQ KK --\u003e QQ NN --\u003e QQ OO --\u003e QQ PP --\u003e QQ GG --\u003e QQ QQ --\u003e RR[收集所有NodeSchema] RR --\u003e SS[转换连接边EdgeToConnection] SS --\u003e TT[标准化端口normalizePorts] TT --\u003e UU[构建分支信息BuildBranches] UU --\u003e VV[生成完整WorkflowSchema] VV --\u003e WW[节点实例化] WW --\u003e XX[NodeBuilder.Build] XX --\u003e YY[创建具体节点实例] YY --\u003e ZZ[工作流执行引擎] subgraph \"验证器详细功能\" D1[ValidateConnections检查节点连接完整性] E1[DetectCycles检测工作流中的循环依赖] F1[节点配置验证检查必填字段和参数合法性] G1[CheckRefVariable验证变量引用的有效性] H1[ValidateNestedFlows检查批处理/循环嵌套限制] I1[CheckGlobalVariables验证全局变量类型匹配] J1[CheckSubWorkFlowTerminatePlan验证子工作流终止策略] end D -.-\u003e D1 E -.-\u003e E1 F -.-\u003e F1 G -.-\u003e G1 H -.-\u003e H1 I -.-\u003e I1 J -.-\u003e J1 subgraph \"NodeAdaptor转换细节\" W1[解析节点特定配置] --\u003e W2[转换输入参数类型] W2 --\u003e W3[转换输出定义类型] W3 --\u003e W4[设置节点内部Config] W4 --\u003e W5[调用通用类型转换函数] end W -.-\u003e W1 subgraph \"执行时节点类型\" YY1[InvokableNode普通执行节点] YY2[StreamableNode流式处理节点] YY3[TransformableNode数据转换节点] YY4[CollectableNode数据收集节点] end YY -.-\u003e YY1 YY -.-\u003e YY2 YY -.-\u003e YY3 YY -.-\u003e YY4 style A fill:#e3f2fd style C fill:#ffebee style K fill:#fff3e0 style VV fill:#e8f5e8 style ZZ fill:#f3e5f5 style L fill:#ffcdd2 前端交互层：前端 Canvas层是用户交互的起点，Canvas画布承载着用户的可视化配置，其中包含 Node（以vo.Node结构体表示）和Edge连接关系，这里的关键问题是\"节点样式：哪些固定字段？表单形式？\"，实际上每个节点都有标准化的元数据定义（如节点类型、显示名称、图标等固定字段）和动态的配置表单（根据节点类型展示不同的参数配置界面），前端schema采用灵活的JSON结构来适应各种节点类型的配置需求。\n验证层：验证层通过CanvasValidator对画布结构进行全面检查，包括节点连接完整性、循环依赖检测、配置合法性验证等多个维度，确保只有结构正确的工作流才能进入后续的转换和执行阶段，如果验证失败，系统会返回具体的错误信息给前端，帮助用户快速定位和修正问题。\n转换层：转换层是整个架构的核心枢纽，负责\"后端保存，workflow运行\"的关键转换过程，通过CanvasToWorkflowSchema函数协调整个转换流程，其中最重要的是NodeType到节点Config的转换，这通过NodeAdaptor接口实现，每个节点类型都有对应的适配器负责将前端的灵活配置转换为后端的强类型NodeSchema结构，实现了\"前端schema -\u003e 后端schema\"的标准化转换。\n节点实例化层：实例化层通过NodeBuilder接口将抽象的NodeSchema转换为具体的可执行节点实例，这里的关键是NodeSchema.Configs字段必须实现NodeBuilder接口，从而能够根据配置信息创建实际的节点对象，实现了\"后端schema -\u003e 节点实例\"的最终转换，为执行层提供了统一的节点实例接口。\n执行层：执行层是整个流程的最终目标，节点实例通过实现InvokableNode等执行接口来提供具体的业务逻辑处理能力，工作流引擎负责按照既定的执行顺序调度各个节点，处理数据流转和状态管理，最终产生业务执行结果并返回给用户。\n工作流校验 2.1 工作流验证流程 2.1.1 核心验证流程 graph LR A[画布预处理] --\u003e B[连接验证] --\u003e C[循环检测] --\u003e D[嵌套验证] --\u003e E[变量检查] --\u003e F[全局变量] --\u003e G[终止策略] 2.1.2 完整验证流程 %% 点击 “绘图” 按钮即可预览 graph LR A[\"1. 画布预处理• JSON反序列化• 清理孤立节点• 创建验证器实例\"] --\u003e H[\"2. 连接关系验证ValidateConnections\"] H --\u003e H1[\"• 检查节点连接完整性• 验证端口连接正确性• 检查分支节点完整性\"] H1 --\u003e I{发现问题?} I --\u003e|是| Z[\"返回验证错误\"] I --\u003e|否| J[\"3. 循环依赖检测DetectCycles\"] J --\u003e J1[\"• 构建依赖关系图• DFS算法检测环• 标识循环路径\"] J1 --\u003e K{发现循环?} K --\u003e|是| Z K --\u003e|否| L[\"4. 嵌套流程验证ValidateNestedFlows\"] L --\u003e L1[\"• 检查批处理节点嵌套• 验证循环节点嵌套• 防止过深嵌套\"] L1 --\u003e M{嵌套违规?} M --\u003e|是| Z M --\u003e|否| N[\"5. 引用变量检查CheckRefVariable\"] N --\u003e N1[\"• 验证变量可达性• 检查参数名规范• 验证作用域正确性\"] N1 --\u003e O{变量引用错误?} O --\u003e|是| Z O --\u003e|否| P[\"6. 全局变量验证CheckGlobalVariables\"] P --\u003e P1[\"• 验证变量类型匹配• 检查数组元素类型• 验证变量声明\"] P1 --\u003e Q{全局变量错误?} Q --\u003e|是| Z Q --\u003e|否| R[\"7. 子工作流终止策略CheckSubWorkFlowTerminatePlanType\"] R --\u003e R1[\"• 验证终止计划配置• 检查版本一致性• 验证子工作流存在性\"] R1 --\u003e S{终止策略错误?} S --\u003e|是| Z S --\u003e|否| T[\"主工作流验证完成\"] T --\u003e U[\"子工作流递归验证\"] U --\u003e U1[\"• 解析画布获取子工作流• 筛选项目级工作流• 批量获取工作流信息\"] U1 --\u003e U2[\"对每个子工作流重复验证流程\"] U2 --\u003e V[\"汇总所有验证结果\"] V --\u003e W[\"错误信息转换• Issue -\u003e ValidateErrorData• 节点错误/路径错误分类\"] W --\u003e X[\"返回验证结果ValidateTreeResponse\"] style A fill:#e1f5fe style H fill:#e8f5e8 style J fill:#e8f5e8 style L fill:#e8f5e8 style N fill:#e8f5e8 style P fill:#e8f5e8 style R fill:#e8f5e8 style U fill:#fff8e1 style Z fill:#ffebee 2.1.3 工作流验证流程技术实现总结 Coze Studio 的工作流验证采用分层递进式验证架构，从 API 层的 ValidateTree 接口开始，经过应用服务层的参数预处理，最终调用领域服务层的核心验证引擎 validateWorkflowTree。验证流程包含七个关键步骤：\n1. 画布预处理阶段 - 首先将 JSON 格式的画布结构反序列化为内存对象，然后调用 adaptor.PruneIsolatedNodes 清理没有连接关系的孤立节点，最后创建配置完整的 CanvasValidator 验证器实例并执行可达性分析，构建节点间的连通关系图。\n2. 连接关系验证 - ValidateConnections 方法通过遍历所有节点和边，构建出度映射表和端口映射表来实现。对于每个节点，检查其输出端口是否正确连接，特别是分支节点（如条件判断、错误处理）必须确保所有期望的端口都有连接。算法会递归验证嵌套节点的连接关系，确保数据流的完整性。\n3. 循环依赖检测 - DetectCycles 使用深度优先搜索（DFS）算法实现。首先构建反向依赖关系图（controlSuccessors），然后对每个未访问的节点启动 DFS 遍历。在遍历过程中维护当前路径栈，当发现路径中已存在的节点时，即检测到循环依赖，算法会提取并返回完整的循环路径。\n4. 嵌套流程验证 - ValidateNestedFlows 通过检查可达性分析结果中的 nestedReachability 结构实现。如果一个节点既有嵌套结构，又在其嵌套结构中还有更深层的嵌套（即 len(nestedReachableNodes.nestedReachability) \u003e 0），则判定为违反嵌套规则，防止批处理和循环节点的过度嵌套导致执行异常。\n5. 引用变量检查 - CheckRefVariable 采用递归作用域分析算法。定义内部函数 inputBlockVerify 解析每个输入参数的引用信息，检查引用的节点是否在当前或父级作用域的可达范围内。通过 combinedReachable 映射表合并当前层级和父级可达节点，实现作用域继承机制。同时验证参数名称的规范性（必须以字母开头，只能包含字母数字下划线）。\n6. 全局变量验证 - CheckGlobalVariables 首先收集所有变量分配节点（NodeTypeVariableAssigner）的变量定义，然后通过 VariablesMetaGetter 获取应用或智能体的变量元数据进行对比。验证包括基础类型匹配和数组元素类型的深度检查，确保工作流中使用的全局变量与系统定义一致。\n7. 子工作流终止策略验证 - CheckSubWorkFlowTerminatePlanType 通过递归收集所有子工作流节点，分别获取草稿版本和已发布版本的画布信息。对每个子工作流，查找其结束节点的终止计划配置，与当前节点的终止类型进行匹配验证，确保子工作流的输出处理策略与调用方期望一致。\n整个验证过程采用快速失败策略，任何步骤发现问题立即返回错误信息，同时支持递归子工作流验证，通过 getAllSubWorkflowIdentities 提取所有子工作流标识，对每个子工作流重复执行完整的验证流程，最终汇总所有验证结果，确保整个工作流树的结构完整性、逻辑正确性和执行安全性。\n2.2 工作流验证算法 2.2.1 连接检测算法 graph LR A[\"开始 validateConnections\"] --\u003e B[\"构建 nodeMap(节点索引)\"] B --\u003e C{\"存在复合节点(批处理/循环)\n判断边和内容块同时存在?\"} C -- 是 --\u003e C1[\"拼子画布(含父节点)\"] --\u003e C2[\"递归验证子画布\"] --\u003e D C -- 否 --\u003e D[\"识别特殊端口节点(selectorPorts)\"] D --\u003e E[\"统计 outDegree(每节点出边数)\"] E --\u003e F[\"统计 portOutDegree(选择器端口出边数)\"] F --\u003e G[\"逐节点规则校验\"] G --\u003e G1{\"开始节点?\"} G1 -- 是 --\u003e G1A[\"必须有出边\"] --\u003e I G1 -- 否 --\u003e G2{\"结束节点?\"} G2 -- 是 --\u003e H[\"结束节点无需出边\"] --\u003e I G2 -- 否 --\u003e G3{\"If选择节点?\"} G3 -- 是 --\u003e G3A[\"每个期望端口必须连出边\"] --\u003e I G3 -- 否 --\u003e G4{\"控制流节点\n不需要后续连接\"} G4 -- 是 --\u003e I G4 -- 否 --\u003e G4A[\"普通节点必须有出边\"] --\u003e I[统计结果] I --\u003e Z[\"返回 issues\"] graph TD A[\"ValidateConnections开始连接验证\"] --\u003e B[\"初始化问题列表issues = []\"] B --\u003e C[\"构建节点映射表buildNodeMap(canvas)\"] C --\u003e D[\"递归验证嵌套节点\"] D --\u003e E{\"遍历所有节点检查是否有子节点\"} E --\u003e|\"有子节点(Blocks \u003e 0)\"| F[\"创建嵌套画布包含父节点和子节点\"] F --\u003e G[\"递归调用validateConnections\"] G --\u003e H[\"汇总嵌套验证问题\"] H --\u003e E E --\u003e|\"无子节点\"| I[\"初始化连接统计\"] I --\u003e J[\"创建出度统计表outDegree[nodeID] = count\"] J --\u003e K[\"创建选择器端口表selectorPorts[nodeID][port] = required\"] K --\u003e L[\"识别特殊端口需求\"] L --\u003e M{\"遍历所有节点检查节点类型\"} M --\u003e|\"错误分支节点\"| N[\"添加错误端口PortBranchError + PortDefault\"] M --\u003e|\"分支适配器节点(Selector/QA/IntentDetector)\"| O[\"获取期望端口列表ba.ExpectPorts()\"] N --\u003e P[\"标记端口为必需\"] O --\u003e P P --\u003e M M --\u003e|\"所有节点处理完成\"| Q[\"统计节点总出度\"] Q --\u003e R[\"遍历所有边outDegree[sourceNodeID]++\"] R --\u003e S[\"统计选择器端口出度\"] S --\u003e T[\"遍历所有边portOutDegree[nodeID][portID]++\"] T --\u003e U[\"验证连接完整性\"] U --\u003e V{\"遍历所有节点按节点类型验证\"} V --\u003e|\"Entry节点(开始节点)\"| W{\"检查出度outDegree \u003e 0?\"} W --\u003e|\"否\"| X[\"添加问题:start node not connected\"] W --\u003e|\"是\"| V V --\u003e|\"Exit节点(结束节点)\"| Y[\"跳过验证(结束节点不需要出边)\"] Y --\u003e V V --\u003e|\"普通节点\"| Z{\"是否为选择器节点?\"} Z --\u003e|\"是\"| AA[\"验证每个必需端口\"] AA --\u003e BB{\"遍历必需端口检查端口出度\"} BB --\u003e|\"端口出度 = 0\"| CC[\"添加问题:port not connected\"] BB --\u003e|\"端口出度 \u003e 0\"| BB BB --\u003e|\"所有端口检查完成\"| V Z --\u003e|\"否\"| DD{\"是否为控制流节点(Break/Continue)?\"} DD --\u003e|\"是\"| EE[\"跳过验证(控制流节点不需要出边)\"] DD --\u003e|\"否\"| FF{\"检查出度outDegree \u003e 0?\"} FF --\u003e|\"否\"| GG[\"添加问题:node not connected\"] FF --\u003e|\"是\"| V X --\u003e V CC --\u003e V EE --\u003e V GG --\u003e V V --\u003e|\"所有节点验证完成\"| HH[\"返回问题列表issues\"] style A fill:#e1f5fe style HH fill:#c8e6c9 style X fill:#ffcdd2 style CC fill:#ffcdd2 style GG fill:#ffcdd2 2.2.2 循环依赖检测算法（检查有向图是否有环） 整体检测流程 graph TD A[开始] --\u003e B(\"初始化一个空的 issues 列表\"); B --\u003e C[\"遍历所有节点\n收集节点ID到 nodeIDs 列表\"]; C --\u003e D[\"遍历所有边(Edge)\n构建一个 Target -\u003e Source 的\n控制流后继关系图 controlSuccessors\"]; D --\u003e E[\"调用 detectCycles(nodeIDs, controlSuccessors)\n获取所有循环路径列表 cycles\"]; E --\u003e F{\"检测到循环?\n(len(cycles) \u003e 0)\"}; F -- 否 --\u003e G[\"返回空的 issues 列表和 nil 错误\"]; G --\u003e Z[结束]; F -- 是 --\u003e H{遍历每个检测到的循环 cycle}; H --\u003e I{遍历循环中的每个节点 i}; I --\u003e J{\"是否为自循环的重复节点?\n(cycle[i] == cycle[(i+1)%n])\"}; J -- 是 --\u003e K[跳过, 继续下一个节点]; K --\u003e I; J -- 否 --\u003e L[\"创建一个 PathErr 问题对象\n描述从 cycle[i] 到 cycle[(i+1)%n] 的边\"]; L --\u003e M[\"将问题对象添加到 issues 列表\"]; M --\u003e I; I -- 遍历结束 --\u003e H; H -- 遍历结束 --\u003e N[\"返回填充好的 issues 列表和 nil 错误\"]; N --\u003e Z; 节点循环依赖检测具体流程 graph TD subgraph detectCycles 函数 S1[开始] --\u003e S2(\"初始化全局 visited 映射\n和最终结果 ret 列表\"); S2 --\u003e S3{遍历所有节点 node}; S3 -- 遍历下一个 --\u003e S4{该 node 是否在\n全局 visited 中?}; S4 -- 是 --\u003e S3; S4 -- 否 --\u003e S5[\"以 [node] 为初始路径\n调用 dfs(path)\"]; S5 --\u003e S6[\"将 dfs 返回的循环\n追加到 ret 列表\"]; S6 --\u003e S3; S3 -- 遍历结束 --\u003e S7[\"返回最终的 ret 列表\"]; S7 --\u003e S_END[结束]; end subgraph \"dfs(path) 递归函数\" D1[开始] --\u003e D2[\"获取当前路径末尾节点 pathEnd\n初始化本次递归的返回列表 local_ret\"]; D2 --\u003e D3[\"在 controlSuccessors 中\n查找 pathEnd 的所有后继 successor\"]; D3 --\u003e D4{遍历所有 successor}; D4 -- 遍历下一个 --\u003e D5[\"将 successor 标记到\n全局 visited 映射中\"]; D5 --\u003e D6{\"检查 successor 是否\n已存在于当前路径 path 中\"}; D6 -- 是 (发现回边, 形成环) --\u003e D7[\"从 path 中截取环的部分\n(从 successor 首次出现的位置到末尾)\"]; D7 --\u003e D8[\"将截取的环闭合\n(末尾追加 successor)\"]; D8 --\u003e D9[\"将闭合的环\n添加到 local_ret\"]; D9 --\u003e D4; D6 -- 否 (未形成环) --\u003e D10[\"以 path.add(successor) 为新路径\n递归调用 dfs(path)\"]; D10 --\u003e D11[\"将递归调用的结果\n追加到 local_ret\"]; D11 --\u003e D4; D4 -- 遍历结束 --\u003e D12[\"返回 local_ret\"]; D12 --\u003e D_END[结束]; end 为什么要建立反向依赖？能否直接用正向依赖 语义贴近依赖回溯：谁指向我=我的上游，在发现回边(Back Edge)时更直观地“截取路径形成闭环”。\n全局去重更自然：一旦在 DFS 中触达某节点，就标记 visited[successor]=true，外层不再从它重复起根，减少重复遍历。\n为什么需要建立自循环节点不处理？ 自循环的部分很容易就看出来了，而且前端是不会放行的自循环的节点的\n2.2.3 嵌套节点检测算法 graph LR A[\"开始 ValidateNestedFlows\"] --\u003e B[\"遍历 reachableNodes\"] B --\u003e C{\"node 在 nestedReachability 中?\"} C -- 否 --\u003e B2[\"下一个节点\"] --\u003e B C -- 是 --\u003e D{\"nestedReachability[node] 还有更深层?\"} D -- 是 --\u003e E[\"记录 Issue: composite 不可嵌套\"] D -- 否 --\u003e B E --\u003e B B --\u003e F[\"结束, 返回 issues\"] 工作流执行 TODO 3.1 工作流执行策略 工作流执行可以分为两种：同步策略和异步策略\nsequenceDiagram participant Frontend as \"前端界面\" participant Handler as \"API Handler(workflow_service.go)\" participant AppService as \"Application Service(workflow.go)\" participant Domain as \"Domain Service(executable_impl.go)\" participant EventHandler as \"Event Handler(event_handle.go)\" participant Database as \"数据库\" Note over Frontend, Database: 工作流执行流程 Frontend-\u003e\u003eHandler: POST /api/workflow_api/run_flow(is_async=true/false) Handler-\u003e\u003eAppService: RunFlow(req) alt 异步执行模式 AppService-\u003e\u003eDomain: AsyncExecute(ctx, config, input) Domain-\u003e\u003eEventHandler: 创建工作流执行记录 EventHandler-\u003e\u003eDatabase: 保存 WorkflowExecution(status=Running) Domain--\u003e\u003eAppService: 返回 executeID AppService--\u003e\u003eHandler: 返回 executeID + debugUrl Handler--\u003e\u003eFrontend: HTTP 200 + executeID Note over Domain: 后台异步执行工作流 Domain-\u003e\u003eDomain: safego.Go(func() { runner.Invoke() }) loop 每个节点执行 Domain-\u003e\u003eEventHandler: NodeStart Event EventHandler-\u003e\u003eDatabase: 创建 NodeExecution(status=Running) Domain-\u003e\u003eDomain: 执行节点逻辑 Domain-\u003e\u003eEventHandler: NodeEnd Event EventHandler-\u003e\u003eDatabase: 更新 NodeExecution(status=Success/Failed) end Domain-\u003e\u003eEventHandler: WorkflowEnd Event EventHandler-\u003e\u003eDatabase: 更新 WorkflowExecution(status=Success/Failed) else 同步执行模式 AppService-\u003e\u003eDomain: SyncExecute(ctx, config, input) Domain-\u003e\u003eEventHandler: 创建工作流执行记录 EventHandler-\u003e\u003eDatabase: 保存 WorkflowExecution(status=Running) Domain-\u003e\u003eDomain: runner.Invoke() (阻塞等待) loop 每个节点执行 Domain-\u003e\u003eEventHandler: NodeStart/NodeEnd Events EventHandler-\u003e\u003eDatabase: 实时更新节点状态 end Domain-\u003e\u003eEventHandler: WorkflowEnd Event EventHandler-\u003e\u003eDatabase: 更新最终状态 Domain--\u003e\u003eAppService: 返回完整结果 AppService--\u003e\u003eHandler: 返回执行结果 Handler--\u003e\u003eFrontend: HTTP 200 + 完整数据 end Note over Frontend, Database: 前端获取执行过程 loop 前端轮询(仅异步模式) Frontend-\u003e\u003eHandler: GET /api/workflow_api/get_process?executeId=xxx Handler-\u003e\u003eAppService: GetProcess(req) AppService-\u003e\u003eDatabase: 查询 WorkflowExecution + NodeExecutions Database--\u003e\u003eAppService: 返回当前状态和所有节点执行记录 AppService--\u003e\u003eHandler: 返回执行进度 Handler--\u003e\u003eFrontend: HTTP 200 + 进度数据 alt 仍在执行中 Frontend-\u003e\u003eFrontend: sleep(300ms) else 执行完成 Frontend-\u003e\u003eFrontend: 停止轮询 end end 不同策略的使用场景 同步策略：\n前台任务（TaskType = “foreground”）：需要立即返回结果的场景\n简单的工作流执行：执行时间较短，用户需要等待结果\n调试模式：开发者需要立即看到执行结果\n工具调用：作为其他系统的工具被调用时\n异步策略：\n后台任务（TaskType = “background”）：长时间运行的工作流\n批量处理：需要处理大量数据的场景\n定时任务：不需要用户等待的定期执行任务\n资源密集型工作流：避免阻塞用户界面\n3.2 异步策略 异步策略采用分层存储机制：\nMySQL：存储结构化的执行记录（状态、元数据、最终结果）\nRedis （流式模式）：存储流式输出的增量数据（临时缓存，有过期时间） 3.2.1 异步策略前端轮询流程 sequenceDiagram participant Client as \"前端客户端\" participant API as \"API层\" participant Service as \"WorkflowService\" participant MySQL as \"MySQL数据库\" participant Redis as \"Redis缓存\" participant Executor as \"工作流执行器(异步)\" Note over Client, Executor: 异步策略：数据存储与前端轮询流程 Client-\u003e\u003eAPI: POST /async-execute API-\u003e\u003eService: AsyncExecute(config, input) Service-\u003e\u003eMySQL: CreateWorkflowExecution(executeID) Service--\u003e\u003eExecutor: 启动异步执行 API--\u003e\u003eClient: 返回executeID Note over Executor: 异步执行开始 Executor-\u003e\u003eMySQL: UpdateWorkflowExecution(Running) loop 节点执行过程 Executor-\u003e\u003eMySQL: CreateNodeExecution() alt 流式输出节点 Executor-\u003e\u003eRedis: UpdateNodeExecutionStreaming()存储增量输出 Note over Redis: key: \"wf:node_exec:output:{nodeID}\"过期时间: nodeExecDataExpiry else 普通节点 Executor-\u003e\u003eMySQL: UpdateNodeExecution()存储最终结果 end end Executor-\u003e\u003eMySQL: UpdateWorkflowExecution(Success/Failed) Note over Client: 前端轮询机制 loop 轮询获取状态 Client-\u003e\u003eAPI: GET /execution/{executeID} API-\u003e\u003eService: GetExecution(executeID, includeNodes=true) Service-\u003e\u003eMySQL: 查询工作流执行状态 Service-\u003e\u003eMySQL: 查询所有节点执行记录 loop 加载节点输出数据 Service-\u003e\u003eRedis: loadNodeExecutionFromRedis()获取流式输出 alt Redis中存在数据 Redis--\u003e\u003eService: 返回最新输出数据 else Redis中无数据 Service-\u003e\u003eMySQL: 从数据库获取最终结果 end end Service--\u003e\u003eAPI: 完整执行信息(状态+节点数据) API--\u003e\u003eClient: 返回执行状态和结果 alt 执行未完成 Client-\u003e\u003eClient: 等待间隔时间 else 执行完成 Note over Client: 停止轮询 end end 3.2.2 异步如何实现？ sequenceDiagram participant Client as \"客户端\" participant API as \"API层\" participant WF as \"WorkflowRunner\" participant EventChan as \"事件通道(chan *Event)\" participant Handler as \"HandleExecuteEvent(goroutine)\" participant Repo as \"Repository(数据库)\" participant Callback as \"节点回调(callback.go)\" participant SW as \"StreamWriter(可选)\" Note over Client, SW: 异步工作流执行完整流程 Client-\u003e\u003eAPI: AsyncExecute(config, input) API-\u003e\u003eWF: NewWorkflowRunner(config) API-\u003e\u003eWF: Prepare(ctx) Note over WF: 生成执行ID，创建事件通道 WF-\u003e\u003eRepo: CreateWorkflowExecution(executeID) WF-\u003e\u003eEventChan: make(chan *Event) Note over WF, Handler: 启动异步事件处理goroutine WF--\u003e\u003eHandler: go HandleExecuteEvent(eventChan) API--\u003e\u003eClient: 返回执行ID (立即返回) Note over WF, Callback: 工作流开始执行 WF-\u003e\u003eCallback: OnStart(WorkflowStart) Callback-\u003e\u003eEventChan: 发送WorkflowStart事件 EventChan-\u003e\u003eHandler: 接收WorkflowStart事件 Handler-\u003e\u003eRepo: 更新工作流状态为Running Handler-\u003e\u003eSW: 发送状态消息(可选) loop 节点执行循环 Note over Callback: 节点开始执行 Callback-\u003e\u003eEventChan: 发送NodeStart事件 EventChan-\u003e\u003eHandler: 接收NodeStart事件 Handler-\u003e\u003eRepo: CreateNodeExecution() Note over Callback: 节点执行中... alt 节点成功 Callback-\u003e\u003eEventChan: 发送NodeEnd事件 EventChan-\u003e\u003eHandler: 接收NodeEnd事件 Handler-\u003e\u003eRepo: UpdateNodeExecution(Success) Handler-\u003e\u003eSW: 发送节点输出(可选) else 节点失败 Callback-\u003e\u003eEventChan: 发送NodeError事件 EventChan-\u003e\u003eHandler: 接收NodeError事件 Handler-\u003e\u003eRepo: UpdateNodeExecution(Failed) else 流式输出 Callback-\u003e\u003eEventChan: 发送NodeStreamingOutput事件 EventChan-\u003e\u003eHandler: 接收流式事件 Handler-\u003e\u003eRepo: UpdateNodeExecutionStreaming() Handler-\u003e\u003eSW: 发送增量内容 end end Note over Callback: 工作流执行完成 Callback-\u003e\u003eEventChan: 发送WorkflowSuccess事件 EventChan-\u003e\u003eHandler: 接收WorkflowSuccess事件 Note over Handler: 等待Exit节点完成 Handler-\u003e\u003eHandler: 检查lastNodeDone标志 Handler-\u003e\u003eRepo: UpdateWorkflowExecution(Success) Handler-\u003e\u003eSW: 发送最终状态消息 Note over Handler: 事件循环结束，清理资源 Handler-\u003e\u003eSW: Close() (如果存在) Note over Client: 客户端可通过轮询或WebSocket获取状态 3.2.3 异步的流式工作流如何保证流式输出？如何存储SSE消息？ 异步策略不等于无SSE支持。实际上，Coze Studio提供了两种异步模式：\n纯异步模式（AsyncExecute）：无SSE，纯轮询\n异步流式模式（StreamExecute）：异步执行 + SSE实时推送\ngraph TD A[SSE消息处理机制] --\u003e B[实时消息] A --\u003e C[持久化数据] B --\u003e B1[\"StateMessage工作流状态变更\"] B --\u003e B2[\"DataMessage节点输出内容\"] B --\u003e B3[\"FunctionCall工具调用信息\"] B --\u003e B4[\"ToolResponse工具响应\"] B1 --\u003e B1a[\"通过StreamWriter实时推送\"] B2 --\u003e B2a[\"增量内容实时推送\"] B3 --\u003e B3a[\"调用参数实时推送\"] B4 --\u003e B4a[\"响应结果实时推送\"] C --\u003e C1[\"MySQL存储\"] C --\u003e C2[\"Redis缓存\"] C1 --\u003e C1a[\"WorkflowExecution工作流执行记录\"] C1 --\u003e C1b[\"NodeExecution节点执行记录\"] C1 --\u003e C1c[\"InterruptEvent中断事件\"] C2 --\u003e C2a[\"流式输出增量数据key: wf:node_exec:output:{id}\"] C2 --\u003e C2b[\"临时缓存，有过期时间nodeExecDataExpiry\"] style B fill:#e1f5fe style C fill:#f3e5f5 style B1a fill:#c8e6c9 style B2a fill:#c8e6c9 style B3a fill:#c8e6c9 style B4a fill:#c8e6c9 实时推送：SSE消息通过 StreamWriter 实时发送，不存储\n状态持久化：只有关键状态信息存储到数据库\n增量数据缓存：流式输出的增量数据临时存储在Redis\n3.2.4 异步的工作流如何保证消息不堆积？ 主要是采用超时取消策略，将消息队列的队列上限阈值设置的小一点。如果超出阈值，直接抛出异常。\ngraph TD A[异步工作流消息防堆积机制] --\u003e B[流式输出增量策略] A --\u003e C[工具响应缓存合并] A --\u003e D[中断事件阻塞确认] A --\u003e E[超时与取消机制] A --\u003e F[内存通道管理] B --\u003e B1[\"只发送增量片段避免重复传输\"] B --\u003e B2[\"上一帧优先发送降低网络抖动\"] B --\u003e B3[\"StreamEnd标记及时收尾\"] C --\u003e C1[\"本地缓存拼接减少网络传输\"] C --\u003e C2[\"EOF时统一发送避免碎片消息\"] D --\u003e D1[\"event.done通道确保落库完成\"] D --\u003e D2[\"避免竞态条件防止重复恢复\"] E --\u003e E1[\"前台/后台超时配置ForegroundRunTimeout/BackgroundRunTimeout\"] E --\u003e E2[\"定时检查取消标志cancelTicker机制\"] E --\u003e E3[\"优雅退出清理资源释放\"] F --\u003e F1[\"goroutine + chan内存发布订阅\"] F --\u003e F2[\"事件循环处理顺序消费\"] F --\u003e F3[\"StreamWriter管理自动关闭\"] ",
+  "wordCount" : "4471",
   "inLanguage": "en",
   "image": "https://swimmingliu.cn/papermod-cover.png","datePublished": "2025-08-07T23:27:35+08:00",
   "dateModified": "2025-08-07T23:27:35+08:00",
@@ -363,7 +363,7 @@ graph TD
     <h1 class="post-title entry-hint-parent">
       Coze工作流分析
     </h1>
-    <div class="post-meta"><span title='2025-08-07 23:27:35 +0800 CST'>August 7, 2025</span>&nbsp;·&nbsp;16 min&nbsp;·&nbsp;SwimmingLiu
+    <div class="post-meta"><span title='2025-08-07 23:27:35 +0800 CST'>August 7, 2025</span>&nbsp;·&nbsp;21 min&nbsp;·&nbsp;SwimmingLiu
 
 </div>
   </header> <div class="toc">
@@ -441,7 +441,49 @@ graph TD
                 <li>
                     <a href="#212%e5%ae%8c%e6%95%b4%e9%aa%8c%e8%af%81%e6%b5%81%e7%a8%8b" aria-label="2.1.2 完整验证流程">2.1.2 完整验证流程</a></li>
                 <li>
-                    <a href="#213%e5%b7%a5%e4%bd%9c%e6%b5%81%e9%aa%8c%e8%af%81%e6%b5%81%e7%a8%8b%e6%8a%80%e6%9c%af%e5%ae%9e%e7%8e%b0%e6%80%bb%e7%bb%93" aria-label="2.1.3 工作流验证流程技术实现总结">2.1.3 工作流验证流程技术实现总结</a>
+                    <a href="#213%e5%b7%a5%e4%bd%9c%e6%b5%81%e9%aa%8c%e8%af%81%e6%b5%81%e7%a8%8b%e6%8a%80%e6%9c%af%e5%ae%9e%e7%8e%b0%e6%80%bb%e7%bb%93" aria-label="2.1.3 工作流验证流程技术实现总结">2.1.3 工作流验证流程技术实现总结</a></li></ul>
+                </li>
+                <li>
+                    <a href="#22%e5%b7%a5%e4%bd%9c%e6%b5%81%e9%aa%8c%e8%af%81%e7%ae%97%e6%b3%95" aria-label="2.2 工作流验证算法">2.2 工作流验证算法</a><ul>
+                        
+                <li>
+                    <a href="#221%e8%bf%9e%e6%8e%a5%e6%a3%80%e6%b5%8b%e7%ae%97%e6%b3%95" aria-label="2.2.1 连接检测算法">2.2.1 连接检测算法</a></li>
+                <li>
+                    <a href="#222%e5%be%aa%e7%8e%af%e4%be%9d%e8%b5%96%e6%a3%80%e6%b5%8b%e7%ae%97%e6%b3%95%e6%a3%80%e6%9f%a5%e6%9c%89%e5%90%91%e5%9b%be%e6%98%af%e5%90%a6%e6%9c%89%e7%8e%af" aria-label="2.2.2 循环依赖检测算法（检查有向图是否有环）">2.2.2 循环依赖检测算法（检查有向图是否有环）</a><ul>
+                        
+                <li>
+                    <a href="#%e6%95%b4%e4%bd%93%e6%a3%80%e6%b5%8b%e6%b5%81%e7%a8%8b" aria-label="整体检测流程">整体检测流程</a></li>
+                <li>
+                    <a href="#%e8%8a%82%e7%82%b9%e5%be%aa%e7%8e%af%e4%be%9d%e8%b5%96%e6%a3%80%e6%b5%8b%e5%85%b7%e4%bd%93%e6%b5%81%e7%a8%8b" aria-label="节点循环依赖检测具体流程">节点循环依赖检测具体流程</a></li>
+                <li>
+                    <a href="#%e4%b8%ba%e4%bb%80%e4%b9%88%e8%a6%81%e5%bb%ba%e7%ab%8b%e5%8f%8d%e5%90%91%e4%be%9d%e8%b5%96%e8%83%bd%e5%90%a6%e7%9b%b4%e6%8e%a5%e7%94%a8%e6%ad%a3%e5%90%91%e4%be%9d%e8%b5%96" aria-label="为什么要建立反向依赖？能否直接用正向依赖">为什么要建立反向依赖？能否直接用正向依赖</a></li>
+                <li>
+                    <a href="#%e4%b8%ba%e4%bb%80%e4%b9%88%e9%9c%80%e8%a6%81%e5%bb%ba%e7%ab%8b%e8%87%aa%e5%be%aa%e7%8e%af%e8%8a%82%e7%82%b9%e4%b8%8d%e5%a4%84%e7%90%86" aria-label="为什么需要建立自循环节点不处理？">为什么需要建立自循环节点不处理？</a></li></ul>
+                </li>
+                <li>
+                    <a href="#223%e5%b5%8c%e5%a5%97%e8%8a%82%e7%82%b9%e6%a3%80%e6%b5%8b%e7%ae%97%e6%b3%95" aria-label="2.2.3 嵌套节点检测算法">2.2.3 嵌套节点检测算法</a></li></ul>
+                </li></ul>
+                </li>
+                <li>
+                    <a href="#%e5%b7%a5%e4%bd%9c%e6%b5%81%e6%89%a7%e8%a1%8ctodo" aria-label="工作流执行 TODO">工作流执行 TODO</a><ul>
+                        
+                <li>
+                    <a href="#31%e5%b7%a5%e4%bd%9c%e6%b5%81%e6%89%a7%e8%a1%8c%e7%ad%96%e7%95%a5" aria-label="3.1 工作流执行策略 ">3.1 工作流执行策略 </a><ul>
+                        
+                <li>
+                    <a href="#%e4%b8%8d%e5%90%8c%e7%ad%96%e7%95%a5%e7%9a%84%e4%bd%bf%e7%94%a8%e5%9c%ba%e6%99%af" aria-label="不同策略的使用场景">不同策略的使用场景</a></li></ul>
+                </li>
+                <li>
+                    <a href="#32%e5%bc%82%e6%ad%a5%e7%ad%96%e7%95%a5" aria-label="3.2 异步策略">3.2 异步策略</a><ul>
+                        
+                <li>
+                    <a href="#321%e5%bc%82%e6%ad%a5%e7%ad%96%e7%95%a5%e5%89%8d%e7%ab%af%e8%bd%ae%e8%af%a2%e6%b5%81%e7%a8%8b" aria-label="3.2.1 异步策略前端轮询流程">3.2.1 异步策略前端轮询流程</a></li>
+                <li>
+                    <a href="#322%e5%bc%82%e6%ad%a5%e5%a6%82%e4%bd%95%e5%ae%9e%e7%8e%b0" aria-label="3.2.2 异步如何实现？">3.2.2 异步如何实现？</a></li>
+                <li>
+                    <a href="#323%e5%bc%82%e6%ad%a5%e7%9a%84%e6%b5%81%e5%bc%8f%e5%b7%a5%e4%bd%9c%e6%b5%81%e5%a6%82%e4%bd%95%e4%bf%9d%e8%af%81%e6%b5%81%e5%bc%8f%e8%be%93%e5%87%ba%e5%a6%82%e4%bd%95%e5%ad%98%e5%82%a8sse%e6%b6%88%e6%81%af" aria-label="3.2.3 异步的流式工作流如何保证流式输出？如何存储SSE消息？">3.2.3 异步的流式工作流如何保证流式输出？如何存储SSE消息？</a></li>
+                <li>
+                    <a href="#324%e5%bc%82%e6%ad%a5%e7%9a%84%e5%b7%a5%e4%bd%9c%e6%b5%81%e5%a6%82%e4%bd%95%e4%bf%9d%e8%af%81%e6%b6%88%e6%81%af%e4%b8%8d%e5%a0%86%e7%a7%af" aria-label="3.2.4 异步的工作流如何保证消息不堆积？">3.2.4 异步的工作流如何保证消息不堆积？</a>
                 </li>
             </ul>
             </li>
@@ -1786,6 +1828,505 @@ graph LR
 <p><strong>6. 全局变量验证</strong> - <code>CheckGlobalVariables</code> 首先收集所有变量分配节点（<code>NodeTypeVariableAssigner</code>）的变量定义，然后通过 <code>VariablesMetaGetter</code> 获取应用或智能体的变量元数据进行对比。验证包括基础类型匹配和数组元素类型的深度检查，确保工作流中使用的全局变量与系统定义一致。</p>
 <p><strong>7. 子工作流终止策略验证</strong> - <code>CheckSubWorkFlowTerminatePlanType</code> 通过递归收集所有子工作流节点，分别获取草稿版本和已发布版本的画布信息。对每个子工作流，查找其结束节点的终止计划配置，与当前节点的终止类型进行匹配验证，确保子工作流的输出处理策略与调用方期望一致。</p>
 <p>整个验证过程采用<strong>快速失败策略</strong>，任何步骤发现问题立即返回错误信息，同时支持<strong>递归子工作流验证</strong>，通过 <code>getAllSubWorkflowIdentities</code> 提取所有子工作流标识，对每个子工作流重复执行完整的验证流程，最终汇总所有验证结果，确保整个工作流树的结构完整性、逻辑正确性和执行安全性。</p>
+<h3 id="22工作流验证算法">2.2 工作流验证算法<a hidden class="anchor" aria-hidden="true" href="#22工作流验证算法">#</a></h3>
+<h4 id="221连接检测算法">2.2.1 连接检测算法<a hidden class="anchor" aria-hidden="true" href="#221连接检测算法">#</a></h4>
+<pre class="mermaid">graph LR
+  A["开始 validateConnections"] --> B["构建 nodeMap(节点索引)"]
+  B --> C{"存在复合节点(批处理/循环)<br>判断边和内容块同时存在?"}
+  C -- 是 --> C1["拼子画布(含父节点)"] --> C2["递归验证子画布"] --> D
+  C -- 否 --> D["识别特殊端口节点(selectorPorts)"]
+  D --> E["统计 outDegree(每节点出边数)"]
+  E --> F["统计 portOutDegree(选择器端口出边数)"]
+  F --> G["逐节点规则校验"]
+  G --> G1{"开始节点?"}
+  G1 -- 是 --> G1A["必须有出边"] --> I
+  G1 -- 否 --> G2{"结束节点?"}
+  G2 -- 是 --> H["结束节点无需出边"] --> I
+  G2 -- 否 --> G3{"If选择节点?"}
+  G3 -- 是 --> G3A["每个期望端口必须连出边"] --> I
+  G3 -- 否 --> G4{"控制流节点<br>不需要后续连接"}
+  G4 -- 是 --> I
+  G4 -- 否 --> G4A["普通节点必须有出边"] --> I[统计结果]
+  I --> Z["返回 issues"]
+</pre>
+
+<pre class="mermaid">graph TD
+    A["ValidateConnections<br/>开始连接验证"] --> B["初始化问题列表<br/>issues = []"]
+    
+    B --> C["构建节点映射表<br/>buildNodeMap(canvas)"]
+    C --> D["递归验证嵌套节点"]
+    
+    D --> E{"遍历所有节点<br/>检查是否有子节点"}
+    E -->|"有子节点<br/>(Blocks > 0)"| F["创建嵌套画布<br/>包含父节点和子节点"]
+    F --> G["递归调用<br/>validateConnections"]
+    G --> H["汇总嵌套验证问题"]
+    H --> E
+    E -->|"无子节点"| I["初始化连接统计"]
+    
+    I --> J["创建出度统计表<br/>outDegree[nodeID] = count"]
+    J --> K["创建选择器端口表<br/>selectorPorts[nodeID][port] = required"]
+    
+    K --> L["识别特殊端口需求"]
+    L --> M{"遍历所有节点<br/>检查节点类型"}
+    
+    M -->|"错误分支节点"| N["添加错误端口<br/>PortBranchError + PortDefault"]
+    M -->|"分支适配器节点<br/>(Selector/QA/IntentDetector)"| O["获取期望端口列表<br/>ba.ExpectPorts()"]
+    N --> P["标记端口为必需"]
+    O --> P
+    P --> M
+    
+    M -->|"所有节点处理完成"| Q["统计节点总出度"]
+    Q --> R["遍历所有边<br/>outDegree[sourceNodeID]++"]
+    
+    R --> S["统计选择器端口出度"]
+    S --> T["遍历所有边<br/>portOutDegree[nodeID][portID]++"]
+    
+    T --> U["验证连接完整性"]
+    U --> V{"遍历所有节点<br/>按节点类型验证"}
+    
+    V -->|"Entry节点<br/>(开始节点)"| W{"检查出度<br/>outDegree > 0?"}
+    W -->|"否"| X["添加问题:<br/>start node not connected"]
+    W -->|"是"| V
+    
+    V -->|"Exit节点<br/>(结束节点)"| Y["跳过验证<br/>(结束节点不需要出边)"]
+    Y --> V
+    
+    V -->|"普通节点"| Z{"是否为选择器节点?"}
+    Z -->|"是"| AA["验证每个必需端口"]
+    AA --> BB{"遍历必需端口<br/>检查端口出度"}
+    BB -->|"端口出度 = 0"| CC["添加问题:<br/>port not connected"]
+    BB -->|"端口出度 > 0"| BB
+    BB -->|"所有端口检查完成"| V
+    
+    Z -->|"否"| DD{"是否为控制流节点<br/>(Break/Continue)?"}
+    DD -->|"是"| EE["跳过验证<br/>(控制流节点不需要出边)"]
+    DD -->|"否"| FF{"检查出度<br/>outDegree > 0?"}
+    FF -->|"否"| GG["添加问题:<br/>node not connected"]
+    FF -->|"是"| V
+    
+    X --> V
+    CC --> V
+    EE --> V
+    GG --> V
+    
+    V -->|"所有节点验证完成"| HH["返回问题列表<br/>issues"]
+    
+    style A fill:#e1f5fe
+    style HH fill:#c8e6c9
+    style X fill:#ffcdd2
+    style CC fill:#ffcdd2
+    style GG fill:#ffcdd2
+</pre>
+
+<h4 id="222循环依赖检测算法检查有向图是否有环">2.2.2 循环依赖检测算法（检查有向图是否有环）<a hidden class="anchor" aria-hidden="true" href="#222循环依赖检测算法检查有向图是否有环">#</a></h4>
+<h5 id="整体检测流程">整体检测流程<a hidden class="anchor" aria-hidden="true" href="#整体检测流程">#</a></h5>
+<pre class="mermaid">graph TD
+    A[开始] --> B("初始化一个空的 issues 列表");
+    B --> C["遍历所有节点<br>收集节点ID到 nodeIDs 列表"];
+    C --> D["遍历所有边(Edge)<br>构建一个 Target -> Source 的<br>控制流后继关系图 controlSuccessors"];
+    D --> E["调用 detectCycles(nodeIDs, controlSuccessors)<br>获取所有循环路径列表 cycles"];
+    E --> F{"检测到循环?<br>(len(cycles) > 0)"};
+    F -- 否 --> G["返回空的 issues 列表和 nil 错误"];
+    G --> Z[结束];
+    F -- 是 --> H{遍历每个检测到的循环 cycle};
+    H --> I{遍历循环中的每个节点 i};
+    I --> J{"是否为自循环的重复节点?<br>(cycle[i] == cycle[(i+1)%n])"};
+    J -- 是 --> K[跳过, 继续下一个节点];
+    K --> I;
+    J -- 否 --> L["创建一个 PathErr 问题对象<br>描述从 cycle[i] 到 cycle[(i+1)%n] 的边"];
+    L --> M["将问题对象添加到 issues 列表"];
+    M --> I;
+    I -- 遍历结束 --> H;
+    H -- 遍历结束 --> N["返回填充好的 issues 列表和 nil 错误"];
+    N --> Z;
+</pre>
+
+<h5 id="节点循环依赖检测具体流程">节点循环依赖检测具体流程<a hidden class="anchor" aria-hidden="true" href="#节点循环依赖检测具体流程">#</a></h5>
+<pre class="mermaid">graph TD
+    subgraph detectCycles 函数
+        S1[开始] --> S2("初始化全局 visited 映射<br>和最终结果 ret 列表");
+        S2 --> S3{遍历所有节点 node};
+        S3 -- 遍历下一个 --> S4{该 node 是否在<br>全局 visited 中?};
+        S4 -- 是 --> S3;
+        S4 -- 否 --> S5["以 [node] 为初始路径<br>调用 dfs(path)"];
+        S5 --> S6["将 dfs 返回的循环<br>追加到 ret 列表"];
+        S6 --> S3;
+        S3 -- 遍历结束 --> S7["返回最终的 ret 列表"];
+        S7 --> S_END[结束];
+    end
+
+    subgraph "dfs(path) 递归函数"
+        D1[开始] --> D2["获取当前路径末尾节点 pathEnd<br>初始化本次递归的返回列表 local_ret"];
+        D2 --> D3["在 controlSuccessors 中<br>查找 pathEnd 的所有后继 successor"];
+        D3 --> D4{遍历所有 successor};
+        D4 -- 遍历下一个 --> D5["将 successor 标记到<br>全局 visited 映射中"];
+        D5 --> D6{"检查 successor 是否<br>已存在于当前路径 path 中"};
+        D6 -- 是 (发现回边, 形成环) --> D7["从 path 中截取环的部分<br>(从 successor 首次出现的位置到末尾)"];
+        D7 --> D8["将截取的环闭合<br>(末尾追加 successor)"];
+        D8 --> D9["将闭合的环<br>添加到 local_ret"];
+        D9 --> D4;
+        D6 -- 否 (未形成环) --> D10["以 path.add(successor) 为新路径<br>递归调用 dfs(path)"];
+        D10 --> D11["将递归调用的结果<br>追加到 local_ret"];
+        D11 --> D4;
+        D4 -- 遍历结束 --> D12["返回 local_ret"];
+        D12 --> D_END[结束];
+    end
+</pre>
+
+<h5 id="为什么要建立反向依赖能否直接用正向依赖">为什么要建立反向依赖？能否直接用正向依赖<a hidden class="anchor" aria-hidden="true" href="#为什么要建立反向依赖能否直接用正向依赖">#</a></h5>
+<ul>
+<li>
+<p>语义贴近依赖回溯：谁指向我=我的上游，在发现回边(Back Edge)时更直观地“截取路径形成闭环”。</p>
+</li>
+<li>
+<p>全局去重更自然：一旦在 DFS 中触达某节点，就标记 visited[successor]=true，外层不再从它重复起根，减少重复遍历。</p>
+</li>
+</ul>
+<h5 id="为什么需要建立自循环节点不处理">为什么需要建立自循环节点不处理？<a hidden class="anchor" aria-hidden="true" href="#为什么需要建立自循环节点不处理">#</a></h5>
+<p>自循环的部分很容易就看出来了，而且前端是不会放行的自循环的节点的</p>
+<h4 id="223嵌套节点检测算法">2.2.3 嵌套节点检测算法<a hidden class="anchor" aria-hidden="true" href="#223嵌套节点检测算法">#</a></h4>
+<pre class="mermaid">graph LR
+    A["开始 ValidateNestedFlows"] --> B["遍历 reachableNodes"]
+    B --> C{"node 在 nestedReachability 中?"}
+    C -- 否 --> B2["下一个节点"] --> B
+    C -- 是 --> D{"nestedReachability[node] 还有更深层?"}
+    D -- 是 --> E["记录 Issue: composite 不可嵌套"]
+    D -- 否 --> B
+    E --> B
+    B --> F["结束, 返回 issues"]
+</pre>
+
+<h2 id="工作流执行todo">工作流执行 TODO<a hidden class="anchor" aria-hidden="true" href="#工作流执行todo">#</a></h2>
+<h3 id="31工作流执行策略">3.1 工作流执行策略 <a hidden class="anchor" aria-hidden="true" href="#31工作流执行策略">#</a></h3>
+<p>工作流执行可以分为两种：同步策略和异步策略</p>
+<pre class="mermaid">sequenceDiagram
+    participant Frontend as "前端界面"
+    participant Handler as "API Handler<br/>(workflow_service.go)"
+    participant AppService as "Application Service<br/>(workflow.go)"
+    participant Domain as "Domain Service<br/>(executable_impl.go)"
+    participant EventHandler as "Event Handler<br/>(event_handle.go)"
+    participant Database as "数据库"
+    
+    Note over Frontend, Database: 工作流执行流程
+    
+    Frontend->>Handler: POST /api/workflow_api/run_flow<br/>(is_async=true/false)
+    Handler->>AppService: RunFlow(req)
+    
+    alt 异步执行模式
+        AppService->>Domain: AsyncExecute(ctx, config, input)
+        Domain->>EventHandler: 创建工作流执行记录
+        EventHandler->>Database: 保存 WorkflowExecution(status=Running)
+        Domain-->>AppService: 返回 executeID
+        AppService-->>Handler: 返回 executeID + debugUrl
+        Handler-->>Frontend: HTTP 200 + executeID
+        
+        Note over Domain: 后台异步执行工作流
+        Domain->>Domain: safego.Go(func() { runner.Invoke() })
+        
+        loop 每个节点执行
+            Domain->>EventHandler: NodeStart Event
+            EventHandler->>Database: 创建 NodeExecution(status=Running)
+            Domain->>Domain: 执行节点逻辑
+            Domain->>EventHandler: NodeEnd Event
+            EventHandler->>Database: 更新 NodeExecution(status=Success/Failed)
+        end
+        
+        Domain->>EventHandler: WorkflowEnd Event
+        EventHandler->>Database: 更新 WorkflowExecution(status=Success/Failed)
+    else 同步执行模式
+        AppService->>Domain: SyncExecute(ctx, config, input)
+        Domain->>EventHandler: 创建工作流执行记录
+        EventHandler->>Database: 保存 WorkflowExecution(status=Running)
+        Domain->>Domain: runner.Invoke() (阻塞等待)
+        
+        loop 每个节点执行
+            Domain->>EventHandler: NodeStart/NodeEnd Events
+            EventHandler->>Database: 实时更新节点状态
+        end
+        
+        Domain->>EventHandler: WorkflowEnd Event
+        EventHandler->>Database: 更新最终状态
+        Domain-->>AppService: 返回完整结果
+        AppService-->>Handler: 返回执行结果
+        Handler-->>Frontend: HTTP 200 + 完整数据
+    end
+    
+    Note over Frontend, Database: 前端获取执行过程
+    
+    loop 前端轮询(仅异步模式)
+        Frontend->>Handler: GET /api/workflow_api/get_process?executeId=xxx
+        Handler->>AppService: GetProcess(req)
+        AppService->>Database: 查询 WorkflowExecution + NodeExecutions
+        Database-->>AppService: 返回当前状态和所有节点执行记录
+        AppService-->>Handler: 返回执行进度
+        Handler-->>Frontend: HTTP 200 + 进度数据
+        
+        alt 仍在执行中
+            Frontend->>Frontend: sleep(300ms)
+        else 执行完成
+            Frontend->>Frontend: 停止轮询
+        end
+    end
+</pre>
+
+<h4 id="不同策略的使用场景">不同策略的使用场景<a hidden class="anchor" aria-hidden="true" href="#不同策略的使用场景">#</a></h4>
+<p><strong>同步策略：</strong></p>
+<ul>
+<li>
+<p><strong>前台任务（TaskType = &ldquo;foreground&rdquo;）</strong>：需要立即返回结果的场景</p>
+</li>
+<li>
+<p><strong>简单的工作流执行</strong>：执行时间较短，用户需要等待结果</p>
+</li>
+<li>
+<p><strong>调试模式</strong>：开发者需要立即看到执行结果</p>
+</li>
+<li>
+<p><strong>工具调用</strong>：作为其他系统的工具被调用时</p>
+</li>
+</ul>
+<p><strong>异步策略：</strong></p>
+<ul>
+<li>
+<p><strong>后台任务（TaskType = &ldquo;background&rdquo;）</strong>：长时间运行的工作流</p>
+</li>
+<li>
+<p><strong>批量处理</strong>：需要处理大量数据的场景</p>
+</li>
+<li>
+<p><strong>定时任务</strong>：不需要用户等待的定期执行任务</p>
+</li>
+<li>
+<p><strong>资源密集型工作流</strong>：避免阻塞用户界面</p>
+</li>
+</ul>
+<h3 id="32异步策略">3.2 异步策略<a hidden class="anchor" aria-hidden="true" href="#32异步策略">#</a></h3>
+<p>异步策略采用分层存储机制：</p>
+<ul>
+<li>
+<p>MySQL：存储结构化的执行记录（状态、元数据、最终结果）</p>
+</li>
+<li>
+<p>Redis （流式模式）：存储流式输出的增量数据（临时缓存，有过期时间） </p>
+</li>
+</ul>
+<h4 id="321异步策略前端轮询流程">3.2.1 异步策略前端轮询流程<a hidden class="anchor" aria-hidden="true" href="#321异步策略前端轮询流程">#</a></h4>
+<pre class="mermaid">sequenceDiagram
+    participant Client as "前端客户端"
+    participant API as "API层"
+    participant Service as "WorkflowService"
+    participant MySQL as "MySQL数据库"
+    participant Redis as "Redis缓存"
+    participant Executor as "工作流执行器<br/>(异步)"
+
+    Note over Client, Executor: 异步策略：数据存储与前端轮询流程
+
+    Client->>API: POST /async-execute
+    API->>Service: AsyncExecute(config, input)
+    Service->>MySQL: CreateWorkflowExecution(executeID)
+    Service-->>Executor: 启动异步执行
+    API-->>Client: 返回executeID
+
+    Note over Executor: 异步执行开始
+    Executor->>MySQL: UpdateWorkflowExecution(Running)
+    
+    loop 节点执行过程
+        Executor->>MySQL: CreateNodeExecution()
+        
+        alt 流式输出节点
+            Executor->>Redis: UpdateNodeExecutionStreaming()<br/>存储增量输出
+            Note over Redis: key: "wf:node_exec:output:{nodeID}"<br/>过期时间: nodeExecDataExpiry
+        else 普通节点
+            Executor->>MySQL: UpdateNodeExecution()<br/>存储最终结果
+        end
+    end
+    
+    Executor->>MySQL: UpdateWorkflowExecution(Success/Failed)
+
+    Note over Client: 前端轮询机制
+    loop 轮询获取状态
+        Client->>API: GET /execution/{executeID}
+        API->>Service: GetExecution(executeID, includeNodes=true)
+        Service->>MySQL: 查询工作流执行状态
+        Service->>MySQL: 查询所有节点执行记录
+        
+        loop 加载节点输出数据
+            Service->>Redis: loadNodeExecutionFromRedis()<br/>获取流式输出
+            alt Redis中存在数据
+                Redis-->>Service: 返回最新输出数据
+            else Redis中无数据
+                Service->>MySQL: 从数据库获取最终结果
+            end
+        end
+        
+        Service-->>API: 完整执行信息(状态+节点数据)
+        API-->>Client: 返回执行状态和结果
+        
+        alt 执行未完成
+            Client->>Client: 等待间隔时间
+        else 执行完成
+            Note over Client: 停止轮询
+        end
+    end
+</pre>
+
+<h4 id="322异步如何实现">3.2.2 异步如何实现？<a hidden class="anchor" aria-hidden="true" href="#322异步如何实现">#</a></h4>
+<pre class="mermaid">sequenceDiagram
+    participant Client as "客户端"
+    participant API as "API层"
+    participant WF as "WorkflowRunner"
+    participant EventChan as "事件通道<br/>(chan *Event)"
+    participant Handler as "HandleExecuteEvent<br/>(goroutine)"
+    participant Repo as "Repository<br/>(数据库)"
+    participant Callback as "节点回调<br/>(callback.go)"
+    participant SW as "StreamWriter<br/>(可选)"
+
+    Note over Client, SW: 异步工作流执行完整流程
+
+    Client->>API: AsyncExecute(config, input)
+    
+    API->>WF: NewWorkflowRunner(config)
+    API->>WF: Prepare(ctx)
+    
+    Note over WF: 生成执行ID，创建事件通道
+    WF->>Repo: CreateWorkflowExecution(executeID)
+    WF->>EventChan: make(chan *Event)
+    
+    Note over WF, Handler: 启动异步事件处理goroutine
+    WF-->>Handler: go HandleExecuteEvent(eventChan)
+    
+    API-->>Client: 返回执行ID (立即返回)
+    
+    Note over WF, Callback: 工作流开始执行
+    WF->>Callback: OnStart(WorkflowStart)
+    Callback->>EventChan: 发送WorkflowStart事件
+    
+    EventChan->>Handler: 接收WorkflowStart事件
+    Handler->>Repo: 更新工作流状态为Running
+    Handler->>SW: 发送状态消息(可选)
+    
+    loop 节点执行循环
+        Note over Callback: 节点开始执行
+        Callback->>EventChan: 发送NodeStart事件
+        EventChan->>Handler: 接收NodeStart事件
+        Handler->>Repo: CreateNodeExecution()
+        
+        Note over Callback: 节点执行中...
+        
+        alt 节点成功
+            Callback->>EventChan: 发送NodeEnd事件
+            EventChan->>Handler: 接收NodeEnd事件
+            Handler->>Repo: UpdateNodeExecution(Success)
+            Handler->>SW: 发送节点输出(可选)
+        else 节点失败
+            Callback->>EventChan: 发送NodeError事件
+            EventChan->>Handler: 接收NodeError事件
+            Handler->>Repo: UpdateNodeExecution(Failed)
+        else 流式输出
+            Callback->>EventChan: 发送NodeStreamingOutput事件
+            EventChan->>Handler: 接收流式事件
+            Handler->>Repo: UpdateNodeExecutionStreaming()
+            Handler->>SW: 发送增量内容
+        end
+    end
+    
+    Note over Callback: 工作流执行完成
+    Callback->>EventChan: 发送WorkflowSuccess事件
+    EventChan->>Handler: 接收WorkflowSuccess事件
+    
+    Note over Handler: 等待Exit节点完成
+    Handler->>Handler: 检查lastNodeDone标志
+    
+    Handler->>Repo: UpdateWorkflowExecution(Success)
+    Handler->>SW: 发送最终状态消息
+    
+    Note over Handler: 事件循环结束，清理资源
+    Handler->>SW: Close() (如果存在)
+    
+    Note over Client: 客户端可通过轮询或WebSocket获取状态
+</pre>
+
+<h4 id="323异步的流式工作流如何保证流式输出如何存储sse消息">3.2.3 异步的流式工作流如何保证流式输出？如何存储SSE消息？<a hidden class="anchor" aria-hidden="true" href="#323异步的流式工作流如何保证流式输出如何存储sse消息">#</a></h4>
+<p>异步策略不等于无SSE支持。实际上，Coze Studio提供了两种异步模式：</p>
+<ul>
+<li>
+<p>纯异步模式（AsyncExecute）：无SSE，纯轮询</p>
+</li>
+<li>
+<p>异步流式模式（StreamExecute）：异步执行 + SSE实时推送</p>
+</li>
+</ul>
+<pre class="mermaid">graph TD
+    A[SSE消息处理机制] --> B[实时消息]
+    A --> C[持久化数据]
+    
+    B --> B1["StateMessage<br/>工作流状态变更"]
+    B --> B2["DataMessage<br/>节点输出内容"]
+    B --> B3["FunctionCall<br/>工具调用信息"]
+    B --> B4["ToolResponse<br/>工具响应"]
+    
+    B1 --> B1a["通过StreamWriter<br/>实时推送"]
+    B2 --> B2a["增量内容<br/>实时推送"]
+    B3 --> B3a["调用参数<br/>实时推送"]
+    B4 --> B4a["响应结果<br/>实时推送"]
+    
+    C --> C1["MySQL存储"]
+    C --> C2["Redis缓存"]
+    
+    C1 --> C1a["WorkflowExecution<br/>工作流执行记录"]
+    C1 --> C1b["NodeExecution<br/>节点执行记录"]
+    C1 --> C1c["InterruptEvent<br/>中断事件"]
+    
+    C2 --> C2a["流式输出增量数据<br/>key: wf:node_exec:output:{id}"]
+    C2 --> C2b["临时缓存，有过期时间<br/>nodeExecDataExpiry"]
+    
+    style B fill:#e1f5fe
+    style C fill:#f3e5f5
+    style B1a fill:#c8e6c9
+    style B2a fill:#c8e6c9
+    style B3a fill:#c8e6c9
+    style B4a fill:#c8e6c9
+</pre>
+
+<ol>
+<li>
+<p>实时推送：SSE消息通过 StreamWriter 实时发送，不存储</p>
+</li>
+<li>
+<p>状态持久化：只有关键状态信息存储到数据库</p>
+</li>
+<li>
+<p>增量数据缓存：流式输出的增量数据临时存储在Redis</p>
+</li>
+</ol>
+<h4 id="324异步的工作流如何保证消息不堆积">3.2.4 异步的工作流如何保证消息不堆积？<a hidden class="anchor" aria-hidden="true" href="#324异步的工作流如何保证消息不堆积">#</a></h4>
+<p>主要是采用超时取消策略，将消息队列的队列上限阈值设置的小一点。如果超出阈值，直接抛出异常。</p>
+<pre class="mermaid">graph TD
+    A[异步工作流消息防堆积机制] --> B[流式输出增量策略]
+    A --> C[工具响应缓存合并]
+    A --> D[中断事件阻塞确认]
+    A --> E[超时与取消机制]
+    A --> F[内存通道管理]
+    
+    B --> B1["只发送增量片段<br/>避免重复传输"]
+    B --> B2["上一帧优先发送<br/>降低网络抖动"]
+    B --> B3["StreamEnd标记<br/>及时收尾"]
+    
+    C --> C1["本地缓存拼接<br/>减少网络传输"]
+    C --> C2["EOF时统一发送<br/>避免碎片消息"]
+    
+    D --> D1["event.done通道<br/>确保落库完成"]
+    D --> D2["避免竞态条件<br/>防止重复恢复"]
+    
+    E --> E1["前台/后台超时配置<br/>ForegroundRunTimeout/BackgroundRunTimeout"]
+    E --> E2["定时检查取消标志<br/>cancelTicker机制"]
+    E --> E3["优雅退出清理<br/>资源释放"]
+    
+    F --> F1["goroutine + chan<br/>内存发布订阅"]
+    F --> F2["事件循环处理<br/>顺序消费"]
+    F --> F3["StreamWriter管理<br/>自动关闭"]
+</pre>
+
 
 
   </div>

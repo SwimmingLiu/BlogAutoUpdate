@@ -211,7 +211,7 @@
 graph TD subgraph &#34;前端Canvas层&#34; A[Canvas画布用户可视化配置] --&gt; B[Node节点vo.Node结构体] A --&gt; C[Edge连接节点间关系] B --&gt; D[节点样式：哪些固定字段？表单形式？] end subgraph &#34;验证层&#34; E[Canvas结构验证CanvasValidator] --&gt; F{验证通过?} F --&gt;|失败| G[返回错误信息] G --&gt; H[前端显示错误提示] end subgraph &#34;转换层&#34; I[后端保存，workflow运行CanvasToWorkflowSchema] --&gt; J[NodeType -&gt; 节点Config通过NodeAdaptor接口] J --&gt; K[前端schema -&gt; 后端schemaschema.NodeSchema] end subgraph &#34;实例化层&#34; L[节点实例化NodeBuilder接口] --&gt; M[NodeSchema.Configs实现NodeBuilder接口] M --&gt; N[后端schema -&gt; 节点实例具体节点对象] end subgraph &#34;执行层&#34; O[节点运行InvokableNode等接口] --&gt; P[业务逻辑具体执行逻辑] P --&gt; Q[结果输出返回执行结果] end A --&gt; E F --&gt;|通过| I K --&gt; L N --&gt; O style A fill:#e3f2fd style E fill:#ffebee style I fill:#fff3e0 style L fill:#e8f5e8 style O fill:#f3e5f5 1.1 画布和后端结构 前端的画布采用DSL (JSON) 形式存储，每次更新画布都是将DSL传给后端。DSL的后端结构如下所示，主要包含节点 (node)、 边 (edge)、 版本
 ...</p>
   </div>
-  <footer class="entry-footer"><span title='2025-08-07 23:27:35 +0800 CST'>August 7, 2025</span>&nbsp;·&nbsp;16 min&nbsp;·&nbsp;SwimmingLiu</footer>
+  <footer class="entry-footer"><span title='2025-08-07 23:27:35 +0800 CST'>August 7, 2025</span>&nbsp;·&nbsp;21 min&nbsp;·&nbsp;SwimmingLiu</footer>
   <a class="entry-link" aria-label="post link to Coze工作流分析" href="https://swimmingliu.cn/posts/job/coze-workflow-analysis/"></a>
 </article>
 

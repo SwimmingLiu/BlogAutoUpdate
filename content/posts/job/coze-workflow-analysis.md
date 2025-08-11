@@ -664,7 +664,7 @@ type BlockInput struct {
 ```
 
 3.   对象引用
-    
+
 
 ```go
 {
@@ -840,7 +840,6 @@ graph TD
 
 *   倒排索引：将文档切分成独立的词汇单元，建立从词汇到文档的映射索引
     
-
 *   TF-IDF (词频-逆文档频率)：TF（词频）： 计算一个词在文档中出现的词次数， 用于衡量词汇的重要性。IDF （逆文档频率）：衡量词汇在整个语料库中的重要性。 
     
 
@@ -1483,3 +1482,511 @@ Coze Studio 的工作流验证采用**分层递进式验证架构**，从 API
 **7. 子工作流终止策略验证** - `CheckSubWorkFlowTerminatePlanType` 通过递归收集所有子工作流节点，分别获取草稿版本和已发布版本的画布信息。对每个子工作流，查找其结束节点的终止计划配置，与当前节点的终止类型进行匹配验证，确保子工作流的输出处理策略与调用方期望一致。
 
 整个验证过程采用**快速失败策略**，任何步骤发现问题立即返回错误信息，同时支持**递归子工作流验证**，通过 `getAllSubWorkflowIdentities` 提取所有子工作流标识，对每个子工作流重复执行完整的验证流程，最终汇总所有验证结果，确保整个工作流树的结构完整性、逻辑正确性和执行安全性。
+
+### 2.2 工作流验证算法
+
+#### 2.2.1 连接检测算法
+
+```mermaid
+graph LR
+  A["开始 validateConnections"] --> B["构建 nodeMap(节点索引)"]
+  B --> C{"存在复合节点(批处理/循环)<br>判断边和内容块同时存在?"}
+  C -- 是 --> C1["拼子画布(含父节点)"] --> C2["递归验证子画布"] --> D
+  C -- 否 --> D["识别特殊端口节点(selectorPorts)"]
+  D --> E["统计 outDegree(每节点出边数)"]
+  E --> F["统计 portOutDegree(选择器端口出边数)"]
+  F --> G["逐节点规则校验"]
+  G --> G1{"开始节点?"}
+  G1 -- 是 --> G1A["必须有出边"] --> I
+  G1 -- 否 --> G2{"结束节点?"}
+  G2 -- 是 --> H["结束节点无需出边"] --> I
+  G2 -- 否 --> G3{"If选择节点?"}
+  G3 -- 是 --> G3A["每个期望端口必须连出边"] --> I
+  G3 -- 否 --> G4{"控制流节点<br>不需要后续连接"}
+  G4 -- 是 --> I
+  G4 -- 否 --> G4A["普通节点必须有出边"] --> I[统计结果]
+  I --> Z["返回 issues"]
+```
+```mermaid
+graph TD
+    A["ValidateConnections<br/>开始连接验证"] --> B["初始化问题列表<br/>issues = []"]
+    
+    B --> C["构建节点映射表<br/>buildNodeMap(canvas)"]
+    C --> D["递归验证嵌套节点"]
+    
+    D --> E{"遍历所有节点<br/>检查是否有子节点"}
+    E -->|"有子节点<br/>(Blocks > 0)"| F["创建嵌套画布<br/>包含父节点和子节点"]
+    F --> G["递归调用<br/>validateConnections"]
+    G --> H["汇总嵌套验证问题"]
+    H --> E
+    E -->|"无子节点"| I["初始化连接统计"]
+    
+    I --> J["创建出度统计表<br/>outDegree[nodeID] = count"]
+    J --> K["创建选择器端口表<br/>selectorPorts[nodeID][port] = required"]
+    
+    K --> L["识别特殊端口需求"]
+    L --> M{"遍历所有节点<br/>检查节点类型"}
+    
+    M -->|"错误分支节点"| N["添加错误端口<br/>PortBranchError + PortDefault"]
+    M -->|"分支适配器节点<br/>(Selector/QA/IntentDetector)"| O["获取期望端口列表<br/>ba.ExpectPorts()"]
+    N --> P["标记端口为必需"]
+    O --> P
+    P --> M
+    
+    M -->|"所有节点处理完成"| Q["统计节点总出度"]
+    Q --> R["遍历所有边<br/>outDegree[sourceNodeID]++"]
+    
+    R --> S["统计选择器端口出度"]
+    S --> T["遍历所有边<br/>portOutDegree[nodeID][portID]++"]
+    
+    T --> U["验证连接完整性"]
+    U --> V{"遍历所有节点<br/>按节点类型验证"}
+    
+    V -->|"Entry节点<br/>(开始节点)"| W{"检查出度<br/>outDegree > 0?"}
+    W -->|"否"| X["添加问题:<br/>start node not connected"]
+    W -->|"是"| V
+    
+    V -->|"Exit节点<br/>(结束节点)"| Y["跳过验证<br/>(结束节点不需要出边)"]
+    Y --> V
+    
+    V -->|"普通节点"| Z{"是否为选择器节点?"}
+    Z -->|"是"| AA["验证每个必需端口"]
+    AA --> BB{"遍历必需端口<br/>检查端口出度"}
+    BB -->|"端口出度 = 0"| CC["添加问题:<br/>port not connected"]
+    BB -->|"端口出度 > 0"| BB
+    BB -->|"所有端口检查完成"| V
+    
+    Z -->|"否"| DD{"是否为控制流节点<br/>(Break/Continue)?"}
+    DD -->|"是"| EE["跳过验证<br/>(控制流节点不需要出边)"]
+    DD -->|"否"| FF{"检查出度<br/>outDegree > 0?"}
+    FF -->|"否"| GG["添加问题:<br/>node not connected"]
+    FF -->|"是"| V
+    
+    X --> V
+    CC --> V
+    EE --> V
+    GG --> V
+    
+    V -->|"所有节点验证完成"| HH["返回问题列表<br/>issues"]
+    
+    style A fill:#e1f5fe
+    style HH fill:#c8e6c9
+    style X fill:#ffcdd2
+    style CC fill:#ffcdd2
+    style GG fill:#ffcdd2
+```
+
+#### 2.2.2 循环依赖检测算法（检查有向图是否有环）
+
+##### 整体检测流程
+
+```mermaid
+graph TD
+    A[开始] --> B("初始化一个空的 issues 列表");
+    B --> C["遍历所有节点<br>收集节点ID到 nodeIDs 列表"];
+    C --> D["遍历所有边(Edge)<br>构建一个 Target -> Source 的<br>控制流后继关系图 controlSuccessors"];
+    D --> E["调用 detectCycles(nodeIDs, controlSuccessors)<br>获取所有循环路径列表 cycles"];
+    E --> F{"检测到循环?<br>(len(cycles) > 0)"};
+    F -- 否 --> G["返回空的 issues 列表和 nil 错误"];
+    G --> Z[结束];
+    F -- 是 --> H{遍历每个检测到的循环 cycle};
+    H --> I{遍历循环中的每个节点 i};
+    I --> J{"是否为自循环的重复节点?<br>(cycle[i] == cycle[(i+1)%n])"};
+    J -- 是 --> K[跳过, 继续下一个节点];
+    K --> I;
+    J -- 否 --> L["创建一个 PathErr 问题对象<br>描述从 cycle[i] 到 cycle[(i+1)%n] 的边"];
+    L --> M["将问题对象添加到 issues 列表"];
+    M --> I;
+    I -- 遍历结束 --> H;
+    H -- 遍历结束 --> N["返回填充好的 issues 列表和 nil 错误"];
+    N --> Z;
+```
+
+##### 节点循环依赖检测具体流程
+
+```mermaid
+graph TD
+    subgraph detectCycles 函数
+        S1[开始] --> S2("初始化全局 visited 映射<br>和最终结果 ret 列表");
+        S2 --> S3{遍历所有节点 node};
+        S3 -- 遍历下一个 --> S4{该 node 是否在<br>全局 visited 中?};
+        S4 -- 是 --> S3;
+        S4 -- 否 --> S5["以 [node] 为初始路径<br>调用 dfs(path)"];
+        S5 --> S6["将 dfs 返回的循环<br>追加到 ret 列表"];
+        S6 --> S3;
+        S3 -- 遍历结束 --> S7["返回最终的 ret 列表"];
+        S7 --> S_END[结束];
+    end
+
+    subgraph "dfs(path) 递归函数"
+        D1[开始] --> D2["获取当前路径末尾节点 pathEnd<br>初始化本次递归的返回列表 local_ret"];
+        D2 --> D3["在 controlSuccessors 中<br>查找 pathEnd 的所有后继 successor"];
+        D3 --> D4{遍历所有 successor};
+        D4 -- 遍历下一个 --> D5["将 successor 标记到<br>全局 visited 映射中"];
+        D5 --> D6{"检查 successor 是否<br>已存在于当前路径 path 中"};
+        D6 -- 是 (发现回边, 形成环) --> D7["从 path 中截取环的部分<br>(从 successor 首次出现的位置到末尾)"];
+        D7 --> D8["将截取的环闭合<br>(末尾追加 successor)"];
+        D8 --> D9["将闭合的环<br>添加到 local_ret"];
+        D9 --> D4;
+        D6 -- 否 (未形成环) --> D10["以 path.add(successor) 为新路径<br>递归调用 dfs(path)"];
+        D10 --> D11["将递归调用的结果<br>追加到 local_ret"];
+        D11 --> D4;
+        D4 -- 遍历结束 --> D12["返回 local_ret"];
+        D12 --> D_END[结束];
+    end
+```
+
+##### 为什么要建立反向依赖？能否直接用正向依赖
+
+*   语义贴近依赖回溯：谁指向我=我的上游，在发现回边(Back Edge)时更直观地“截取路径形成闭环”。
+    
+*   全局去重更自然：一旦在 DFS 中触达某节点，就标记 visited\[successor\]=true，外层不再从它重复起根，减少重复遍历。
+    
+
+##### 为什么需要建立自循环节点不处理？
+
+自循环的部分很容易就看出来了，而且前端是不会放行的自循环的节点的
+
+#### 2.2.3 嵌套节点检测算法
+
+```mermaid
+graph LR
+    A["开始 ValidateNestedFlows"] --> B["遍历 reachableNodes"]
+    B --> C{"node 在 nestedReachability 中?"}
+    C -- 否 --> B2["下一个节点"] --> B
+    C -- 是 --> D{"nestedReachability[node] 还有更深层?"}
+    D -- 是 --> E["记录 Issue: composite 不可嵌套"]
+    D -- 否 --> B
+    E --> B
+    B --> F["结束, 返回 issues"]
+```
+
+## 工作流执行 TODO
+
+### 3.1 工作流执行策略 
+
+工作流执行可以分为两种：同步策略和异步策略
+
+```mermaid
+sequenceDiagram
+    participant Frontend as "前端界面"
+    participant Handler as "API Handler<br/>(workflow_service.go)"
+    participant AppService as "Application Service<br/>(workflow.go)"
+    participant Domain as "Domain Service<br/>(executable_impl.go)"
+    participant EventHandler as "Event Handler<br/>(event_handle.go)"
+    participant Database as "数据库"
+    
+    Note over Frontend, Database: 工作流执行流程
+    
+    Frontend->>Handler: POST /api/workflow_api/run_flow<br/>(is_async=true/false)
+    Handler->>AppService: RunFlow(req)
+    
+    alt 异步执行模式
+        AppService->>Domain: AsyncExecute(ctx, config, input)
+        Domain->>EventHandler: 创建工作流执行记录
+        EventHandler->>Database: 保存 WorkflowExecution(status=Running)
+        Domain-->>AppService: 返回 executeID
+        AppService-->>Handler: 返回 executeID + debugUrl
+        Handler-->>Frontend: HTTP 200 + executeID
+        
+        Note over Domain: 后台异步执行工作流
+        Domain->>Domain: safego.Go(func() { runner.Invoke() })
+        
+        loop 每个节点执行
+            Domain->>EventHandler: NodeStart Event
+            EventHandler->>Database: 创建 NodeExecution(status=Running)
+            Domain->>Domain: 执行节点逻辑
+            Domain->>EventHandler: NodeEnd Event
+            EventHandler->>Database: 更新 NodeExecution(status=Success/Failed)
+        end
+        
+        Domain->>EventHandler: WorkflowEnd Event
+        EventHandler->>Database: 更新 WorkflowExecution(status=Success/Failed)
+    else 同步执行模式
+        AppService->>Domain: SyncExecute(ctx, config, input)
+        Domain->>EventHandler: 创建工作流执行记录
+        EventHandler->>Database: 保存 WorkflowExecution(status=Running)
+        Domain->>Domain: runner.Invoke() (阻塞等待)
+        
+        loop 每个节点执行
+            Domain->>EventHandler: NodeStart/NodeEnd Events
+            EventHandler->>Database: 实时更新节点状态
+        end
+        
+        Domain->>EventHandler: WorkflowEnd Event
+        EventHandler->>Database: 更新最终状态
+        Domain-->>AppService: 返回完整结果
+        AppService-->>Handler: 返回执行结果
+        Handler-->>Frontend: HTTP 200 + 完整数据
+    end
+    
+    Note over Frontend, Database: 前端获取执行过程
+    
+    loop 前端轮询(仅异步模式)
+        Frontend->>Handler: GET /api/workflow_api/get_process?executeId=xxx
+        Handler->>AppService: GetProcess(req)
+        AppService->>Database: 查询 WorkflowExecution + NodeExecutions
+        Database-->>AppService: 返回当前状态和所有节点执行记录
+        AppService-->>Handler: 返回执行进度
+        Handler-->>Frontend: HTTP 200 + 进度数据
+        
+        alt 仍在执行中
+            Frontend->>Frontend: sleep(300ms)
+        else 执行完成
+            Frontend->>Frontend: 停止轮询
+        end
+    end
+```
+
+#### 不同策略的使用场景
+
+**同步策略：**
+
+*   **前台任务（TaskType = "foreground"）**：需要立即返回结果的场景
+    
+*   **简单的工作流执行**：执行时间较短，用户需要等待结果
+    
+*   **调试模式**：开发者需要立即看到执行结果
+    
+*   **工具调用**：作为其他系统的工具被调用时
+    
+
+**异步策略：**
+
+*   **后台任务（TaskType = "background"）**：长时间运行的工作流
+    
+*   **批量处理**：需要处理大量数据的场景
+    
+*   **定时任务**：不需要用户等待的定期执行任务
+    
+*   **资源密集型工作流**：避免阻塞用户界面
+    
+
+### 3.2 异步策略
+
+异步策略采用分层存储机制：
+
+*   MySQL：存储结构化的执行记录（状态、元数据、最终结果）
+    
+*   Redis （流式模式）：存储流式输出的增量数据（临时缓存，有过期时间） 
+    
+
+#### 3.2.1 异步策略前端轮询流程
+
+```mermaid
+sequenceDiagram
+    participant Client as "前端客户端"
+    participant API as "API层"
+    participant Service as "WorkflowService"
+    participant MySQL as "MySQL数据库"
+    participant Redis as "Redis缓存"
+    participant Executor as "工作流执行器<br/>(异步)"
+
+    Note over Client, Executor: 异步策略：数据存储与前端轮询流程
+
+    Client->>API: POST /async-execute
+    API->>Service: AsyncExecute(config, input)
+    Service->>MySQL: CreateWorkflowExecution(executeID)
+    Service-->>Executor: 启动异步执行
+    API-->>Client: 返回executeID
+
+    Note over Executor: 异步执行开始
+    Executor->>MySQL: UpdateWorkflowExecution(Running)
+    
+    loop 节点执行过程
+        Executor->>MySQL: CreateNodeExecution()
+        
+        alt 流式输出节点
+            Executor->>Redis: UpdateNodeExecutionStreaming()<br/>存储增量输出
+            Note over Redis: key: "wf:node_exec:output:{nodeID}"<br/>过期时间: nodeExecDataExpiry
+        else 普通节点
+            Executor->>MySQL: UpdateNodeExecution()<br/>存储最终结果
+        end
+    end
+    
+    Executor->>MySQL: UpdateWorkflowExecution(Success/Failed)
+
+    Note over Client: 前端轮询机制
+    loop 轮询获取状态
+        Client->>API: GET /execution/{executeID}
+        API->>Service: GetExecution(executeID, includeNodes=true)
+        Service->>MySQL: 查询工作流执行状态
+        Service->>MySQL: 查询所有节点执行记录
+        
+        loop 加载节点输出数据
+            Service->>Redis: loadNodeExecutionFromRedis()<br/>获取流式输出
+            alt Redis中存在数据
+                Redis-->>Service: 返回最新输出数据
+            else Redis中无数据
+                Service->>MySQL: 从数据库获取最终结果
+            end
+        end
+        
+        Service-->>API: 完整执行信息(状态+节点数据)
+        API-->>Client: 返回执行状态和结果
+        
+        alt 执行未完成
+            Client->>Client: 等待间隔时间
+        else 执行完成
+            Note over Client: 停止轮询
+        end
+    end
+```
+
+#### 3.2.2 异步如何实现？
+
+```mermaid
+sequenceDiagram
+    participant Client as "客户端"
+    participant API as "API层"
+    participant WF as "WorkflowRunner"
+    participant EventChan as "事件通道<br/>(chan *Event)"
+    participant Handler as "HandleExecuteEvent<br/>(goroutine)"
+    participant Repo as "Repository<br/>(数据库)"
+    participant Callback as "节点回调<br/>(callback.go)"
+    participant SW as "StreamWriter<br/>(可选)"
+
+    Note over Client, SW: 异步工作流执行完整流程
+
+    Client->>API: AsyncExecute(config, input)
+    
+    API->>WF: NewWorkflowRunner(config)
+    API->>WF: Prepare(ctx)
+    
+    Note over WF: 生成执行ID，创建事件通道
+    WF->>Repo: CreateWorkflowExecution(executeID)
+    WF->>EventChan: make(chan *Event)
+    
+    Note over WF, Handler: 启动异步事件处理goroutine
+    WF-->>Handler: go HandleExecuteEvent(eventChan)
+    
+    API-->>Client: 返回执行ID (立即返回)
+    
+    Note over WF, Callback: 工作流开始执行
+    WF->>Callback: OnStart(WorkflowStart)
+    Callback->>EventChan: 发送WorkflowStart事件
+    
+    EventChan->>Handler: 接收WorkflowStart事件
+    Handler->>Repo: 更新工作流状态为Running
+    Handler->>SW: 发送状态消息(可选)
+    
+    loop 节点执行循环
+        Note over Callback: 节点开始执行
+        Callback->>EventChan: 发送NodeStart事件
+        EventChan->>Handler: 接收NodeStart事件
+        Handler->>Repo: CreateNodeExecution()
+        
+        Note over Callback: 节点执行中...
+        
+        alt 节点成功
+            Callback->>EventChan: 发送NodeEnd事件
+            EventChan->>Handler: 接收NodeEnd事件
+            Handler->>Repo: UpdateNodeExecution(Success)
+            Handler->>SW: 发送节点输出(可选)
+        else 节点失败
+            Callback->>EventChan: 发送NodeError事件
+            EventChan->>Handler: 接收NodeError事件
+            Handler->>Repo: UpdateNodeExecution(Failed)
+        else 流式输出
+            Callback->>EventChan: 发送NodeStreamingOutput事件
+            EventChan->>Handler: 接收流式事件
+            Handler->>Repo: UpdateNodeExecutionStreaming()
+            Handler->>SW: 发送增量内容
+        end
+    end
+    
+    Note over Callback: 工作流执行完成
+    Callback->>EventChan: 发送WorkflowSuccess事件
+    EventChan->>Handler: 接收WorkflowSuccess事件
+    
+    Note over Handler: 等待Exit节点完成
+    Handler->>Handler: 检查lastNodeDone标志
+    
+    Handler->>Repo: UpdateWorkflowExecution(Success)
+    Handler->>SW: 发送最终状态消息
+    
+    Note over Handler: 事件循环结束，清理资源
+    Handler->>SW: Close() (如果存在)
+    
+    Note over Client: 客户端可通过轮询或WebSocket获取状态
+```
+
+#### 3.2.3 异步的流式工作流如何保证流式输出？如何存储SSE消息？
+
+异步策略不等于无SSE支持。实际上，Coze Studio提供了两种异步模式：
+
+*   纯异步模式（AsyncExecute）：无SSE，纯轮询
+    
+*   异步流式模式（StreamExecute）：异步执行 + SSE实时推送
+    
+
+```mermaid
+graph TD
+    A[SSE消息处理机制] --> B[实时消息]
+    A --> C[持久化数据]
+    
+    B --> B1["StateMessage<br/>工作流状态变更"]
+    B --> B2["DataMessage<br/>节点输出内容"]
+    B --> B3["FunctionCall<br/>工具调用信息"]
+    B --> B4["ToolResponse<br/>工具响应"]
+    
+    B1 --> B1a["通过StreamWriter<br/>实时推送"]
+    B2 --> B2a["增量内容<br/>实时推送"]
+    B3 --> B3a["调用参数<br/>实时推送"]
+    B4 --> B4a["响应结果<br/>实时推送"]
+    
+    C --> C1["MySQL存储"]
+    C --> C2["Redis缓存"]
+    
+    C1 --> C1a["WorkflowExecution<br/>工作流执行记录"]
+    C1 --> C1b["NodeExecution<br/>节点执行记录"]
+    C1 --> C1c["InterruptEvent<br/>中断事件"]
+    
+    C2 --> C2a["流式输出增量数据<br/>key: wf:node_exec:output:{id}"]
+    C2 --> C2b["临时缓存，有过期时间<br/>nodeExecDataExpiry"]
+    
+    style B fill:#e1f5fe
+    style C fill:#f3e5f5
+    style B1a fill:#c8e6c9
+    style B2a fill:#c8e6c9
+    style B3a fill:#c8e6c9
+    style B4a fill:#c8e6c9
+```
+
+1.  实时推送：SSE消息通过 StreamWriter 实时发送，不存储
+    
+2.  状态持久化：只有关键状态信息存储到数据库
+    
+3.  增量数据缓存：流式输出的增量数据临时存储在Redis
+    
+
+#### 3.2.4 异步的工作流如何保证消息不堆积？
+
+主要是采用超时取消策略，将消息队列的队列上限阈值设置的小一点。如果超出阈值，直接抛出异常。
+
+```mermaid
+graph TD
+    A[异步工作流消息防堆积机制] --> B[流式输出增量策略]
+    A --> C[工具响应缓存合并]
+    A --> D[中断事件阻塞确认]
+    A --> E[超时与取消机制]
+    A --> F[内存通道管理]
+    
+    B --> B1["只发送增量片段<br/>避免重复传输"]
+    B --> B2["上一帧优先发送<br/>降低网络抖动"]
+    B --> B3["StreamEnd标记<br/>及时收尾"]
+    
+    C --> C1["本地缓存拼接<br/>减少网络传输"]
+    C --> C2["EOF时统一发送<br/>避免碎片消息"]
+    
+    D --> D1["event.done通道<br/>确保落库完成"]
+    D --> D2["避免竞态条件<br/>防止重复恢复"]
+    
+    E --> E1["前台/后台超时配置<br/>ForegroundRunTimeout/BackgroundRunTimeout"]
+    E --> E2["定时检查取消标志<br/>cancelTicker机制"]
+    E --> E3["优雅退出清理<br/>资源释放"]
+    
+    F --> F1["goroutine + chan<br/>内存发布订阅"]
+    F --> F2["事件循环处理<br/>顺序消费"]
+    F --> F3["StreamWriter管理<br/>自动关闭"]
+```

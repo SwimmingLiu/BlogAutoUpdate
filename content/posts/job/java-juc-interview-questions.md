@@ -1165,3 +1165,203 @@ public class SemaphoreTest {
 3. 采用弱引用之后，也只能在一定程度上防止内存泄露。在使用线程池等场景中，线程的生命周期可能长于 `ThreadLocal` 实例，`ThreadLocalMap` 可能一直被强引用，不会被垃圾回收。所以在使用完 `ThreadLocal` 后，需要调用 `remove() `方法清理 `ThreadLocalMap` 中可能残留无用的键值对。
 
 4. `ThreadLocal` 内部在执行 `set` 和 `get` 的过程当中，也会像后遍历去清理掉 `key` 为 `null` 的 `Entry` 对象。
+
+## 14. 线程池的作用？常用的创建方法？
+
+【线程池的作用】
+
+1. **降低资源消耗**：线程池里的线程是可以重复利用的。一旦线程完成了某个任务，它不会立即销毁，而是回到池子里等待下一个任务。这就避免了频繁创建和销毁线程带来的开销。
+2. **提高响应速度**：因为线程池里通常会维护一定数量的核心线程（或者说“常驻工人”），任务来了之后，可以直接交给这些已经存在的、空闲的线程去执行，省去了创建线程的时间，任务能够更快地得到处理。
+3. **提高线程的可管理性**：线程池允许我们统一管理池中的线程。我们可以配置线程池的大小（核心线程数、最大线程数）、任务队列的类型和大小、拒绝策略等。这样就能控制并发线程的总量，防止资源耗尽，保证系统的稳定性。同时，线程池通常也提供了监控接口，方便我们了解线程池的运行状态（比如有多少活跃线程、多少任务在排队等），便于调优。
+
+【线程池的创建方法】
+
+```mermaid
+graph TD
+    A["线程池创建方法"] --> B["Executors工具类方法"]
+    A --> C["ThreadPoolExecutor构造器"]
+    
+    B --> B1["newFixedThreadPool(n)<br/>固定大小线程池"]
+    B --> B2["newCachedThreadPool()<br/>缓存线程池"]
+    B --> B3["newSingleThreadExecutor()<br/>单线程池"]
+    B --> B4["newScheduledThreadPool(n)<br/>定时任务线程池"]
+    
+    C --> C1["new ThreadPoolExecutor(<br/>corePoolSize,<br/>maximumPoolSize,<br/>keepAliveTime,<br/>unit,<br/>workQueue,<br/>threadFactory,<br/>handler)"]
+    
+    B1 --> D1["核心线程数 = 最大线程数 = n<br/>使用LinkedBlockingQueue<br/>适用于负载均匀的场景"]
+    B2 --> D2["核心线程数 = 0<br/>最大线程数 = Integer.MAX_VALUE<br/>使用SynchronousQueue<br/>适用于大量短时异步任务"]
+    B3 --> D3["核心线程数 = 最大线程数 = 1<br/>使用LinkedBlockingQueue<br/>保证任务顺序执行"]
+    B4 --> D4["支持延时和周期性任务<br/>使用DelayedWorkQueue<br/>适用于定时任务场景"]
+    
+    C1 --> D5["完全自定义配置<br/>推荐生产环境使用<br/>参数可控，避免OOM风险"]
+```
+
+【为什么必须用ThreadPoolExecutor而不用Executors？】
+
+- Executors的致命问题：主要是等待队列是无界的，很容易OOM
+
+  - 资源不可控：队列或线程数无限制，在高并发场景下会耗尽系统资源
+
+  - 难以调优：参数固定，无法根据业务特点优化
+
+  - 监控困难：缺乏有效的监控和调试手段
+
+- ThreadPoolExecutor的优势：
+
+  - 资源可控：所有参数都可自定义，避免系统崩溃
+
+  - 业务适配：可根据具体业务场景调整参数
+
+  - 监控友好：提供丰富的监控指标，便于性能调优
+
+```mermaid
+graph TD
+    A["为什么必须用ThreadPoolExecutor？"] --> B["Executors的问题"]
+    A --> C["ThreadPoolExecutor的优势"]
+    
+    B --> B1["newFixedThreadPool<br/>无界队列LinkedBlockingQueue<br/>可能导致OOM"]
+    B --> B2["newCachedThreadPool<br/>最大线程数Integer.MAX_VALUE<br/>可能创建大量线程OOM"]
+    B --> B3["newSingleThreadExecutor<br/>无界队列LinkedBlockingQueue<br/>可能导致OOM"]
+    B --> B4["newScheduledThreadPool<br/>最大线程数Integer.MAX_VALUE<br/>可能创建大量线程OOM"]
+    
+    C --> C1["参数完全可控<br/>避免OOM风险"]
+    C --> C2["队列大小可限制<br/>防止内存耗尽"]
+    C --> C3["线程数量可控制<br/>避免系统资源耗尽"]
+    C --> C4["拒绝策略可自定义<br/>符合业务需求"]
+    C --> C5["监控和调试友好<br/>便于性能调优"]
+    
+    B1 --> D["⚠️ 生产环境风险"]
+    B2 --> D
+    B3 --> D
+    B4 --> D
+    
+    C1 --> E["✅ 生产环境推荐"]
+    C2 --> E
+    C3 --> E
+    C4 --> E
+    C5 --> E
+```
+
+
+## 15. 线程池常用的参数有哪些？CPU密集任务和I/O密集任务的参数设置策略？
+
+一般使用 `ThreadPoolExecutor` 需要手动显示指定线程池的参数，线程池的参数如下。
+
+1. CPU密集型任务（如计算、加密等）：
+
+   - 核心线程数：CPU核数（避免线程切换开销）
+
+   - 最大线程数：CPU核数 + 1（预留一个线程处理可能的缺页中断）
+
+   - 队列：建议使用有界队列，防止内存溢出
+
+2. I/O密集型任务（如文件读写、网络请求等）：
+
+   - 核心线程数：CPU核数 × 2（线程等待I/O时，其他线程可以使用CPU）
+
+   - 最大线程数：CPU核数 × (1 + 阻塞系数)，阻塞系数 = 阻塞时间/计算时间
+
+   - 队列：根据业务特点选择，通常使用LinkedBlockingQueue
+
+```mermaid
+graph TD
+    A["ThreadPoolExecutor参数配置"] --> B["corePoolSize<br/>核心线程数"]
+    A --> C["maximumPoolSize<br/>最大线程数"]
+    A --> D["keepAliveTime<br/>线程空闲时间"]
+    A --> E["unit<br/>时间单位"]
+    A --> F["workQueue<br/>任务队列"]
+    A --> G["threadFactory<br/>线程工厂"]
+    A --> H["handler<br/>拒绝策略"]
+    
+    B --> B1["CPU密集型: CPU核数<br/>I/O密集型: CPU核数 × 2"]
+    C --> C1["CPU密集型: CPU核数 + 1<br/>I/O密集型: CPU核数 × (1 + 阻塞系数)"]
+    D --> D1["默认60秒<br/>根据业务调整"]
+    E --> E1["TimeUnit.SECONDS<br/>TimeUnit.MILLISECONDS等"]
+    
+    F --> F1["ArrayBlockingQueue<br/>有界队列"]
+    F --> F2["LinkedBlockingQueue<br/>可设置容量"]
+    F --> F3["SynchronousQueue<br/>直接传递"]
+    F --> F4["PriorityBlockingQueue<br/>优先级队列"]
+    
+    G --> G1["自定义线程名称<br/>设置daemon属性<br/>异常处理等"]
+    
+    H --> H1["AbortPolicy<br/>CallerRunsPolicy<br/>DiscardPolicy<br/>DiscardOldestPolicy"]
+```
+
+## 16. 线程池的完整执行流程？
+
+简单理解就是：核心线程 -> 等待队列 -> 最大线程 -> 拒绝策略
+
+```mermaid
+sequenceDiagram
+    participant Client as 客户端
+    participant Pool as 线程池
+    participant Core as 核心线程
+    participant Queue as 任务队列
+    participant Max as 最大线程
+    participant Handler as 拒绝策略
+    
+    Client->>Pool: 1. 提交任务
+    
+    alt 核心线程未满
+        Pool->>Core: 2a. 创建新核心线程执行
+        Core->>Client: 执行结果
+    else 核心线程已满 && 队列未满
+        Pool->>Queue: 2b. 任务入队列
+        Core->>Queue: 3. 核心线程取任务执行
+        Core->>Client: 执行结果
+    else 核心线程已满 && 队列已满 && 未达最大线程数
+        Pool->>Max: 2c. 创建非核心线程执行
+        Max->>Client: 执行结果
+        Note over Max: keepAliveTime后销毁
+    else 核心线程已满 && 队列已满 && 达到最大线程数
+        Pool->>Handler: 2d. 执行拒绝策略
+        Handler->>Client: 拒绝执行或其他策略
+    end
+```
+
+【线程池有哪些状态？状态之间如何转换？】
+
+线程池按照下面的顺序，进行状态转换
+
+1. INIT: 刚创建线程，初始化状态
+
+2. RUNNING：接收新任务，处理队列中的任务
+
+3. SHUTDOWN：不接收新任务，但处理队列中的现有任务
+
+4. STOP：不接收新任务，不处理队列中的任务，中断正在执行的任务
+
+5. TIDYING：所有任务都已终止，工作线程数为0
+
+6. TERMINATED：terminated()方法执行完毕
+
+## 17. 线程池拒绝策略详解
+
+| 策略                | 餐厅比喻                             | 使用场景             | 优缺点                                |
+| :------------------ | :----------------------------------- | :------------------- | :------------------------------------ |
+| AbortPolicy         | 直接告诉客人"满座了，不接待"         | 金融支付等关键业务   | ✅ 快速发现问题<br/>❌ 可能导致程序崩溃 |
+| CallerRunsPolicy    | 让客人自己去厨房做菜                 | 重要但可延迟的任务   | ✅ 任务不丢失<br/>❌ 阻塞调用者         |
+| DiscardPolicy       | 悄悄把客人赶走，假装没看见           | 日志记录等非关键任务 | ✅ 系统稳定<br/>❌ 任务丢失无感知       |
+| DiscardOldestPolicy | 把排队最久的客人赶走，给新客人腾位置 | 实时数据处理         | ✅ 保证新任务<br/>❌ 旧任务可能很重要   |
+
+```mermaid
+graph TD
+    A["线程池拒绝策略"] --> B["AbortPolicy<br/>直接抛异常（默认）"]
+    A --> C["CallerRunsPolicy<br/>调用者执行"]
+    A --> D["DiscardPolicy<br/>静默丢弃"]
+    A --> E["DiscardOldestPolicy<br/>丢弃最老任务"]
+    
+    B --> B1["✅ 快速失败，便于发现问题<br/>❌ 可能导致程序异常终止<br/>🎯 适用：关键任务，不能丢失"]
+    
+    C --> C1["✅ 保证任务执行，不丢失<br/>❌ 可能阻塞调用线程<br/>🎯 适用：任务重要但可容忍延迟"]
+    
+    D --> D1["✅ 系统稳定，不抛异常<br/>❌ 任务丢失，无感知<br/>🎯 适用：允许丢失的非关键任务"]
+    
+    E --> E1["✅ 为新任务让路<br/>❌ 旧任务可能很重要<br/>🎯 适用：时效性要求高的任务"]
+    
+    style B fill:#ff9999
+    style C fill:#99ccff
+    style D fill:#ffcc99
+    style E fill:#ccff99
+```

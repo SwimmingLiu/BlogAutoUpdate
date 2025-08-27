@@ -1,7 +1,7 @@
 ---
 title: "Coze工作流分析"
 date: 2025-08-07T23:27:35+08:00
-lastmod: 2025-08-07T23:27:35+08:00
+lastmod: 2025-08-27T21:27:35+08:00
 author: ["SwimmingLiu"]
 
 categories:
@@ -1015,6 +1015,29 @@ type StrategyParam struct {
 }
 ```
 
+#### 1.1.6 交互节点
+
+> 交互节点就是需要让用户做出反馈的节点
+
+```mermaid
+sequenceDiagram
+    participant User as 用户
+    participant Workflow as 工作流引擎
+    participant InputNode as 交互节点
+    participant InterruptEvent as 中断事件
+    participant Database as 数据库
+    
+    User->>Workflow: 执行工作流
+    Workflow->>InputNode: 遇到交互节点
+    InputNode->>InterruptEvent: 创建中断事件
+    InterruptEvent->>Database: 持久化中断状态
+    Workflow->>User: 返回中断事件
+    
+    User->>Workflow: 提供交互输入
+    Workflow->>InputNode: 恢复执行
+    InputNode->>Workflow: 继续后续流程
+```
+
 ### 1.2 如何从画布转换为后端类？如何转换为执行态？
 
 前端传入画布的 DSL语言（JSON）给后端之后，会解析为上方的后端结构。画布中的每个节点都会变成 `canvas.go`中的 `Node`结构体。但是转换后的 `Node`结构体只是一个存储态，如果需要执行工作流还需要将 `Node`结构体从存储态转为运行态。后端 schema 的 `NodeSchema`结构体就是 针对用于表达工作流的运行态的
@@ -1661,9 +1684,9 @@ graph LR
     B --> F["结束, 返回 issues"]
 ```
 
-## 工作流执行 TODO
+## 工作流执行
 
-### 3.1 工作流执行策略 
+### 3.1 工作流执行交互策略
 
 工作流执行可以分为两种：同步策略和异步策略
 
@@ -1762,7 +1785,7 @@ sequenceDiagram
 *   **资源密集型工作流**：避免阻塞用户界面
     
 
-### 3.2 异步策略
+### 3.2 工作流执行交互-异步策略
 
 异步策略采用分层存储机制：
 
@@ -1989,4 +2012,543 @@ graph TD
     F --> F1["goroutine + chan<br/>内存发布订阅"]
     F --> F2["事件循环处理<br/>顺序消费"]
     F --> F3["StreamWriter管理<br/>自动关闭"]
+```
+
+### 3.3 工作流执行过程
+
+#### 3.3.1 工作流执行-调试过程
+
+##### 3.3.1.1 调试过程-执行过程 （不包含工作流执行过程）
+
+> 工作流编辑模式，进行调试，采用异步模式执行。
+
+```mermaid
+sequenceDiagram
+    participant Client as 客户端
+    participant AS as ApplicationService
+    participant Check as checkUserSpace
+    participant Domain as WorkflowDomainSVC
+    participant Impl as executableImpl
+    participant Repo as Repository
+    participant Canvas as CanvasAdaptor
+    participant Compose as WorkflowCompose
+    participant Nodes as NodesConverter
+    participant Runner as WorkflowRunner
+
+    Client->>AS: TestRun(ctx, req)
+    
+    Note over AS: 第一步：验证用户权限
+    AS->>Check: checkUserSpace(ctx, userID, spaceID)
+    Check-->>AS: 权限验证结果
+    
+    Note over AS: 第二步：构建执行配置
+    AS->>AS: 构建ExecuteConfig对象
+    
+    Note over AS: 第三步：调用域服务异步执行
+    AS->>Domain: AsyncExecute(ctx, exeCfg, input)
+    Domain->>Impl: AsyncExecute(ctx, config, input)
+    
+    Note over Impl: 第四步：获取工作流实体
+    Impl->>Impl: Get(ctx, GetPolicy)
+    Impl->>Repo: 查询工作流数据
+    Repo-->>Impl: 返回工作流实体
+    
+    Note over Impl: 第五步：权限检查（如果是应用工作流）
+    alt 应用工作流且发布模式
+        Impl->>Impl: checkApplicationWorkflowReleaseVersion
+        Impl->>Repo: 检查版本权限
+        Repo-->>Impl: 验证结果
+    end
+    
+    Note over Impl: 第六步：解析画布配置
+    Impl->>Impl: sonic.UnmarshalString(canvas)
+    Impl->>Canvas: CanvasToWorkflowSchema(ctx, canvas)
+    Canvas-->>Impl: 返回工作流模式
+    
+    Note over Impl: 第七步：创建工作流对象
+    Impl->>Compose: NewWorkflow(ctx, workflowSC, opts...)
+    Compose-->>Impl: 返回工作流实例
+    
+    Note over Impl: 第八步：转换输入参数
+    Impl->>Nodes: ConvertInputs(ctx, input, wf.Inputs(), opts...)
+    Nodes-->>Impl: 返回转换后的输入
+    
+    Note over Impl: 第九步：准备执行环境
+    Impl->>Runner: NewWorkflowRunner(...).Prepare(ctx)
+    Runner-->>Impl: 返回执行ID和选项
+    
+    Note over Impl: 第十步：设置调试最新执行ID
+    alt 调试模式
+        Impl->>Repo: SetTestRunLatestExeID(ctx, wfID, operator, executeID)
+    end
+    
+    Note over Impl: 第十一步：异步运行工作流
+    Impl->>Compose: wf.AsyncRun(cancelCtx, convertedInput, opts...)
+    
+    Impl-->>Domain: 返回executeID
+    Domain-->>AS: 返回executeID
+    AS-->>Client: 返回TestRunResponse
+```
+
+##### 3.3.1.2 工作流执行过程 （DAG执行流程）
+
+> eino框架 DAG执行流程
+
+❶ **执行模式选择阶段**
+
+```go
+var runWrapper runnableCallWrapper
+runWrapper = runnableInvoke
+if isStream {
+    runWrapper = runnableTransform
+}
+
+```
+
+根据`isStream`参数选择执行包装器(wrapper function)。这就像选择传送带的工作模式：同步模式一次处理一批货物，流式模式则是连续不断地处理数据流。
+
+❷ **管理器初始化阶段**
+
+```go
+cm := r.initChannelManager(isStream)
+tm := r.initTaskManager(runWrapper, opts...)
+
+```
+
+创建通道管理器(channel manager)和任务管理器(task manager)。通道管理器负责节点间的数据流转，任务管理器负责并发执行控制，类似于工厂的物流系统和人员调度系统。
+
+❸ **检查点恢复阶段** 检查是否存在检查点(checkpoint)进行状态恢复。如果有检查点，就从断点继续执行；如果没有，就从START节点开始全新执行。这如同游戏的存档系统，可以从上次中断的地方继续。
+
+❄ **主执行循环阶段**
+
+```go
+for step := 0; ; step++ {
+    // 三阶段执行模式
+    err = tm.submit(nextTasks)
+    completedTasks = tm.wait()
+    nextTasks, result, isEnd, err = r.calculateNextTasks(...)
+}
+
+```
+
+这是核心的三阶段循环：提交任务 → 等待完成 → 计算下一个任务。每轮循环都会检查上下文取消、最大步数限制，以及各种中断情况。
+
+```mermaid
+sequenceDiagram
+    participant Client as 客户端
+    participant Runner as runner
+    participant CM as channelManager
+    participant TM as taskManager
+    participant Handler as 回调处理器
+    participant Node as 节点执行器
+
+    Client->>Runner: run(ctx, isStream, input, opts)
+    
+    note over Runner: 选择执行包装器
+    alt isStream == true
+        Runner->>Runner: runWrapper = runnableTransform
+    else isStream == false
+        Runner->>Runner: runWrapper = runnableInvoke
+    end
+    
+    note over Runner: 初始化管理器
+    Runner->>CM: initChannelManager(isStream)
+    CM-->>Runner: channelManager实例
+    Runner->>TM: initTaskManager(runWrapper, opts)
+    TM-->>Runner: taskManager实例
+    
+    note over Runner: 处理选项和检查点
+    Runner->>Runner: extractOption(chanSubscribeTo, opts)
+    Runner->>Runner: getCheckPointInfo(opts)
+    
+    alt 存在检查点
+        Runner->>Runner: 加载检查点状态
+        Runner->>CM: loadChannels(checkpoint.Channels)
+        Runner->>Runner: restoreTasks(...)
+    else 无检查点
+        Runner->>Handler: onGraphStart(ctx, input, isStream)
+        Handler-->>Runner: 处理后的ctx和input
+        Runner->>Runner: calculateNextTasks([startTask])
+    end
+    
+    note over Runner: 主执行循环
+    loop 直到完成或达到最大步数
+        Runner->>TM: submit(nextTasks)
+        TM->>Node: 并发执行任务
+        Node-->>TM: 任务完成结果
+        TM-->>Runner: completedTasks
+        
+        note over Runner: 处理中断
+        Runner->>Runner: resolveInterruptCompletedTasks(tempInfo, completedTasks)
+        
+        alt 存在子图中断或重运行节点
+            Runner->>Runner: handleInterruptWithSubGraphAndRerunNodes(...)
+            Runner-->>Client: 返回中断错误
+        else 存在before/after中断
+            Runner->>Runner: handleInterrupt(...)
+            Runner-->>Client: 返回中断错误
+        else 正常完成
+            Runner->>Runner: calculateNextTasks(ctx, completedTasks)
+            alt 到达END节点
+                Runner->>Handler: onGraphEnd(ctx, result, isStream)
+                Handler-->>Runner: 处理后的结果
+                Runner-->>Client: 返回最终结果
+            else 继续执行
+                note over Runner: 检查before中断点
+                alt 命中before中断点
+                    Runner->>Runner: handleInterrupt(...)
+                    Runner-->>Client: 返回中断错误
+                else 继续下一轮循环
+                    note over Runner: nextTasks准备就绪
+                end
+            end
+        end
+    end
+```
+
+##### 3.3.1.3 DAG图中节点队列 （执行顺序）
+
+> DAG图中节点执行顺序，如何获取节点队列
+
+```mermaid
+flowchart TD
+    A[开始执行run方法] --> B["声明: var nextTasks []*task"]
+    B --> C{是否存在检查点?}
+    
+    C -->|有检查点| D[从检查点恢复]
+    D --> E[restoreTasks方法]
+    E --> F[nextTasks = 恢复的任务列表]
+    
+    C -->|无检查点| G[全新执行]
+    G --> H[创建START任务]
+    H --> I["task{nodeKey: START, output: input}"]
+    I --> J[calculateNextTasks方法]
+    J --> K[nextTasks = 初始计算结果]
+    
+    F --> L[进入主执行循环]
+    K --> L
+    
+    L --> M[tm.submit提交当前nextTasks]
+    M --> N[tm.wait等待任务完成]
+    N --> O[获得completedTasks]
+    O --> P[calculateNextTasks再次计算]
+    P --> Q[更新nextTasks为新任务列表]
+    
+    Q --> R{检查END节点}
+    R -->|到达END| S[返回最终结果]
+    R -->|未到达| T{检查中断条件}
+    
+    T -->|有中断| U[处理中断并返回]
+    T -->|无中断| M
+    
+    style B fill:#e1f5fe
+    style F fill:#c8e6c9
+    style K fill:#c8e6c9
+    style Q fill:#fff3e0
+    style S fill:#ffcdd2
+```
+> calculateNextTasks 方法的具体执行流程
+
+```mermaid
+sequenceDiagram
+    participant Caller as 调用方(主循环)
+    participant CNT as calculateNextTasks
+    participant RCT as resolveCompletedTasks
+    participant CB as calculateBranch
+    participant CM as channelManager
+    participant CT as createTasks
+
+    Caller->>CNT: calculateNextTasks(ctx, completedTasks, isStream, cm, optMap)
+    
+    note over CNT: 第一阶段：解析已完成任务
+    CNT->>RCT: resolveCompletedTasks(ctx, completedTasks, isStream, cm)
+    
+    note over RCT: 处理每个已完成任务
+    loop 遍历completedTasks
+        RCT->>RCT: 处理控制依赖关系
+        RCT->>RCT: 复制任务输出数据
+        RCT->>CB: calculateBranch(分支计算)
+        CB-->>RCT: 返回分支选择的节点列表
+        RCT->>RCT: 合并直接写入目标和分支目标
+        RCT->>RCT: 为多后继节点复制数据
+        RCT->>RCT: 构建writeChannelValues映射
+    end
+    
+    RCT-->>CNT: 返回(writeChannelValues, controls, err)
+    
+    alt err != nil
+        CNT-->>Caller: 返回错误
+    end
+    
+    note over CNT: 第二阶段：更新通道状态
+    CNT->>CM: updateAndGet(ctx, writeChannelValues, controls)
+    
+    note over CM: 通道管理器内部处理
+    CM->>CM: 更新通道值
+    CM->>CM: 更新依赖关系
+    CM->>CM: 检查哪些节点准备就绪
+    CM-->>CNT: 返回(nodeMap, err)
+    
+    alt err != nil
+        CNT-->>Caller: 返回错误
+    end
+    
+    note over CNT: 第三阶段：处理执行结果
+    alt len(nodeMap) == 0
+        CNT-->>Caller: 返回([], nil, false, nil)
+    else nodeMap包含节点
+        alt nodeMap[END]存在
+            note over CNT: 到达图的结束节点
+            CNT-->>Caller: 返回(nil, endResult, true, nil)
+        else 未到达END
+            note over CNT: 第四阶段：创建下一批任务
+            CNT->>CT: createTasks(ctx, nodeMap, optMap)
+            
+            note over CT: 为每个准备好的节点创建任务
+            loop 遍历nodeMap
+                CT->>CT: 查找节点的chanCall配置
+                CT->>CT: 设置检查点转发(如果是子图)
+                CT->>CT: 创建task实例
+                CT->>CT: 添加到nextTasks列表
+            end
+            
+            CT-->>CNT: 返回(nextTasks, err)
+            
+            alt err != nil
+                CNT-->>Caller: 返回错误
+            else 成功创建任务
+                CNT-->>Caller: 返回(nextTasks, nil, false, nil)
+            end
+        end
+    end
+```
+> 流程图
+
+```mermaid
+flowchart LR
+    A[calculateNextTasks开始] --> B[第一阶段：调用resolveCompletedTasks]
+    
+    B --> C[遍历completedTasks列表]
+    C --> D[处理控制依赖关系]
+    D --> E[复制任务输出数据]
+    E --> F[调用calculateBranch计算分支]
+    F --> G[合并直接目标和分支目标]
+    G --> H[为多后继节点复制数据]
+    H --> I[构建writeChannelValues映射]
+    I --> J{还有未处理任务?}
+    J -->|是| C
+    J -->|否| K[返回writeChannelValues和controls]
+    
+    K --> L[第二阶段：调用cm.updateAndGet]
+    L --> M[更新通道值]
+    M --> N[更新依赖关系]
+    N --> O[检查哪些节点准备就绪]
+    O --> P[返回nodeMap]
+    
+    P --> Q{nodeMap为空?}
+    Q -->|是| R[返回空任务列表]
+    Q -->|否| S{包含END节点?}
+    
+    S -->|是| T[提取END节点结果]
+    T --> U[返回final result和isEnd=true]
+    
+    S -->|否| V[第三阶段：调用createTasks]
+    V --> W[遍历nodeMap中的节点]
+    W --> X[查找节点的chanCall配置]
+    X --> Y{节点是子图?}
+    Y -->|是| Z[设置检查点转发]
+    Y -->|否| AA[直接处理]
+    Z --> AA
+    AA --> BB[创建task实例]
+    BB --> CC[设置任务上下文和选项]
+    CC --> DD[添加到nextTasks列表]
+    DD --> EE{还有未处理节点?}
+    EE -->|是| W
+    EE -->|否| FF[返回nextTasks列表]
+    
+    FF --> GG[返回nextTasks和isEnd=false]
+    
+    style B fill:#e1f5fe
+    style L fill:#fff3e0
+    style V fill:#e8f5e8
+    style T fill:#ffebee
+    style GG fill:#f3e5f5
+```
+
+### 3.4 全局状态机是什么？
+
+```mermaid
+graph TD
+    A[工作流执行请求] --> B[WorkflowExecution 实体]
+    B --> C[状态机状态管理]
+    C --> D[数据库持久化]
+    
+    C --> E[Running 运行中]
+    C --> F[Success 成功]
+    C --> G[Failed 失败]
+    C --> H[Cancel 取消]
+    C --> I[Interrupted 中断]
+    
+    I --> J[InterruptEvent 中断事件]
+    J --> K[中断事件持久化]
+    J --> L[中断事件恢复]
+    
+    D --> M[workflow_execution 表]
+    K --> N[interrupt_event 表]
+    
+    O[状态转换控制] --> C
+    O --> P[UpdateWorkflowExecution]
+    O --> Q[状态验证逻辑]
+```
+
+## 工作流发布
+
+### 4.1 工作流发布流程
+
+```mermaid
+sequenceDiagram
+    participant Client as 客户端
+    participant Handler as "PublishProject<br/>Handler"
+    participant AppSvc as "APPApplicationService"
+    participant DomainSvc as "AppService<br/>(Domain层)"
+    participant PluginSvc as "Plugin服务"
+    participant WorkflowSvc as "Workflow服务"
+    participant AppRepo as "APP仓储"
+    participant EventBus as "项目事件总线"
+
+    Client->>Handler: POST /api/intelligence_api/publish/publish_project
+    Handler->>Handler: 参数绑定与验证
+    
+    alt 参数验证失败
+        Handler-->>Client: 400 Bad Request
+    end
+    
+    Handler->>AppSvc: PublishAPP(ctx, req)
+    AppSvc->>AppSvc: ValidateDraftAPPAccess(草稿权限验证)
+    AppSvc->>AppSvc: getConnectorPublishConfigs(获取连接器发布配置)
+    
+    AppSvc->>DomainSvc: PublishAPP(ctx, publishReq)
+    
+    Note over DomainSvc: 发布前检查阶段
+    DomainSvc->>DomainSvc: checkCanPublishAPP(检查版本是否已存在)
+    DomainSvc->>AppRepo: CheckAPPVersionExist(检查版本)
+    AppRepo-->>DomainSvc: 版本存在状态
+    
+    alt 版本已存在
+        DomainSvc-->>AppSvc: 返回错误
+        AppSvc-->>Handler: 错误响应
+        Handler-->>Client: 500 Internal Server Error
+    end
+    
+    Note over DomainSvc: 创建发布版本阶段
+    DomainSvc->>DomainSvc: createPublishVersion(创建发布版本)
+    DomainSvc->>AppRepo: GetDraftAPP(获取草稿应用)
+    AppRepo-->>DomainSvc: 草稿应用信息
+    DomainSvc->>AppRepo: CreateAPPPublishRecord(创建发布记录)
+    AppRepo-->>DomainSvc: 发布记录ID
+    
+    Note over DomainSvc: 资源打包与发布阶段
+    DomainSvc->>DomainSvc: publishByConnectors(按连接器发布)
+    
+    par 并行打包资源
+        DomainSvc->>PluginSvc: packPlugins(打包插件)
+        PluginSvc->>PluginSvc: PublishAPPPlugins(发布应用插件)
+        PluginSvc-->>DomainSvc: 插件打包结果
+    and
+        DomainSvc->>WorkflowSvc: packWorkflows(打包工作流)
+        WorkflowSvc->>WorkflowSvc: ReleaseApplicationWorkflows(发布应用工作流)
+        WorkflowSvc-->>DomainSvc: 工作流打包结果
+    end
+    
+    alt 资源打包失败
+        DomainSvc->>AppRepo: UpdateAPPPublishStatus(更新为打包失败)
+        DomainSvc->>DomainSvc: packResourcesFailedPostProcess(失败后处理)
+        DomainSvc-->>AppSvc: 返回失败结果
+    else 资源打包成功
+        DomainSvc->>AppRepo: UpdateConnectorPublishStatus(更新连接器状态)
+        DomainSvc->>AppRepo: UpdateAPPPublishStatus(更新为发布完成)
+        DomainSvc-->>AppSvc: 返回成功结果
+    end
+    
+    AppSvc-->>DomainSvc: 发布结果
+    
+    alt 发布成功
+        AppSvc->>EventBus: PublishProject(发布项目更新事件)
+        EventBus->>EventBus: 更新搜索索引
+    end
+    
+    AppSvc-->>Handler: 发布响应
+    Handler->>Handler: 构造JSON响应
+    Handler-->>Client: 200 OK + PublishRecordID
+```
+
+### 4.2 工作流打包过程
+
+```mermaid
+sequenceDiagram
+    participant PublishService as "App发布服务"
+    participant CrossWorkflow as "跨域工作流服务"
+    participant WorkflowDomain as "工作流领域服务"
+    participant WorkflowRepo as "工作流仓储"
+    participant Validator as "工作流验证器"
+    participant Database as "数据库"
+
+    Note over PublishService: 工作流打包发布流程开始
+    PublishService->>CrossWorkflow: packWorkflows调用
+    Note right of PublishService: 传入appID、version、<br/>pluginIDs、connectorIDs
+
+    CrossWorkflow->>WorkflowDomain: ReleaseApplicationWorkflows
+    
+    Note over WorkflowDomain: 第一阶段：获取应用工作流
+    WorkflowDomain->>WorkflowRepo: MGet获取应用所有草稿工作流
+    WorkflowRepo-->>WorkflowDomain: 返回工作流列表
+
+    Note over WorkflowDomain: 第二阶段：工作流验证
+    loop 遍历每个工作流
+        WorkflowDomain->>Validator: validateWorkflowTree验证
+        Validator->>Validator: 解析Canvas结构
+        Validator->>Validator: 清理孤立节点
+        Validator->>Validator: 验证节点连接关系
+        Validator->>Validator: 检测循环依赖
+        Validator->>Validator: 验证嵌套流程
+        Validator->>Validator: 检查变量可达性
+        Validator-->>WorkflowDomain: 返回验证问题列表
+        
+        alt 存在验证问题
+            WorkflowDomain-->>CrossWorkflow: 返回验证失败信息
+            CrossWorkflow-->>PublishService: 工作流打包失败
+        end
+    end
+
+    Note over WorkflowDomain: 第三阶段：资源引用替换
+    loop 遍历每个工作流
+        WorkflowDomain->>WorkflowDomain: 解析Canvas JSON
+        WorkflowDomain->>WorkflowDomain: replaceRelatedWorkflowOrExternalResourceInWorkflowNodes
+        Note right of WorkflowDomain: 替换插件引用为发布版本<br/>替换子工作流引用
+        WorkflowDomain->>WorkflowDomain: 重新序列化Canvas
+    end
+
+    Note over WorkflowDomain: 第四阶段：创建发布版本
+    loop 遍历每个工作流
+        WorkflowDomain->>WorkflowDomain: 构建VersionInfo对象
+        Note right of WorkflowDomain: 包含版本号、Canvas、<br/>输入输出参数等信息
+        WorkflowDomain->>WorkflowRepo: CreateVersion创建版本记录
+        WorkflowRepo->>Database: 插入工作流版本数据
+        Database-->>WorkflowRepo: 版本创建成功
+        WorkflowRepo-->>WorkflowDomain: 返回创建结果
+    end
+
+    Note over WorkflowDomain: 第五阶段：连接器关联
+    loop 遍历每个连接器
+        WorkflowDomain->>WorkflowRepo: BatchCreateConnectorWorkflowVersion
+        Note right of WorkflowDomain: 为连接器批量创建<br/>工作流版本关联关系
+        WorkflowRepo->>Database: 插入连接器-工作流版本映射
+        Database-->>WorkflowRepo: 关联创建成功
+        WorkflowRepo-->>WorkflowDomain: 返回关联结果
+    end
+
+    WorkflowDomain-->>CrossWorkflow: 工作流发布成功，返回空问题列表
+    CrossWorkflow-->>PublishService: 工作流打包完成
+
+    Note over PublishService: 工作流打包发布流程结束
 ```

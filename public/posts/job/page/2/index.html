@@ -200,6 +200,27 @@
 
 <article class="post-entry"> 
   <header class="entry-header">
+    <h2 class="entry-hint-parent">个人简历常问问题
+    </h2>
+  </header>
+  <div class="entry-content">
+    <p>个人简历详情查看 -&gt; 个人简历页
+1. 异步秒杀机制的异步是如何实现的? 【正常秒杀的顺序】
+查询优惠券 -&gt; 判断秒杀库存 -&gt; 查询订单 -&gt; 校验是否一人一单 -&gt; 扣减库存 -&gt; 创建订单
+【异步秒杀】
+为了实现用户异步下单，其实就是把是否能够下单的判断逻辑和下单的操作拆分开。
+采用Redis来判断是否有足够的库存和校验一人一单 如果满足条件，把用户、订单id、商品id保存到阻塞队列，直接给用户返回秒杀成功。 如果不满足条件，直接返回秒杀失败。 后台线程会去执行queue里边的消息 这样就可以实现异步的秒杀下单了，那么如果实现判断秒杀库存和校验一人一单呢？
+【秒杀库存 &#43; 一人一单】
+用户下单之后，判断redis当中的库存key的value是否大于0 value &gt; 0 -&gt; 第2步 value &lt;= 0 -&gt; 直接返回库存不足 （返回1） 如果库存充足，判断redis当中的秒杀商品key的 set 集合是否已包含userid 包含userid， 说明用户已经下单了，直接返回当前用户已下单 (返回2) 不包含 userid -&gt; 第3步 如果用户没有下单，将用户的 userid 存入 set 里面 (返回0) 【注意】 整个操作是原子性的，这样就确保了不会出现超卖现象和一人多单现象
+-- 1.参数列表 -- 1.1.秒杀商品id local voucherId = ARGV[1] -- 1.2.用户id local userId = ARGV[2] -- 1.3.订单id local orderId = ARGV[3] -- 2.数据key -- 2.1.库存key local stockKey = &#39;seckill:stock:&#39; .. voucherId -- 2.2.秒杀商品订单key local orderKey = &#39;seckill:order:&#39; .. voucherId -- 3.脚本业务 -- 3.1.判断库存是否充足 get stockKey if(tonumber(redis.call(&#39;get&#39;, stockKey)) &lt;= 0) then -- 3.2.库存不足，返回1 return 1 end -- 3.2.判断用户是否下单 SISMEMBER orderKey userId if(redis.call(&#39;sismember&#39;, orderKey, userId) == 1) then -- 3.3.存在，说明是重复下单，返回2 return 2 end return 0 【阻塞队列实现下单】
+...</p>
+  </div>
+  <footer class="entry-footer"><span title='2025-02-27 10:52:54 +0800 CST'>February 27, 2025</span>&nbsp;·&nbsp;1 min&nbsp;·&nbsp;SwimmingLiu</footer>
+  <a class="entry-link" aria-label="post link to 个人简历常问问题" href="https://swimmingliu.cn/posts/job/personal-interview-hot-question/"></a>
+</article>
+
+<article class="post-entry"> 
+  <header class="entry-header">
     <h2 class="entry-hint-parent">Redis面试题笔记
     </h2>
   </header>

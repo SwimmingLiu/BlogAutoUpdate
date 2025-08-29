@@ -35,8 +35,6 @@ cover:
     relative: false
 ---
 
-# 美团笔试合集
-
 ## 2024.09.07
 
 ### 1. 第一题
@@ -517,45 +515,74 @@ public class Main {
 import java.util.Arrays;
 import java.util.Scanner;
 
-public class Main {
-
-    // 判断是否可以在给定的间隔范围内种下至少 k 棵树
-    public static boolean check(int[] A, int x, int k) {
-        int cnt = 0;
-        int bd = 0; // 上一次种到的边界
-        for (int a : A) {
-            if (a + x > Math.max(a, bd)) {
-                cnt += (a + x) - Math.max(a, bd);
+public class OptimalSolution {
+    
+    /**
+     * 检查给定区间长度len是否能种至少k棵树
+     * 关键思路：贪心策略 - 每个工人尽量往右种，但不能超过之前覆盖的边界
+     */
+    public static boolean check(int[] positions, int len, int k) {
+        int totalTrees = 0;      // 总共种的树数
+        int rightBoundary = 0;   // 当前已经种树覆盖到的最右边界
+        
+        for (int pos : positions) {
+            // 当前工人的种树区间是 [pos, pos + len - 1]
+            int currentStart = pos;
+            int currentEnd = pos + len - 1;
+            
+            // 实际种树的起始位置：不能重复种树，所以要从 max(currentStart, rightBoundary + 1) 开始
+            int actualStart = Math.max(currentStart, rightBoundary + 1);
+            
+            // 如果实际起始位置没超过当前工人的种树范围
+            if (actualStart <= currentEnd) {
+                // 计算这个工人实际能种的树数
+                int treesPlanted = currentEnd - actualStart + 1;
+                totalTrees += treesPlanted;
+                
+                // 更新右边界
+                rightBoundary = currentEnd;
+                
+                // 提前结束：如果已经种够了k棵树
+                if (totalTrees >= k) {
+                    return true;
+                }
             }
-            bd = Math.max(a + x, bd);
+            // 如果 actualStart > currentEnd，说明这个工人种不了任何新树（都被前面覆盖了）
         }
-        return cnt >= k;
+        
+        return totalTrees >= k;
     }
-
+    
     public static void main(String[] args) {
         Scanner scanner = new Scanner(System.in);
         int n = scanner.nextInt();
         int k = scanner.nextInt();
-        int[] A = new int[n];
-
+        int[] positions = new int[n];
+        
         for (int i = 0; i < n; i++) {
-            A[i] = scanner.nextInt();
+            positions[i] = scanner.nextInt();
         }
-
-        Arrays.sort(A);
-
-        int l = 0, r = 300000; // Java 中设置边界
-
-        while (l < r) {
-            int mid = (l + r) >> 1;
-            if (check(A, mid, k)) {
-                r = mid;
+        
+        // 排序：让工人按位置从左到右排列，这样贪心策略才有效
+        Arrays.sort(positions);
+        
+        // 二分查找答案
+        int left = 1;                    // 最小可能的区间长度
+        int right = 300000;              // 最大可能的区间长度（根据题目数据范围估算）
+        
+        while (left < right) {
+            int mid = left + (right - left) / 2;  // 防止溢出的中点计算方式
+            
+            if (check(positions, mid, k)) {
+                // 如果mid长度可行，尝试更小的长度
+                right = mid;
             } else {
-                l = mid + 1;
+                // 如果mid长度不可行，必须用更大的长度
+                left = mid + 1;
             }
         }
-
-        System.out.println(r);
+        
+        System.out.println(left);  // left == right，就是答案
         scanner.close();
     }
 }
@@ -605,7 +632,9 @@ public class Main {
 
 #### 答案
 
-ST表+单调栈+二分。使用ST表预处理，便于后续求出[l,r]区间的最大值的下标。对于每一个元素使用单调栈处理，方便求每一个元素下一个更大的元素的下标。如果[l,r]的区间的最大值已经是整个数组的最大值，那么此时的判断就非常清晰：最大值的数量超过2个，那么必然是平局，我们只需要搜索距离区间最近的最大值即可。否则一定是输的，此时需要特判一下，如果区间大小只有1，那么最少需要扩大一个才可以选择。否则，应该使用st表找到当前区间的最大值的下标mx_index，并且使用单调栈找到mx_index的下一个更大的元素/前一个更大的元素，比较哪个更接近即可。
+> ST表+单调栈+二分。使用ST表预处理，便于后续求出[l,r]区间的最大值的下标。对于每一个元素使用单调栈处理，方便求每一个元素下一个更大的元素的下标。如果[l,r]的区间的最大值已经是整个数组的最大值，那么此时的判断就非常清晰：最大值的数量超过2个，那么必然是平局，我们只需要搜索距离区间最近的最大值即可。否则一定是输的，此时需要特判一下，如果区间大小只有1，那么最少需要扩大一个才可以选择。否则，应该使用st表找到当前区间的最大值的下标mx_index，并且使用单调栈找到mx_index的下一个更大的元素/前一个更大的元素，比较哪个更接近即可。
+
+这种博弈论的题太难了，骗分就行。把样例和一些边界条件都枚举出来，剩下的情况随机骗分。
 
 ## 2024.08.17
 
@@ -617,61 +646,125 @@ ST表+单调栈+二分。使用ST表预处理，便于后续求出[l,r]区间的
 
 #### 答案
 
-这个正则表达式用于匹配国际电话号码，其中号码部分可以包含数字和井号。
+按照规则进行模拟，最好是用正则表达式，但是考试肯定写不出来。
 
 ```java
 import java.util.Scanner;
-import java.util.ArrayList;
-import java.util.regex.Pattern;
-import java.util.regex.Matcher;
 
-public class StringClassifier {
-
-    // 检查是否为有效的电子邮件地址
-    public static boolean isEmail(String str) {
-        Pattern pattern = Pattern.compile("^[a-zA-Z0-9_]+@[a-zA-Z0-9_]+\\.com$");
-        Matcher matcher = pattern.matcher(str);
-        return matcher.matches();
+public class StringClassifierOptimal {
+    
+    // 工具方法：检查字符串是否只包含数字
+    private static boolean isAllDigits(String s) {
+        if (s.isEmpty()) return false;
+        for (char c : s.toCharArray()) {
+            if (!Character.isDigit(c)) return false;
+        }
+        return true;
     }
-
-    // 检查是否为有效的IP地址
-    public static boolean isIP(String str) {
-        Pattern pattern = Pattern.compile("^(\\d{1,2}|1\\d{2}|2[0-4]\\d|25[0-5])\\.(\\d{1,2}|1\\d{2}|2[0-4]\\d|25[0-5])\\.(\\d{1,2}|1\\d{2}|2[0-4]\\d|25[0-5])\\.(\\d{1,2}|1\\d{2}|2[0-4]\\d|25[0-5])$");
-        Matcher matcher = pattern.matcher(str);
-        return matcher.matches();
+    
+    // 工具方法：检查字符串是否只包含字母、数字、下划线
+    private static boolean isValidIdentifier(String s) {
+        if (s.isEmpty()) return false;
+        for (char c : s.toCharArray()) {
+            if (!Character.isLetterOrDigit(c) && c != '_') return false;
+        }
+        return true;
     }
-
-    // 检查是否为有效的电话号码
-    public static boolean isPhone(String str) {
-        Pattern pattern = Pattern.compile("^\\+\\d+-\\d+-[\\d#]+$");
-        Matcher matcher = pattern.matcher(str);
-        return matcher.matches();
+    
+    // 工具方法：检查字符串是否只包含数字和#
+    private static boolean isValidPhoneNumber(String s) {
+        if (s.isEmpty()) return false;
+        for (char c : s.toCharArray()) {
+            if (!Character.isDigit(c) && c != '#') return false;
+        }
+        return true;
     }
-
-    public static void main(String[] args) {
-        Scanner scanner = new Scanner(System.in);
-        int n = scanner.nextInt();  // 读取输入的组数
-        scanner.nextLine();  // 忽略整数后的换行符
-
-        ArrayList<String> results = new ArrayList<>();
-        while (n-- > 0) {
-            String input = scanner.nextLine();
-
-            if (isEmail(input)) {
-                results.add("email");
-            } else if (isIP(input)) {
-                results.add("ip");
-            } else if (isPhone(input)) {
-                results.add("phone");
-            } else {
-                results.add("invalid");
+    
+    // 验证电子邮件：更简洁的实现
+    private static boolean isValidEmail(String s) {
+        // 查找@符号的位置
+        int atIndex = s.indexOf('@');
+        int lastAtIndex = s.lastIndexOf('@');
+        
+        // 必须有且仅有一个@符号，且不在首尾
+        if (atIndex == -1 || atIndex != lastAtIndex || atIndex == 0 || atIndex == s.length() - 1) {
+            return false;
+        }
+        
+        // 验证username和domain部分
+        String username = s.substring(0, atIndex);
+        String domain = s.substring(atIndex + 1);
+        
+        return isValidIdentifier(username) && isValidIdentifier(domain);
+    }
+    
+    // 验证IP地址：更清晰的逻辑
+    private static boolean isValidIP(String s) {
+        // 手动分割，避免使用split的开销
+        String[] parts = new String[4];
+        int partIndex = 0;
+        int start = 0;
+        
+        for (int i = 0; i <= s.length(); i++) {
+            if (i == s.length() || s.charAt(i) == '.') {
+                if (partIndex >= 4) return false; // 超过4部分
+                parts[partIndex++] = s.substring(start, i);
+                start = i + 1;
             }
         }
-
-        for (String result : results) {
-            System.out.println(result);
+        
+        // 必须恰好是4部分
+        if (partIndex != 4) return false;
+        
+        // 验证每个部分
+        for (String part : parts) {
+            if (!isAllDigits(part)) return false;
+            
+            int num = Integer.parseInt(part);
+            if (num > 255) return false;
         }
-
+        
+        return true;
+    }
+    
+    // 验证电话号码：优化分割逻辑
+    private static boolean isValidPhone(String s) {
+        if (s.length() < 5 || s.charAt(0) != '+') return false;
+        
+        // 找到第一个和第二个-的位置
+        int firstDash = s.indexOf('-');
+        int secondDash = s.indexOf('-', firstDash + 1);
+        
+        if (firstDash == -1 || secondDash == -1) return false;
+        
+        // 提取各部分
+        String countryCode = s.substring(1, firstDash); // 去掉+号
+        String areaCode = s.substring(firstDash + 1, secondDash);
+        String phoneNumber = s.substring(secondDash + 1);
+        
+        // 验证各部分
+        return isAllDigits(countryCode) && 
+               isAllDigits(areaCode) && 
+               isValidPhoneNumber(phoneNumber);
+    }
+    
+    public static String classify(String s) {
+        if (isValidEmail(s)) return "email";
+        if (isValidIP(s)) return "ip";  
+        if (isValidPhone(s)) return "phone";
+        return "invalid";
+    }
+    
+    public static void main(String[] args) {
+        Scanner scanner = new Scanner(System.in);
+        int n = scanner.nextInt();
+        scanner.nextLine();
+        
+        for (int i = 0; i < n; i++) {
+            String line = scanner.nextLine();
+            System.out.println(classify(line));
+        }
+        
         scanner.close();
     }
 }

@@ -18,8 +18,7 @@
       <link>https://swimmingliu.cn/posts/job/meituan-algorithm-quiz-notes/</link>
       <pubDate>Thu, 28 Aug 2025 21:27:35 +0800</pubDate>
       <guid>https://swimmingliu.cn/posts/job/meituan-algorithm-quiz-notes/</guid>
-      <description>&lt;h1 id=&#34;美团笔试合集&#34;&gt;美团笔试合集&lt;/h1&gt;
-&lt;h2 id=&#34;20240907&#34;&gt;2024.09.07&lt;/h2&gt;
+      <description>&lt;h2 id=&#34;20240907&#34;&gt;2024.09.07&lt;/h2&gt;
 &lt;h3 id=&#34;1-第一题&#34;&gt;1. 第一题&lt;/h3&gt;
 &lt;p&gt;小美有一个长度为n的数组，她每次操作会执行如下：选定一个ai，把这个数加上一个任意的x(x &amp;gt; 0)，花费的代价为ai + x。现在小美想要把整个数组变成全部奇数或者全部偶数的最小代价是多少？&lt;/p&gt;
 &lt;h4 id=&#34;输入描述&#34;&gt;输入描述&lt;/h4&gt;

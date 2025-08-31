@@ -41,27 +41,27 @@ cover:
 
 小美有一个长度为n的数组，她每次操作会执行如下：选定一个ai，把这个数加上一个任意的x(x > 0)，花费的代价为ai + x。现在小美想要把整个数组变成全部奇数或者全部偶数的最小代价是多少？
 
-#### 输入描述
+【输入描述】
 
 第一行输入一个整数n，代表数组的长度
 
 第二行输入n个数
 
-#### 输出描述
+【输出描述】
 
 输出最小花费
 
-#### 样例输入
+【样例输入】
 
 > 3
 >
 > 1 2 3
 
-#### 样例输出
+【样例输出】
 
 > 3
 
-#### 答案
+【答案】
 
 > 要么统一把奇数编程偶数，要么统一把偶数变成奇数，只需要计算两种情况的最小值就行
 
@@ -97,7 +97,7 @@ public class Main {
 
 对于给定的由n个节点构成，根结点为1的有根树中，我们定义节点u和v是相似的节点，当且仅当节点u的子节点数量与节点v的子节点数量相等。输出相似节点的对数。
 
-#### 输入描述
+【输入描述】
 
 每个测试文件均包含多组测试数据；
 
@@ -109,11 +109,11 @@ public class Main {
 
 除此之外，保证所有n之和不超过2 * (10 ^ 5)。
 
-#### 输出描述
+【输出描述】
 
 对于每一个测试用例，输出相似节点的对数。
 
-#### 样例输入
+【样例输入】
 
 > 1
 >
@@ -131,11 +131,11 @@ public class Main {
 >
 > 2 6
 
-#### 样例输出
+【样例输出】
 
 > 9
 
-#### 答案
+【答案】
 
 > 根结点的子节点数量为根节点的度数，其他节点的子节点数量为度数 - 1。根据子节点数量分组，然后对每一组计算对数即可。
 
@@ -207,7 +207,7 @@ public class Main {
 
 小美和小团在玩一个卡牌游戏，初始时桌面上有n种卡牌，每种卡牌有ai张，这些牌都是背面朝上的。玩家操作时会翻两张牌，如果这两张牌的类型相同，则获胜，否则，将两张牌翻回背面朝上，两个玩家轮流进行操作。小美和小团总共会玩q + 1轮游戏，第1轮的卡牌为初始卡牌，后续每一轮会在上一轮的基础上，增加或减少一些卡牌，然后将所有卡牌背面朝上并重新打乱。增加卡牌的操作为：+ l r x，表示第l种到第r种卡牌各增加x张。减少卡牌的操作为：- l r x，表示第l种到第r种卡牌各减少x张。每一轮都是由小美先手，小美想让小团获胜，小美想知道她至少需要偷看多少张牌才能保证小团一定获胜？若无法保证小团一定获胜，则输出-1。
 
-#### 输入描述
+【输入描述】
 
 第一行输入2个正整数n,q(1 <= n, q <= 10^5)，表示卡牌的数量和游戏轮数。
 
@@ -215,11 +215,11 @@ public class Main {
 
 接下来q行，每行输入 op l r x，表示操作数据保证任意一轮开始之前，每种卡牌的数量非负，且所有卡牌数量不小于2张。
 
-#### 输出描述
+【输出描述】
 
 输出q + 1行，每行输出一个整数表示答案。
 
-#### 样例输入
+【样例输入】
 
 > 2 1
 >
@@ -227,7 +227,7 @@ public class Main {
 >
 > \+ 2 2 1
 
-#### 样例输出
+【样例输出】
 
 > -1
 >
@@ -239,7 +239,7 @@ public class Main {
 
 第二轮，小美可以偷看一张牌，如果这张牌时种类1，那么小美选择这张牌和另外其他一张牌，如果是种类2，则选择另外两张牌。
 
-#### 答案
+【答案】
 
 线段树。如果序列中最大数为1，那么小美和小团谁也赢不了，因此输出-1。如果序列中的最大数等于序列的总和，小美必赢，因此输出-1。如果序列中最大数>1，如果其他数不是0，就是1，那么小美只需要偷看max - 1张牌就行了（max是最大的数，且这样的max只能有一个）。如果序列中最大数>1并且有其他数>1，那么小美至少应该偷看max张牌。
 
@@ -416,31 +416,31 @@ public class CardGameOptimal {
 
 小美写单词喜欢横着写，她记录了若干个人的名字，但是不小心加进去了一些无关的单词。一个名字单词以大写字母开头，请你帮助她统计共有多少个人的名字。
 
-#### 输入描述
+【输入描述】
 
 在一行上输入一个长度为n(1<=n<=10^5) 、且由大小写字母和空格混合构成的字符串 s代表小美的全部单词，每个单词之间使用空格间隔。除此之外，保证字符串的开头与结尾字符不为空格。
 
-#### 输出描述
+【输出描述】
 
 在一行上输出一个整数，代表人名的个数。
 
-#### 样例输入一
+【样例输入】一
 
 > ABC abc Abc
 
-#### 样例输出一
+【样例输出】一
 
 > 2
 
-#### 样例输入二
+【样例输入】二
 
 > A A c
 
-#### 样例输出二
+【样例输出】二
 
 > 2
 
-#### 答案
+【答案】
 
 判断每一个字符串的首字母是否为大写即可。
 
@@ -471,23 +471,23 @@ public class Main {
 
 长度无限长的公路上，小美雇佣了 n 位工人来种树，每个点最多种一棵树。从左向右数，工人所站的位置为 a1,a2,...,an 。已知每位工人都会将自己所在位置的右侧一段长度的区间种满树，且每位工人的种树区间长度相同。现在小美希望公路上至少有 k棵树，为了节约成本，他希望每位工人种树的区间长度尽可能短，请你帮他求出，工人们的种树区间至少多长，才能使得公路被种上至少 k棵树。
 
-#### 输入描述
+【输入描述】
 
 第一行输入两个正整数 n,k(1<=n,k<=2*10^5),分别表示工人的数量，以及小美要求树的最少数量。
 
 第二行输入 n个正整数 a1,a2,...,an(1<=ai<=2*10^5)，表示每名工人的位置。
 
-#### 输出描述
+【输出描述】
 
 在一行上输出一个整数，代表工人们最短的种树区间长度。
 
-#### 样例输入
+【样例输入】
 
 > 3 6
 >
 > 1 2 5
 
-#### 样例输出
+【样例输出】
 
 > 3
 
@@ -507,7 +507,7 @@ public class Main {
 
 可以证明，不存在比 3 更小的答案。
 
-#### 答案
+【答案】
 
 二分答案。我们来二分枚举每个人种树的区间，用一个check函数来判断种树的区间为x的适合，是否可以种k棵树？首先将数组进行排序，对于每一个人可以种的树的逻辑是：尽量往后种，在不超过之前的覆盖的前提下。bd记录的是上一次种到的边界，当前可以种的边界应该是 a+x，只要保证不会超过边界即可。
 
@@ -592,7 +592,7 @@ public class OptimalSolution {
 
 小美和小团在玩一个游戏，游戏中有一个长度为 n 的数组 a ，她们会玩 q 轮游戏，每轮游戏都是独立的。游戏规则如下，双方都会执行最优策略：1） 第一步，游戏给出一个区间 [l,r]。2） 第二步，小团在 [l,r] 区间中选择一个数。3） 第三步，小美将区间扩展成 [L,R] （ [L,R] 必须包含 [l,r] ），然后在 [L,R] 区间中选择一个数，但不能跟小团选同一个数。4） 第四步，小美和小团选择的数字较大的一方获胜，若相同则平局。小美想知道她每一轮的输赢状态，并且她想知道要达到输赢状态所需的 [L,R] 区间长度最小是多少。
 
-#### 输入描述
+【输入描述】
 
 第一行输入两个整数 n,q(2<=n<=2*10^5) ，表示数组长度和询问次数。
 
@@ -600,13 +600,13 @@ public class OptimalSolution {
 
 接下来 q 行，每行输入两个整数 (1<=l<=r<=n) ，表示询问。
 
-#### 输出描述
+【输出描述】
 
 对于每个询问先输出一行，若小美可以获胜则输出 "win" ，若平局则输出 "draw" ，多失败则输出 "lose" 。
 
 第二行输出达到最终状态所需的区间长度的最小值。
 
-#### 样例输入
+【样例输入】
 
 > 6 2
 >
@@ -616,7 +616,7 @@ public class OptimalSolution {
 >
 > 4 4
 
-#### 样例输出
+【样例输出】
 
 > win
 >
@@ -630,7 +630,7 @@ public class OptimalSolution {
 
 第1个询问，小团会选择数字4，小美将区间扩展成[1,4]，选择数字5，小美获胜，扩展后的区间长度为4。第2个询问，小团会选择数字5，小美将区间扩展成[3,4]，选择数字4，小团获胜，扩展后的区间长度为2。
 
-#### 答案
+【答案】
 
 > ST表+单调栈+二分。使用ST表预处理，便于后续求出[l,r]区间的最大值的下标。对于每一个元素使用单调栈处理，方便求每一个元素下一个更大的元素的下标。如果[l,r]的区间的最大值已经是整个数组的最大值，那么此时的判断就非常清晰：最大值的数量超过2个，那么必然是平局，我们只需要搜索距离区间最近的最大值即可。否则一定是输的，此时需要特判一下，如果区间大小只有1，那么最少需要扩大一个才可以选择。否则，应该使用st表找到当前区间的最大值的下标mx_index，并且使用单调栈找到mx_index的下一个更大的元素/前一个更大的元素，比较哪个更接近即可。
 
@@ -644,7 +644,7 @@ public class OptimalSolution {
 
 ![meituan-08-17-1-2](https://oss.swimmingliu.cn/a0098ec8-8415-11f0-814f-caaeffceb345)
 
-#### 答案
+【答案】
 
 按照规则进行模拟，最好是用正则表达式，但是考试肯定写不出来。
 
@@ -774,7 +774,7 @@ public class StringClassifierOptimal {
 
 小美对 gcd (最大公约数) 很感兴趣，她会询问你t次。 每次询问给出一个大于1的正整数n，你是否找到一个数字 m (2 ≤ m ≤ n)，使得 gcd(n,m)为素数。
 
-#### 输入描述
+【输入描述】
 
 每个测试文件均包含多组测试数据。
 
@@ -782,11 +782,11 @@ public class StringClassifierOptimal {
 
 在一行上输入一个整数 n (2 ≤ n ≤ 10^5)代表给定的数字。
 
-#### 输出描述
+【输出描述】
 
 对于每一组测试数据，在一行上输出一个整数，代表数字m。如果有多种合法答案，您可以输出任意一种。
 
-#### 样例输入
+【样例输入】
 
 > 2
 >
@@ -794,13 +794,13 @@ public class StringClassifierOptimal {
 >
 > 15
 
-#### 样例输出
+【样例输出】
 
 > 57
 >
 > 5
 
-#### 答案
+【答案】
 
 基本思路就是在[2,n]这个范围内寻找一个数m，满足gcd(n,m)是一个素数。
 
@@ -869,23 +869,23 @@ public class GCDPrime {
 
 小美有一个长度为 n 的数组，每次操作可以选择两个下标i和 j，将 ai 减去 1，将 aj 加上 1。小美想知道最少需要多少次操作，可以使数组极差最小。 数组的极差为数组中最大值和最小值的差。
 
-#### 输入描述
+【输入描述】
 
 第一行输入一个整数 n (2 ≤  n ≤ 10^5)代表数组的长度。
 
 第二行输入几 个整数 a1,a2,...,an (1 ≤ ai ≤ 10^9) 代表数组的元素。
 
-#### 输出描述
+【输出描述】
 
 在一行上输出一个整数，表示最少需要多少次操作。
 
-#### 样例输入
+【样例输入】
 
 > 5
 >
 > 1 2 3 4 5
 
-#### 样例输出
+【样例输出】
 
 > 3
 
@@ -893,7 +893,7 @@ public class GCDPrime {
 
 三次操作分别为 (a1,a5), (a2,a5), (a1,a4)。最终数组为[3,3,3,3,3]，极差为0。
 
-#### 参考题解
+【答案】
 
 通过一系列增减操作来使数组中的最大值和最小值尽可能接近，从而最小化数组的极差。这可以通过计算数组中每个元素与数组平均值之间的差异来完成。 要实现目标，我们应考虑将所有元素调整到一个共同的目标值上，这个目标值最接近整个数组的平均值。由于每次操作是将一个元素减去 1，另一个元素加上 1，这意味着数组的总和在操作前后保持不变。因此，最佳策略是尝试使所有元素达到数组总和除以数组长度的结果（向下取整的结果），即平均值。
 
@@ -937,7 +937,7 @@ public class Main {
 
 小美准备登录美团，需要输入密码，小美忘记了密码，只记得密码可能是 n个字符串中的一个。小美会按照密码的长度从小到大依次尝试每个字符串，对于相同长度的字符串，小美随机尝试，并且相同的密码只会尝试一次。小美想知道，她最少需要尝试多少次才能登录成功，最多需要尝试多少次才能登录成功。小美不会重新尝试已经尝试过的字符串。成功登录后会立即停止尝试。
 
-#### 输入描述
+【输入描述】
 
 第一行输入一个整数 n(1<=n<=1000)代表密码字符串的个数。
 
@@ -945,11 +945,11 @@ public class Main {
 
 接下来 n 行，每行输入一个长度不超过 1000的字符串，代表小美记得的密码。
 
-#### 输出描述
+【输出描述】
 
 在一行上输出两个整数，表示最少和最多尝试次数。
 
-#### 样例输入
+【样例输入】
 
 > 4
 >
@@ -963,7 +963,7 @@ public class Main {
 >
 > ac
 
-#### 样例输出
+【样例输出】
 
 > 1 2
 
@@ -973,44 +973,56 @@ public class Main {
 
 小美在尝试 "ac" 发现不正确后不会继续尝试 "ac"。
 
-#### 答案
+【答案】
 
 哈希表
 
 ```java
 import java.util.*;
 
-public class Main {
-
+public class OptimalSolution {
     public static void main(String[] args) {
         Scanner scanner = new Scanner(System.in);
         
         int n = scanner.nextInt();
-        String ans = scanner.next();
+        String correctPassword = scanner.next();
         
-        Map<Integer, Set<String>> pos = new HashMap<>();
+        // 核心数据结构：按长度分组的哈希表
+        // Key: 密码长度, Value: 该长度的所有不重复密码
+        Map<Integer, Set<String>> lengthGroups = new HashMap<>();
+        
+        // 读取并分组所有密码
         for (int i = 0; i < n; i++) {
-            String p = scanner.next();
-            pos.computeIfAbsent(p.length(), k -> new HashSet<>()).add(p);
+            String password = scanner.next();
+            int length = password.length();
+            
+            // 如果该长度还没有对应的Set，就创建一个
+            lengthGroups.computeIfAbsent(length, k -> new HashSet<>()).add(password);
         }
         
-        List<Map.Entry<Integer, Set<String>>> sortedPos = new ArrayList<>(pos.entrySet());
-        sortedPos.sort(Map.Entry.comparingByKey());
+        // 将所有长度按从小到大排序
+        List<Map.Entry<Integer, Set<String>>> sortedGroups = new ArrayList<>(lengthGroups.entrySet());
+        sortedGroups.sort(Map.Entry.comparingByKey()); // 按长度排序
         
-        int step = 0;
-        int MIN = -1, MAX = -1;
-        for (Map.Entry<Integer, Set<String>> entry : sortedPos) {
-            Set<String> v = entry.getValue();
-            if (v.contains(ans)) {
-                MIN = step + 1;
-                MAX = step + v.size();
+        int previousTries = 0; // 在找到正确密码之前已经尝试的次数
+        int minTries = -1, maxTries = -1;
+        
+        // 遍历每个长度组
+        for (Map.Entry<Integer, Set<String>> group : sortedGroups) {
+            Set<String> passwordsInGroup = group.getValue();
+            
+            if (passwordsInGroup.contains(correctPassword)) {
+                // 找到了包含正确密码的长度组
+                minTries = previousTries + 1;           // 最好情况：第一个就试中
+                maxTries = previousTries + passwordsInGroup.size(); // 最坏情况：最后一个才试中
+                break;
             } else {
-                step += v.size();
+                // 这个长度组不包含正确密码，需要全部试完
+                previousTries += passwordsInGroup.size();
             }
         }
         
-        System.out.println(MIN + " " + MAX);
-        
+        System.out.println(minTries + " " + maxTries);
         scanner.close();
     }
 }
@@ -1021,25 +1033,25 @@ public class Main {
 小美有一个长度为 n 的数组 a1,a2,....,an ，他可以对数组进行如下操作：
 
 - 删除第一个元素 a1，同时数组的长度减一，花费为 x。
-- 删除整个数组，花费为 k*MEX(a) （其中 MEX(a) 表示 a 中未出现过的最小非负整数。例如 [0,1,2,4] 的 MEX 为 3 ）。
+- 删除整个数组，花费为 `k * MEX(a)` （其中 `MEX(a)` 表示 a 中未出现过的最小非负整数。例如 [0,1,2,4] 的 `MEX` 为 3 ）。
 
 小美想知道将 a 数组全部清空的最小代价是多少，请你帮帮他吧。
 
-### 输入描述
+【输入描述】
 
 每个测试文件均包含多组测试数据。第一行输入一个整数 T(1<=T<=1000) 代表数据组数，每组测试数据描述如下：
 
-第一行输入三个正整数 n,k,x(1<=n<=2*10^5, 1<=k,x<=10^9) 代表数组中的元素数量、删除整个数组的花费系数、删除单个元素的花费。
+第一行输入三个正整数 `n, k, x(1<=n<=2*10^5, 1<=k,x<=10^9)`  代表数组中的元素数量、删除整个数组的花费系数、删除单个元素的花费。
 
-第二行输入 n 个整数 a1,a2,....,an(0<=ai<=n)，表示数组元素。
+第二行输入 n 个整数 `a1,a2,....,an (0<=ai<=n)`，表示数组元素。
 
-除此之外，保证所有的 n 之和不超过 2*10^5。
+除此之外，保证所有的 n 之和不超过 `2*10^5` 。
 
-### 输出描述
+【 输出描述】
 
 对于每一组测试数据，在一行上输出一个整数表示将数组中所有元素全部删除的最小花费。
 
-### 样例输入
+【样例输入】
 
 > 1
 >
@@ -1047,7 +1059,7 @@ public class Main {
 >
 > 4 5 2 3 1 0
 
-### 样例输出
+【样例输出】
 
 > 15
 
@@ -1067,44 +1079,90 @@ public class Main {
 
 若执行六次操作一，MEX{} = 0，花费 18；
 
-### 参考题解
+【参考题解】
 
-动态规划+维护动态最小未出现的整数。f[i]表示从i往后考虑的最小花费，选择就是选择第一个元素或者直接删除后续所有的元素。对于删除后续所有的元素的选项，我们必须要直到MEX是多少，我们可以用在更新dp的过程中，用一个suffix不断地更新当前的最小未出现的整数。虽然这里出现了两层循环的嵌套，但是并不会重置参数，因此复杂度是O(n).
+- 核心思路： 我们用DFS递归来模拟决策过程，每到一个位置i都面临两种选择：删除当前元素(花费x)然后递归处理剩余部分，或者直接清空从 `i` 开始的所有元素(花费 `k * MEX`)。为了避免重复计算相同的子问题，我们使用HashMap作为记忆化数组来保存每个起始位置的最优解。同时，为了高效获取任意位置开始的子数组的 `MEX` 值，我们从**数组末尾开始向前预计算**，动态维护一个HashSet来记录已出现的数字，并实时更新 `MEX` 值。这样整个算法的时间复杂度降低到`O(n)` ，每个状态只计算一次，MEX值也只需要一次预处理即可获得。
+
+- 总结： 通过DFS枚举所有可能的删除策略，用记忆化避免重复计算，用预计算的MEX数组快速获取删除代价，最终找到清空数组的最小花费。
 
 ```java
 import java.util.*;
 
-public class Main {
+public class Solution {
+    private static Map<Integer, Long> memo; // 记忆化数组
+    private static int[] arr;
+    private static long k, x;
+    private static int n;
+    private static long[] mexFromPosition; // 预计算每个位置开始的MEX
+    
+    public static long dfs(int start) {
+        // 基础情况：如果没有元素了，花费为0
+        if (start >= n) {
+            return 0;
+        }
+        
+        // 检查是否已经计算过这个状态
+        if (memo.containsKey(start)) {
+            return memo.get(start);
+        }
+        
+        long result = Long.MAX_VALUE;
+        
+        // 选择1：删除第一个元素，然后递归处理剩余部分
+        long choice1 = x + dfs(start + 1);
+        result = Math.min(result, choice1);
+        
+        // 选择2：直接删除剩余所有元素
+        long choice2 = k * mexFromPosition[start];
+        result = Math.min(result, choice2);
+        
+        // 保存结果到记忆化数组
+        memo.put(start, result);
+        return result;
+    }
+    
+    // 预计算每个位置开始的MEX值
+    private static void precomputeMEX() {
+        mexFromPosition = new long[n + 1];
+        mexFromPosition[n] = 0; // 空数组的MEX是0
+        
+        Set<Integer> present = new HashSet<>();
+        long currentMEX = 0;
+        
+        // 从后往前计算MEX
+        for (int i = n - 1; i >= 0; i--) {
+            present.add(arr[i]);
+            
+            // 更新MEX：如果当前MEX值已经在集合中，就向上寻找
+            while (present.contains((int)currentMEX)) {
+                currentMEX++;
+            }
+            
+            mexFromPosition[i] = currentMEX;
+        }
+    }
+    
     public static void main(String[] args) {
         Scanner scanner = new Scanner(System.in);
         int T = scanner.nextInt();
         
         while (T-- > 0) {
-            long n = scanner.nextLong();
-            long k = scanner.nextLong();
-            long x = scanner.nextLong();
+            n = scanner.nextInt();
+            k = scanner.nextLong();
+            x = scanner.nextLong();
             
-            long[] A = new long[(int) n];
-            for (int i = 0; i < n; ++i) {
-                A[i] = scanner.nextLong();
+            arr = new int[n];
+            for (int i = 0; i < n; i++) {
+                arr[i] = scanner.nextInt();
             }
             
-            long[] dp = new long[(int) (n + 1)];
-            Arrays.fill(dp, Long.MAX_VALUE);
-            dp[(int) n] = 0;
+            // 预计算MEX值
+            precomputeMEX();
             
-            Set<Long> vst = new HashSet<>();
-            long suffix_MEX = 0;
+            // 初始化记忆化数组
+            memo = new HashMap<>();
             
-            for (int i = (int) (n - 1); i >= 0; --i) {
-                vst.add(A[i]);
-                while (vst.contains(suffix_MEX)) {
-                    suffix_MEX++;
-                }
-                dp[i] = Math.min(dp[i + 1] + x, k * suffix_MEX);
-            }
-            
-            System.out.println(dp[0]);
+            System.out.println(dfs(0));
         }
         
         scanner.close();
@@ -1118,7 +1176,7 @@ public class Main {
 
 小美每次会从左往后或从右往左剪一段长度为 x 的彩带，她想知道她每次剪下来的彩带有多少种颜色。
 
-### 输入描述
+【输入描述】
 
 第一行输入两个整数 n,q(1<=n,q<=2*10^5) 代表彩带长度、剪彩带次数。
 
@@ -1126,11 +1184,11 @@ public class Main {
 
 此后 q 行，每行输入一个字符 c 和一个整数 x(1<=x<=10^9; c∈L,R) 代表裁剪方向和裁剪长度，其中 'L' 说明从左往右剪， 'R' 说明从右往左剪 。
 
-### 输出描述
+【输出描述】
 
 对于每一次裁剪彩带，在一行上输出一个整数代表颜色数量。
 
-### 样例输入
+【样例输入】
 
 > 6 3
 >
@@ -1142,7 +1200,7 @@ public class Main {
 >
 > R 12
 
-### 样例输出
+【样例输出】
 
 > 1
 >
@@ -1158,7 +1216,7 @@ public class Main {
 
 第三次剪彩带，剪下来的是 [1,1,4,5,1,4,1,1,4,5,1,4] ，有 {1,4,5} 这 3 种颜色。
 
-### 参考题解
+【参考题解】
 
 离散化+离线处理（莫队）+树状数组。
 
@@ -1274,4 +1332,3 @@ public class Main {
     }
 }
 ```
-

@@ -210,14 +210,14 @@ import java.util.*; public class Main { public static void main(String[] args) {
     </h2>
   </header>
   <div class="entry-content">
-    <p>Coze工作流-QA 工作流可以分为三个大板块：工作流管理 (前后端交互-画布存储)、工作流校验、工作流执行
+    <p> 工作流可以分为三个大板块：工作流管理 (前后端交互-画布存储)、工作流校验、工作流执行
 工作流管理 对于前端来讲，工作流就是一张canvas画布。用户可以在画布中，创建不同功能的节点。
 节点类型可以分为：开始和结束节点 （默认）、LLM节点、子工作流 (嵌套)、插件 (外部工具-例如MCP、OCR)、业务逻辑节点 (选择、循环、分类、批处理(并发)、变量聚合)、数据库节点(SQL、CRUD)、知识库节点(RAG、增删、变量赋值)、图像处理节点、音视频处理节点、组件(JSON序列化、HTTP请求)、定时触发器节点(定时触发任务)
 工作流大体执行流程如下
 graph TD subgraph &#34;前端Canvas层&#34; A[Canvas画布用户可视化配置] --&gt; B[Node节点vo.Node结构体] A --&gt; C[Edge连接节点间关系] B --&gt; D[节点样式：哪些固定字段？表单形式？] end subgraph &#34;验证层&#34; E[Canvas结构验证CanvasValidator] --&gt; F{验证通过?} F --&gt;|失败| G[返回错误信息] G --&gt; H[前端显示错误提示] end subgraph &#34;转换层&#34; I[后端保存，workflow运行CanvasToWorkflowSchema] --&gt; J[NodeType -&gt; 节点Config通过NodeAdaptor接口] J --&gt; K[前端schema -&gt; 后端schemaschema.NodeSchema] end subgraph &#34;实例化层&#34; L[节点实例化NodeBuilder接口] --&gt; M[NodeSchema.Configs实现NodeBuilder接口] M --&gt; N[后端schema -&gt; 节点实例具体节点对象] end subgraph &#34;执行层&#34; O[节点运行InvokableNode等接口] --&gt; P[业务逻辑具体执行逻辑] P --&gt; Q[结果输出返回执行结果] end A --&gt; E F --&gt;|通过| I K --&gt; L N --&gt; O style A fill:#e3f2fd style E fill:#ffebee style I fill:#fff3e0 style L fill:#e8f5e8 style O fill:#f3e5f5 1.1 画布和后端结构 前端的画布采用DSL (JSON) 形式存储，每次更新画布都是将DSL传给后端。DSL的后端结构如下所示，主要包含节点 (node)、 边 (edge)、 版本
 ...</p>
   </div>
-  <footer class="entry-footer"><span title='2025-08-07 23:27:35 +0800 CST'>August 7, 2025</span>&nbsp;·&nbsp;27 min&nbsp;·&nbsp;SwimmingLiu</footer>
+  <footer class="entry-footer"><span title='2025-08-07 23:27:35 +0800 CST'>August 7, 2025</span>&nbsp;·&nbsp;31 min&nbsp;·&nbsp;SwimmingLiu</footer>
   <a class="entry-link" aria-label="post link to Coze工作流分析" href="https://swimmingliu.cn/posts/job/coze-workflow-analysis/"></a>
 </article>
 

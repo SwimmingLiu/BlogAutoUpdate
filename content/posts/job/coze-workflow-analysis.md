@@ -35,8 +35,6 @@ cover:
     relative: false
 ---
 
-# Coze工作流-QA
-
 > 工作流可以分为三个大板块：工作流管理 (前后端交互-画布存储)、工作流校验、工作流执行
 
 ## 工作流管理
@@ -2276,7 +2274,7 @@ sequenceDiagram
     
     RCT-->>CNT: 返回(writeChannelValues, controls, err)
     
-    alt err != nil
+    alt 出现异常
         CNT-->>Caller: 返回错误
     end
     
@@ -2289,13 +2287,13 @@ sequenceDiagram
     CM->>CM: 检查哪些节点准备就绪
     CM-->>CNT: 返回(nodeMap, err)
     
-    alt err != nil
+    alt 出现异常
         CNT-->>Caller: 返回错误
     end
     
     note over CNT: 第三阶段：处理执行结果
-    alt len(nodeMap) == 0
-        CNT-->>Caller: 返回([], nil, false, nil)
+    alt len(nodeMap) == 0 (Node节点的Map为空)
+        CNT-->>Caller: 直接返回空列表
     else nodeMap包含节点
         alt nodeMap[END]存在
             note over CNT: 到达图的结束节点
@@ -2314,7 +2312,7 @@ sequenceDiagram
             
             CT-->>CNT: 返回(nextTasks, err)
             
-            alt err != nil
+            alt 出现异常
                 CNT-->>Caller: 返回错误
             else 成功创建任务
                 CNT-->>Caller: 返回(nextTasks, nil, false, nil)
@@ -2373,6 +2371,396 @@ flowchart LR
     style V fill:#e8f5e8
     style T fill:#ffebee
     style GG fill:#f3e5f5
+```
+
+##### 3.3.1.4 超详细执行流程
+
+> 假如现在开始节点(start)连接了 \[A，B，C\] 三个节点，且B节点还连接了E节点。 另外，\[A，E，C\] 三个节点都连接 end节点。
+
+```mermaid
+sequenceDiagram
+    participant Client as "客户端"
+    participant Runner as "Runner执行器"
+    participant CM as "ChannelManager"
+    participant TM as "TaskManager"
+    participant CP as "CheckPointer"
+    participant StartTask as "START任务"
+    participant NodeA as "节点A任务"
+    participant NodeB as "节点B任务"
+    participant NodeC as "节点C任务"
+    participant NodeE as "节点E任务"
+    participant EndTask as "END任务"
+
+    Note over Client, EndTask: 工作流详细执行序列：START→[A,B,C]→E→END
+
+    Client->>Runner: invoke(ctx, input, opts)
+    activate Runner
+    
+    Note over Runner: 第1阶段：初始化执行环境
+    Runner->>Runner: 选择执行包装器(runnableInvoke)
+    Runner->>CM: initChannelManager(isStream=false)
+    activate CM
+    CM->>CM: 创建所有节点通道
+    CM->>CM: 初始化依赖关系映射
+    CM-->>Runner: 通道管理器实例
+    deactivate CM
+    
+    Runner->>TM: initTaskManager(runWrapper, opts)
+    activate TM
+    TM->>TM: 配置并发执行参数
+    TM-->>Runner: 任务管理器实例
+    deactivate TM
+
+    Note over Runner: 第2阶段：全新执行初始化
+    Runner->>Runner: calculateNextTasks(startTask)
+    activate Runner
+    Runner->>Runner: resolveCompletedTasks([startTask])
+    Runner->>Runner: 生成START输出副本
+    Runner->>Runner: 为A、B、C创建数据映射
+    Runner->>CM: updateAndGet(writeValues, controls)
+    activate CM
+    CM->>CM: 更新START→A通道数据
+    CM->>CM: 更新START→B通道数据  
+    CM->>CM: 更新START→C通道数据
+    CM->>CM: 检查A、B、C节点就绪状态
+    CM-->>Runner: nodeMap{A: inputA, B: inputB, C: inputC}
+    deactivate CM
+    Runner->>Runner: createTasks([A, B, C])
+    Runner-->>Runner: nextTasks=[taskA, taskB, taskC]
+    deactivate Runner
+
+    Note over Runner, EndTask: 第3阶段：主执行循环开始
+
+    Note over Runner, TM: 循环1：并发执行A、B、C
+    Runner->>TM: submit([taskA, taskB, taskC])
+    activate TM
+    
+    par 并发执行A、B、C
+        TM->>NodeA: 执行节点A逻辑
+        activate NodeA
+        NodeA->>NodeA: 处理输入数据
+        NodeA-->>TM: 返回A的输出结果
+        deactivate NodeA
+    and
+        TM->>NodeB: 执行节点B逻辑
+        activate NodeB
+        NodeB->>NodeB: 处理输入数据
+        NodeB-->>TM: 返回B的输出结果
+        deactivate NodeB
+    and
+        TM->>NodeC: 执行节点C逻辑
+        activate NodeC
+        NodeC->>NodeC: 处理输入数据
+        NodeC-->>TM: 返回C的输出结果
+        deactivate NodeC
+    end
+    
+    Runner->>TM: wait()
+    TM-->>Runner: completedTasks=[taskA, taskB, taskC]
+    deactivate TM
+
+    Runner->>Runner: calculateNextTasks([taskA, taskB, taskC])
+    activate Runner
+    Runner->>Runner: resolveCompletedTasks([taskA, taskB, taskC])
+    Runner->>Runner: 处理A→END数据映射
+    Runner->>Runner: 处理B→E数据映射
+    Runner->>Runner: 处理C→END数据映射
+    Runner->>CM: updateAndGet(writeValues, controls)
+    activate CM
+    CM->>CM: 更新A→END通道数据
+    CM->>CM: 更新B→E通道数据
+    CM->>CM: 更新C→END通道数据
+    CM->>CM: 检查E节点就绪状态(仅B→E满足)
+    CM->>CM: 检查END节点就绪状态(A、C满足，等待E)
+    CM-->>Runner: nodeMap{E: inputE}
+    deactivate CM
+    Runner->>Runner: createTasks([E])
+    Runner-->>Runner: nextTasks=[taskE]
+    deactivate Runner
+
+    Note over Runner, TM: 循环2：执行E节点
+    Runner->>TM: submit([taskE])
+    activate TM
+    TM->>NodeE: 执行节点E逻辑
+    activate NodeE
+    NodeE->>NodeE: 处理来自B的输入数据
+    NodeE-->>TM: 返回E的输出结果
+    deactivate NodeE
+    
+    Runner->>TM: wait()
+    TM-->>Runner: completedTasks=[taskE]
+    deactivate TM
+
+    Runner->>Runner: calculateNextTasks([taskE])
+    activate Runner
+    Runner->>Runner: resolveCompletedTasks([taskE])
+    Runner->>Runner: 处理E→END数据映射
+    Runner->>CM: updateAndGet(writeValues, controls)
+    activate CM
+    CM->>CM: 更新E→END通道数据
+    CM->>CM: 检查END节点就绪状态
+    CM->>CM: 发现A、C、E都已完成，END就绪
+    CM-->>Runner: nodeMap{END: mergedInput}
+    deactivate CM
+    Runner-->>Runner: 检测到END节点，isEnd=true
+    deactivate Runner
+
+    Note over Runner: 第4阶段：返回最终结果
+    Runner-->>Client: 返回END节点的合并输出
+    deactivate Runner
+```
+
+【代码分析】
+
+1.  工作流结构
+    
+
+```plaintext
+START → [A, B, C] (并发)
+B → E
+[A, E, C] → END (汇聚)
+```
+
+2.  依赖关系在代码中的表示
+    
+
+```go
+// 每个节点都有一个 dagChannel 来跟踪其依赖状态
+type dagChannel struct {
+    ControlPredecessors map[string]dependencyState  // 控制依赖状态
+    Values              map[string]any              // 来自前驱的数据
+    DataPredecessors    map[string]bool             // 数据依赖映射
+}
+// 您的工作流在初始化时建立如下依赖关系：
+// A: ControlPredecessors = {"start": dependencyStateWaiting}
+// B: ControlPredecessors = {"start": dependencyStateWaiting}
+// C: ControlPredecessors = {"start": dependencyStateWaiting}
+// E: ControlPredecessors = {"B": dependencyStateWaiting}
+// END: ControlPredecessors = {"A": dependencyStateWaiting, "C": dependencyStateWaiting, "E": dependencyStateWaiting}
+```
+
+3.   执行过程的代码实现
+
+
+*   **第一轮循环：START → \[A,B,C\]**
+    
+
+```go
+// 1. START任务完成后，调用 resolveCompletedTasks()
+func (r *runner) resolveCompletedTasks(ctx context.Context, completedTasks []*task, isStream bool, cm *channelManager) {
+    // START任务的输出会被分发给 A、B、C 三个后继节点
+    for _, t := range completedTasks {  // t.nodeKey = "start"
+        // t.call.writeTo = ["A", "B", "C"]
+        for i, next := range t.call.writeTo {  // next = "A", "B", "C"
+            writeChannelValues[next]["start"] = vs[i]  // 为每个后继分配START的输出副本
+        }
+    }
+}
+// 2. 通道管理器更新状态
+func (cm *channelManager) updateAndGet() {
+    // 为A、B、C节点报告START依赖已完成
+    for target, fromMap := range writeChannelValues {
+        ch := cm.channels[target]  // target = "A", "B", "C"
+        ch.reportValues(fromMap)      // 报告数据值
+        ch.reportDependencies(["start"])  // 报告START依赖已就绪
+    }
+    
+    // 检查哪些节点就绪
+    result := make(map[string]any)
+    for target, ch := range cm.channels {
+        value, ready, _ := ch.get(isStream)
+        if ready {  // A、B、C的START依赖都满足，全部就绪
+            result[target] = value
+        }
+    }
+    // 返回 {"A": inputA, "B": inputB, "C": inputC} -> 作为下一轮的任务节点
+}
+```
+
+*   **第二轮循环：A、B、C完成 → 只有E就绪**
+    
+
+```go
+// A、B、C完成后的状态更新
+func (r *runner) resolveCompletedTasks() {
+    // A完成：A.output → END
+    writeChannelValues["end"]["A"] = outputA
+    
+    // B完成：B.output → E  
+    writeChannelValues["E"]["B"] = outputB
+    
+    // C完成：C.output → END
+    writeChannelValues["end"]["C"] = outputC
+}
+// 通道状态检查
+func (cm *channelManager) updateAndGet() {
+    // E节点检查：ControlPredecessors = {"B": dependencyStateReady} ✓
+    // E就绪，返回 {"E": inputE}
+    
+    // END节点检查：ControlPredecessors = {
+    //   "A": dependencyStateReady ✓, 
+    //   "C": dependencyStateReady ✓, 
+    //   "E": dependencyStateWaiting ✗  // E还未完成
+    // }
+    // END未就绪，不在返回结果中
+}
+```
+
+*   **第三轮循环：****E完成** **→** **触发合并**
+    
+
+```go
+// E节点完成后
+func (r *runner) resolveCompletedTasks([taskE]) {
+    writeChannelValues["end"]["E"] = map[string]any{
+        "nodeE_result": "final_processing_from_E",
+        "status": "complete",
+    }
+}
+
+// END节点最终就绪检查
+func (endChannel *dagChannel) get(isStream=false) (any, bool, error) {
+    // 所有依赖都已满足：A✓, C✓, E✓
+    
+    // 收集所有前驱的数据
+    valueList := []any{
+        // 来自A的数据
+        map[string]any{
+            "nodeA_result": "processed_data_from_A",
+            "timestamp": "2024-01-01T10:00:00Z",
+        },
+        // 来自C的数据  
+        map[string]any{
+            "nodeC_result": "processed_data_from_C",
+            "analysis": "completed", 
+        },
+        // 来自E的数据
+        map[string]any{
+            "nodeE_result": "final_processing_from_E",
+            "status": "complete",
+        },
+    }
+    names := []string{"A", "C", "E"}
+    
+    // 调用数据合并
+    mergeOpts := &mergeOptions{
+        streamMergeWithSourceEOF: false,
+        names: names,
+    }
+    
+    mergedValue, err := mergeValues(valueList, mergeOpts)
+    // 返回合并结果
+    return mergedValue, true, nil
+}
+```
+
+4.  数据合并机制
+    
+
+```mermaid
+flowchart TD
+    subgraph "您的工作流拓扑"
+        START[START节点<br/>输入: 原始数据] 
+        A[节点A<br/>输出: outputA]
+        B[节点B<br/>输出: outputB]
+        C[节点C<br/>输出: outputC]
+        E[节点E<br/>输入: outputB<br/>输出: outputE]
+        END_NODE[END节点<br/>等待: outputA, outputC, outputE]
+    end
+    
+    START --> A
+    START --> B
+    START --> C
+    B --> E
+    A --> END_NODE
+    C --> END_NODE  
+    E --> END_NODE
+
+    subgraph "数据合并详细过程"
+        subgraph "第1轮: START完成"
+            S1[START输出被复制3份]
+            S1 --> A1[A接收: 副本1]
+            S1 --> B1[B接收: 副本2]
+            S1 --> C1[C接收: 副本3]
+        end
+        
+        subgraph "第2轮: A,B,C完成"
+            A2[A完成: outputA → END]
+            B2[B完成: outputB → E]
+            C2[C完成: outputC → END]
+            
+            A2 --> END1[END.Values:<br/>A: outputA<br/>C: outputC<br/>E: 等待中...]
+            C2 --> END1
+            B2 --> E1[E.Values:<br/>B: outputB]
+        end
+        
+        subgraph "第3轮: E完成"
+            E2[E完成: outputE → END]
+            E2 --> END2[END.Values:<br/>A: outputA<br/>C: outputC<br/>E: outputE]
+        end
+        
+        subgraph "数据合并阶段"
+            END2 --> MERGE{检查合并策略}
+            
+            MERGE -->|map类型| MAP_MERGE[Map合并策略<br/>mergeMap函数]
+            MERGE -->|自定义类型| CUSTOM_MERGE[自定义合并函数<br/>用户注册的函数]
+            MERGE -->|流数据| STREAM_MERGE[流合并策略<br/>streamReader.merge]
+            
+            MAP_MERGE --> MAP_RESULT["合并结果示例:<br/>{<br/>  'nodeA_result': valueA,<br/>  'nodeC_result': valueC,<br/>  'nodeE_result': valueE<br/>}"]
+            
+            CUSTOM_MERGE --> CUSTOM_RESULT[按用户定义逻辑<br/>合并struct/其他类型]
+            
+            STREAM_MERGE --> STREAM_RESULT[按时序合并流数据<br/>支持源EOF标识]
+        end
+    end
+
+    style START fill:#e3f2fd
+    style END_NODE fill:#e8f5e8
+    style MERGE fill:#fff3e0
+    style MAP_RESULT fill:#f3e5f5
+    style CUSTOM_RESULT fill:#f3e5f5  
+    style STREAM_RESULT fill:#f3e5f5
+```
+
+【Map合并 - 代码执行过程】
+
+```go
+// mergeValues函数识别为map类型，调用mergeMap
+func mergeMap(typ, valueList) {
+    merged := make(map[string]any)
+    
+    // 合并来自A的map
+    for k, v := range valueList[0] {  // A的数据
+        merged[k] = v  // {"nodeA_result": "...", "timestamp": "..."}
+    }
+    
+    // 合并来自C的map
+    for k, v := range valueList[1] {  // C的数据
+        if merged[k] != nil {
+            // 键冲突检查：如果A和C有相同的键，会报错
+            return nil, fmt.Errorf("duplicated key ('%v') found", k)
+        }
+        merged[k] = v  // {"nodeC_result": "...", "analysis": "..."}
+    }
+    
+    // 合并来自E的map
+    for k, v := range valueList[2] {  // E的数据  
+        if merged[k] != nil {
+            return nil, fmt.Errorf("duplicated key ('%v') found", k)
+        }
+        merged[k] = v  // {"nodeE_result": "...", "status": "..."}
+    }
+    
+    // 最终合并结果
+    return map[string]any{
+        "nodeA_result": "processed_data_from_A",
+        "timestamp": "2024-01-01T10:00:00Z", 
+        "nodeC_result": "processed_data_from_C",
+        "analysis": "completed",
+        "nodeE_result": "final_processing_from_E", 
+        "status": "complete",
+    }, nil
+}
 ```
 
 ### 3.4 全局状态机是什么？

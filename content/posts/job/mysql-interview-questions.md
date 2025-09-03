@@ -1,7 +1,7 @@
 ---
 title: "MySQL面试题笔记"
 date: 2025-02-19T15:16:42+08:00
-lastmod: 2025-02-19T15:16:42+08:00
+lastmod: 2025-09-03T22:16:42+08:00
 author: ["SwimmingLiu"]
 
 categories:
@@ -869,7 +869,7 @@ MVCC多版本控制并发主要是用来解决 **读-写并发** 所引起的问
 1. **隐藏字段**：
    - `db_row_id`: 如果没有创建主键，就用这个字段来创建聚簇索引
    - `db_trx_id`：对该记录左最新一次修改的事务的ID
-   - `db_roll_ptr`: 回滚指针，指向这条记录的上一个版本。其实是只想undo log当中上一个版本的快找地址
+   - `db_roll_ptr`: 回滚指针，指向当前行记录的上一个版本，也就是指向undo log当中上一个版本的快照地址
 
 ![MVCC隐藏字段](https://oss.swimmingliu.cn/7755e134-f4b5-11ef-9a76-c858c0c1deba)
 
@@ -918,6 +918,189 @@ MVCC多版本控制并发主要是用来解决 **读-写并发** 所引起的问
    -- 事务B插入 age=25 的记录并提交
    SELECT * FROM users WHERE age > 20 FOR UPDATE; -- 当前读，返回事务B插入的记录
    ```
+
+---
+
+下面是快速图解版
+
+**【MVCC 结构】**
+
+```mermaid
+graph TB
+    subgraph "数据表"
+        T[账户表] --> R1["记录1: 余额=100万"]
+        R1 --> H1["db_trx_id: 事务ID"]
+        R1 --> H2["db_roll_ptr: 回滚指针"]
+        R1 --> H3["db_row_id: 行ID"]
+    end
+    
+    subgraph "Undo Log版本链"
+        U1["[版本1]<br/>余额 = 100万<br/>trx_id = 1<br/>roll_ptr → U2"]
+        U2["[版本2]<br/>余额 = 80万<br/>trx_id = 2<br/>roll_ptr → U3"]
+        U3["[版本3]<br/>余额 = 50万<br/>trx_id = 3<br/>roll_ptr → NULL"]
+        U1 --> U2
+        U2 --> U3
+    end
+    subgraph "Read View 结构"
+        RV["Read View"]
+        RV --> TV["trx_ids: [活跃事务ID列表]"]
+        RV --> LT["low_limit_id: 下一个事务ID"]
+        RV --> UT["up_limit_id: 最小活跃事务ID"]
+        RV --> CT["creator_trx_id: 创建者事务ID"]
+    end
+    
+    subgraph "MVCC判断流程"
+        J1["判断 trx_id == creator_trx_id?"]
+        J2["判断 trx_id < up_limit_id?"]
+        J3["判断 trx_id >= low_limit_id?"]
+        J4["判断 trx_id 在 trx_ids 中?"]
+        
+        J1 -->|是| V1["可见"]
+        J1 -->|否| J2
+        J2 -->|是| V2["可见"]
+        J2 -->|否| J3
+        J3 -->|是| NV1["不可见"]
+        J3 -->|否| J4
+        J4 -->|在| NV2["不可见"]
+        J4 -->|不在| V3["可见"]
+    end
+    
+    H2 -.->|指向| U1
+    RV -.->|查找版本链| U1
+```
+
+【**MVCC - 执行过程】**
+
+```mermaid
+sequenceDiagram
+    participant T as 事务线程
+    participant RV as Read View
+    participant UL as Undo Log版本链
+    participant R as 记录版本
+    
+    Note over T: 事务开始读取操作
+    T->>RV: 创建/获取Read View
+    RV-->>T: 返回Read View<br/>(trx_ids, up_limit_id, low_limit_id, creator_trx_id)
+    
+    T->>UL: 获取当前记录版本
+    UL-->>T: 返回最新版本记录
+    
+    loop 遍历版本链直到找到可见版本
+        T->>R: 获取当前版本的trx_id
+        R-->>T: 返回版本的trx_id
+        
+        Note over T,RV: 开始可见性判断
+        
+        T->>RV: 判断 trx_id == creator_trx_id?
+        alt trx_id 等于 creator_trx_id
+            RV-->>T: 可见(自己修改的记录)
+            Note over T: 返回当前版本数据
+        else 不等于 creator_trx_id
+            T->>RV: 判断 trx_id < up_limit_id (最小未提交的事务id)? 
+            alt trx_id < up_limit_id
+                RV-->>T: 可见(已提交的旧事务)
+                Note over T: 返回当前版本数据
+            else trx_id >= up_limit_id
+                T->>RV: 判断 trx_id >= low_limit_id (下一个待分配的事务id)?
+                alt trx_id >= low_limit_id
+                    RV-->>T: 不可见(未来事务)
+                    T->>UL: 通过roll_ptr获取上一版本
+                    UL-->>T: 返回上一版本记录
+                else trx_id < low_limit_id
+                    T->>RV: 判断 trx_id 是否在 trx_ids 中?
+                    alt trx_id 在 trx_ids 中
+                        RV-->>T: 不可见(活跃未提交事务)
+                        T->>UL: 通过roll_ptr获取上一版本
+                        UL-->>T: 返回上一版本记录
+                    else trx_id 不在 trx_ids 中
+                        RV-->>T: 可见(已提交事务)
+                        Note over T: 返回当前版本数据
+                    end
+                end
+            end
+        end
+    end
+    
+    Note over T: 找到可见版本或到达版本链末尾
+```
+
+## [补充] 23.1 MySQL事务的四大隔离级别实现原理？
+
+- **读未提交**：可以读到未提交的数据，所以直接读最新的数据即可
+- **读已提交**和**可重复读**：是通过 Read View 来实现的，它们的区别在于创建 Read View 的时机不同，大家可以把 Read View 理解成一个数据快照，就像相机拍照那样，定格某一时刻的风景。
+  - **读已提交**：**每个语句执行前**， 都会重新生成一个 **Read View** 。可以确保只读到已经提交过的事务，如果没提交在Read View里面是看不到的。
+  - **可重复读**：**启动事务时**，生成一个 Read View，整个事务期间都在用这个 **Read View** 。所以，可以确保读取到的都是同一个事务内修改过的数据。即便事务执行过程中有其他已经事务提交，也看不到其他事务修改过的数据记录。
+- **串行化**：通过加读写锁的方式来避免并行访问
+
+【案例分析】
+
+> 假设有一张账户余额表，里面有一条账户余额为 100 万的记录。然后有两个并发的事务，事务 A 只负责查询余额，事务 B 则会将我的余额改成 200 万，下面是按照时间顺序执行两个事务的行为：
+>
+> ![事务并发案例](https://oss.swimmingliu.cn/44c8997a-88d2-11f0-87e7-caaeffceb345)
+
+【分析】
+
+- 可重复读：下面事务并发的执行过程，利用MVCC的快照读解决了不可重复读的问题。（因为在事务开始的时候，就生成了一个ReadView。确保读取到的数据一定是当前事务和之前已提交事务的数据记录，后面的记录都读取不到）
+- 读已提交：如果是读已提交，每次执行都会生成一个ReadView。当事务A第二次读区的时候，就可以读区到事务B提交的数据了。
+
+```mermaid
+sequenceDiagram
+    participant DB as 数据库记录
+    participant UA as 事务A的Undo Log
+    participant UB as 事务B的Undo Log
+    participant TA as 事务A(trx_id=100)
+    participant TB as 事务B(trx_id=101)
+    
+    Note over DB: 初始状态: 余额=100万, trx_id=99
+    
+    Note over TA: 1. 事务A启动
+    TA->>TA: 生成Read View A<br/>up_limit_id=100<br/>low_limit_id=102<br/>trx_ids=[100]<br/>creator_trx_id=100
+    
+    Note over TA: 2. 事务A首次读取
+    TA->>DB: SELECT 余额
+    DB-->>TA: 返回100万<br/>(trx_id=99 < up_limit_id=100, 可见)
+    
+    Note over TB: 3. 事务B启动
+    TB->>TB: 生成Read View B<br/>up_limit_id=100<br/>low_limit_id=102<br/>trx_ids=[100,101]<br/>creator_trx_id=101
+    
+    Note over TB: 4. 事务B首次读取
+    TB->>DB: SELECT 余额
+    DB-->>TB: 返回100万<br/>(trx_id=99 < up_limit_id=100, 可见)
+    
+    Note over TB: 5. 事务B更新数据
+    TB->>UB: 创建Undo Log记录<br/>old_value=100万, trx_id=99
+    TB->>DB: UPDATE 余额=200万, trx_id=101
+    Note over DB: 当前记录: 余额=200万, trx_id=101<br/>roll_ptr→Undo Log(100万, trx_id=99)
+    
+    Note over TA: 6. 事务A第二次读取(V1)
+    TA->>DB: SELECT 余额
+    Note over TA,DB: 使用事务A的Read View判断可见性
+    Note over TA: trx_id=101 在 trx_ids=[100] 中? 不在<br/>trx_id=101 >= low_limit_id=102? 否<br/>但 trx_id=101 > up_limit_id=100
+    TA->>UB: 通过roll_ptr访问Undo Log
+    UB-->>TA: 返回100万<br/>(trx_id=99 < up_limit_id=100, 可见)
+    
+    Note over TB: 7. 事务B提交
+    TB->>DB: COMMIT
+    Note over DB: 事务B提交，记录持久化
+    
+    Note over TA: 8. 事务A第三次读取(V2)
+    TA->>DB: SELECT 余额
+    Note over TA: 仍使用原来的Read View A<br/>(RR级别下Read View不变)
+    TA->>UB: 通过roll_ptr访问Undo Log
+    UB-->>TA: 返回100万<br/>(可重复读保证)
+    
+    Note over TA: 9. 事务A提交
+    TA->>DB: COMMIT
+    
+    Note over DB: 10. 最终读取(V3)
+    Note over DB: 新事务读取会看到200万<br/>(事务B的修改已提交)
+```
+
+
+
+## [补充] 23.2 MySQL事务的四大特性的底层原理？
+
+##   
 
 ## 24. MySQL 中的日志类型有哪些？binlog、redo log 和 undo log 的作用和区别是什么？
 

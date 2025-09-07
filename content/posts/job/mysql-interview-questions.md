@@ -1,7 +1,7 @@
 ---
 title: "MySQL面试题笔记"
 date: 2025-02-19T15:16:42+08:00
-lastmod: 2025-09-03T22:16:42+08:00
+lastmod: 2025-09-07T21:16:42+08:00
 author: ["SwimmingLiu"]
 
 categories:
@@ -625,6 +625,124 @@ MySQL的InnoDB引擎中，B+树m每个节点的数据页大小可以通过调整
 - 开启慢SQL日志记录功能，使用`set global slow_query_log = "ON"`， 默认是关闭的。设置一个查询延迟的阈值，把超过规定时间的SQL查询找出来。
 - 利用`explain`关键字分析慢SQL的原因，比如看看是否有索引失效、`select *`等情况
 
+```mermaid
+graph LR
+    subgraph "MySQL性能调优方法体系"
+        A["SQL层面优化"] --> A1["索引优化"]
+        A --> A2["SQL语句优化"]
+        A --> A3["表结构优化"]
+        
+        A1 --> A11["创建合适索引"]
+        A1 --> A12["避免索引失效"]
+        A1 --> A13["覆盖索引"]
+        A1 --> A14["索引下推ICP"]
+        
+        A2 --> A21["避免SELECT *"]
+        A2 --> A22["优化JOIN查询"]
+        A2 --> A23["合理使用分页"]
+        A2 --> A24["批量操作"]
+        
+        A3 --> A31["字段类型选择"]
+        A3 --> A32["范式反范式权衡"]
+        A3 --> A33["垂直分表"]
+        
+        B["架构层面优化"] --> B1["读写分离"]
+        B --> B2["分库分表"]
+        B --> B3["缓存机制"]
+        B --> B4["数据冷热分离"]
+        
+        B1 --> B11["主从复制"]
+        B1 --> B12["负载均衡"]
+        B2 --> B21["水平分片"]
+        B2 --> B22["垂直分片"]
+        B3 --> B31["Redis缓存"]
+        B3 --> B32["查询缓存"]
+        
+        C["系统层面优化"] --> C1["硬件配置"]
+        C --> C2["参数调优"]
+        C --> C3["连接池配置"]
+        
+        C1 --> C11["SSD硬盘"]
+        C1 --> C12["增加内存"]
+        C2 --> C21["innodb_buffer_pool_size"]
+        C2 --> C22["max_connections"]
+        C3 --> C31["连接池大小"]
+        C3 --> C32["超时设置"]
+        
+        D["监控诊断"] --> D1["慢查询日志"]
+        D --> D2["EXPLAIN分析"]
+        D --> D3["Performance Schema"]
+        D --> D4["监控工具"]
+    end
+```
+
+## [补充] 16.1 MySQL中的慢SQL如何排查 （完整排查链路）
+
+**【慢SQL完成排查流程】**
+
+```mermaid
+flowchart LR
+    A["发现慢SQL"] --> B{"慢SQL来源"}
+    
+    B --> B1["慢查询日志"]
+    B --> B2["监控告警"]
+    B --> B3["应用响应慢"]
+    
+    B1 --> C["开启慢查询日志<br>long_query_time=1"]
+    B2 --> C
+    B3 --> C
+    
+    C --> D["定位具体SQL语句"]
+    D --> E["使用EXPLAIN分析执行计划"]
+    
+    E --> F{"执行计划分析"}
+    F --> F1["type: ALL/index<br>(全表扫描)"]
+    F --> F2["key: NULL<br>(未使用索引)"]
+    F --> F3["rows: 很大<br>(扫描行数多)"]
+    F --> F4["Extra: Using filesort<br>Using temporary"]
+    
+    F1 --> G["索引优化"]
+    F2 --> G
+    F3 --> G
+    F4 --> G
+    
+    G --> H{"优化策略选择"}
+    
+    H --> H1["创建索引"]
+    H --> H2["SQL重写"]
+    H --> H3["表结构调整"]
+    H --> H4["分库分表"]
+    
+    H1 --> I1["单列索引<br>复合索引<br>覆盖索引"]
+    H2 --> I2["JOIN优化<br>子查询优化<br>分页优化"]
+    H3 --> I3["字段类型优化<br>冗余字段<br>垂直分表"]
+    H4 --> I4["水平分片<br>垂直分片<br>读写分离"]
+    
+    I1 --> J["执行优化方案"]
+    I2 --> J
+    I3 --> J
+    I4 --> J
+    
+    J --> K["再次EXPLAIN验证"]
+    K --> L{"性能是否满足要求"}
+    
+    L --> L1["是"] 
+    L --> L2["否"]
+    
+    L1 --> M["持续监控"]
+    L2 --> N["继续深度优化"]
+    
+    N --> N1["查看Profile"]
+    N --> N2["分析锁等待"]
+    N --> N3["优化参数配置"]
+    
+    N1 --> H
+    N2 --> H  
+    N3 --> H
+    
+    M --> O["优化完成"]
+```
+
 ## 17. 如何使用MySQL的EXPLAIN语句进行查询分析?
 
 **【EXPLAIN查询结果解释】**
@@ -844,6 +962,44 @@ FLUSH TABLES WITH READ LOCK
 - 快照读：直接 `select`，普通的查询操作，不加任何锁，不会阻塞其他事务。会生成ReadView，不会有幻行
 
 ![MVCC当前读和快照读](https://oss.swimmingliu.cn/76d0b02d-f4b5-11ef-9134-c858c0c1deba)
+
+**【当前读和快照读事务执行流程区别】**
+
+```mermaid
+sequenceDiagram
+    participant T1 as 事务1
+    participant T2 as 事务2
+    participant DB as 数据库
+    participant MVCC as MVCC版本链
+    
+    Note over T1, MVCC: 场景1：快照读
+    T1->>DB: BEGIN
+    T1->>MVCC: SELECT * FROM users WHERE id=1 (快照读)
+    MVCC-->>T1: 返回快照版本数据: name='Alice'
+    
+    T2->>DB: BEGIN
+    T2->>DB: UPDATE users SET name='Bob' WHERE id=1
+    T2->>DB: COMMIT
+    
+    T1->>MVCC: SELECT * FROM users WHERE id=1 (快照读)
+    MVCC-->>T1: 仍返回快照版本: name='Alice'
+    T1->>DB: COMMIT
+    
+    Note over T1, MVCC: 场景2：当前读
+    T1->>DB: BEGIN
+    T1->>DB: SELECT * FROM users WHERE id=1 FOR UPDATE (当前读)
+    DB-->>T1: 获取排他锁，返回最新数据: name='Bob'
+    
+    T2->>DB: BEGIN
+    T2->>DB: SELECT * FROM users WHERE id=1 FOR UPDATE (当前读)
+    Note over T2, DB: 等待T1释放锁
+    
+    T1->>DB: UPDATE users SET name='Charlie' WHERE id=1
+    T1->>DB: COMMIT
+    
+    DB-->>T2: 获取锁成功，返回最新数据: name='Charlie'
+    T2->>DB: COMMIT
+```
 
 **【隔离级别】**
 
@@ -1100,7 +1256,298 @@ sequenceDiagram
 
 ## [补充] 23.2 MySQL事务的四大特性的底层原理？
 
-##   
+**【事务的四大特性定义】**
+
+- 原子性（Atomicity）：事务中的所有操作要么全部成功执行并提交，要么全部失败并回滚，不存在部分执行的情况。就像转账操作，扣款和加款必须同时成功或同时失败。
+
+- 隔离性（Isolation）：并发执行的多个事务之间相互隔离，一个事务的执行不应该被其他事务干扰。通过不同的隔离级别来控制并发访问。
+
+- 持久性（Durability）：事务一旦提交，其对数据库的修改就是永久性的，即使系统崩溃也不会丢失。
+
+  **【为什么需要持久化？】**
+
+  ```mermaid
+  graph LR
+      A[用户发起转账请求<br/>转账1000元] --> B[MySQL处理事务]
+      B --> C[在内存中修改数据<br/>账户A: 5000→4000<br/>账户B: 3000→4000]
+      C --> D[返回成功响应给用户<br/>用户认为转账完成]
+      D --> E{系统是否崩溃?}
+      
+      E -- 正常运行 --> F[数据最终写入磁盘<br/>数据安全保存]
+      E -- 突然断电/崩溃 --> G[内存数据丢失<br/>修改全部消失]
+      
+      G --> H[严重后果]
+      H --> I[用户金钱损失<br/>账户A已扣款<br/>账户B未到账]
+      H --> J[银行信誉受损<br/>监管合规问题]
+      H --> K[数据不一致<br/>总金额不守恒]
+      
+      F --> L[数据一致性保证<br/>业务正常运行]
+      
+      style A fill:#e1f5fe
+      style G fill:#ffebee
+      style H fill:#ffcdd2
+      style I fill:#ffcdd2
+      style J fill:#ffcdd2
+      style K fill:#ffcdd2
+      style L fill:#e8f5e8
+  ```
+
+- 一致性（Consistency）：事务执行前后，数据库必须处于一致性状态。所有数据完整性约束都得到满足，不会出现数据不一致的情况。
+
+**【四大特性的关系】**
+
+```mermaid
+graph TB
+    subgraph "MySQL事务ACID特性"
+        A["原子性 Atomicity<br/>事务要么全部成功<br/>要么全部失败"]
+        I["隔离性 Isolation<br/>并发事务之间<br/>相互独立"]
+        D["持久性 Durability<br/>事务提交后<br/>永久保存"]
+        C["一致性 Consistency<br/>数据库状态<br/>保持一致"]
+    end
+    
+    A --> C
+    I --> C  
+    D --> C
+    
+    style A fill:#e1f5fe
+    style I fill:#f3e5f5
+    style D fill:#e8f5e8
+    style C fill:#fff3e0
+```
+
+
+
+**【四大特性实现原理】**
+
+1. **原子性**：原子性主要通过 `Undo Log` （回滚日志）来实现，`Undo Log` 的生命周期有三个阶段。
+
+   - **操作记录阶段**：当事务对数据进行修改时，MySQL会先将原始数据记录到 `Undo Log` 中，然后再执行实际的修改操作。如果是修改操作，`Undo Log` 存的是数据、`trx_id`、`row_id`、`rollback_pt` (MVCC 记录)。如果是新增操作，会记录一条对应的删除操作，用于后续回滚。
+   - **回滚处理阶段**：如果事务需要回滚（主动ROLLBACK或系统异常），MySQL会读取 `Undo Log` 中记录的原始数据，并使用这些数据将数据库恢复到事务开始前的状态。
+
+   - **提交处理阶段**：如果事务成功提交，`Undo Log` 中的数据会被标记为可清理状态，等待后台进程回收。
+
+   ```mermaid
+   sequenceDiagram
+       participant Client as 客户端
+       participant Server as MySQL服务器
+       participant UndoLog as Undo Log
+       participant Buffer as 缓冲池
+       participant Storage as 存储引擎
+   
+       Client->>Server: BEGIN TRANSACTION
+       Server->>UndoLog: 创建事务ID和Undo Log空间
+       
+       Client->>Server: UPDATE users SET balance=1000 WHERE id=1
+       Server->>UndoLog: 记录原始数据<br/>(id=1, balance=500)
+       Server->>Buffer: 修改缓冲池数据<br/>(id=1, balance=1000)
+       
+       Client->>Server: INSERT INTO orders VALUES(1, 'item1')
+       Server->>UndoLog: 记录插入操作的反向删除记录<br/>(DELETE FROM orders WHERE id=1)
+       Server->>Buffer: 在缓冲池中插入新记录
+       
+       alt 事务提交成功
+           Client->>Server: COMMIT
+           Server->>Storage: 将缓冲池数据刷新到磁盘
+           Server->>UndoLog: 标记Undo Log为可清理状态
+           Server-->>Client: 事务提交成功
+       else 事务回滚
+           Client->>Server: ROLLBACK (或系统异常)
+           Server->>UndoLog: 读取Undo Log中的历史数据
+           Server->>Buffer: 使用Undo Log恢复原始数据<br/>(id=1, balance=500)
+           Server->>Buffer: 删除已插入的订单记录
+           Server-->>Client: 事务回滚完成
+       end
+   ```
+
+2. **持久性**：主要通过 **`Redo log` 、双阶段提交、双写缓存区**来确保事务的持久性
+
+   -  **Redo Log机制**：MySQL使用WAL（Write-Ahead Logging）策略，先写日志再写数据。即使系统崩溃，也能通过重放Redo Log恢复数据。
+
+   - **两阶段提交**：协调Redo Log和Binary Log的写入顺序，确保事务的一致性和持久性。
+
+   - **双写缓冲区**：防止页面写入过程中的部分写问题，确保数据页的完整性。
+
+   **【持久化机制流程图】**
+
+   ```mermaid
+   graph LR
+   		 subgraph "崩溃恢复机制"
+   		 				direction LR
+               Y[系统重启] --> Z[读取Redo Log]
+               Z --> AA[从检查点开始重放]
+               AA --> BB[恢复未刷盘的修改]
+               BB --> CC[数据完整性验证]
+        end
+       
+       subgraph "二阶段提交"
+       		direction LR
+           DD[Phase 1: Prepare] --> EE[写入Prepare状态]
+           EE --> FF[刷新Redo Log]
+           FF --> GG[写入Binary Log]
+           GG --> HH[Phase 2: Commit]
+           HH --> II[写入Commit状态]
+           II --> JJ[事务完成]
+       end
+   
+       subgraph "用户层"
+           A[客户端应用] --> B[事务提交请求]
+       end
+       
+       subgraph "MySQL服务器层"
+           B --> C[SQL解析器]
+           C --> D[事务管理器]
+           D --> E[存储引擎接口]
+       end
+       
+       subgraph "InnoDB存储引擎"
+           E --> F[缓冲池 Buffer Pool]
+           
+           subgraph "内存结构"
+               F --> G[数据页缓存]
+               F --> H[索引页缓存]
+               F --> I[Undo页缓存]
+               
+               J[Log Buffer] --> K[Redo Log Records]
+           end
+           
+           subgraph "磁盘持久化机制"
+               L[Redo Log Files] --> M[ib_logfile0]
+               L --> N[ib_logfile1]
+               
+               O[数据文件] --> P[表空间 .ibd]
+               O --> Q[系统表空间 ibdata]
+               
+               R[双写缓冲区] --> S[Double Write Buffer<br/>连续的磁盘区域]
+           end
+           
+           subgraph "WAL写入流程"
+               G --> T{数据页修改}
+               T --> U[1. 记录到Redo Log Buffer]
+               U --> V[2. 写入Redo Log Files<br/>fsync强制刷盘]
+               V --> W[3. 标记页面为脏页]
+               W --> X[4. 后台异步刷脏页]
+           end
+       end
+       
+       K --> U
+       V --> L
+       X --> R
+       R --> O
+       
+       style F fill:#e3f2fd
+       style L fill:#fff3e0
+       style R fill:#f3e5f5
+       style DD fill:#e8f5e8
+   ```
+
+   **【持久化机制-执行过程详细时序图】**
+
+   ```mermaid
+   sequenceDiagram
+       participant Client as 客户端
+       participant Server as MySQL服务器
+       participant Buffer as 缓冲池
+       participant RedoLog as Redo Log
+       participant BinLog as Binary Log
+       participant Disk as 磁盘存储
+       participant DoubleWrite as 双写缓冲区
+   
+       Client->>Server: BEGIN TRANSACTION
+       
+       Client->>Server: UPDATE users SET balance=1000 WHERE id=1
+       
+       Note over Server: 开始两阶段提交过程
+       
+       Server->>Buffer: 在缓冲池中修改数据页<br/>(balance=1000)
+       
+       Server->>RedoLog: 写入Redo Log记录<br/>(LSN=1001, 页面修改详情)
+       RedoLog->>RedoLog: 将日志写入Log Buffer
+       
+       Client->>Server: COMMIT
+       
+       Note over Server: 第一阶段：准备提交
+       
+       Server->>RedoLog: 写入Prepare状态的Redo Log<br/>(XID=12345, state=PREPARE)
+       RedoLog->>Disk: 强制刷新Redo Log到磁盘<br/>(fsync调用)
+       
+       Server->>BinLog: 写入Binary Log记录<br/>(XID=12345, SQL语句)
+       BinLog->>Disk: 强制刷新Binary Log到磁盘<br/>(fsync调用)
+       
+       Note over Server: 第二阶段：最终提交
+       
+       Server->>RedoLog: 写入Commit状态的Redo Log<br/>(XID=12345, state=COMMIT)
+       RedoLog->>Disk: 刷新Commit记录到磁盘
+       
+       Server-->>Client: 返回提交成功响应
+       
+       Note over Server: 后台异步刷脏页过程
+       
+       par 脏页刷新
+           Server->>DoubleWrite: 将脏页先写入双写缓冲区
+           DoubleWrite->>Disk: 刷新双写缓冲区到磁盘
+           DoubleWrite-->>Server: 双写完成确认
+           Server->>Disk: 将脏页写入实际数据文件位置
+       and 检查点处理
+           Server->>RedoLog: 推进检查点LSN
+           Server->>RedoLog: 清理已刷新脏页对应的Redo Log
+       end
+       
+       Note over Server: 崩溃恢复场景
+       alt 系统崩溃后重启
+           Server->>RedoLog: 从检查点开始读取Redo Log
+           Server->>Buffer: 根据Redo Log重放未刷盘的修改
+           Server->>Disk: 重新应用所有已提交事务的修改
+           Note over Server: 持久性得到保证，数据不会丢失
+       end
+   ```
+
+3. **隔离性**: 主要通过**锁**和**MVCC**两大机制来保证并发事务之间，事务能够相互独立。
+
+   ```mermaid
+   sequenceDiagram
+       participant T1 as 事务1<br/>(Transaction ID: 100)
+       participant T2 as 事务2<br/>(Transaction ID: 101)
+       participant LockManager as 锁管理器
+       participant MVCC as MVCC引擎
+       participant UndoLog as Undo Log
+       participant DataPage as 数据页
+   
+       Note over T1, T2: 假设两个并发事务同时操作用户余额
+   
+       T1->>LockManager: BEGIN TRANSACTION
+       LockManager->>T1: 分配事务ID: 100
+       
+       T2->>LockManager: BEGIN TRANSACTION  
+       LockManager->>T2: 分配事务ID: 101
+   
+       T1->>LockManager: 请求修改用户ID=1的数据<br/>UPDATE users SET balance=1000 WHERE id=1
+       LockManager->>T1: 获得行级写锁(X锁)
+       T1->>UndoLog: 记录原始数据(balance=500)
+       T1->>DataPage: 修改数据页<br/>(balance=1000, trx_id=100)
+       
+       T2->>MVCC: 读取用户ID=1的数据<br/>SELECT balance FROM users WHERE id=1
+       MVCC->>UndoLog: 检查当前活跃事务列表<br/>发现事务100未提交
+       MVCC->>UndoLog: 通过Undo Log找到事务100之前的版本
+       MVCC->>T2: 返回快照读结果(balance=500)<br/>基于ReadView机制
+   
+       T2->>LockManager: 尝试修改同一数据<br/>UPDATE users SET balance=800 WHERE id=1
+       LockManager->>T2: 等待锁释放<br/>(阻塞状态)
+   
+       alt 事务1提交
+           T1->>LockManager: COMMIT
+           T1->>DataPage: 将修改写入磁盘
+           LockManager->>T2: 释放行级写锁<br/>唤醒等待的事务2
+           T2->>LockManager: 获得行级写锁
+           T2->>DataPage: 修改数据页<br/>(balance=800, trx_id=101)
+           T2->>LockManager: COMMIT
+       else 事务1回滚
+           T1->>LockManager: ROLLBACK
+           T1->>UndoLog: 恢复原始数据(balance=500)
+           LockManager->>T2: 释放行级写锁
+           T2->>LockManager: 获得行级写锁
+           T2->>DataPage: 基于原始值修改<br/>(balance=800, trx_id=101)
+       end
+   ```
 
 ## 24. MySQL 中的日志类型有哪些？binlog、redo log 和 undo log 的作用和区别是什么？
 
@@ -1286,6 +1733,47 @@ MySQL默认的事务隔离级别是可重复读 `RR` 。
 MySQL事务从开启到提交的过程，大致如下：
 
  开启事务 -> 查询数据到内存 -> 记录`undo log` -> 记录`redo log`(prepare阶段) -> 更新内存 -> 记录`binlog` -> 记录`redo log` (commit之后)
+
+```mermaid
+graph LR
+    subgraph "传统写入方式（无WAL）的问题"
+        A1[用户提交事务] --> B1[直接修改数据文件]
+        B1 --> C1{数据文件写入完成?}
+        C1 -- 写入中断电 --> D1[数据文件损坏<br/>原始数据丢失<br/>新数据不完整]
+        C1 -- 写入成功 --> E1[数据安全]
+        D1 --> F1[❌ 数据无法恢复]
+    end
+    
+    subgraph "WAL策略的优势"
+        A2[用户提交事务] --> B2[1. 先写Redo Log<br/>记录：在页面X的偏移Y<br/>将值从A改为B]
+        B2 --> C2[2. 强制刷新Redo Log到磁盘<br/>fsync系统调用]
+        C2 --> D2[3. 返回用户事务成功]
+        D2 --> E2[4. 后台异步刷新数据页]
+        
+        subgraph "崩溃恢复场景"
+            F2[系统崩溃重启] --> G2[读取Redo Log]
+            G2 --> H2[重放所有已提交事务的修改]
+            H2 --> I2[✅ 数据完整恢复]
+        end
+        
+        E2 --> J2{系统崩溃?}
+        J2 -- 正常运行 --> K2[数据最终写入数据文件]
+        J2 -- 崩溃 --> F2
+    end
+    
+    subgraph "WAL性能优势"
+        L1[顺序写入Redo Log<br/>高性能] --> M1[随机写入数据文件<br/>可异步执行]
+        N1[小尺寸日志记录<br/>快速I/O] --> O1[大尺寸数据页面<br/>批量写入]
+    end
+    
+    style D1 fill:#ffcdd2
+    style F1 fill:#ffcdd2
+    style I2 fill:#e8f5e8
+    style L1 fill:#e3f2fd
+    style N1 fill:#e3f2fd
+```
+
+
 
 ## 30. MySQL 中如果发生死锁应该如何解决？
 

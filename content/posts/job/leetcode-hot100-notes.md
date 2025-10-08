@@ -1084,3 +1084,926 @@ private void dfs(int i, int left, int[] candidates, List<List<Integer>> ans, Lis
     }
 }
 ```
+
+### 4. 全排列
+
+题目链接：[全排列](https://leetcode.cn/problems/permutations/?favorite=2cktkvj)
+
+【思路】
+
+使用常规DFS即可，需要用 `onPath` 数组来记录 `nums` 中的原书是否被选中，用 `List<Integer> path` 来记录单个排列的情况。
+
+为了避免频繁的插入和删除操作，可以使用 `path.set(i, nums[j])` 对指定的位置修改
+
+【伪代码】
+
+```java
+ public List<List<Integer>> permute(int[] nums) {
+        List<List<Integer>> ans = new ArrayList<>();
+        List<Integer> path = Arrays.asList(new Integer[nums.length]); // 所有排列的长度都是一样的 n
+        boolean[] onPath = new boolean[nums.length];
+        dfs(0, nums, ans, path, onPath);
+        return ans;
+    }
+
+  private void dfs(int i, int[] nums, List<List<Integer>> ans, List<Integer> path, boolean[] onPath) {
+      if (i == nums.length) {
+          ans.add(new ArrayList<>(path));
+          return;
+      }
+      for (int j = 0; j < nums.length; j++) {
+          if (!onPath[j]) {
+              path.set(i, nums[j]); // 从没有选的数字中选一个 （这里可以用 path.add，恢复现场的时候用 path.remove）
+              onPath[j] = true; // 已选上
+              dfs(i + 1, nums, ans, path, onPath);
+              onPath[j] = false; // 恢复现场
+              // 注意 path 无需恢复现场，因为排列长度固定，直接覆盖就行
+          }
+      }
+  }
+```
+
+### 5. 子集
+
+题目链接：[子集](https://leetcode.cn/problems/subsets/description/)
+
+【第一种思路】
+
+【输入视角】选或不选 `nums` 数组中的每个元素，`dfs` 中的 `i` 表示当前考虑 `nums[i]` 选或者不选
+
+时间复杂度分析：$O(n*2^n)$，其中 n 为 nums 的长度。每次都是选或不选，递归次数为一个满二叉树的节点个数，那么一共会递归 $O(2^n)$ 次（等比数列和），再算上加入答案时复制 path 需要 $O(n)$ 的时间，所以时间复杂度为 $O(n*2^n)$。
+
+【伪代码】
+
+```java
+public List<List<Integer>> subsets(int[] nums) {
+        List<List<Integer>> ans = new ArrayList<>();
+        List<Integer> path = new ArrayList<>();
+        dfs(0, nums, path, ans);
+        return ans;
+    }
+
+private void dfs(int i, int[] nums, List<Integer> path, List<List<Integer>> ans) {
+    if (i == nums.length) { // 子集构造完毕
+        ans.add(new ArrayList<>(path)); // 复制 path
+        return;
+    }
+
+    // 不选 nums[i]
+    dfs(i + 1, nums, path, ans);
+
+    // 选 nums[i]
+    path.add(nums[i]);
+    dfs(i + 1, nums, path, ans);
+    path.removeLast(); // path.remove(path.size() - 1);
+}
+```
+
+【第二种思路】
+
+【答案视角】枚举选哪个 `nums` 数组中的元素：*dfs* 中的 *i* 表示现在要枚举选 *nums*[*i*] 到 *nums*[*n*−1] 中的一个数，添加到 *path* 末尾。
+
+【伪代码】
+
+```java
+  public List<List<Integer>> subsets(int[] nums) {
+      List<List<Integer>> ans = new ArrayList<>();
+      List<Integer> path = new ArrayList<>();
+      dfs(0, nums, path, ans);
+      return ans;
+  }
+
+  private void dfs(int i, int[] nums, List<Integer> path, List<List<Integer>> ans) {
+      if (i == n) return;
+      ans.add(new ArrayList<>(path)); // 复制 path
+      for (int j = i; j < nums.length; j++) { // 枚举选择的数字
+          path.add(nums[j]);
+          dfs(j + 1, nums, path, ans);
+          path.removeLast(); // path.remove(path.size() - 1);
+      }
+  }
+```
+
+## 哈希表/Map
+
+### 1. 两数之和
+
+题目链接：[两数之和](https://leetcode.cn/problems/two-sum/description/)
+
+【思路】
+
+用 `HashMap` 记录下每个元素的值和对应的索引即可。
+
+【伪代码】
+
+```java
+public int[] twoSum(int[] nums, int target) {
+    HashMap<Integer, Integer> map = new HashMap<>();
+    for (int i = 0; i < nums.length; i ++){
+        map.put(nums[i], i);
+    }
+    for (int i = 0; i < nums.length; i ++){
+        if (map.containsKey(target - nums[i])){
+            int index = map.get(target - nums[i]);
+            if (i != index){
+                return new int[]{i, index};
+            }  
+        }
+    }
+    return new int[]{};
+}
+```
+
+### 2. 字母异位词分组
+
+题目链接：[字母异位词分组](https://leetcode.cn/problems/group-anagrams/description/)
+
+【思路】
+
+将每个字符串变换为字符数组，并进行排序。 如果是异位词分组，则他们排序后的结果是一样的
+
+用排序后的字符串作为 `key`，所有的异位词都存储到 `value` 里面，构成一个 `map` 
+
+最后，只需要取出 `map` 中的所有 `value` 数据即可
+
+【伪代码】
+
+```java
+public List<List<String>> groupAnagrams(String[] strs) {
+     Map<String, List<String>> map = new HashMap();
+     for (String str: strs){
+        char[] s = str.toCharArray();
+        Arrays.sort(s);
+        map.computeIfAbsent(new String(s) , x -> new ArrayList<>()).add(str);
+     }
+     return new ArrayList<>(map.values());
+}
+```
+
+### 3. 最长连续序列
+
+题目链接：[最长连续序列](https://leetcode.cn/problems/longest-consecutive-sequence/description/?favorite=2cktkvj)
+
+【思路】
+
+1、循环遍历数组中的所有元素，用 `HashSet` 存储所有的元素。
+
+2、循环遍历数组中的所有元素，判断当前元素的 `x - 1` 元素是否存在？
+
+- 若 `x - 1` 元素存在，则直接跳过
+- 若 `x - 1` 元素不存在，说明当前元素是开始元素。则向后记录 `x + 1` 存在的个数，将记录的个数和 `ans` 计算最大值
+
+3、当 `ans >= num.size() / 2` 的时候，说明不存在更长的顺序串了
+
+【伪代码】 
+
+```java
+public int longestConsecutive(int[] nums) {
+    Set<Integer> st = new HashSet<>();
+    for (int num : nums) {
+        st.add(num); // 把 nums 转成哈希集合
+    }
+    int m = st.size();
+
+    int ans = 0;
+    for (int x : st) { // 遍历哈希集合
+        if (st.contains(x - 1)) { // 如果 x 不是序列的起点，直接跳过
+            continue;
+        }
+        // x 是序列的起点
+        int y = x + 1;
+        while (st.contains(y)) { // 不断查找下一个数是否在哈希集合中
+            y++;
+        }
+        // 循环结束后，y-1 是最后一个在哈希集合中的数
+        ans = Math.max(ans, y - x); // 从 x 到 y-1 一共 y-x 个数
+        if (ans * 2 >= m) {
+            break;
+        }
+    }
+    return ans;
+}
+```
+
+## 位运算
+
+### 1. 只出现一次的数字
+
+题目链接：[只出现一次的数字](https://leetcode.cn/problems/single-number/description/)
+
+【思路】
+
+对所有元素进行异或操作即可，相同的元素异或结果为 `0`,  任何元素和 `0` 进行异或的结果为其本身
+
+例如：`4 ^ 1 ^ 2 ^ 2 ^ 1 = 4 ^ (1 ^ 1) ^ (2 ^ 2) = 4 ^ 0 ^ 0 = 4`
+
+【伪代码】
+
+```java
+public int singleNumber(int[] nums) {
+    int ans = 0;
+    for (int x : nums) {
+        ans ^= x;
+    }
+    return ans;
+}
+```
+
+### 2. 比特位计数
+
+题目链接：[比特位计数](https://leetcode.cn/problems/counting-bits/description/)
+
+【思路】
+
+用动态规划的思路来思考，设  `dp[i]` 表示 `i` 有的二进制数有几个 `1`， 所以 `dp[0] = 0`
+
+1. 奇数：当 `i` 是奇数的时候， `i` 的二进制数，其实就是在 `i - 1` 的最后一位上，加了一个 `1`。
+
+   所以，当 `i` 是奇数的时候， `dp[i] = dp[i - 1] + 1`
+
+2. 偶数：当 `i` 是偶数的时候， `i` 的二进制个数和 `i / 2` 的二进制个数一样，因为从 `i / 2` 变成 `i` ，本质上就是 `i / 2` 想左移动一位。所以，当 `i` 是偶数的时候， `dp[i] = dp[i / 2]`
+
+【伪代码】
+
+```java
+public int[] countBits(int n) {
+        int[] dp = new int[n + 1];
+        dp[0] = 0;
+        for (int i = 0; i <= n; i ++){
+            if (i % 2 == 0){
+                dp[i] = dp[i / 2];
+            } else {
+                dp[i] = dp[i - 1] + 1;
+            }
+        }
+        return dp;
+    }
+}
+```
+
+### 3. 汉明距离
+
+题目链接：[汉明距离](https://leetcode.cn/problems/hamming-distance/description/)
+
+【思路】
+
+先将 `x` 和 `y` 进行异或操作，然后计算异或结果二进制中 `1` 的个数
+
+计算某个数二进制中 `1` 的个数:
+
+1. 库函数：`int count = Integer.bitCount(x)`
+2. 与 `x - 1` 进行与操作，直到为 `0` 为止，操作次数就是 二进制中 `1` 的个数
+
+【伪代码】
+
+```java
+public int hammingDistance(int x, int y) {
+  int xor = x ^ y;
+  int count = 0;
+  while( xor != 0){
+      xor = xor & (xor - 1);
+      count ++;
+  }    
+  return count;
+}
+```
+
+## 数组
+
+### 1. 下一个排列
+
+题目链接：[下一个排列](https://leetcode.cn/problems/next-permutation/description/)
+
+【思路】
+
+1. 找需要被替换的数 `x`：需要被替换的数 `x`，一定是从右到左里面第一个小于右侧相邻元素的元素。 该元素的右侧是一个严格递减的序列，且该队列中一定包含比 `x` 更大的元素。
+
+   例如， `[4, 2, 0, 2, 3, 2, 0]` 中，从右往左查找，被替换的数 `x` 应该是 `2`。
+
+2. 找到递减队列中，最小大于 `x` 的元素：在递减队列中，从右到左查找第一个大于 `x` 的元素，就是最小大于 `x` 的我元素
+
+   例如， `[4, 2, 0, 2, 3, 2, 0]` 中，从右往左查找，最小大于 `x` 的元素应该是 3`。
+
+3. 替换 `x` 和 最小大于 `x` 的元素，替换之后仍然是递减队列，然后将递减队列进行逆序。
+
+【伪代码】
+
+```java
+public void nextPermutation(int[] nums) {
+    int n = nums.length;
+
+    // 第一步：从右向左找到第一个小于右侧相邻数字的数 nums[i]
+    int i = n - 2;
+    while (i >= 0 && nums[i] >= nums[i + 1]) {
+        i --;
+    }
+
+    // 如果找到了，进入第二步；否则跳过第二步，反转整个数组
+    if (i >= 0) {
+        // 第二步：从右向左找到 nums[i] 右边最小的大于 nums[i] 的数 nums[j]
+        int j = n - 1;
+        while (nums[j] <= nums[i]) {
+            j --;
+        }
+        // 交换 nums[i] 和 nums[j]
+        swap(nums, i, j);
+    }
+
+    // 第三步：反转 [i+1, n-1]（如果上面跳过第二步，此时 i = -1）
+    reverse(nums, i + 1, n - 1);
+}
+
+private void swap(int[] nums, int i, int j) {
+    int tmp = nums[i];
+    nums[i] = nums[j];
+    nums[j] = tmp;
+}
+
+private void reverse(int[] nums, int left, int right) {
+    while (left < right) {
+        swap(nums, left++, right--);
+    }
+}
+```
+
+### 2. 多数元素
+
+题目链接：[多数元素](https://leetcode.cn/problems/majority-element/description/)
+
+【思路】
+
+ 摩尔投票法：对当前队列中的元素进行投票，不同元素的投票可相互抵消。如果当前队列中，存在一个出现次数最多的元素，那么这个元素最后一定会有余票。下面说一下具体方案：
+
+首先，需要维护两个核心变量：
+
+- 候选人（candidate）：当前的潜在多数元素
+
+- 票数（vote）：当前候选人的"净得票数"
+
+从队列头开始找第一个候选人，进行投票。然后再和后续的元素进行比较。如果和后续元素相同，则票数+1。如果和后续元素不同，则票数至为 `0`， 且需要重新选择候选人。
+
+【伪代码】
+
+```java
+/**
+ * 摩尔投票法求多数元素
+ * 核心思想：多数元素与其他元素"对抗"，最终一定能剩下
+ */
+public int majorityElement(int[] nums) {
+    int candidate = 0;  // 候选人
+    int vote = 0;      // 当前候选人的"净得票数"
+
+    // 遍历数组，寻找候选人
+    for (int num : nums) {
+        // 如果count为0，说明之前的元素已经完全抵消
+        // 需要重新选择候选人
+        if (vote == 0) {
+            candidate = num;
+        }
+
+        // 如果当前元素等于候选人，count+1（支持者+1）
+        // 如果不等于候选人，count-1（被反对者抵消）
+        vote += (num == candidate) ? 1 : -1;
+    }
+
+    // 题目保证一定有多数元素，所以最后的candidate就是答案
+    return candidate;
+}
+```
+
+### 3. 除自身以外数组的乘积
+
+题目链接：[除自身以外数组的乘积](https://leetcode.cn/problems/product-of-array-except-self/description/)
+
+> 要求是不能使用➗法，且出了最终的结果数组，不允许使用额外的空间
+
+【第一种思路】
+
+用两个数组  `pre[i]`  和 `suf[i]` 分别存储 `nums[i]` 左边所有元素的乘积 (`nums[0] * ... * nums[i - 1]`) 和 `nums[i]` 右边所有元素的乘积 (`nums[i + 1] * ... * nums[n - 1]`)。
+
+- `pre` 计算方式：`pre[i] = pre[i - 1] * nums[i - 1]`， 特别的 `pre[0] = 1`
+- `suf`  计算方式: `suf[i] = suf[i + 1] * nums[i + 1]`， 特别的 `suf[n - 1] = 1`
+
+则最终答案数组 `ans[i] = pre[i] * suf[i]`
+
+【伪代码】
+
+```java
+public int[] productExceptSelf(int[] nums) {
+      int n = nums.length;
+      int[] pre = new int[n];
+      pre[0] = 1;
+      for (int i = 1; i < n; i++) {
+          pre[i] = pre[i - 1] * nums[i - 1];
+      }
+
+      int[] suf = new int[n];
+      suf[n - 1] = 1;
+      for (int i = n - 2; i >= 0; i--) {
+          suf[i] = suf[i + 1] * nums[i + 1];
+      }
+
+      int[] ans = new int[n];
+      for (int i = 0; i < n; i++) {
+          ans[i] = pre[i] * suf[i];
+      }
+      return ans;
+  }
+```
+
+【优化思路】
+
+上述过程其实不需要两个数组都存储数据，直接用一个数组 `suf[i]` 先计算右边对应的乘积，然后一遍计算 `pre[i]` 对应的值，直接将结果放入 `suf[i]` 即为最终结果
+
+【伪代码】
+
+```java
+public int[] productExceptSelf(int[] nums) {
+    int n = nums.length;
+    int[] suf = new int[n];
+    suf[n - 1] = 1;
+    for (int i = n - 2; i >= 0; i--) {
+        suf[i] = suf[i + 1] * nums[i + 1];
+    }
+
+    int pre = 1;
+    for (int i = 0; i < n; i++) {
+        // 此时 pre 为 nums[0] 到 nums[i-1] 的乘积，直接乘到 suf[i] 中
+        suf[i] *= pre;
+        pre *= nums[i];
+    }
+
+    return suf;
+}
+```
+
+### 4. 找到所有数组中消失的数字
+
+题目链接：[找到所有数组中消失的数字](https://leetcode.cn/problems/find-all-numbers-disappeared-in-an-array/description/)
+
+> 要求是不使用额外空间且时间复杂度为 `O(n)` 
+
+【思路】
+
+`nums[i]` 中的数的取值范围为 `1~n`，则 `nums[i] - 1` 的取值范围可以映射为 `0~n-1`， 刚好是 `nums` 数组的长度。
+
+如果从对 `nums[i]`  按照规则映射为 `nums` 数组的下标 (`index = nums[i] - 1`), 对 `nums[index]`的元素都✖️ `-1`。 
+
+如果`nums[i]` 中的某些元素不会负数，则说明 `index` 对应的数 `index + 1` 是不存在的
+
+【伪代码】
+
+```java
+public List<Integer> findDisappearedNumbers(int[] nums) {
+      List<Integer> list = new ArrayList<Integer>();
+      int n = nums.length;
+      for (int i = 0; i < n; i ++){
+          // 这里用绝对值是因为 nums[i] 可能会在前面的轮次被改为负数
+          int index = Math.abs(nums[i]) - 1;
+          if (nums[index] > 0){
+              // 只对没有被操作过的元素，进行取负操作
+              nums[index] *= -1;
+          }
+      }
+      for (int i = 0; i < n; i ++){
+          if (nums[i] > 0){
+              list.add(i + 1);
+          }
+      }
+      return list;
+  }
+```
+
+## 二分查找
+
+### 二分查找写法解析 （3种）
+
+> 场景：在有序数组中查找第一个 >= target 的位置
+>
+> 假设有数组 arr = [1, 3, 3, 5, 7, 9]，我们要找第一个 >= 4 的位置。
+>
+> 答案应该是索引 3（值为 5）。
+
+【闭区间二分】
+
+```java
+/**
+ * 闭区间二分：查找第一个 >= target 的位置
+ * 区间定义：[left, right] 表示可能的答案在这个闭区间内
+ */
+public static int lowerBound(int[] arr, int target) {
+      int left = 0;
+      int right = arr.length - 1; // 闭区间，包含最后一个元素
+
+      // 当区间 [left, right] 不为空时继续
+      while (left <= right) { // 注意：是 <=，因为闭区间包含边界
+          int mid = left + (right - left) / 2;
+
+          if (arr[mid] >= target) {
+              // mid 可能是答案，但还要继续向左找
+              right = mid - 1; // 缩小为 [left, mid-1]
+          } else {
+              // mid 太小，答案在右边
+              left = mid + 1; // 缩小为 [mid+1, right]
+          }
+      }
+
+      // 循环结束时，left = right + 1
+      // left 是第一个 >= target 的位置
+      return left < arr.length ? left : -1;
+  }
+```
+
+【开区间二分】
+
+```java
+/**
+ * 开区间二分：查找第一个 >= target 的位置
+ * 区间定义：(left, right) 表示可能的答案在这个开区间内
+ * 核心思想：left 和 right 本身不是候选答案，答案在它们之间
+ */
+public static int lowerBound(int[] arr, int target) {
+    int left = -1;           // 开区间，不包含 left
+    int right = arr.length;  // 开区间，不包含 right
+
+    // 循环不变量：
+    // arr[left] < target （如果 left >= 0）
+    // arr[right] >= target （如果 right < arr.length）
+
+    // 当开区间 (left, right) 不为空时继续
+    while (left + 1 < right) { // 开区间至少有一个元素
+        int mid = left + (right - left) / 2;
+
+        if (arr[mid] >= target) {
+            // mid 可能是答案，将其作为新的右边界
+            right = mid; // 缩小为 (left, mid)，注意不是 mid-1
+        } else {
+            // mid 太小，将其作为新的左边界
+            left = mid; // 缩小为 (mid, right)，注意不是 mid+1
+        }
+    }
+
+    // 循环结束时，left + 1 = right
+    // 开区间 (left, right) = (left, left+1) 为空
+    // right 是第一个 >= target 的位置
+    return right < arr.length ? right : -1;
+}
+```
+
+【左开右闭】
+
+```java
+/**
+ * 左开右闭区间二分：查找第一个 >= target 的位置
+ * 区间定义：(left, right] 表示可能的答案在 left（不含）到 right（含）之间
+ */
+public static int lowerBound(int[] arr, int target) {
+    int left = -1;               // 左开，不包含 left
+    int right = arr.length - 1;  // 右闭，包含 right
+
+    // 循环不变量：
+    // arr[left] < target （如果 left >= 0）
+    // arr[right] 未确定
+
+    // 当区间 (left, right] 不为空时继续
+    while (left < right) { // 注意：不是 <=
+        int mid = left + (right - left + 1) / 2; // 向上取整，避免死循环
+
+        if (arr[mid] >= target) {
+            // mid 可能是答案，继续向左找
+            right = mid; // 缩小为 (left, mid]
+        } else {
+            // mid 太小，答案在右边
+            left = mid; // 缩小为 (mid, right]
+        }
+    }
+
+    // 循环结束时，left = right 或 left + 1 = right
+    // right 是第一个 >= target 的位置
+    return arr[right] >= target ? right : -1;
+}
+```
+
+### 1. 寻找两个正序数组的中位数
+
+题目链接：[寻找两个正序数组的中位数](https://leetcode.cn/problems/median-of-two-sorted-arrays/description/)
+
+> 要求算法的时间复杂度应该为 `O(log (m+n))` 
+
+【思路】
+
+> 思路题解：https://leetcode.cn/problems/median-of-two-sorted-arrays/solutions/2950686/tu-jie-xun-xu-jian-jin-cong-shuang-zhi-z-p2gd/
+
+将两个数组按照顺序，分为第一组和第二组，`max(num1) < min(num2)` 
+
+暴力做法：枚举两个数组中分为不同组的情况，最后找到合法的两个分组之后。则中位数为 `(max(num1) + min(num2)) / 2` 或 `max(num1)` ， 默认第一组比第二组多一个元素。
+
+![寻找两个正序数组的中位数](https://oss.swimmingliu.cn/7afc1702-a456-11f0-8c8b-caaeffceb346)
+
+【伪代码】
+
+```java
+public double findMedianSortedArrays(int[] nums1, int[] nums2) {
+    if (nums1.length > nums2.length) {
+        // 交换 nums1 和 nums2，保证下面的 i 可以从 0 开始枚举
+        int[] tmp = nums1;
+        nums1 = nums2;
+        nums2 = tmp;
+    }
+
+    int m = nums1.length;
+    int n = nums2.length;
+    int[] a = new int[m + 2];
+    int[] b = new int[n + 2];
+    a[0] = b[0] = Integer.MIN_VALUE; // 最左边插入 -∞
+    a[m + 1] = b[n + 1] = Integer.MAX_VALUE; // 最右边插入 ∞
+    System.arraycopy(nums1, 0, a, 1, m); // 数组没法直接插入，只能 copy
+    System.arraycopy(nums2, 0, b, 1, n);
+
+    // 枚举 nums1 有 i 个数在第一组
+    // 那么 nums2 有 j = (m + n + 1) / 2 - i 个数在第一组
+    int i = 0;
+    int j = (m + n + 1) / 2;
+    while (true) {
+        if (a[i] <= b[j + 1] && a[i + 1] > b[j]) { // 写 >= 也可以
+            int max1 = Math.max(a[i], b[j]); // 第一组的最大值
+            int min2 = Math.min(a[i + 1], b[j + 1]); // 第二组的最小值
+            return (m + n) % 2 > 0 ? max1 : (max1 + min2) / 2.0;
+        }
+        i++; // 继续枚举
+        j--;
+    }
+}
+```
+
+【优化思路】
+
+将枚举转换为二分
+
+【伪代码】
+
+```java
+public double findMedianSortedArrays(int[] nums1, int[] nums2) {
+      if (nums1.length > nums2.length) {
+          // 交换 nums1 和 nums2，保证下面的 i 可以从 0 开始枚举
+          int[] tmp = nums1;
+          nums1 = nums2;
+          nums2 = tmp;
+      }
+
+      int m = nums1.length;
+      int n = nums2.length;
+      int[] a = new int[m + 2];
+      int[] b = new int[n + 2];
+      a[0] = b[0] = Integer.MIN_VALUE;
+      a[m + 1] = b[n + 1] = Integer.MAX_VALUE;
+      System.arraycopy(nums1, 0, a, 1, m);
+      System.arraycopy(nums2, 0, b, 1, n);
+
+      // 循环不变量：a[left] <= b[j+1] （左边界）
+      // 循环不变量：a[right] > b[j+1] （右边界）
+      int left = 0;
+      int right = m + 1;
+      while (left + 1 < right) { // 开区间 (left, right) 不为空
+          int i = left + (right - left) / 2;
+          int j = (m + n + 1) / 2 - i;
+          if (a[i] <= b[j + 1]) {
+              left = i; // 缩小二分区间为 (i, right)
+          } else {
+              right = i; // 缩小二分区间为 (left, i)
+          }
+      }
+
+      // 此时 left 等于 right-1
+      // a[left] <= b[j+1] 且 a[right] > b[j'+1] = b[j]，所以答案是 i=left
+  		// 这里 `i = left` 是因为满足 a[left] <= b[j+1] 的最大值就是左边界
+      int i = left;
+      int j = (m + n + 1) / 2 - i;
+      int max1 = Math.max(a[i], b[j]);
+      int min2 = Math.min(a[i + 1], b[j + 1]);
+      return (m + n) % 2 > 0 ? max1 : (max1 + min2) / 2.0;
+  }
+```
+
+### 2. 搜索旋转排序数组
+
+题目链接：[搜索旋转排序数组](https://leetcode.cn/problems/search-in-rotated-sorted-array/description/)
+
+【思路】
+
+两次二分，第一次二分用于找到分割点（最小值的位置），第二次二分用于分别找两个子区间中是否存在目标元素
+
+- 第一次二分，找最小值：循环数组可以分为两个部分，一部分是被循环放到前面的，另外一部分是从最小值开始的。二分查找数组中的 `mid` 位置元素，和最后一个元素比较。如果 `nums[mid] > end`， 则说明当前元素不是最小值所在的部分，区间向右边缩小。如果 `nums[mid] <= end` ，说明当前元素是最小值所在的部分，区间进一步向左缩小。最后左边界所指向的元素，就是最小值。
+
+  > [二分查找最小值](https://leetcode.cn/problems/find-minimum-in-rotated-sorted-array/solutions/1987499/by-endlesscheng-owgd/)
+
+- 第二次二分，找目标元素：通过最小值的下标，将数组划分为两个区间。分别在两个区间里面，用二分查找是否存在对应的元素。
+
+【伪代码】
+
+```java
+public static int search(int[] nums, int target) {
+    int n = nums.length;
+    int minIndex = findMinIndex(nums);
+    int left = 0, right = minIndex - 1;
+    int res = findTarget(nums, left, right, target);
+    if (res != -1){
+        return res;
+    }
+    left = minIndex;
+    right = n - 1;
+    return findTarget(nums, left, right, target);
+}
+
+// 第二次二分： 查找目标元素
+public static int findTarget(int[] nums, int left, int right, int target){
+    while(left <= right){
+        int mid = left + (right - left) / 2;
+        if (nums[mid] >= target){
+            right = mid - 1;
+        } else {
+            left = mid + 1;
+        }
+    }
+    return left < nums.length && nums[left] == target ? left : -1;
+}
+
+// 第一次二分：查找最小元素
+public static int findMinIndex(int[] nums) {
+    int n = nums.length;
+    int end = nums[n - 1];
+    int left = 0, right = n - 1;
+    while (left <= right){
+        int mid = left + (right - left) / 2;
+        if (nums[mid] > end){
+            left = mid + 1;
+        } else {
+            right = mid - 1;
+        }
+    }
+    return left;
+}
+```
+
+### 3. 在排序数组中查找元素的第一个和最后一个位置
+
+题目链接：[在排序数组中查找元素的第一个和最后一个位置](https://leetcode.cn/problems/find-first-and-last-position-of-element-in-sorted-array/description/)
+
+【思路】
+
+两次二分：第一次二分查找第一个 `target` 的位置，第二次二分查找 `target + 1` 的位置，则其前面一个位置就是 `target` 出现的最后一个位置。
+
+【伪代码】
+
+```java
+public int[] searchRange(int[] nums, int target) {
+    int start = lowerBound(nums, target);
+    if (start == nums.length || nums[start] != target) {
+        return new int[]{-1, -1}; // nums 中没有 target
+    }
+    // 如果 start 存在，那么 end 必定存在
+    int end = lowerBound(nums, target + 1) - 1;
+    return new int[]{start, end};
+}
+
+// lowerBound 返回最小的满足 nums[i] >= target 的下标 i
+// 如果数组为空，或者所有数都 < target，则返回 nums.length
+// 要求 nums 是非递减的，即 nums[i] <= nums[i + 1]
+private int lowerBound(int[] nums, int target) {
+    int left = 0;
+    int right = nums.length - 1; // 闭区间 [left, right]
+    while (left <= right) { // 区间不为空
+        // 循环不变量：
+        // nums[left-1] < target
+        // nums[right+1] >= target
+        int mid = left + (right - left) / 2;
+        if (nums[mid] >= target) {
+            right = mid - 1; // 范围缩小到 [left, mid-1]
+        } else {
+            left = mid + 1; // 范围缩小到 [mid+1, right]
+        }
+    }
+    // 循环结束后 left = right+1
+    // 此时 nums[left-1] < target 而 nums[left] = nums[right+1] >= target
+    // 所以 left 就是第一个 >= target 的元素下标
+    return left;
+}
+```
+
+### 4. 搜索插入位置
+
+题目链接：[搜索插入位置](https://leetcode.cn/problems/search-insert-position/description/)
+
+【思路】
+
+普通二分查找即可，最后二分的位置是最小的大于 `target` 的 `nums[i]`，就是应该插入的位置。
+
+【伪代码】
+
+```java
+public int searchInsert(int[] nums, int target) {
+        return lowerBound(nums, target); // 选择其中一种写法即可
+    }
+
+  // lowerBound 返回最小的满足 nums[i] >= target 的 i
+  // 如果数组为空，或者所有数都 < target，则返回 nums.length
+  // 要求 nums 是非递减的，即 nums[i] <= nums[i + 1]
+
+  // 闭区间写法
+  private int lowerBound(int[] nums, int target) {
+      int left = 0;
+      int right = nums.length - 1; // 闭区间 [left, right]
+      while (left <= right) { // 区间不为空
+          // 循环不变量：
+          // nums[left-1] < target
+          // nums[right+1] >= target
+          int mid = left + (right - left) / 2;
+          if (nums[mid] < target) {
+              left = mid + 1; // 范围缩小到 [mid+1, right]
+          } else {
+              right = mid - 1; // 范围缩小到 [left, mid-1]
+          }
+      }
+      return left;
+  }
+```
+
+### 5. 搜索二维矩阵 II
+
+题目链接：[搜索二维矩阵 II](https://leetcode.cn/problems/search-a-2d-matrix-ii/description/?favorite=2cktkvj)
+
+【思路】	
+
+> 题解：[https://leetcode.cn/problems/search-a-2d-matrix-ii/solutions/2783938/tu-jie-pai-chu-fa-yi-tu-miao-dong-python-kytg/?favorite=2cktkvj](https://leetcode.cn/problems/search-a-2d-matrix-ii/solutions/2783938/tu-jie-pai-chu-fa-yi-tu-miao-dong-python-kytg/?favorite=2cktkvj)
+
+规律题：
+
+1. 从右上角开始查询：因为右上角元素可以决定行和列的选择 
+2. 行选择：如果当前元素 `nums[i][j] < target` ，则说明这一行所有元素都小于 `target` ，可以排除
+3. 列选择：如果当前元素 `nums[i][j] > target` ，则说明这一行所有元素都大于 `target` ，可以排除
+
+4. 找到答案：重复上述步骤，直到找到答案位置。
+
+![搜索二维矩阵II](https://oss.swimmingliu.cn/7b29d5d4-a456-11f0-8c8b-caaeffceb346)
+
+【伪代码】
+
+```java
+public boolean searchMatrix(int[][] matrix, int target) {
+    int n = martix.length; // 行
+    int m = matrix[0].length; // 列
+    int i = 0;
+    int j = m - 1; // 从右上角开始
+    while (i < n && j >= 0) { // 还有剩余元素
+        if (matrix[i][j] == target) {
+            return true; // 找到 target
+        }
+        if (matrix[i][j] < target) {
+            i++; // 这一行剩余元素全部小于 target，排除
+        } else {
+            j--; // 这一列剩余元素全部大于 target，排除
+        }
+    }
+    return false;
+}
+```
+
+### 6. 寻找重复数
+
+题目链接：[寻找重复数](https://leetcode.cn/problems/find-the-duplicate-number/description/)
+
+【思路】
+
+> 题解：[https://leetcode.cn/problems/find-the-duplicate-number/solutions/3797843/yong-ji-huan-shu-li-jie-zuo-fa-tong-142-tkoc2/](https://leetcode.cn/problems/find-the-duplicate-number/solutions/3797843/yong-ji-huan-shu-li-jie-zuo-fa-tong-142-tkoc2/)
+
+本题可以看作是 *环形链表II* 类比的题目，`nums` 中的元素取值范围为 `1 ~ n`， 数组 `nums` 的长度为 `n+1`， 则说明 `nums` 中的元素可以映射为下标 `0~n`。当 `nums` 中存在重复元素的时候，说明 `nums` 数组按照值映射的下标进行遍历，一定是一个环形的链表。所以，相同元素就是环形链表的入口。
+
+- 环形链表查找入环处：快慢指针的相遇处 + 入环的距离 
+
+  假设入环距离为 `a`， 相遇处慢指针走的距离为 `b`，环长为 `c` 。 则快慢指针相遇的时候，快指针比慢指针多走了 `kc` 距离。
+  则 `fast - slow = kc` -> `2b - b = kc` -> `b = kc` ，则 `x = b - a = kc - a` -> `kc = x + a`。 所以，从相遇位置再往前走 `a` 步就是入环处。
+
+![环形链表II](https://oss.swimmingliu.cn/7b5bdb24-a456-11f0-8c8b-caaeffceb346)
+
+【伪代码】
+
+```java
+public int findDuplicate(int[] nums) {
+    int slow = 0; // 0 是头节点
+    int fast = 0;
+    while (true) {
+        slow = nums[slow]; // 等价于 slow = slow.next
+        fast = nums[nums[fast]]; // 等价于 fast = fast.next.next
+        if (fast == slow) { // 快慢指针移动到同一个节点
+            break;
+        }
+    }
+
+    int head = 0; // 再用一个指针，从头节点出发
+    while (slow != head) {
+        slow = nums[slow];
+        head = nums[head];
+    }
+    return slow; // 入环口即重复元素
+}
+```
